@@ -29,18 +29,40 @@ export default function LinkCard({ link, onDelete }: LinkCardProps) {
             return "https://placehold.co/32x32.png";
         }
     };
+
+    const getYouTubeVideoId = (url: string): string | null => {
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+        const match = url.match(regExp);
+        return (match && match[2].length === 11) ? match[2] : null;
+    }
+
+    const videoId = getYouTubeVideoId(link.url);
     
   return (
     <Card className="flex flex-col h-full">
-      <CardHeader>
-        <CardTitle className="flex items-start gap-3 text-base">
-          <img src={getFaviconUrl(link.url)} alt="favicon" className="w-8 h-8 mt-1 rounded-md" />
-          <a href={link.url} target="_blank" rel="noopener noreferrer" className="hover:underline flex-1 break-words">
-            {link.title}
-          </a>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="flex-1">
+        {videoId ? (
+            <div className='aspect-video w-full rounded-t-lg overflow-hidden'>
+                <iframe
+                    src={`https://www.youtube.com/embed/${videoId}`}
+                    title="YouTube video player"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className='w-full h-full'
+                ></iframe>
+            </div>
+        ) : (
+             <CardHeader>
+                <CardTitle className="flex items-start gap-3 text-base">
+                <img src={getFaviconUrl(link.url)} alt="favicon" className="w-8 h-8 mt-1 rounded-md" />
+                <a href={link.url} target="_blank" rel="noopener noreferrer" className="hover:underline flex-1 break-words">
+                    {link.title}
+                </a>
+                </CardTitle>
+            </CardHeader>
+        )}
+     
+      <CardContent className={`flex-1 ${videoId ? 'pt-6' : ''}`}>
         <p className="text-sm text-muted-foreground">{link.summary}</p>
       </CardContent>
       <CardFooter className="flex justify-between items-center">

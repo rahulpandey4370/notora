@@ -27,25 +27,11 @@ export async function analyzeLink(input: AnalyzeLinkInput): Promise<AnalyzeLinkO
   return analyzeLinkFlow(input);
 }
 
-const AnalyzeLinkPromptInputSchema = z.object({
-  url: z.string().url(),
-  content: z.string().optional(),
-});
-
 const prompt = ai.definePrompt({
   name: 'analyzeLinkPrompt',
-  input: {schema: AnalyzeLinkPromptInputSchema},
+  input: {schema: AnalyzeLinkInputSchema},
   output: {schema: AnalyzeLinkOutputSchema},
   prompt: `Analyze the content of the webpage from the URL: {{{url}}}
-
-{{#if content}}
-Here is the text content of the page:
----
-{{{content}}}
----
-{{else}}
-The text content could not be fetched. Please analyze the link based on the URL and your own knowledge.
-{{/if}}
 
 Based on the content, you must extract the following information:
 1.  **Title**: The main title of the webpage. If you can't find one, generate a suitable title based on the URL.
@@ -62,35 +48,7 @@ const analyzeLinkFlow = ai.defineFlow(
     outputSchema: AnalyzeLinkOutputSchema,
   },
   async (input) => {
-    let content: string | undefined = undefined;
-    try {
-      // Set a timeout for the fetch request
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 seconds
-
-      const response = await fetch(input.url, { signal: controller.signal });
-      clearTimeout(timeoutId);
-
-      if (response.ok) {
-        const text = await response.text();
-        // A simple way to strip HTML tags to reduce token count and noise.
-        const cleanedText = text.replace(/<style[^>]*>.*<\/style>/gs, '')
-                      .replace(/<script[^>]*>.*<\/script>/gs, '')
-                      .replace(/<[^>]+>/g, ' ')
-                      .replace(/\s\s+/g, ' ')
-                      .trim();
-
-        // If we get meaningful content, use it. Otherwise, let the model try with just the URL.
-        if (cleanedText.length > 100) {
-            content = cleanedText.substring(0, 15000); // Limit content to avoid exceeding token limits
-        }
-      }
-
-    } catch (e) {
-        console.warn("Failed to fetch or process URL content, letting model analyze by URL alone.", e);
-    }
-    
-    const {output} = await prompt({ url: input.url, content });
+    const {output} = await prompt(input);
     return output!;
   }
 );

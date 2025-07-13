@@ -17,12 +17,18 @@ export interface StickyNote {
   theme: 'yellow' | 'blue' | 'green' | 'pink' | 'purple';
 }
 
+export interface NoteBoard {
+  id: string;
+  title: string;
+  notes: StickyNote[];
+}
+
 export interface UserStats {
     xp: number;
 }
 
 export interface AppData {
   tasks: Task[];
-  notes: StickyNote[];
+  noteBoards: NoteBoard[];
   userStats: UserStats;
 }

@@ -8,16 +8,23 @@ import type { AppData } from '@/lib/types';
 import Dashboard from '@/components/notora/Dashboard';
 import { v4 as uuidv4 } from 'uuid';
 import { Skeleton } from '@/components/ui/skeleton';
+import AppLayout from '@/components/notora/AppLayout';
 
 const defaultAppData: AppData = {
   tasks: [],
-  notes: [
-    { 
-      id: 'note-1', 
-      content: 'Welcome to Notora! ✨\n\nThis is a draggable sticky note. You can edit me or use the AI tools in the menu below.', 
-      position: { x: 50, y: 50 }, 
-      theme: 'yellow' 
-    },
+  noteBoards: [
+    {
+      id: 'board-1',
+      title: 'General',
+      notes: [
+        { 
+          id: 'note-1', 
+          content: 'Welcome to Notora! ✨\n\nThis is a draggable sticky note. You can edit me or use the AI tools in the menu below.', 
+          position: { x: 50, y: 50 }, 
+          theme: 'yellow' 
+        },
+      ]
+    }
   ],
   userStats: {
     xp: 0,
@@ -34,8 +41,15 @@ export default function Home() {
   const loadData = useCallback(async (username: string) => {
     setLoading(true);
     let appData = await getAppData(username);
-    if (!appData) {
-      const newDefaultData = { ...defaultAppData, notes: [{...defaultAppData.notes[0], id: uuidv4()}] };
+    if (!appData || !appData.noteBoards || appData.noteBoards.length === 0) { // Check for legacy or empty data
+      const newDefaultData = { 
+        ...defaultAppData, 
+        noteBoards: [{
+          ...defaultAppData.noteBoards[0], 
+          id: uuidv4(),
+          notes: [{...defaultAppData.noteBoards[0].notes[0], id: uuidv4()}] 
+        }] 
+      };
       await saveAppData(username, newDefaultData);
       appData = newDefaultData;
     }
@@ -61,34 +75,32 @@ export default function Home() {
   };
 
   if (authLoading || loading || !data || !user) {
-    return <LoadingSkeleton />;
+    return (
+      <AppLayout user={user}>
+        <LoadingSkeleton />
+      </AppLayout>
+    )
   }
 
   return (
-    <Dashboard 
-      user={user} 
-      data={data}
-      onDataChange={handleDataChange}
-    />
+    <AppLayout user={user}>
+      <Dashboard 
+        user={user} 
+        data={data}
+        onDataChange={handleDataChange}
+      />
+    </AppLayout>
   );
 }
 
 function LoadingSkeleton() {
   return (
-    <div className="flex flex-col h-screen bg-background">
-      <header className="flex items-center justify-between p-4 border-b">
-        <Skeleton className="h-8 w-24" />
-        <Skeleton className="h-10 w-10 rounded-full" />
-      </header>
-      <main className="flex-1 p-4 md:p-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-8">
-          <Skeleton className="h-40 rounded-lg" />
-          <Skeleton className="h-96 rounded-lg" />
-        </div>
-        <div className="lg:col-span-1 space-y-8">
-          <Skeleton className="h-64 rounded-lg" />
-        </div>
-      </main>
+    <div className="p-4 md:p-8 space-y-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <Skeleton className="h-64 rounded-lg" />
+        <Skeleton className="h-64 rounded-lg" />
+      </div>
+       <Skeleton className="h-96 rounded-lg" />
     </div>
   );
 }

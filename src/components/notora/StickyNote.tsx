@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { motion, useMotionValue, useDragControls } from 'framer-motion';
 import { Textarea } from '@/components/ui/textarea';
 import type { StickyNote as StickyNoteType } from '@/lib/types';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { MoreVertical, Trash2, Wand2, BookText, List, BrainCircuit, Loader2 } from 'lucide-react';
+import { MoreVertical, Trash2, Wand2, BookText, List, BrainCircuit, Loader2, Paintbrush } from 'lucide-react';
 import { polishStickyNote } from '@/ai/flows/polish-sticky-note';
 import { summarizeStickyNote } from '@/ai/flows/summarize-sticky-note';
 import { bulletifyStickyNote } from '@/ai/flows/bullet-ify-sticky-note';
@@ -14,19 +14,22 @@ import { simplifyStickyNote } from '@/ai/flows/simplify-sticky-note';
 
 interface StickyNoteProps {
   note: StickyNoteType;
-  onChange: (id: string, newContent: string) => void;
+  onChange: (id: string, newContent: Partial<StickyNoteType>) => void;
   onDelete: (id: string) => void;
   onStopDrag: (id: string, position: { x: number; y: number }) => void;
   constraintsRef: React.RefObject<HTMLDivElement>;
 }
 
-const themeColors = {
+const themeColors: Record<StickyNoteType['theme'], string> = {
   yellow: 'bg-[#FFDA63]/30 border-[#FFDA63]',
   blue: 'bg-blue-300/30 border-blue-400',
   green: 'bg-green-300/30 border-green-400',
   pink: 'bg-pink-300/30 border-pink-400',
   purple: 'bg-purple-300/30 border-purple-400',
 };
+
+const themes: StickyNoteType['theme'][] = ['yellow', 'blue', 'green', 'pink', 'purple'];
+
 
 type AIOperation = 'polish' | 'summarize' | 'bulletify' | 'simplify';
 
@@ -44,19 +47,19 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
         switch (operation) {
             case 'polish':
                 result = await polishStickyNote({ content: note.content });
-                onChange(note.id, result.polishedContent);
+                onChange(note.id, { content: result.polishedContent });
                 break;
             case 'summarize':
                 result = await summarizeStickyNote({ content: note.content });
-                onChange(note.id, result.summary);
+                onChange(note.id, { content: result.summary });
                 break;
             case 'bulletify':
                 result = await bulletifyStickyNote({ text: note.content });
-                onChange(note.id, result.bulletifiedText);
+                onChange(note.id, { content: result.bulletifiedText });
                 break;
             case 'simplify':
                 result = await simplifyStickyNote({ text: note.content });
-                onChange(note.id, result.simplifiedText);
+                onChange(note.id, { content: result.simplifiedText });
                 break;
         }
     } catch (error) {
@@ -73,7 +76,7 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
       drag
       dragListener={false}
       onPointerDown={(e) => {
-        if (e.target instanceof HTMLTextAreaElement) return;
+        if (e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLButtonElement || e.target.closest('button')) return;
         dragControls.start(e)
       }}
       dragControls={dragControls}
@@ -85,7 +88,7 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
     >
       <Textarea
         value={note.content}
-        onChange={(e) => onChange(note.id, e.target.value)}
+        onChange={(e) => onChange(note.id, { content: e.target.value })}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         className="w-full h-full bg-transparent border-0 focus-visible:ring-0 resize-none text-sm"
@@ -111,6 +114,19 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
                 <DropdownMenuItem onClick={() => handleAIAction('simplify')} disabled={!!aiLoading}>
                     {aiLoading === 'simplify' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <BrainCircuit className="mr-2 h-4 w-4" />} Simplify
                 </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                 <DropdownMenuItem>
+                    <Paintbrush className="mr-2 h-4 w-4" /> Change Color
+                    <div className='flex gap-1 ml-auto'>
+                        {themes.map(theme => (
+                            <button key={theme} onClick={(e) => {
+                                e.stopPropagation();
+                                onChange(note.id, { theme });
+                            }} className={`w-4 h-4 rounded-full ${themeColors[theme].split(' ')[0]}`} />
+                        ))}
+                    </div>
+                 </DropdownMenuItem>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => onDelete(note.id)} className="text-destructive">
                     <Trash2 className="mr-2 h-4 w-4" /> Delete
                 </DropdownMenuItem>

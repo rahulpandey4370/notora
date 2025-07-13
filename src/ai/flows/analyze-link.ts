@@ -9,8 +9,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
-
-export const linkCategories = ['Article', 'Video', 'Course', 'Image', 'Other'] as const;
+import { linkCategories } from '@/lib/types';
 
 const AnalyzeLinkInputSchema = z.object({
   url: z.string().url().describe('The URL of the link to analyze.'),

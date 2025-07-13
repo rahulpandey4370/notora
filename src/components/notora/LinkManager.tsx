@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Loader2, Plus } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
-import { analyzeLink, linkCategories } from '@/ai/flows/analyze-link';
+import { analyzeLink } from '@/ai/flows/analyze-link';
+import { linkCategories } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import LinkCard from './LinkCard';
 

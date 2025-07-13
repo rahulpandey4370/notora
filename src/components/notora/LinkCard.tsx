@@ -5,7 +5,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Trash2 } from 'lucide-react';
-import { linkCategories } from '@/ai/flows/analyze-link';
+import { linkCategories } from '@/lib/types';
 
 interface LinkCardProps {
   link: SavedLink;

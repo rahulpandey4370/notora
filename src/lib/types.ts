@@ -1,4 +1,4 @@
-import { type linkCategories } from "@/ai/flows/analyze-link";
+export const linkCategories = ['Article', 'Video', 'Course', 'Image', 'Other'] as const;
 
 export interface User {
   username: string;

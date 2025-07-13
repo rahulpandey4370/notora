@@ -3,11 +3,13 @@
 import { useState } from 'react';
 import UserProfile from './UserProfile';
 import { Button } from '@/components/ui/button';
-import { Wand2 } from 'lucide-react';
+import { Menu, Wand2 } from 'lucide-react';
 import DayEndSummaryDialog from './DayEndSummaryDialog';
 import type { AppData, Task, User, UserStats } from '@/lib/types';
 import { ModeToggle } from './ModeToggle';
 import Link from 'next/link';
+import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';
+import SidebarContent from './SidebarContent';
 
 interface HeaderProps {
   user: User | null;
@@ -18,10 +20,22 @@ interface HeaderProps {
 
 export default function Header({ user, tasks, userStats, onDataChange }: HeaderProps) {
   const [summaryOpen, setSummaryOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <header className="flex items-center justify-between p-4 border-b sticky top-0 bg-background/80 backdrop-blur-sm z-20">
       <div className="flex items-center gap-2">
+         <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon" className="md:hidden">
+              <Menu className="h-6 w-6" />
+              <span className="sr-only">Toggle Menu</span>
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="p-0 w-64">
+            <SidebarContent onLinkClick={() => setMobileMenuOpen(false)} />
+          </SheetContent>
+        </Sheet>
         <Link href="/" className='flex items-center gap-2'>
           <img src="https://placehold.co/32x32/FFDA63/000000.png?text=N" alt="Notora Logo" data-ai-hint="logo initial" className="rounded-md" />
           <h1 className="text-xl font-bold font-headline text-foreground hidden md:block">Notora</h1>

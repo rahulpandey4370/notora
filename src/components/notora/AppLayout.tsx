@@ -1,8 +1,10 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Header from "./Header";
 import Sidebar from "./Sidebar";
-import type { User } from "@/lib/types";
+import type { AppData, User } from "@/lib/types";
+import { getAppData } from '@/lib/storage';
 
 interface AppLayoutProps {
     user: User | null;
@@ -10,21 +12,29 @@ interface AppLayoutProps {
 }
 
 export default function AppLayout({ user, children }: AppLayoutProps) {
-    // A dummy implementation for tasks and stats for the header
-    // In a real app, this would come from a global state or context
-    const dummyData = {
-        tasks: [],
-        userStats: { xp: 0 },
-        onDataChange: () => {},
-    }
+    const [data, setData] = useState<AppData | null>(null);
+
+    useEffect(() => {
+        if (user) {
+            getAppData(user.username).then(setData);
+        }
+    }, [user]);
+
+    const tasks = data?.tasks || [];
+    const userStats = data?.userStats || { xp: 0 };
+    
+    const handleDataChange = (newData: AppData) => {
+        // This is a dummy handler for components that need it but AppLayout is now main data source
+        // Actual data saving is handled in pages
+    };
 
     return (
         <div className="flex flex-col min-h-screen bg-background text-foreground">
              <Header 
                 user={user} 
-                tasks={dummyData.tasks} 
-                userStats={dummyData.userStats} 
-                onDataChange={dummyData.onDataChange}
+                tasks={tasks} 
+                userStats={userStats}
+                onDataChange={handleDataChange}
             />
             <div className="flex-1 flex">
                 <Sidebar />

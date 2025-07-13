@@ -13,7 +13,20 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const defaultAppData: AppData = {
   tasks: [],
-  noteBoards: [],
+  noteBoards: [
+    {
+      id: 'board-1',
+      title: 'General',
+      notes: [
+        { 
+          id: 'note-1', 
+          content: 'Welcome to Notora! ✨', 
+          position: { x: 50, y: 50 }, 
+          theme: 'yellow' 
+        },
+      ]
+    }
+  ],
   userStats: {
     xp: 0,
   },
@@ -28,13 +41,21 @@ export default function TasksPage() {
   const loadData = useCallback(async (username: string) => {
     setLoading(true);
     let appData = await getAppData(username);
+
     if (!appData) {
       const newDefaultData = { 
-        ...defaultAppData, 
+        ...defaultAppData,
+        noteBoards: [{
+          ...defaultAppData.noteBoards[0],
+          id: uuidv4(),
+          notes: [{...defaultAppData.noteBoards[0].notes[0], id: uuidv4()}]
+        }]
       };
+      // Save the new default data first, then set it.
       await saveAppData(username, newDefaultData);
       appData = newDefaultData;
     }
+    
     setData(appData);
     setLoading(false);
   }, []);

@@ -41,7 +41,8 @@ export default function Home() {
   const loadData = useCallback(async (username: string) => {
     setLoading(true);
     let appData = await getAppData(username);
-    if (!appData || !appData.noteBoards || appData.noteBoards.length === 0) { // Check for legacy or empty data
+    
+    if (!appData) {
       const newDefaultData = { 
         ...defaultAppData, 
         noteBoards: [{
@@ -50,9 +51,11 @@ export default function Home() {
           notes: [{...defaultAppData.noteBoards[0].notes[0], id: uuidv4()}] 
         }] 
       };
+      // Save the new default data first, then set it.
       await saveAppData(username, newDefaultData);
       appData = newDefaultData;
     }
+
     setData(appData);
     setLoading(false);
   }, []);

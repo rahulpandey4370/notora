@@ -33,8 +33,13 @@ export default function Home() {
 
   const loadData = useCallback(async (username: string) => {
     setLoading(true);
-    const appData = await getAppData(username);
-    setData(appData || { ...defaultAppData, notes: [{...defaultAppData.notes[0], id: uuidv4()}] });
+    let appData = await getAppData(username);
+    if (!appData) {
+      const newDefaultData = { ...defaultAppData, notes: [{...defaultAppData.notes[0], id: uuidv4()}] };
+      await saveAppData(username, newDefaultData);
+      appData = newDefaultData;
+    }
+    setData(appData);
     setLoading(false);
   }, []);
 

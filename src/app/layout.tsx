@@ -3,6 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 import { AuthProvider } from '@/contexts/auth-context';
 import { ThemeProvider } from '@/components/providers/theme-provider';
+import { AppProvider } from '@/contexts/app-context';
 
 export const metadata: Metadata = {
   title: 'Notora',
@@ -29,8 +30,10 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <AuthProvider>
-            {children}
-            <Toaster />
+            <AppProvider>
+              {children}
+              <Toaster />
+            </AppProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>

@@ -8,6 +8,7 @@ export interface Task {
   title: string;
   completed: boolean;
   priority: 'Easy' | 'Medium' | 'Hard';
+  date: string; // ISO 8601 date string
 }
 
 export interface StickyNote {

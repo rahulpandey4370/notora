@@ -5,7 +5,7 @@ import UserProfile from './UserProfile';
 import { Button } from '@/components/ui/button';
 import { Menu, Wand2 } from 'lucide-react';
 import DayEndSummaryDialog from './DayEndSummaryDialog';
-import type { AppData, Task, User, UserStats } from '@/lib/types';
+import type { Task, User, UserStats } from '@/lib/types';
 import { ModeToggle } from './ModeToggle';
 import Link from 'next/link';
 import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';
@@ -15,10 +15,9 @@ interface HeaderProps {
   user: User | null;
   tasks: Task[];
   userStats: UserStats;
-  onDataChange: (data: AppData) => void;
 }
 
-export default function Header({ user, tasks, userStats, onDataChange }: HeaderProps) {
+export default function Header({ user, tasks, userStats }: HeaderProps) {
   const [summaryOpen, setSummaryOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 

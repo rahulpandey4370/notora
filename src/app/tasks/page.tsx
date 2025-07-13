@@ -1,103 +1,80 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/use-auth';
-import { getAppData, saveAppData } from '@/lib/storage';
-import type { AppData } from '@/lib/types';
-import { v4 as uuidv4 } from 'uuid';
+import { useApp } from '@/hooks/use-app';
 import { Skeleton } from '@/components/ui/skeleton';
 import AppLayout from '@/components/notora/AppLayout';
 import TaskList from '@/components/notora/TaskList';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-
-const defaultAppData: AppData = {
-  tasks: [],
-  noteBoards: [
-    {
-      id: 'board-1',
-      title: 'General',
-      notes: [
-        { 
-          id: 'note-1', 
-          content: 'Welcome to Notora! ✨', 
-          position: { x: 50, y: 50 }, 
-          theme: 'yellow' 
-        },
-      ]
-    }
-  ],
-  userStats: {
-    xp: 0,
-  },
-};
+import { Calendar } from '@/components/ui/calendar';
 
 export default function TasksPage() {
   const { user, loading: authLoading } = useAuth();
+  const { data, loading: appLoading, handleDataChange } = useApp();
   const router = useRouter();
-  const [data, setData] = useState<AppData | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  const loadData = useCallback(async (username: string) => {
-    setLoading(true);
-    let appData = await getAppData(username);
-
-    if (!appData) {
-      console.log(`No data found for ${username}, creating default data.`);
-      const newDefaultData = { 
-        ...defaultAppData,
-        noteBoards: [{
-          ...defaultAppData.noteBoards[0],
-          id: uuidv4(),
-          notes: [{...defaultAppData.noteBoards[0].notes[0], id: uuidv4()}]
-        }]
-      };
-      await saveAppData(username, newDefaultData);
-      appData = newDefaultData;
-    }
-    
-    setData(appData);
-    setLoading(false);
-  }, []);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
 
   useEffect(() => {
-    if (!authLoading) {
-      if (user) {
-        loadData(user.username);
-      } else {
-        router.push('/login');
-      }
+    if (!authLoading && !user) {
+      router.push('/login');
     }
-  }, [user, authLoading, router, loadData]);
+  }, [user, authLoading, router]);
 
-  const handleDataChange = (newData: AppData) => {
-    if (user) {
-      setData(newData);
-      saveAppData(user.username, newData);
-    }
-  };
-
-  if (authLoading || loading || !data || !user) {
+  if (authLoading || appLoading || !data || !user) {
     return (
-      <AppLayout user={user}>
-        <div className="p-4 md:p-8">
+      <AppLayout>
+        <div className="p-4 md:p-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-1">
+            <Skeleton className="h-80 w-full" />
+          </div>
+          <div className="lg:col-span-2">
             <Skeleton className="h-96 w-full" />
+          </div>
         </div>
       </AppLayout>
     );
   }
 
+  const tasksForSelectedDate = data.tasks.filter(task => {
+    if (!selectedDate) return false;
+    const taskDate = new Date(task.date);
+    return taskDate.toDateString() === selectedDate.toDateString();
+  });
+
   return (
-    <AppLayout user={user}>
-      <main className="p-4 md:p-8">
-        <Card>
-            <CardHeader>
-            <CardTitle>My Tasks</CardTitle>
-            </CardHeader>
-            <CardContent>
-            <TaskList tasks={data.tasks} onDataChange={handleDataChange} data={data} />
-            </CardContent>
-        </Card>
+    <AppLayout>
+      <main className="p-4 md:p-8 grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+        <div className="lg:col-span-1 lg:sticky lg:top-24">
+            <Card>
+                <CardContent className="p-0">
+                    <Calendar
+                        mode="single"
+                        selected={selectedDate}
+                        onSelect={setSelectedDate}
+                        className="w-full"
+                    />
+                </CardContent>
+            </Card>
+        </div>
+        <div className="lg:col-span-2">
+            <Card>
+                <CardHeader>
+                <CardTitle>
+                    Tasks for {selectedDate ? selectedDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'a selected date'}
+                </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <TaskList 
+                        tasks={tasksForSelectedDate} 
+                        onDataChange={handleDataChange} 
+                        data={data}
+                        selectedDate={selectedDate || new Date()}
+                    />
+                </CardContent>
+            </Card>
+        </div>
       </main>
     </AppLayout>
   );

@@ -15,6 +15,7 @@ interface TaskListProps {
   tasks: Task[];
   data: AppData;
   onDataChange: (data: AppData) => void;
+  selectedDate: Date;
 }
 
 const xpMap: Record<Task['priority'], number> = {
@@ -23,7 +24,7 @@ const xpMap: Record<Task['priority'], number> = {
   Hard: 50,
 };
 
-export default function TaskList({ tasks, data, onDataChange }: TaskListProps) {
+export default function TaskList({ tasks, data, onDataChange, selectedDate }: TaskListProps) {
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [newTaskPriority, setNewTaskPriority] = useState<Task['priority']>('Medium');
   const [optimizing, setOptimizing] = useState(false);
@@ -37,15 +38,16 @@ export default function TaskList({ tasks, data, onDataChange }: TaskListProps) {
       title: newTaskTitle.trim(),
       completed: false,
       priority: newTaskPriority,
+      date: selectedDate.toISOString(),
     };
 
-    onDataChange({ ...data, tasks: [...tasks, newTask] });
+    onDataChange({ ...data, tasks: [...data.tasks, newTask] });
     setNewTaskTitle('');
   };
 
   const handleToggleTask = (id: string) => {
     let xpChange = 0;
-    const newTasks = tasks.map((task) => {
+    const newTasks = data.tasks.map((task) => {
       if (task.id === id) {
         xpChange = task.completed ? -xpMap[task.priority] : xpMap[task.priority];
         if(!task.completed) {
@@ -70,29 +72,42 @@ export default function TaskList({ tasks, data, onDataChange }: TaskListProps) {
 
   const handleDeleteTask = (id: string) => {
     let xpChange = 0;
-    const taskToDelete = tasks.find(t => t.id === id);
+    const taskToDelete = data.tasks.find(t => t.id === id);
     if (taskToDelete && taskToDelete.completed) {
         xpChange = -xpMap[taskToDelete.priority];
     }
-    const newTasks = tasks.filter((task) => task.id !== id);
+    const newTasks = data.tasks.filter((task) => task.id !== id);
     onDataChange({ ...data, tasks: newTasks, userStats: { xp: data.userStats.xp + xpChange }});
   };
 
   const handleOptimizeTasks = async () => {
     setOptimizing(true);
-    const uncompletedTasks = tasks.filter(t => !t.completed).map(t => t.title);
+    const uncompletedTasksForDay = tasks.filter(t => !t.completed).map(t => t.title);
 
     try {
-        const { orderedTasks } = await suggestTaskOrdering({ tasks: uncompletedTasks });
-        const completedTasks = tasks.filter(t => t.completed);
-        const taskMap = new Map(tasks.map(t => [t.title, t]));
-        const reorderedUncompleted = orderedTasks.map(title => taskMap.get(title)).filter(Boolean) as Task[];
+        const { orderedTasks } = await suggestTaskOrdering({ tasks: uncompletedTasksForDay });
         
-        onDataChange({ ...data, tasks: [...completedTasks, ...reorderedUncompleted] });
+        const taskMap = new Map(data.tasks.map(t => [t.id, t]));
+        const reorderedTasksForDay = orderedTasks.map(title => {
+            return tasks.find(t => t.title === title);
+        }).filter((t): t is Task => !!t);
+
+        const otherTasks = data.tasks.filter(t => {
+            const taskDate = new Date(t.date);
+            return taskDate.toDateString() !== selectedDate.toDateString();
+        });
+
+        const newTaskList = [...otherTasks];
+        const completedTasksForDay = tasks.filter(t => t.completed);
+
+        newTaskList.push(...completedTasksForDay);
+        newTaskList.push(...reorderedTasksForDay);
+
+        onDataChange({ ...data, tasks: newTaskList });
         
         toast({
             title: "Tasks Optimized! 🧠",
-            description: "Your task list has been reordered for maximum productivity.",
+            description: "Today's task list has been reordered for maximum productivity.",
         });
     } catch (error) {
         console.error("Failed to optimize tasks:", error);
@@ -141,7 +156,7 @@ export default function TaskList({ tasks, data, onDataChange }: TaskListProps) {
             />
           ))
         ) : (
-          <p className="text-center text-muted-foreground p-4">No tasks yet. Add one to get started!</p>
+          <p className="text-center text-muted-foreground p-4">No tasks for this day. Add one to get started!</p>
         )}
       </div>
 

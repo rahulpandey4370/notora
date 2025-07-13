@@ -1,6 +1,6 @@
 'use client';
 
-import type { User, AppData } from '@/lib/types';
+import type { User, AppData, Task } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import TaskList from './TaskList';
@@ -16,21 +16,28 @@ interface DashboardProps {
 }
 
 export default function Dashboard({ user, data, onDataChange }: DashboardProps) {
-  const { tasks, noteBoards, userStats } = data;
+  const { noteBoards, userStats } = data;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const todaysTasks = useMemo(() => {
+    return data.tasks.filter(task => {
+        const taskDate = new Date(task.date);
+        taskDate.setHours(0,0,0,0);
+        return taskDate.getTime() === today.getTime();
+    });
+  }, [data.tasks]);
 
   const progress = useMemo(() => {
-    if (tasks.length === 0) return 0;
-    const completedTasks = tasks.filter((task) => task.completed).length;
-    return (completedTasks / tasks.length) * 100;
-  }, [tasks]);
+    if (todaysTasks.length === 0) return 0;
+    const completedTasks = todaysTasks.filter((task) => task.completed).length;
+    return (completedTasks / todaysTasks.length) * 100;
+  }, [todaysTasks]);
 
   const recentNotes = useMemo(() => {
     return noteBoards.flatMap(board => board.notes).slice(0, 3);
   }, [noteBoards]);
-  
-  const uncompletedTasks = useMemo(() => {
-    return tasks.filter(task => !task.completed).slice(0, 5);
-  }, [tasks]);
 
   return (
     <div className="p-4 md:p-8 space-y-6">
@@ -48,7 +55,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
             <Progress value={progress} className="w-full" />
           </div>
           <p className="text-sm text-muted-foreground mt-2">
-            {tasks.filter(t => t.completed).length} of {tasks.length} tasks completed. Keep going!
+            {todaysTasks.filter(t => t.completed).length} of {todaysTasks.length} tasks completed today. Keep going!
           </p>
         </CardContent>
       </Card>
@@ -58,25 +65,19 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
               <CardHeader className="flex flex-row items-center justify-between">
                   <CardTitle className="flex items-center gap-2">
                       <CheckSquare className="w-5 h-5" />
-                      Upcoming Tasks
+                      Today's Tasks
                   </CardTitle>
                   <Button variant="ghost" size="sm" asChild>
-                      <Link href="/tasks">View All <ArrowRight className="ml-2 w-4 h-4"/></Link>
+                      <Link href="/tasks">View All Tasks <ArrowRight className="ml-2 w-4 h-4"/></Link>
                   </Button>
               </CardHeader>
               <CardContent>
-                  {uncompletedTasks.length > 0 ? (
-                      <div className="space-y-2">
-                          {uncompletedTasks.map(task => (
-                              <div key={task.id} className="flex items-center justify-between p-2 rounded-md bg-secondary/50">
-                                  <span className="text-sm">{task.title}</span>
-                                  <span className="text-xs text-muted-foreground">{task.priority}</span>
-                              </div>
-                          ))}
-                      </div>
-                  ) : (
-                      <p className="text-sm text-muted-foreground text-center py-4">No upcoming tasks. Great job!</p>
-                  )}
+                 <TaskList 
+                    tasks={todaysTasks}
+                    onDataChange={onDataChange}
+                    data={data}
+                    selectedDate={today}
+                 />
               </CardContent>
           </Card>
           <Card>
@@ -86,7 +87,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
                       Recent Notes
                   </CardTitle>
                   <Button variant="ghost" size="sm" asChild>
-                      <Link href="/notes">View All <ArrowRight className="ml-2 w-4 h-4"/></Link>
+                      <Link href="/notes">View All Notes <ArrowRight className="ml-2 w-4 h-4"/></Link>
                   </Button>
               </CardHeader>
               <CardContent>

@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useMemo } from 'react';
 import StickyNote from './StickyNote';
 import type { AppData, NoteBoard, StickyNote as StickyNoteType } from '@/lib/types';
 import { Button } from '@/components/ui/button';
@@ -14,15 +15,45 @@ interface StickyNotesBoardProps {
 }
 
 const themes: StickyNoteType['theme'][] = ['yellow', 'blue', 'green', 'pink', 'purple'];
+const NOTE_WIDTH = 256; // w-64
+const NOTE_HEIGHT = 256; // h-64
+const NOTE_OFFSET_X = 40;
+const NOTE_OFFSET_Y = 40;
+const PADDING = 20;
 
 export default function StickyNotesBoard({ board, data, onDataChange }: StickyNotesBoardProps) {
   const constraintsRef = useRef<HTMLDivElement>(null);
 
+  const boardHeight = useMemo(() => {
+    if (!board.notes || board.notes.length === 0) {
+      return 500; // default height
+    }
+    const maxY = Math.max(...board.notes.map(note => note.position.y + NOTE_HEIGHT));
+    return Math.max(500, maxY + PADDING);
+  }, [board.notes]);
+
   const handleAddNote = () => {
+    let newPosition = { x: PADDING, y: PADDING };
+    
+    if (board.notes.length > 0) {
+      const lastNote = board.notes[board.notes.length - 1];
+      newPosition = { 
+        x: lastNote.position.x + NOTE_OFFSET_X, 
+        y: lastNote.position.y + NOTE_OFFSET_Y 
+      };
+
+      if (constraintsRef.current) {
+        const boardWidth = constraintsRef.current.offsetWidth;
+        if (newPosition.x + NOTE_WIDTH + PADDING > boardWidth) {
+          newPosition.x = PADDING;
+        }
+      }
+    }
+
     const newNote: StickyNoteType = {
       id: uuidv4(),
       content: '',
-      position: { x: 20, y: 20 },
+      position: newPosition,
       theme: themes[board.notes.length % themes.length],
     };
     
@@ -58,7 +89,11 @@ export default function StickyNotesBoard({ board, data, onDataChange }: StickyNo
   }
 
   return (
-    <div className="relative min-h-[500px] w-full rounded-md border-2 border-dashed bg-secondary/50 p-4" ref={constraintsRef}>
+    <div 
+      className="relative w-full rounded-md border-2 border-dashed bg-secondary/50 p-4 transition-all duration-300" 
+      ref={constraintsRef}
+      style={{ minHeight: `${boardHeight}px` }}
+    >
       {board.notes.map((note) => (
         <StickyNote
           key={note.id}

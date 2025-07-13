@@ -99,11 +99,19 @@ export default function TasksPage() {
   const getTasksForDate = (date: Date): Task[] => {
       return data.tasks.filter(task => {
           switch (task.type) {
-              case 'single': return task.date ? isSameDay(new Date(task.date), date) : false;
-              case 'recurring': return true;
-              case 'weekly': return task.week ? isSameWeek(date, startOfWeek(new Date(task.week.replace(/(\d{4})-(\d{2})/, '$1-W$2-1'))), { weekStartsOn: 1 }) : false;
-              case 'monthly': return task.month ? isSameMonth(date, new Date(task.month)) : false;
-              default: return false;
+              case 'single': 
+                return task.date ? isSameDay(new Date(task.date), date) : false;
+              case 'recurring': 
+                return true;
+              case 'weekly':
+                if (!task.week) return false;
+                const taskWeekDate = startOfWeek(new Date(task.week.replace(/(\d{4})-(\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
+                return isSameWeek(date, taskWeekDate, { weekStartsOn: 1 });
+              case 'monthly':
+                // Monthly tasks should not appear in daily breakdown
+                return false; 
+              default: 
+                return false;
           }
       });
   };

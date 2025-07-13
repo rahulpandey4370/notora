@@ -9,6 +9,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import StickyNotesBoard from './StickyNotesBoard';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '../ui/alert-dialog';
+import { cn } from '@/lib/utils';
 
 interface NoteBoardsManagerProps {
   noteBoards: NoteBoard[];
@@ -72,9 +73,9 @@ export default function NoteBoardsManager({ noteBoards, data, onDataChange }: No
       <Tabs defaultValue={noteBoards[0]?.id || ''} className="w-full">
         <TabsList className="overflow-x-auto">
           {noteBoards.map(board => (
-            <TabsTrigger value={board.id} key={board.id} className="relative group pr-8">
+            <div key={board.id} className="relative group">
                {editingBoard?.id === board.id ? (
-                <div className='flex items-center gap-1'>
+                <div className='flex items-center gap-1 p-1'>
                   <Input 
                     value={editingBoard.title}
                     onChange={(e) => setEditingBoard({...editingBoard, title: e.target.value})}
@@ -82,7 +83,7 @@ export default function NoteBoardsManager({ noteBoards, data, onDataChange }: No
                         if (e.key === 'Enter') handleConfirmEdit();
                         if (e.key === 'Escape') handleCancelEdit();
                     }}
-                    className="h-7 w-32"
+                    className="h-8 w-32"
                     autoFocus
                   />
                   <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleConfirmEdit}><Check className="h-4 w-4" /></Button>
@@ -90,7 +91,9 @@ export default function NoteBoardsManager({ noteBoards, data, onDataChange }: No
                 </div>
                ) : (
                 <>
-                  {board.title}
+                  <TabsTrigger value={board.id} className="pr-8">
+                    {board.title}
+                  </TabsTrigger>
                   <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
                       <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleStartEdit(board)}>
                           <Edit className="h-3 w-3" />
@@ -117,7 +120,7 @@ export default function NoteBoardsManager({ noteBoards, data, onDataChange }: No
                   </div>
                 </>
                )}
-            </TabsTrigger>
+            </div>
           ))}
         </TabsList>
 

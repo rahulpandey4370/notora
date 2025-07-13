@@ -1,3 +1,4 @@
+'use server';
 import { config } from 'dotenv';
 config();
 
@@ -7,3 +8,4 @@ import '@/ai/flows/summarize-sticky-note.ts';
 import '@/ai/flows/polish-sticky-note.ts';
 import '@/ai/flows/simplify-sticky-note.ts';
 import '@/ai/flows/bullet-ify-sticky-note.ts';
+import '@/ai/flows/analyze-link.ts';

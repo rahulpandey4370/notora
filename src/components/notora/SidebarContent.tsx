@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, CheckSquare, StickyNote } from 'lucide-react';
+import { Home, CheckSquare, StickyNote, Link2 } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
@@ -15,6 +15,7 @@ const navItems = [
   { href: '/', label: 'Dashboard', icon: Home },
   { href: '/tasks', label: 'Tasks', icon: CheckSquare },
   { href: '/notes', label: 'Notes', icon: StickyNote },
+  { href: '/links', label: 'Links', icon: Link2 },
 ];
 
 interface SidebarContentProps {

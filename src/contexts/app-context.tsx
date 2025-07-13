@@ -25,6 +25,7 @@ const defaultAppData: AppData = {
   userStats: {
     xp: 0,
   },
+  savedLinks: [],
 };
 
 interface AppContextType {
@@ -53,7 +54,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
           ...defaultAppData.noteBoards[0], 
           id: uuidv4(),
           notes: [{...defaultAppData.noteBoards[0].notes[0], id: uuidv4()}] 
-        }]
+        }],
+        savedLinks: [],
       };
       await saveAppData(username, newDefaultData);
       appData = newDefaultData;

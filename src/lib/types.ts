@@ -1,3 +1,5 @@
+import { type linkCategories } from "@/ai/flows/analyze-link";
+
 export interface User {
   username: string;
   avatarUrl: string;
@@ -28,8 +30,18 @@ export interface UserStats {
     xp: number;
 }
 
+export interface SavedLink {
+    id: string;
+    url: string;
+    title: string;
+    summary: string;
+    category: typeof linkCategories[number];
+    dateAdded: string; // ISO 8601 date string
+}
+
 export interface AppData {
   tasks: Task[];
   noteBoards: NoteBoard[];
   userStats: UserStats;
+  savedLinks: SavedLink[];
 }

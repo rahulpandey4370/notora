@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -40,7 +41,18 @@ export default function TaskList({ tasks, data, onDataChange, selectedDate }: Ta
       priority: newTaskPriority,
       date: selectedDate.toISOString(),
     };
+    
+    // We need to find all other tasks and then add the new one.
+    const otherTasks = data.tasks.filter(t => {
+      const taskDate = new Date(t.date);
+      return taskDate.toDateString() !== selectedDate.toDateString();
+    });
 
+    const tasksForSelectedDate = data.tasks.filter(t => {
+      const taskDate = new Date(t.date);
+      return taskDate.toDateString() === selectedDate.toDateString();
+    });
+    
     onDataChange({ ...data, tasks: [...data.tasks, newTask] });
     setNewTaskTitle('');
   };
@@ -87,21 +99,27 @@ export default function TaskList({ tasks, data, onDataChange, selectedDate }: Ta
     try {
         const { orderedTasks } = await suggestTaskOrdering({ tasks: uncompletedTasksForDay });
         
-        const taskMap = new Map(data.tasks.map(t => [t.id, t]));
-        const reorderedTasksForDay = orderedTasks.map(title => {
-            return tasks.find(t => t.title === title);
-        }).filter((t): t is Task => !!t);
+        // Create a map for easy lookup of original task objects by title
+        const tasksForDayMap = new Map(tasks.map(t => [t.title, t]));
 
-        const otherTasks = data.tasks.filter(t => {
+        // Create the reordered list of uncompleted tasks
+        const reorderedUncompleted = orderedTasks.map(title => tasksForDayMap.get(title)).filter((t): t is Task => !!t);
+
+        // Get completed tasks for the day
+        const completedTasksForDay = tasks.filter(t => t.completed);
+
+        // Get all tasks that are NOT for the selected day
+        const otherDaysTasks = data.tasks.filter(t => {
             const taskDate = new Date(t.date);
             return taskDate.toDateString() !== selectedDate.toDateString();
         });
 
-        const newTaskList = [...otherTasks];
-        const completedTasksForDay = tasks.filter(t => t.completed);
-
-        newTaskList.push(...completedTasksForDay);
-        newTaskList.push(...reorderedTasksForDay);
+        // Combine the lists: other days, then this day's completed tasks, then this day's reordered uncompleted tasks
+        const newTaskList = [
+            ...otherDaysTasks,
+            ...completedTasksForDay,
+            ...reorderedUncompleted
+        ];
 
         onDataChange({ ...data, tasks: newTaskList });
         

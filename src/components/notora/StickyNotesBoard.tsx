@@ -17,8 +17,8 @@ interface StickyNotesBoardProps {
 const themes: StickyNoteType['theme'][] = ['yellow', 'blue', 'green', 'pink', 'purple'];
 const NOTE_WIDTH = 256; // w-64
 const NOTE_HEIGHT = 256; // h-64
-const NOTE_OFFSET_X = 40;
-const NOTE_OFFSET_Y = 40;
+const HORIZONTAL_OFFSET = 32; // Gap between notes horizontally
+const VERTICAL_OFFSET = 32; // Gap between notes vertically
 const PADDING = 20;
 
 export default function StickyNotesBoard({ board, data, onDataChange }: StickyNotesBoardProps) {
@@ -28,32 +28,28 @@ export default function StickyNotesBoard({ board, data, onDataChange }: StickyNo
     if (!board.notes || board.notes.length === 0) {
       return 500; // default height
     }
-    const maxY = Math.max(...board.notes.map(note => note.position.y + NOTE_HEIGHT));
-    return Math.max(500, maxY + PADDING);
+    const maxY = Math.max(...board.notes.map(note => note.position.y));
+    return Math.max(500, maxY + NOTE_HEIGHT + PADDING);
   }, [board.notes]);
 
   const handleAddNote = () => {
+    const boardWidth = constraintsRef.current?.offsetWidth ?? window.innerWidth;
     let newPosition = { x: PADDING, y: PADDING };
 
     if (board.notes.length > 0) {
         const lastNote = board.notes[board.notes.length - 1];
-        const boardWidth = constraintsRef.current ? constraintsRef.current.offsetWidth : Infinity;
-        
-        // Try placing it to the right of the last note
-        let potentialX = lastNote.position.x + NOTE_WIDTH + NOTE_OFFSET_X;
+        let nextX = lastNote.position.x + NOTE_WIDTH + HORIZONTAL_OFFSET;
 
-        // If it goes off-screen, wrap to a new "row"
-        if (potentialX + NOTE_WIDTH > boardWidth) {
+        if (nextX + NOTE_WIDTH > boardWidth) {
+            // Wrap to a new row
             newPosition.x = PADDING;
-            // Place it below the highest note on the board
             const maxY = Math.max(...board.notes.map(n => n.position.y));
-            newPosition.y = maxY + NOTE_HEIGHT + NOTE_OFFSET_Y;
+            newPosition.y = maxY + NOTE_HEIGHT + VERTICAL_OFFSET;
         } else {
-            // Otherwise, place it next to the last note
-            newPosition.x = potentialX - NOTE_WIDTH; // a bit of an offset from previous note
+            // Place on the same row
+            newPosition.x = nextX;
             newPosition.y = lastNote.position.y;
         }
-
     }
 
     const newNote: StickyNoteType = {

@@ -34,20 +34,26 @@ export default function StickyNotesBoard({ board, data, onDataChange }: StickyNo
 
   const handleAddNote = () => {
     let newPosition = { x: PADDING, y: PADDING };
-    
-    if (board.notes.length > 0) {
-      const lastNote = board.notes[board.notes.length - 1];
-      newPosition = { 
-        x: lastNote.position.x + NOTE_OFFSET_X, 
-        y: lastNote.position.y + NOTE_OFFSET_Y 
-      };
 
-      if (constraintsRef.current) {
-        const boardWidth = constraintsRef.current.offsetWidth;
-        if (newPosition.x + NOTE_WIDTH + PADDING > boardWidth) {
-          newPosition.x = PADDING;
+    if (board.notes.length > 0) {
+        const lastNote = board.notes[board.notes.length - 1];
+        const boardWidth = constraintsRef.current ? constraintsRef.current.offsetWidth : Infinity;
+        
+        // Try placing it to the right of the last note
+        let potentialX = lastNote.position.x + NOTE_WIDTH + NOTE_OFFSET_X;
+
+        // If it goes off-screen, wrap to a new "row"
+        if (potentialX + NOTE_WIDTH > boardWidth) {
+            newPosition.x = PADDING;
+            // Place it below the highest note on the board
+            const maxY = Math.max(...board.notes.map(n => n.position.y));
+            newPosition.y = maxY + NOTE_HEIGHT + NOTE_OFFSET_Y;
+        } else {
+            // Otherwise, place it next to the last note
+            newPosition.x = potentialX - NOTE_WIDTH; // a bit of an offset from previous note
+            newPosition.y = lastNote.position.y;
         }
-      }
+
     }
 
     const newNote: StickyNoteType = {

@@ -18,10 +18,22 @@ import TaskItem from '@/components/notora/TaskItem';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-const xpMap: Record<Task['priority'], number> = {
-    Easy: 10,
-    Medium: 25,
-    Hard: 50,
+const getTaskXp = (task: Task): number => {
+    const dailyXp: Record<Task['priority'], number> = {
+        Easy: 10,
+        Medium: 25,
+        Hard: 50,
+    };
+    const monthlyXp: Record<Task['priority'], number> = {
+        Easy: 50,
+        Medium: 100,
+        Hard: 200,
+    };
+
+    if (task.type === 'monthly') {
+        return monthlyXp[task.priority];
+    }
+    return dailyXp[task.priority];
 };
 
 export default function TasksPage() {
@@ -54,7 +66,8 @@ export default function TasksPage() {
     let xpChange = 0;
     const newTasks = data.tasks.map((task) => {
       if (task.id === id) {
-        xpChange = xpMap[task.priority];
+        const taskXp = getTaskXp(task);
+        xpChange = taskXp;
         const dateStr = format(date, 'yyyy-MM-dd');
         const isCompleted = task.completions.includes(dateStr);
         
@@ -68,7 +81,7 @@ export default function TasksPage() {
 
         if(!isCompleted) {
             toast({
-                title: `+${xpMap[task.priority]} XP! ✨`,
+                title: `+${taskXp} XP! ✨`,
                 description: `You've completed "${task.title}". Great job!`,
             });
             if (data.userStats.xp + xpChange > 100 && data.userStats.xp <= 100) {
@@ -90,7 +103,8 @@ export default function TasksPage() {
     let xpChange = 0;
     const taskToDelete = data.tasks.find(t => t.id === id);
     if (taskToDelete) {
-        xpChange = -xpMap[taskToDelete.priority] * taskToDelete.completions.length;
+        const taskXp = getTaskXp(taskToDelete);
+        xpChange = -taskXp * taskToDelete.completions.length;
     }
     const newTasks = data.tasks.filter((task) => task.id !== id);
     handleDataChange({ ...data, tasks: newTasks, userStats: { xp: data.userStats.xp + xpChange }});
@@ -120,8 +134,8 @@ export default function TasksPage() {
   const monthlyTasks = data.tasks.filter(t => t.type === 'monthly' && t.month === format(currentMonth, 'yyyy-MM'));
   const allTasksInMonth = eachDayOfInterval({start: startOfMonth(currentMonth), end: endOfMonth(currentMonth)}).flatMap(d => getTasksForDate(d));
   const completedTasksInMonth = allTasksInMonth.filter(t => t.completions.some(c => isSameMonth(new Date(c), currentMonth)));
-  const monthlyXp = completedTasksInMonth.reduce((acc, task) => acc + xpMap[task.priority], 0);
-  const totalPossibleMonthlyXp = allTasksInMonth.length * xpMap['Hard']; // Simplified denominator
+  const monthlyXp = completedTasksInMonth.reduce((acc, task) => acc + getTaskXp(task), 0);
+  const totalPossibleMonthlyXp = allTasksInMonth.length * 50; // Simplified denominator using max daily XP
   
   // Weekly tasks
   const weeksInMonth = eachWeekOfInterval({ start: startOfMonth(currentMonth), end: endOfMonth(currentMonth) }, { weekStartsOn: 1 });
@@ -231,8 +245,8 @@ export default function TasksPage() {
                              const compDate = new Date(c);
                              return compDate >= weekStart && compDate <= weekEnd;
                          }));
-                         const weeklyXp = tasksForWeek.filter(t => completionsForWeek.some(c => t.completions.includes(c))).reduce((acc, task) => acc + xpMap[task.priority], 0);
-
+                         const weeklyXp = tasksForWeek.filter(t => completionsForWeek.some(c => t.completions.includes(c))).reduce((acc, task) => acc + getTaskXp(task), 0);
+                         const totalPossibleWeeklyXp = tasksForWeek.length * 50; // Max daily XP
                          return (
                             <Accordion type="single" collapsible key={format(weekStart, 'yyyy-MM-dd')}>
                                 <AccordionItem value={`week-${getWeek(weekStart)}`}>
@@ -241,7 +255,7 @@ export default function TasksPage() {
                                     <div className="space-y-2">
                                         <div className="flex items-center gap-2 text-sm text-primary font-semibold mb-2">
                                             <span>Weekly XP: {weeklyXp}</span>
-                                            <Progress value={(weeklyXp / (tasksForWeek.length * xpMap['Hard'] || 1)) * 100} className="w-32 h-2" />
+                                            <Progress value={(weeklyXp / (totalPossibleWeeklyXp || 1)) * 100} className="w-32 h-2" />
                                         </div>
                                         {tasksForWeek.map(task => (
                                            <div key={task.id} className="p-2 rounded-md bg-secondary/50 text-sm">{task.title}</div>

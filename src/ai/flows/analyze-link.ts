@@ -29,7 +29,7 @@ export async function analyzeLink(input: AnalyzeLinkInput): Promise<AnalyzeLinkO
 
 const AnalyzeLinkPromptInputSchema = z.object({
   url: z.string().url(),
-  content: z.string(),
+  content: z.string().optional(),
 });
 
 const prompt = ai.definePrompt({
@@ -38,13 +38,17 @@ const prompt = ai.definePrompt({
   output: {schema: AnalyzeLinkOutputSchema},
   prompt: `Analyze the content of the webpage from the URL: {{{url}}}
 
+{{#if content}}
 Here is the text content of the page:
 ---
 {{{content}}}
 ---
+{{else}}
+The text content could not be fetched. Please analyze the link based on the URL and your own knowledge.
+{{/if}}
 
 Based on the content, you must extract the following information:
-1.  **Title**: The main title of the webpage.
+1.  **Title**: The main title of the webpage. If you can't find one, generate a suitable title based on the URL.
 2.  **Summary**: A concise, one-line summary of the content.
 3.  **Category**: Classify the link into one of the following categories: ${linkCategories.join(', ')}.
 
@@ -58,22 +62,32 @@ const analyzeLinkFlow = ai.defineFlow(
     outputSchema: AnalyzeLinkOutputSchema,
   },
   async (input) => {
-    let content = '';
+    let content: string | undefined = undefined;
     try {
-      const response = await fetch(input.url);
-      const text = await response.text();
-      // A simple way to strip HTML tags to reduce token count and noise.
-      // This is a basic implementation and might not be perfect.
-      content = text.replace(/<style[^>]*>.*<\/style>/gs, '')
-                    .replace(/<script[^>]*>.*<\/script>/gs, '')
-                    .replace(/<[^>]+>/g, ' ')
-                    .replace(/\s+/g, ' ')
-                    .trim()
-                    .substring(0, 15000); // Limit content to avoid exceeding token limits
+      // Set a timeout for the fetch request
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 seconds
+
+      const response = await fetch(input.url, { signal: controller.signal });
+      clearTimeout(timeoutId);
+
+      if (response.ok) {
+        const text = await response.text();
+        // A simple way to strip HTML tags to reduce token count and noise.
+        const cleanedText = text.replace(/<style[^>]*>.*<\/style>/gs, '')
+                      .replace(/<script[^>]*>.*<\/script>/gs, '')
+                      .replace(/<[^>]+>/g, ' ')
+                      .replace(/\s\s+/g, ' ')
+                      .trim();
+
+        // If we get meaningful content, use it. Otherwise, let the model try with just the URL.
+        if (cleanedText.length > 100) {
+            content = cleanedText.substring(0, 15000); // Limit content to avoid exceeding token limits
+        }
+      }
 
     } catch (e) {
-        console.error("Failed to fetch URL content", e);
-        // If fetching fails, we can still try to let the model analyze it by URL alone.
+        console.warn("Failed to fetch or process URL content, letting model analyze by URL alone.", e);
     }
     
     const {output} = await prompt({ url: input.url, content });

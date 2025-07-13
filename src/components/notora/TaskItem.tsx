@@ -11,6 +11,7 @@ interface TaskItemProps {
   task: Task;
   onToggle: (id: string) => void;
   onDelete: (id: string) => void;
+  isCompleted: boolean;
   // onEdit: (id: string) => void; // Future enhancement
 }
 
@@ -26,18 +27,18 @@ const priorityBadge: Record<Task['priority'], string> = {
     'Hard': 'bg-red-500/20 text-red-700 border-red-500/30 hover:bg-red-500/30',
 }
 
-export default function TaskItem({ task, onToggle, onDelete }: TaskItemProps) {
+export default function TaskItem({ task, onToggle, onDelete, isCompleted }: TaskItemProps) {
   return (
     <div className="flex items-center gap-4 p-2 rounded-md hover:bg-secondary/50 transition-colors">
       <Checkbox
         id={`task-${task.id}`}
-        checked={task.completed}
+        checked={isCompleted}
         onCheckedChange={() => onToggle(task.id)}
         aria-labelledby={`task-label-${task.id}`}
       />
       <label
         id={`task-label-${task.id}`}
-        className={`flex-1 text-sm ${task.completed ? 'text-muted-foreground line-through' : ''}`}
+        className={`flex-1 text-sm ${isCompleted ? 'text-muted-foreground line-through' : ''}`}
       >
         {task.title}
       </label>

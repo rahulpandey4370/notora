@@ -8,9 +8,11 @@ export interface User {
 export interface Task {
   id: string;
   title: string;
-  completed: boolean;
   priority: 'Easy' | 'Medium' | 'Hard';
-  date: string; // ISO 8601 date string
+  type: 'single' | 'recurring' | 'monthly';
+  completions: string[]; // Array of ISO date strings 'yyyy-MM-dd'
+  date?: string; // ISO 8601 date string, for single tasks
+  month?: string; // 'yyyy-MM', for monthly tasks
 }
 
 export interface StickyNote {

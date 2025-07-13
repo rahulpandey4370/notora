@@ -8,6 +8,7 @@ import { useMemo } from 'react';
 import { Award, CheckSquare, StickyNote, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '../ui/button';
+import { isSameDay, format } from 'date-fns';
 
 interface DashboardProps {
   user: User;
@@ -19,21 +20,23 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
   const { noteBoards, userStats } = data;
 
   const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const todayStr = format(today, 'yyyy-MM-dd');
 
   const todaysTasks = useMemo(() => {
     return data.tasks.filter(task => {
-        const taskDate = new Date(task.date);
-        taskDate.setHours(0,0,0,0);
-        return taskDate.getTime() === today.getTime();
+        if (task.type === 'recurring') return true;
+        if (task.type === 'single' && task.date) {
+            return isSameDay(new Date(task.date), today);
+        }
+        return false;
     });
-  }, [data.tasks]);
+  }, [data.tasks, today]);
 
   const progress = useMemo(() => {
     if (todaysTasks.length === 0) return 0;
-    const completedTasks = todaysTasks.filter((task) => task.completed).length;
+    const completedTasks = todaysTasks.filter((task) => task.completions.includes(todayStr)).length;
     return (completedTasks / todaysTasks.length) * 100;
-  }, [todaysTasks]);
+  }, [todaysTasks, todayStr]);
 
   const recentNotes = useMemo(() => {
     return noteBoards.flatMap(board => board.notes).slice(0, 3);
@@ -55,7 +58,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
             <Progress value={progress} className="w-full" />
           </div>
           <p className="text-sm text-muted-foreground mt-2">
-            {todaysTasks.filter(t => t.completed).length} of {todaysTasks.length} tasks completed today. Keep going!
+            {todaysTasks.filter(t => t.completions.includes(todayStr)).length} of {todaysTasks.length} tasks completed today. Keep going!
           </p>
         </CardContent>
       </Card>
@@ -77,6 +80,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
                     onDataChange={onDataChange}
                     data={data}
                     selectedDate={today}
+                    taskType="single"
                  />
               </CardContent>
           </Card>

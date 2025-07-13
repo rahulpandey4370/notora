@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { getAppData, saveAppData } from '@/lib/storage';
 import type { AppData } from '@/lib/types';
 import { v4 as uuidv4 } from 'uuid';
+import { useToast } from '@/hooks/use-toast';
 
 const defaultAppData: AppData = {
   tasks: [],
@@ -32,6 +33,7 @@ interface AppContextType {
   data: AppData | null;
   loading: boolean;
   handleDataChange: (newData: AppData) => void;
+  toast: ReturnType<typeof useToast>['toast'];
 }
 
 export const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -40,6 +42,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const { user, loading: authLoading } = useAuth();
   const [data, setData] = useState<AppData | null>(null);
   const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
 
   const loadData = useCallback(async (username: string) => {
     setLoading(true);
@@ -85,7 +88,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AppContext.Provider value={{ data, loading, handleDataChange }}>
+    <AppContext.Provider value={{ data, loading, handleDataChange, toast }}>
       {children}
     </AppContext.Provider>
   );

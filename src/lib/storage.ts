@@ -1,6 +1,6 @@
 'use server';
 
-import { put, get } from '@vercel/blob';
+import { put, list } from '@vercel/blob';
 import type { AppData } from '@/lib/types';
 
 const BLOB_TOKEN = process.env.BLOB_READ_WRITE_TOKEN;
@@ -15,8 +15,20 @@ export async function getAppData(username: string): Promise<AppData | null> {
 
   const key = getBlobKey(username);
   try {
-    const blob = await get(key, { token: BLOB_TOKEN });
-    return await blob.json();
+    const { blobs } = await list({
+      prefix: key,
+      limit: 1,
+      token: BLOB_TOKEN
+    });
+
+    if (blobs.length === 0) {
+      console.log(`No data found for user ${username}, returning null.`);
+      return null;
+    }
+    
+    const response = await fetch(blobs[0].url);
+    return await response.json();
+
   } catch (error: any) {
     if (error.status === 404) {
       console.log(`No data found for user ${username}, returning null.`);

@@ -27,13 +27,23 @@ export async function analyzeLink(input: AnalyzeLinkInput): Promise<AnalyzeLinkO
   return analyzeLinkFlow(input);
 }
 
+const AnalyzeLinkPromptInputSchema = z.object({
+  url: z.string().url(),
+  content: z.string(),
+});
+
 const prompt = ai.definePrompt({
   name: 'analyzeLinkPrompt',
-  input: {schema: AnalyzeLinkInputSchema},
+  input: {schema: AnalyzeLinkPromptInputSchema},
   output: {schema: AnalyzeLinkOutputSchema},
-  prompt: `Analyze the content of the following URL: {{{url}}}
+  prompt: `Analyze the content of the webpage from the URL: {{{url}}}
 
-You must extract the following information:
+Here is the text content of the page:
+---
+{{{content}}}
+---
+
+Based on the content, you must extract the following information:
 1.  **Title**: The main title of the webpage.
 2.  **Summary**: A concise, one-line summary of the content.
 3.  **Category**: Classify the link into one of the following categories: ${linkCategories.join(', ')}.
@@ -48,10 +58,25 @@ const analyzeLinkFlow = ai.defineFlow(
     outputSchema: AnalyzeLinkOutputSchema,
   },
   async (input) => {
-    // In a real-world scenario, you might fetch the URL content here first
-    // and pass it to the prompt if the model can't access external URLs directly.
-    // For this case, we rely on the model's ability to process the URL.
-    const {output} = await prompt(input);
+    let content = '';
+    try {
+      const response = await fetch(input.url);
+      const text = await response.text();
+      // A simple way to strip HTML tags to reduce token count and noise.
+      // This is a basic implementation and might not be perfect.
+      content = text.replace(/<style[^>]*>.*<\/style>/gs, '')
+                    .replace(/<script[^>]*>.*<\/script>/gs, '')
+                    .replace(/<[^>]+>/g, ' ')
+                    .replace(/\s+/g, ' ')
+                    .trim()
+                    .substring(0, 15000); // Limit content to avoid exceeding token limits
+
+    } catch (e) {
+        console.error("Failed to fetch URL content", e);
+        // If fetching fails, we can still try to let the model analyze it by URL alone.
+    }
+    
+    const {output} = await prompt({ url: input.url, content });
     return output!;
   }
 );

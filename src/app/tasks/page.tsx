@@ -18,7 +18,7 @@ import TaskItem from '@/components/notora/TaskItem';
 
 export default function TasksPage() {
   const { user, loading: authLoading } = useAuth();
-  const { data, loading: appLoading, handleDataChange } = useApp();
+  const { data, loading: appLoading, handleDataChange, toast } = useApp();
   const router = useRouter();
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
@@ -89,6 +89,12 @@ export default function TasksPage() {
   const daysWithTasks = Object.keys(tasksByDay).sort();
   const defaultOpenAccordion = daysWithTasks.length > 0 ? [`item-${daysWithTasks[0]}`] : [];
 
+   const xpMap: Record<Task['priority'], number> = {
+    Easy: 10,
+    Medium: 25,
+    Hard: 50,
+  };
+
    const onToggle = (id: string, date: Date) => {
     let xpChange = 0;
     const newTasks = data.tasks.map((task) => {
@@ -138,14 +144,6 @@ export default function TasksPage() {
     const newTasks = data.tasks.filter((task) => task.id !== id);
     handleDataChange({ ...data, tasks: newTasks, userStats: { xp: data.userStats.xp + xpChange }});
   };
-
-  const { toast } = useApp();
-  const xpMap: Record<Task['priority'], number> = {
-    Easy: 10,
-    Medium: 25,
-    Hard: 50,
-  };
-
 
   return (
     <AppLayout>
@@ -238,4 +236,3 @@ export default function TasksPage() {
     </AppLayout>
   );
 }
-

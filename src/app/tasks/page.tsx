@@ -43,6 +43,7 @@ export default function TasksPage() {
     let appData = await getAppData(username);
 
     if (!appData) {
+      console.log(`No data found for ${username}, creating default data.`);
       const newDefaultData = { 
         ...defaultAppData,
         noteBoards: [{
@@ -51,7 +52,6 @@ export default function TasksPage() {
           notes: [{...defaultAppData.noteBoards[0].notes[0], id: uuidv4()}]
         }]
       };
-      // Save the new default data first, then set it.
       await saveAppData(username, newDefaultData);
       appData = newDefaultData;
     }
@@ -71,8 +71,8 @@ export default function TasksPage() {
   }, [user, authLoading, router, loadData]);
 
   const handleDataChange = (newData: AppData) => {
-    setData(newData);
     if (user) {
+      setData(newData);
       saveAppData(user.username, newData);
     }
   };

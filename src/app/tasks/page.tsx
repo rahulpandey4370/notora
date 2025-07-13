@@ -132,10 +132,11 @@ export default function TasksPage() {
 
   // Monthly tasks
   const monthlyTasks = data.tasks.filter(t => t.type === 'monthly' && t.month === format(currentMonth, 'yyyy-MM'));
-  const allTasksInMonth = eachDayOfInterval({start: startOfMonth(currentMonth), end: endOfMonth(currentMonth)}).flatMap(d => getTasksForDate(d));
-  const completedTasksInMonth = allTasksInMonth.filter(t => t.completions.some(c => isSameMonth(new Date(c), currentMonth)));
-  const monthlyXp = completedTasksInMonth.reduce((acc, task) => acc + getTaskXp(task), 0);
-  const totalPossibleMonthlyXp = allTasksInMonth.length * 50; // Simplified denominator using max daily XP
+  const completedMonthlyTasks = monthlyTasks.filter(task => 
+    task.completions.some(completionDate => isSameMonth(new Date(completionDate), currentMonth))
+  );
+  const monthlyXp = completedMonthlyTasks.reduce((acc, task) => acc + getTaskXp(task), 0);
+  const totalPossibleMonthlyXp = monthlyTasks.reduce((acc, task) => acc + getTaskXp(task), 0);
   
   // Weekly tasks
   const weeksInMonth = eachWeekOfInterval({ start: startOfMonth(currentMonth), end: endOfMonth(currentMonth) }, { weekStartsOn: 1 });

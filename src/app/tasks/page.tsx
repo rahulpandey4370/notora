@@ -11,7 +11,7 @@ import TaskList from '@/components/notora/TaskList';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, ClipboardList, Calendar, CalendarCheck, CalendarDays } from 'lucide-react';
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, addMonths, subMonths, isSameDay, startOfWeek, endOfWeek, eachWeekOfInterval, getWeek, isSameWeek } from 'date-fns';
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, addMonths, subMonths, isSameDay, startOfWeek, endOfWeek, eachWeekOfInterval, getWeek, isSameWeek, startOfDay } from 'date-fns';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import type { Task } from '@/lib/types';
 import TaskItem from '@/components/notora/TaskItem';
@@ -68,7 +68,11 @@ export default function TasksPage() {
       if (task.id === id) {
         const taskXp = getTaskXp(task);
         xpChange = taskXp;
-        const dateStr = format(date, 'yyyy-MM-dd');
+        
+        // Use the start of the month for monthly tasks, otherwise use the provided date.
+        const relevantDate = task.type === 'monthly' ? startOfMonth(date) : startOfDay(date);
+        const dateStr = format(relevantDate, 'yyyy-MM-dd');
+
         const isCompleted = task.completions.includes(dateStr);
         
         let newCompletions: string[];
@@ -122,7 +126,6 @@ export default function TasksPage() {
                 const taskWeekDate = startOfWeek(new Date(task.week.replace(/(\d{4})-(\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
                 return isSameWeek(date, taskWeekDate, { weekStartsOn: 1 });
               case 'monthly':
-                // Monthly tasks should not appear in daily breakdown
                 return false; 
               default: 
                 return false;
@@ -130,7 +133,6 @@ export default function TasksPage() {
       });
   };
 
-  // Monthly tasks
   const monthlyTasks = data.tasks.filter(t => t.type === 'monthly' && t.month === format(currentMonth, 'yyyy-MM'));
   const completedMonthlyTasks = monthlyTasks.filter(task => 
     task.completions.some(completionDate => isSameMonth(new Date(completionDate), currentMonth))
@@ -138,10 +140,8 @@ export default function TasksPage() {
   const monthlyXp = completedMonthlyTasks.reduce((acc, task) => acc + getTaskXp(task), 0);
   const totalPossibleMonthlyXp = monthlyTasks.reduce((acc, task) => acc + getTaskXp(task), 0);
   
-  // Weekly tasks
   const weeksInMonth = eachWeekOfInterval({ start: startOfMonth(currentMonth), end: endOfMonth(currentMonth) }, { weekStartsOn: 1 });
   
-  // Daily tasks
   const daysInMonthWithTasks = eachDayOfInterval({ start: startOfMonth(currentMonth), end: endOfMonth(currentMonth) })
       .map(day => ({ day, tasks: getTasksForDate(day) }))
       .filter(d => d.tasks.length > 0);
@@ -291,7 +291,7 @@ export default function TasksPage() {
                                     task={task}
                                     onToggle={() => onToggle(task.id, currentMonth)}
                                     onDelete={() => onDelete(task.id)}
-                                    isCompleted={task.completions.includes(format(currentMonth, 'yyyy-MM-dd'))}
+                                    isCompleted={task.completions.some(d => isSameMonth(new Date(d), currentMonth))}
                                />
                             ))}
                             {monthlyTasks.length === 0 && (
@@ -308,3 +308,5 @@ export default function TasksPage() {
     </AppLayout>
   );
 }
+
+    

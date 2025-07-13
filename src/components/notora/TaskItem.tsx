@@ -9,8 +9,8 @@ import type { Task } from "@/lib/types";
 
 interface TaskItemProps {
   task: Task;
-  onToggle: (id: string) => void;
-  onDelete: (id: string) => void;
+  onToggle: () => void;
+  onDelete: () => void;
   isCompleted: boolean;
   // onEdit: (id: string) => void; // Future enhancement
 }
@@ -28,17 +28,19 @@ const priorityBadge: Record<Task['priority'], string> = {
 }
 
 export default function TaskItem({ task, onToggle, onDelete, isCompleted }: TaskItemProps) {
+  const uniqueId = `task-${task.id}-${task.date || ''}`;
   return (
     <div className="flex items-center gap-4 p-2 rounded-md hover:bg-secondary/50 transition-colors">
       <Checkbox
-        id={`task-${task.id}`}
+        id={uniqueId}
         checked={isCompleted}
-        onCheckedChange={() => onToggle(task.id)}
-        aria-labelledby={`task-label-${task.id}`}
+        onCheckedChange={onToggle}
+        aria-labelledby={`${uniqueId}-label`}
       />
       <label
-        id={`task-label-${task.id}`}
-        className={`flex-1 text-sm ${isCompleted ? 'text-muted-foreground line-through' : ''}`}
+        id={`${uniqueId}-label`}
+        htmlFor={uniqueId}
+        className={`flex-1 text-sm cursor-pointer ${isCompleted ? 'text-muted-foreground line-through' : ''}`}
       >
         {task.title}
       </label>
@@ -55,7 +57,7 @@ export default function TaskItem({ task, onToggle, onDelete, isCompleted }: Task
           {/* <DropdownMenuItem onClick={() => onEdit(task.id)}>
             <Edit className="mr-2 h-4 w-4" /> Edit
           </DropdownMenuItem> */}
-          <DropdownMenuItem onClick={() => onDelete(task.id)} className="text-destructive">
+          <DropdownMenuItem onClick={onDelete} className="text-destructive">
             <Trash2 className="mr-2 h-4 w-4" /> Delete
           </DropdownMenuItem>
         </DropdownMenuContent>
@@ -63,3 +65,5 @@ export default function TaskItem({ task, onToggle, onDelete, isCompleted }: Task
     </div>
   );
 }
+
+    

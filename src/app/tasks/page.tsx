@@ -69,7 +69,6 @@ export default function TasksPage() {
         const taskXp = getTaskXp(task);
         xpChange = taskXp;
         
-        // Use the start of the month for monthly tasks, otherwise use the provided date.
         const relevantDate = task.type === 'monthly' ? startOfMonth(date) : startOfDay(date);
         const dateStr = format(relevantDate, 'yyyy-MM-dd');
 
@@ -132,12 +131,48 @@ export default function TasksPage() {
           }
       });
   };
+  
+  const allTasksInMonth = data.tasks.filter(task => {
+    switch (task.type) {
+        case 'monthly':
+            return task.month === format(currentMonth, 'yyyy-MM');
+        case 'weekly': {
+            if (!task.week) return false;
+            const taskWeekDate = startOfWeek(new Date(task.week.replace(/(\d{4})-(\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
+            return isSameMonth(taskWeekDate, currentMonth);
+        }
+        case 'single':
+            return task.date ? isSameMonth(new Date(task.date), currentMonth) : false;
+        case 'recurring':
+            return true;
+        default:
+            return false;
+    }
+  });
 
-  const monthlyTasks = data.tasks.filter(t => t.type === 'monthly' && t.month === format(currentMonth, 'yyyy-MM'));
-  const completedMonthlyTasks = monthlyTasks.filter(task => 
-    task.completions.some(completionDate => isSameMonth(new Date(completionDate), currentMonth))
+  const completionsInMonth = allTasksInMonth.flatMap(task =>
+      task.completions.filter(c => isSameMonth(new Date(c), currentMonth))
   );
-  const monthlyXp = completedMonthlyTasks.reduce((acc, task) => acc + getTaskXp(task), 0);
+
+  const monthlyXp = allTasksInMonth.reduce((acc, task) => {
+    const completedInMonth = task.completions.some(c => isSameMonth(new Date(c), currentMonth));
+    if (completedInMonth) {
+        if (task.type === 'recurring') {
+            const daysInMonth = eachDayOfInterval({start: startOfMonth(currentMonth), end: endOfMonth(currentMonth)});
+            const completionsForMonth = task.completions.filter(c => isSameMonth(new Date(c), currentMonth)).length;
+            return acc + completionsForMonth * getTaskXp(task);
+        }
+        if (task.type === 'weekly') {
+            const weeksInMonth = eachWeekOfInterval({ start: startOfMonth(currentMonth), end: endOfMonth(currentMonth) }, { weekStartsOn: 1 });
+            const completionsForMonth = task.completions.filter(c => isSameMonth(new Date(c), currentMonth)).length;
+            return acc + completionsForMonth * getTaskXp(task);
+        }
+        return acc + getTaskXp(task);
+    }
+    return acc;
+  }, 0);
+  
+  const monthlyTasks = data.tasks.filter(t => t.type === 'monthly' && t.month === format(currentMonth, 'yyyy-MM'));
   const totalPossibleMonthlyXp = monthlyTasks.reduce((acc, task) => acc + getTaskXp(task), 0);
   
   const weeksInMonth = eachWeekOfInterval({ start: startOfMonth(currentMonth), end: endOfMonth(currentMonth) }, { weekStartsOn: 1 });
@@ -209,7 +244,7 @@ export default function TasksPage() {
                                                 task={task}
                                                 onToggle={() => onToggle(task.id, day)}
                                                 onDelete={() => onDelete(task.id)}
-                                                isCompleted={task.completions.includes(format(day, 'yyyy-MM-dd'))}
+                                                isCompleted={task.completions.includes(format(startOfDay(day), 'yyyy-MM-dd'))}
                                             />
                                         ))}
                                     </AccordionContent>
@@ -234,20 +269,28 @@ export default function TasksPage() {
                      {weeksInMonth.map((weekStart) => {
                          const weekEnd = endOfWeek(weekStart, { weekStartsOn: 1 });
                          const tasksForWeek = data.tasks.filter(t => {
-                             if(t.type === 'weekly' && t.week === `${format(weekStart, 'yyyy')}-${getWeek(weekStart)}`) return true;
-                             if(t.type === 'single' && t.date) {
-                                 const taskDate = new Date(t.date);
-                                 return taskDate >= weekStart && taskDate <= weekEnd;
-                             }
-                             if(t.type === 'recurring') return true;
-                             return false;
+                            if (t.type === 'weekly' && t.week === `${format(weekStart, 'yyyy')}-${getWeek(weekStart)}`) return true;
+                            if (t.type === 'single' && t.date) {
+                                const taskDate = new Date(t.date);
+                                return taskDate >= weekStart && taskDate <= weekEnd;
+                            }
+                            if (t.type === 'recurring') return true;
+                            return false;
                          });
-                         const completionsForWeek = tasksForWeek.flatMap(t => t.completions.filter(c => {
-                             const compDate = new Date(c);
-                             return compDate >= weekStart && compDate <= weekEnd;
-                         }));
-                         const weeklyXp = tasksForWeek.filter(t => completionsForWeek.some(c => t.completions.includes(c))).reduce((acc, task) => acc + getTaskXp(task), 0);
-                         const totalPossibleWeeklyXp = tasksForWeek.length * 50; // Max daily XP
+
+                         const weeklyXp = tasksForWeek.reduce((acc, task) => {
+                            const completionsForWeek = task.completions.filter(c => {
+                                const compDate = new Date(c);
+                                return compDate >= weekStart && compDate <= weekEnd;
+                            }).length;
+                            return acc + (completionsForWeek * getTaskXp(task));
+                         }, 0);
+
+                         const totalPossibleWeeklyXp = tasksForWeek.reduce((acc, task) => {
+                            if (task.type === 'recurring') return acc + (getTaskXp(task) * 7);
+                            return acc + getTaskXp(task);
+                         }, 0); 
+                         
                          return (
                             <Accordion type="single" collapsible key={format(weekStart, 'yyyy-MM-dd')}>
                                 <AccordionItem value={`week-${getWeek(weekStart)}`}>
@@ -291,7 +334,7 @@ export default function TasksPage() {
                                     task={task}
                                     onToggle={() => onToggle(task.id, currentMonth)}
                                     onDelete={() => onDelete(task.id)}
-                                    isCompleted={task.completions.some(d => isSameMonth(new Date(d), currentMonth))}
+                                    isCompleted={task.completions.includes(format(startOfMonth(currentMonth), 'yyyy-MM-dd'))}
                                />
                             ))}
                             {monthlyTasks.length === 0 && (
@@ -308,5 +351,7 @@ export default function TasksPage() {
     </AppLayout>
   );
 }
+
+    
 
     

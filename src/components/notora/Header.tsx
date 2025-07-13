@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Wand2 } from 'lucide-react';
 import DayEndSummaryDialog from './DayEndSummaryDialog';
 import type { AppData, Task, User, UserStats } from '@/lib/types';
+import { ModeToggle } from './ModeToggle';
 
 interface HeaderProps {
   user: User;
@@ -28,6 +29,7 @@ export default function Header({ user, tasks, userStats, onDataChange }: HeaderP
           <Wand2 className="mr-2 h-4 w-4" />
           Day End Summary
         </Button>
+        <ModeToggle />
         <UserProfile user={user} userStats={userStats} />
       </div>
       <DayEndSummaryDialog open={summaryOpen} onOpenChange={setSummaryOpen} tasks={tasks} />

@@ -75,6 +75,17 @@ export default function LinkManager({ savedLinks, data, onDataChange }: LinkMana
     onDataChange({ ...data, savedLinks: updatedLinks });
   };
   
+  const handleUpdateLink = (id: string, updatedData: Partial<Omit<SavedLink, 'id'>>) => {
+    const updatedLinks = (data.savedLinks || []).map((link) => 
+      link.id === id ? { ...link, ...updatedData } : link
+    );
+    onDataChange({ ...data, savedLinks: updatedLinks });
+    toast({
+        title: 'Link Updated!',
+        description: 'Your changes have been saved.',
+    });
+  };
+
   const filteredLinks = activeFilter
     ? savedLinks.filter(link => link.category === activeFilter)
     : savedLinks;
@@ -120,7 +131,7 @@ export default function LinkManager({ savedLinks, data, onDataChange }: LinkMana
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredLinks.map((link) => (
-          <LinkCard key={link.id} link={link} onDelete={handleDeleteLink} />
+          <LinkCard key={link.id} link={link} onDelete={handleDeleteLink} onUpdate={handleUpdateLink} />
         ))}
       </div>
       {savedLinks.length === 0 && !loading && (

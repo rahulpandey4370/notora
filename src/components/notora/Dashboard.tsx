@@ -4,10 +4,10 @@ import type { User, AppData, Task } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useMemo } from 'react';
 import { BarChart as BarChartIcon, Calendar, Target, Flame } from 'lucide-react';
-import { format, isSameDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, isSameMonth, startOfDay, isAfter, addDays, differenceInDays, getDaysInMonth } from 'date-fns';
+import { format, isSameDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, isSameMonth, isAfter, addDays } from 'date-fns';
 import { getTaskXp } from '@/lib/utils';
 import { useApp } from '@/hooks/use-app';
-import { Label, PolarRadiusAxis, RadialBar, RadialBarChart, Bar, XAxis, YAxis, Tooltip, BarChart } from "recharts"
+import { PolarGrid, PolarRadiusAxis, RadialBar, RadialBarChart, Bar, XAxis, YAxis, Tooltip, BarChart, Label } from "recharts"
 import {
   ChartConfig,
   ChartContainer,
@@ -19,21 +19,19 @@ import TaskItem from './TaskItem';
 import { motion } from 'framer-motion';
 import { Progress } from '../ui/progress';
 
-
-const weeklyChartConfig = {
-  achieved: {
-    label: "Achieved",
-    color: "hsl(var(--primary))",
-  },
-  remaining: {
-    label: "Remaining",
-    color: "hsl(var(--muted))",
-  },
-} satisfies ChartConfig
-
 const monthlyChartConfig = {
   xp: {
     label: "XP",
+    color: "hsl(var(--primary))",
+  },
+} satisfies ChartConfig
+
+const weeklyChartConfig = {
+  xp: {
+    label: "XP",
+  },
+  weekly: {
+    label: "Weekly XP",
     color: "hsl(var(--primary))",
   },
 } satisfies ChartConfig
@@ -156,8 +154,8 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
   
   const monthlyChartData = useMemo(() => {
     const monthStart = startOfMonth(today);
-    const daysInMonth = getDaysInMonth(today);
-    const dailyData = Array.from({ length: daysInMonth }, (_, i) => ({
+    const daysInMonth = format(today, 'd');
+    const dailyData = Array.from({ length: Number(daysInMonth) }, (_, i) => ({
       date: format(addDays(monthStart, i), 'MMM d'),
       xp: 0,
     }));
@@ -186,8 +184,6 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
     const achievedXp = completedTasks.reduce((acc, t) => acc + getTaskXp(t), 0);
     return { completedTodayCount: completedCount, todaysTotalXp: totalXp, todaysAchievedXp: achievedXp };
   }, [todaysTasks, today]);
-
-  const weeklyChartData = [{ week: "current", achieved: weeklyXp, remaining: Math.max(0, totalWeeklyXp - weeklyXp) }];
   
   const animationVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -200,6 +196,13 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
       }
     }),
   };
+
+  const weeklyChartData = [{
+    xp: weeklyXp,
+    total: totalWeeklyXp,
+    fill: "var(--color-weekly)"
+  }];
+
 
   return (
     <div className="p-4 md:p-8 space-y-6">
@@ -248,7 +251,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
                                   task={task}
                                   onToggle={() => onToggle(task.id, today)}
                                   onDelete={() => onDelete(task.id)}
-                                  isCompleted={(task.completions || []).includes(format(today, 'yyyy-MM-dd'))}
+                                  isCompleted={(todaysTasks.find(t => t.id === task.id)?.completions || []).includes(format(today, 'yyyy-MM-dd'))}
                               />
                           ))
                           ) : (
@@ -274,69 +277,69 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
             >
               <motion.div whileHover={{ y: -5, transition: { duration: 0.2 } }}>
                 <Card className="border-2 border-black rounded-lg shadow-none">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2"><BarChartIcon className="w-5 h-5"/> Weekly Progress</CardTitle>
-                        <CardDescription>Your XP summary for this week.</CardDescription>
+                    <CardHeader className="items-center pb-0">
+                        <CardTitle>Weekly Progress</CardTitle>
+                        <CardDescription>{format(startOfWeek(today, { weekStartsOn: 1 }), "MMM d")} - {format(endOfWeek(today, { weekStartsOn: 1 }), "MMM d")}</CardDescription>
                     </CardHeader>
-                    <CardContent>
-                        <ChartContainer
-                        config={weeklyChartConfig}
-                        className="mx-auto aspect-square max-h-[250px]"
-                        >
-                        <RadialBarChart
+                    <CardContent className="flex-1 pb-0">
+                      <ChartContainer
+                          config={weeklyChartConfig}
+                          className="mx-auto aspect-square max-h-[250px]"
+                      >
+                          <RadialBarChart
                             data={weeklyChartData}
-                            startAngle={-90}
-                            endAngle={270}
+                            startAngle={0}
+                            endAngle={360 * (weeklyXp / (totalWeeklyXp || 1))}
                             innerRadius={80}
                             outerRadius={110}
-                        >
-                            <ChartTooltip
-                            cursor={false}
-                            content={<ChartTooltipContent hideLabel nameKey="name" />}
+                          >
+                            <PolarGrid
+                              gridType="circle"
+                              radialLines={false}
+                              stroke="none"
+                              className="first:fill-muted last:fill-background"
+                              polarRadius={[86, 74]}
                             />
+                            <RadialBar dataKey="xp" background cornerRadius={10} />
                             <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
-                            <Label
+                              <Label
                                 content={({ viewBox }) => {
-                                if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                                  if (viewBox && "cx" in viewBox && "cy" in viewBox) {
                                     return (
-                                    <text x={viewBox.cx} y={viewBox.cy} textAnchor="middle">
-                                        <tspan
+                                      <text
                                         x={viewBox.cx}
-                                        y={(viewBox.cy || 0) - 16}
-                                        className="fill-foreground text-2xl font-bold"
+                                        y={viewBox.cy}
+                                        textAnchor="middle"
+                                        dominantBaseline="middle"
+                                      >
+                                        <tspan
+                                          x={viewBox.cx}
+                                          y={viewBox.cy}
+                                          className="fill-foreground text-4xl font-bold"
                                         >
-                                        {weeklyXp.toLocaleString()}
+                                          {weeklyXp.toLocaleString()}
                                         </tspan>
                                         <tspan
-                                        x={viewBox.cx}
-                                        y={(viewBox.cy || 0) + 4}
-                                        className="fill-muted-foreground"
+                                          x={viewBox.cx}
+                                          y={(viewBox.cy || 0) + 24}
+                                          className="fill-muted-foreground"
                                         >
-                                        Weekly XP
+                                          Weekly XP
                                         </tspan>
-                                    </text>
+                                      </text>
                                     )
-                                }
+                                  }
                                 }}
-                            />
+                              />
                             </PolarRadiusAxis>
-                            <RadialBar
-                                dataKey="achieved"
-                                stackId="a"
-                                cornerRadius={5}
-                                fill="var(--color-achieved)"
-                                className="stroke-transparent stroke-2"
-                            />
-                            <RadialBar
-                                dataKey="remaining"
-                                fill="var(--color-remaining)"
-                                stackId="a"
-                                cornerRadius={5}
-                                className="stroke-transparent stroke-2"
-                            />
-                        </RadialBarChart>
+                          </RadialBarChart>
                         </ChartContainer>
                     </CardContent>
+                    <div className="flex-col gap-2 text-sm text-center pb-4">
+                      <div className="text-muted-foreground leading-none">
+                        You've earned {weeklyXp} of {totalWeeklyXp} possible XP this week.
+                      </div>
+                    </div>
                 </Card>
               </motion.div>
             </motion.div>

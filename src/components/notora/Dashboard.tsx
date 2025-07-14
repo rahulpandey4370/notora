@@ -3,28 +3,18 @@
 import type { User, AppData, Task } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useMemo } from 'react';
-import { BarChart as BarChartIcon, Calendar, Target, Flame } from 'lucide-react';
-import { format, isSameDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, isSameMonth, isAfter, addDays } from 'date-fns';
+import { Calendar, Target, Flame, TrendingUp } from 'lucide-react';
+import { format, isSameDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, addDays, isSameMonth, isAfter } from 'date-fns';
 import { getTaskXp } from '@/lib/utils';
 import { useApp } from '@/hooks/use-app';
-import { PolarGrid, PolarRadiusAxis, RadialBar, RadialBarChart, Bar, XAxis, YAxis, Tooltip, BarChart, Label } from "recharts"
+import { PolarGrid, PolarRadiusAxis, RadialBar, RadialBarChart, Label } from "recharts"
 import {
   ChartConfig,
   ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
 } from "@/components/ui/chart"
 import TaskList from './TaskList';
 import TaskItem from './TaskItem';
 import { motion } from 'framer-motion';
-import { Progress } from '../ui/progress';
-
-const monthlyChartConfig = {
-  xp: {
-    label: "XP",
-    color: "hsl(var(--primary))",
-  },
-} satisfies ChartConfig
 
 const weeklyChartConfig = {
   xp: {
@@ -33,6 +23,16 @@ const weeklyChartConfig = {
   weekly: {
     label: "Weekly XP",
     color: "hsl(var(--primary))",
+  },
+} satisfies ChartConfig
+
+const monthlyChartConfig = {
+  xp: {
+    label: "XP",
+  },
+  monthly: {
+    label: "Monthly XP",
+    color: "hsl(var(--accent))",
   },
 } satisfies ChartConfig
 
@@ -152,29 +152,49 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
     return { weeklyXp: achieved, totalWeeklyXp: total };
   }, [tasks, today]);
   
-  const monthlyChartData = useMemo(() => {
-    const monthStart = startOfMonth(today);
-    const daysInMonth = format(today, 'd');
-    const dailyData = Array.from({ length: Number(daysInMonth) }, (_, i) => ({
-      date: format(addDays(monthStart, i), 'MMM d'),
-      xp: 0,
-    }));
-
-    tasks.forEach(task => {
-        const taskXpValue = getTaskXp(task);
-        (task.completions || []).forEach(completionStr => {
-            const completionDate = new Date(completionStr);
-            if (isSameMonth(completionDate, today)) {
-                const dayIndex = completionDate.getDate() - 1;
-                if(dailyData[dayIndex]) {
-                  dailyData[dayIndex].xp += taskXpValue;
-                }
-            }
-        });
+  const { monthlyXp, totalPossibleMonthlyXp } = useMemo(() => {
+    let achieved = 0;
+    let total = 0;
+    
+    const allTasksInMonth = data.tasks.filter(task => {
+        if (task.type === 'monthly') {
+            return task.month === format(today, 'yyyy-MM');
+        }
+        if (task.type === 'weekly' && task.week) {
+            const taskWeekDate = startOfWeek(new Date(task.week.replace(/(\d{4})-(\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
+            return isSameMonth(taskWeekDate, today);
+        }
+        if (task.type === 'single' && task.date) {
+            return isSameMonth(new Date(task.date), today);
+        }
+        if (task.type === 'recurring') {
+            const createdAt = new Date(task.createdAt);
+            return isSameMonth(createdAt, today);
+        }
+        return false;
     });
 
-    return dailyData;
-  }, [tasks, today]);
+    allTasksInMonth.forEach(task => {
+      const taskXpValue = getTaskXp(task);
+      const completionsForMonth = (task.completions || []).filter(c => isSameMonth(new Date(c), today));
+      achieved += completionsForMonth.length * taskXpValue;
+    
+      if (task.type === 'recurring') {
+          const start = startOfDay(new Date(task.createdAt));
+          if (!isSameMonth(start, today)) return;
+
+          const end = endOfMonth(today);
+          const daysInRange = Array.from({ length: end.getDate() }, (_, i) => addDays(startOfMonth(today), i));
+          const applicableDays = daysInRange.filter(day => isAfter(day, start) || isSameDay(day, start)).length;
+          total += (applicableDays * taskXpValue);
+      } else {
+          total += taskXpValue;
+      }
+    });
+    
+    return { monthlyXp: achieved, totalPossibleMonthlyXp: total };
+  }, [data, today]);
+
 
   const { completedTodayCount, todaysTotalXp, todaysAchievedXp } = useMemo(() => {
     const todayStr = format(today, 'yyyy-MM-dd');
@@ -201,6 +221,12 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
     xp: weeklyXp,
     total: totalWeeklyXp,
     fill: "var(--color-weekly)"
+  }];
+
+  const monthlyChartData = [{
+    xp: monthlyXp,
+    total: totalPossibleMonthlyXp,
+    fill: "var(--color-monthly)"
   }];
 
 
@@ -234,7 +260,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
             variants={animationVariants}
             initial="hidden"
             animate="visible"
-            custom={3}
+            custom={1}
           >
             <motion.div whileHover={{ y: -5, transition: { duration: 0.2 } }}>
               <Card className="border-2 border-black rounded-lg shadow-none">
@@ -273,10 +299,10 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
                 variants={animationVariants}
                 initial="hidden"
                 animate="visible"
-                custom={1}
+                custom={2}
             >
               <motion.div whileHover={{ y: -5, transition: { duration: 0.2 } }}>
-                <Card className="border-2 border-black rounded-lg shadow-none">
+                <Card className="flex flex-col border-2 border-black rounded-lg shadow-none">
                     <CardHeader className="items-center pb-0">
                         <CardTitle>Weekly Progress</CardTitle>
                         <CardDescription>{format(startOfWeek(today, { weekStartsOn: 1 }), "MMM d")} - {format(endOfWeek(today, { weekStartsOn: 1 }), "MMM d")}</CardDescription>
@@ -289,7 +315,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
                           <RadialBarChart
                             data={weeklyChartData}
                             startAngle={0}
-                            endAngle={360 * (weeklyXp / (totalWeeklyXp || 1))}
+                            endAngle={totalWeeklyXp > 0 ? (weeklyXp / totalWeeklyXp) * 360 : 0}
                             innerRadius={80}
                             outerRadius={110}
                           >
@@ -335,11 +361,11 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
                           </RadialBarChart>
                         </ChartContainer>
                     </CardContent>
-                    <div className="flex-col gap-2 text-sm text-center pb-4">
-                      <div className="text-muted-foreground leading-none">
+                    <CardFooter className="flex-col gap-2 text-sm">
+                      <div className="text-muted-foreground leading-none text-center">
                         You've earned {weeklyXp} of {totalWeeklyXp} possible XP this week.
                       </div>
-                    </div>
+                    </CardFooter>
                 </Card>
               </motion.div>
             </motion.div>
@@ -348,40 +374,73 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
                 variants={animationVariants}
                 initial="hidden"
                 animate="visible"
-                custom={2}
+                custom={3}
             >
               <motion.div whileHover={{ y: -5, transition: { duration: 0.2 } }}>
-                <Card className="border-2 border-black rounded-lg shadow-none">
-                  <CardHeader>
-                      <CardTitle className="flex items-center gap-2"><Target className="w-5 h-5"/> Monthly Progress</CardTitle>
-                      <CardDescription>Daily XP earned for {format(today, 'MMMM')}.</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                      <ChartContainer config={monthlyChartConfig} className="w-full h-[250px]">
-                          <BarChart data={monthlyChartData} margin={{ top: 20, right: 0, left: -20, bottom: 0 }}>
-                              <defs>
-                                <linearGradient id="colorXp" x1="0" y1="0" x2="0" y2="1">
-                                  <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.8}/>
-                                  <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0.1}/>
-                                </linearGradient>
-                              </defs>
-                              <XAxis dataKey="date" tickLine={false} axisLine={false} tickMargin={8} fontSize={12} />
-                              <YAxis tickLine={false} axisLine={false} tickMargin={8} fontSize={12} />
-                              <Tooltip 
-                                  cursor={{ fill: 'hsl(var(--accent) / 0.1)' }}
-                                  content={({ active, payload, label }) =>
-                                  active && payload && payload.length ? (
-                                    <div className="bg-background/80 backdrop-blur-sm border rounded-lg p-2 text-sm shadow-lg">
-                                      <p className="font-bold">{`${label}`}</p>
-                                      <p className="text-primary">{`XP: ${payload[0].value}`}</p>
-                                    </div>
-                                  ) : null
-                                }
+                <Card className="flex flex-col border-2 border-black rounded-lg shadow-none">
+                    <CardHeader className="items-center pb-0">
+                        <CardTitle>Monthly Goal</CardTitle>
+                        <CardDescription>{format(today, 'MMMM yyyy')}</CardDescription>
+                    </CardHeader>
+                    <CardContent className="flex-1 pb-0">
+                      <ChartContainer
+                          config={monthlyChartConfig}
+                          className="mx-auto aspect-square max-h-[250px]"
+                      >
+                          <RadialBarChart
+                            data={monthlyChartData}
+                            startAngle={0}
+                            endAngle={totalPossibleMonthlyXp > 0 ? (monthlyXp / totalPossibleMonthlyXp) * 360 : 0}
+                            innerRadius={80}
+                            outerRadius={110}
+                          >
+                            <PolarGrid
+                              gridType="circle"
+                              radialLines={false}
+                              stroke="none"
+                              className="first:fill-muted last:fill-background"
+                              polarRadius={[86, 74]}
+                            />
+                            <RadialBar dataKey="xp" background cornerRadius={10} fill="var(--color-monthly)" />
+                            <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
+                              <Label
+                                content={({ viewBox }) => {
+                                  if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                                    return (
+                                      <text
+                                        x={viewBox.cx}
+                                        y={viewBox.cy}
+                                        textAnchor="middle"
+                                        dominantBaseline="middle"
+                                      >
+                                        <tspan
+                                          x={viewBox.cx}
+                                          y={viewBox.cy}
+                                          className="fill-foreground text-4xl font-bold"
+                                        >
+                                          {monthlyXp.toLocaleString()}
+                                        </tspan>
+                                        <tspan
+                                          x={viewBox.cx}
+                                          y={(viewBox.cy || 0) + 24}
+                                          className="fill-muted-foreground"
+                                        >
+                                          Monthly XP
+                                        </tspan>
+                                      </text>
+                                    )
+                                  }
+                                }}
                               />
-                              <Bar dataKey="xp" fill="url(#colorXp)" radius={[4, 4, 0, 0]} />
-                          </BarChart>
-                      </ChartContainer>
-                  </CardContent>
+                            </PolarRadiusAxis>
+                          </RadialBarChart>
+                        </ChartContainer>
+                    </CardContent>
+                    <CardFooter className="flex-col gap-2 text-sm">
+                      <div className="text-muted-foreground leading-none text-center">
+                        You've earned {monthlyXp} of {totalPossibleMonthlyXp} possible XP this month.
+                      </div>
+                    </CardFooter>
                 </Card>
               </motion.div>
             </motion.div>

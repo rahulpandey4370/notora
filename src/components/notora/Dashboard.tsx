@@ -235,7 +235,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
   return (
     <div className="p-4 md:p-8 space-y-6">
         <motion.div variants={animationVariants} initial="hidden" animate="visible" custom={0}>
-          <Card className="border-2 border-black rounded-lg shadow-none">
+          <Card className="border-2 border-black rounded-lg shadow-none dark:neon-border">
             <CardHeader className='pb-2'>
               <CardTitle className='text-center'>Progress Tracker</CardTitle>
             </CardHeader>
@@ -265,7 +265,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
             custom={1}
           >
             <motion.div whileHover={{ y: -5, transition: { duration: 0.2 } }}>
-              <Card className="border-2 border-black rounded-lg shadow-none">
+              <Card className="border-2 border-black rounded-lg shadow-none dark:neon-border">
                   <CardHeader>
                       <CardTitle className="flex items-center gap-2"><Calendar className="w-5 h-5"/> Today's Focus</CardTitle>
                       <CardDescription>Tasks scheduled for {format(today, 'MMMM do')}. ({completedTodayCount}/{todaysTasks.length} completed)</CardDescription>
@@ -304,7 +304,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
                 custom={2}
             >
               <motion.div whileHover={{ y: -5, transition: { duration: 0.2 } }}>
-                <Card className="flex flex-col border-2 border-black rounded-lg shadow-none">
+                <Card className="flex flex-col border-2 border-black rounded-lg shadow-none dark:neon-border">
                     <CardHeader className="items-center pb-0">
                         <CardTitle>Weekly Progress</CardTitle>
                         <CardDescription>{format(startOfWeek(today, { weekStartsOn: 1 }), "MMM d")} - {format(endOfWeek(today, { weekStartsOn: 1 }), "MMM d")}</CardDescription>
@@ -382,7 +382,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
                 custom={3}
             >
               <motion.div whileHover={{ y: -5, transition: { duration: 0.2 } }}>
-                <Card className="flex flex-col border-2 border-black rounded-lg shadow-none">
+                <Card className="flex flex-col border-2 border-black rounded-lg shadow-none dark:neon-border">
                     <CardHeader className="items-center pb-0">
                         <CardTitle>Monthly Goal</CardTitle>
                         <CardDescription>{format(today, 'MMMM yyyy')}</CardDescription>

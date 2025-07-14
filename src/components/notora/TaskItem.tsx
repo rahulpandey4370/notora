@@ -6,7 +6,10 @@ import { Trash2 } from "lucide-react";
 import type { Task } from "@/lib/types";
 import { getTaskXp } from "@/lib/utils";
 import { Badge } from "../ui/badge";
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { useTheme } from "next-themes";
+import { cn } from "@/lib/utils";
+
 
 interface TaskItemProps {
   task: Task;
@@ -24,6 +27,7 @@ const priorityStyles = {
 export default function TaskItem({ task, onToggle, onDelete, isCompleted }: TaskItemProps) {
   const uniqueId = `task-${task.id}-${task.date || ''}`;
   const taskXp = getTaskXp(task);
+  const { resolvedTheme } = useTheme();
 
   return (
     <motion.div
@@ -32,14 +36,12 @@ export default function TaskItem({ task, onToggle, onDelete, isCompleted }: Task
       animate={{ scale: 1, opacity: 1 }}
       exit={{ scale: 0.9, opacity: 0 }}
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-      className="flex items-center gap-4 p-3 border-2 border-black rounded-lg bg-card hover:shadow-[4px_4px_0px_#000] transition-shadow"
+      className={cn(
+        "flex items-center gap-4 p-3 border-2 border-black rounded-lg bg-card hover:shadow-[4px_4px_0px_#000] transition-shadow duration-200",
+        isCompleted && resolvedTheme === 'dark' && "neon-border"
+      )}
     >
-      <motion.div
-        animate={{
-          backgroundColor: isCompleted ? "hsl(var(--primary))" : "hsl(var(--card))",
-          scale: isCompleted ? 1.05 : 1,
-        }}
-        transition={{ duration: 0.3 }}
+      <div
         className="flex items-center gap-4 flex-1 rounded-md"
       >
         <Checkbox
@@ -47,20 +49,24 @@ export default function TaskItem({ task, onToggle, onDelete, isCompleted }: Task
           checked={isCompleted}
           onCheckedChange={onToggle}
           aria-labelledby={`${uniqueId}-label`}
-          className="w-5 h-5 border-2 border-black rounded-sm data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
+          className="w-5 h-5 border-2 border-black rounded-sm data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:border-slate-700"
         />
         <label
           id={`${uniqueId}-label`}
           htmlFor={uniqueId}
-          className={`flex-1 text-sm font-medium cursor-pointer transition-colors ${isCompleted ? 'text-muted-foreground line-through' : ''}`}
+          className={cn(
+            'flex-1 text-sm font-medium cursor-pointer transition-all', 
+            isCompleted ? 'text-muted-foreground line-through' : '',
+            isCompleted && resolvedTheme === 'dark' && "neon-text"
+          )}
         >
           {task.title}
         </label>
-      </motion.div>
+      </div>
       
       <Badge variant="outline" className={`font-mono text-xs ${priorityStyles[task.priority]}`}>{taskXp} XP</Badge>
 
-      <Button variant="ghost" size="icon" onClick={onDelete} className="h-8 w-8 text-black/60 hover:text-destructive hover:bg-destructive/10 rounded-full">
+      <Button variant="ghost" size="icon" onClick={onDelete} className="h-8 w-8 text-black/60 hover:text-destructive hover:bg-destructive/10 rounded-full dark:text-slate-400 dark:hover:text-destructive">
         <Trash2 className="h-4 w-4" />
       </Button>
     </motion.div>

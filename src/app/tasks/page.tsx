@@ -182,7 +182,7 @@ export default function TasksPage() {
   return (
     <AppLayout>
       <main className="p-4 md:p-8 space-y-6">
-        <Card>
+        <Card className="dark:neon-border">
             <CardHeader className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <div>
                 <CardTitle>My Tasks</CardTitle>
@@ -210,7 +210,7 @@ export default function TasksPage() {
           </TabsList>
           
           <TabsContent value="daily" className="mt-6">
-              <Card>
+              <Card className="dark:neon-border">
                   <CardHeader>
                     <div className="flex justify-between items-center">
                         <div>
@@ -251,7 +251,7 @@ export default function TasksPage() {
           </TabsContent>
 
           <TabsContent value="monthly" className="mt-6">
-              <Card>
+              <Card className="dark:neon-border">
                   <CardHeader>
                       <CardTitle className="flex items-center gap-2"><ClipboardList className="w-5 h-5"/> Monthly Goals</CardTitle>
                       <CardDescription>High-level targets for {format(currentMonth, 'MMMM')}.</CardDescription>

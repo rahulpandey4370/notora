@@ -3,7 +3,7 @@
 import React, { useRef, useEffect } from 'react';
 import { Renderer, Camera, Transform, Program, Geometry, Vec3, Color, Mesh } from 'ogl';
 
-interface ParticlesProps {
+interface ParticlesProps extends React.HTMLAttributes<HTMLDivElement> {
   particleCount?: number;
   particleColors?: string[];
   particleSpread?: number;
@@ -70,6 +70,8 @@ export default function Particles({
   moveParticlesOnHover = true,
   alphaParticles = false,
   disableRotation = false,
+  className,
+  ...props
 }: ParticlesProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const pointer = useRef({ x: 0, y: 0 });
@@ -186,5 +188,5 @@ export default function Particles({
     };
   }, [particleCount, particleColors, particleSpread, speed, particleBaseSize, moveParticlesOnHover, alphaParticles, disableRotation]);
 
-  return <div ref={canvasRef} style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0, zIndex: -1 }} />;
+  return <div ref={canvasRef} className={className} style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0, zIndex: -1 }} {...props} />;
 }

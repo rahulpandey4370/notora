@@ -44,16 +44,16 @@ export default function TaskList({ data, onDataChange, currentMonth }: TaskListP
   };
 
   return (
-    <div className="space-y-4 w-full">
+    <div className="space-y-4 w-full pt-4">
       <div className="flex flex-wrap items-center gap-2">
         <Input
-          placeholder="Read book"
+          placeholder="Add a new goal..."
           value={newTaskTitle}
           onChange={(e) => setNewTaskTitle(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleAddTask()}
           className="flex-grow min-w-[150px] border-2 border-black rounded-md h-9"
         />
-        <Button onClick={handleAddTask} className="bg-primary/80 hover:bg-primary text-primary-foreground border-2 border-black rounded-md h-9">
+        <Button onClick={handleAddTask} className="bg-primary hover:bg-primary/90 text-primary-foreground border-2 border-black rounded-md h-9 shadow-[2px_2px_0px_#000]">
           <Plus className="mr-2 h-4 w-4" /> Add Goal
         </Button>
       </div>

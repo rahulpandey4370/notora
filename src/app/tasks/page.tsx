@@ -11,7 +11,7 @@ import TaskList from '@/components/notora/TaskList';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, ClipboardList, CalendarDays } from 'lucide-react';
-import { format, startOfMonth, addMonths, subMonths, isSameDay, startOfDay, addDays, subDays } from 'date-fns';
+import { format, startOfMonth, addMonths, subMonths, isSameDay, startOfDay, addDays, subDays, isAfter, isSameMonth, endOfMonth } from 'date-fns';
 import type { Task } from '@/lib/types';
 import TaskItem from '@/components/notora/TaskItem';
 import { Progress } from '@/components/ui/progress';
@@ -113,8 +113,10 @@ export default function TasksPage() {
           switch (task.type) {
               case 'single': 
                 return task.date ? isSameDay(new Date(task.date), date) : false;
-              case 'recurring': 
-                return true;
+              case 'recurring':
+                const createdAt = new Date(task.createdAt);
+                const monthEnd = endOfMonth(createdAt);
+                return (isSameDay(date, createdAt) || isAfter(date, createdAt)) && (isSameDay(date, monthEnd) || isAfter(monthEnd, date));
               case 'weekly':
                 if (!task.week) return false;
                 const taskWeekDate = startOfWeek(new Date(task.week.replace(/(\d{4})-(\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
@@ -127,21 +129,40 @@ export default function TasksPage() {
       });
   };
   
+  const monthlyTasks = data.tasks.filter(t => t.type === 'monthly' && t.month === format(currentMonth, 'yyyy-MM'));
+  
   const allTasksInMonth = data.tasks.filter(task => {
-    const taskDate = task.date ? new Date(task.date) : (task.week ? new Date(task.week.replace(/(\d{4})-(\d{2})/, '$1-W$2-1')) : new Date(task.month || ''));
-    return task.type === 'recurring' || (task.month && task.month === format(currentMonth, 'yyyy-MM')) || isSameDay(taskDate, currentMonth);
+    if (task.type === 'monthly') {
+        return task.month === format(currentMonth, 'yyyy-MM');
+    }
+    if (task.type === 'weekly' && task.week) {
+        const taskDate = new Date(task.week.replace(/(\d{4})-(\d{2})/, '$1-W$2-1'));
+        return isSameMonth(taskDate, currentMonth);
+    }
+     if (task.type === 'single' && task.date) {
+        return isSameMonth(new Date(task.date), currentMonth);
+    }
+    if (task.type === 'recurring') {
+        return isSameMonth(new Date(task.createdAt), currentMonth);
+    }
+    return false;
   });
 
   const monthlyXp = allTasksInMonth.reduce((acc, task) => {
-    const completionsForMonth = (task.completions || []).filter(c => isSameDay(new Date(c), currentMonth));
-    if (task.type === 'monthly') {
-        return acc + (completionsForMonth.length > 0 ? getTaskXp(task) : 0);
-    }
-    return acc + completionsForMonth.length * getTaskXp(task);
+      const taskXp = getTaskXp(task);
+      const completionsForMonth = (task.completions || []).filter(c => isSameMonth(new Date(c), currentMonth));
+      return acc + completionsForMonth.length * taskXp;
   }, 0);
-  
-  const monthlyTasks = data.tasks.filter(t => t.type === 'monthly' && t.month === format(currentMonth, 'yyyy-MM'));
-  const totalPossibleMonthlyXp = monthlyTasks.reduce((acc, task) => acc + getTaskXp(task), 0);
+
+  const totalPossibleMonthlyXp = allTasksInMonth.reduce((acc, task) => {
+      if (task.type === 'recurring') {
+        const start = startOfDay(new Date(task.createdAt));
+        const end = endOfMonth(start);
+        const days = Math.max(0, (end.getDate() - start.getDate()) + 1);
+        return acc + (days * getTaskXp(task));
+      }
+      return acc + getTaskXp(task);
+  }, 0);
   
   const tasksForCurrentDay = getTasksForDate(currentDay);
   const completedCountForDay = tasksForCurrentDay.filter(t => (t.completions || []).includes(format(currentDay, 'yyyy-MM-dd'))).length;

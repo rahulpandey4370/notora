@@ -11,6 +11,7 @@ export interface Task {
   priority: 'Easy' | 'Medium' | 'Hard';
   type: 'single' | 'recurring' | 'monthly' | 'weekly';
   completions: string[]; // Array of ISO date strings 'yyyy-MM-dd'
+  createdAt: string; // ISO 8601 date string
   date?: string; // ISO 8601 date string, for single tasks
   month?: string; // 'yyyy-MM', for monthly tasks
   week?: string; // 'yyyy-ww', for weekly tasks

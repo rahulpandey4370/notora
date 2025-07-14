@@ -33,6 +33,7 @@ export default function TaskList({ data, onDataChange, currentMonth }: TaskListP
       priority: newTaskPriority,
       type: addTaskType,
       completions: [],
+      createdAt: new Date().toISOString(),
       date: addTaskType === 'single' && taskDate ? taskDate.toISOString() : undefined,
       month: addTaskType === 'monthly' ? format(currentMonth, 'yyyy-MM') : undefined,
       week: addTaskType === 'weekly' && taskDate ? `${format(taskDate, 'yyyy')}-${getWeek(taskDate)}` : undefined,

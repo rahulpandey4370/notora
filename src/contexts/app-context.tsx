@@ -52,7 +52,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       console.log(`No data found for ${username}, creating default data.`);
       const newDefaultData: AppData = { 
         ...defaultAppData,
-        tasks: defaultAppData.tasks.map(t => ({...t, date: new Date().toISOString()})),
+        tasks: defaultAppData.tasks.map(t => ({...t, createdAt: new Date().toISOString(), date: new Date().toISOString()})),
         noteBoards: [{
           ...defaultAppData.noteBoards[0], 
           id: uuidv4(),
@@ -62,6 +62,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       };
       await saveAppData(username, newDefaultData);
       appData = newDefaultData;
+    } else {
+      // Backwards compatibility for old data
+      appData.tasks = appData.tasks.map(t => ({ ...t, createdAt: t.createdAt || new Date().toISOString() }));
     }
     
     setData(appData);

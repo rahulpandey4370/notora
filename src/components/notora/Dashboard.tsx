@@ -3,7 +3,7 @@
 import type { User, AppData, Task } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useMemo } from 'react';
-import { BarChart, Calendar, Target } from 'lucide-react';
+import { BarChart, Calendar, Target, Flame } from 'lucide-react';
 import { format, isSameDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, isSameMonth, startOfDay, isAfter, addDays, differenceInDays } from 'date-fns';
 import { getTaskXp } from '@/lib/utils';
 import { useApp } from '@/hooks/use-app';
@@ -18,6 +18,7 @@ import TaskList from './TaskList';
 import TaskItem from './TaskItem';
 import { motion } from 'framer-motion';
 import { Progress } from '../ui/progress';
+import { Separator } from '../ui/separator';
 
 
 const weeklyChartConfig = {
@@ -188,11 +189,14 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
     return { monthlyXp: mXp, totalMonthlyXp: tMXp };
   }, [tasks, today]);
 
-  const { dailyProgress, completedTodayCount } = useMemo(() => {
+  const { dailyProgress, completedTodayCount, todaysTotalXp, todaysAchievedXp } = useMemo(() => {
     const todayStr = format(today, 'yyyy-MM-dd');
-    const completedCount = todaysTasks.filter(t => (t.completions || []).includes(todayStr)).length;
+    const completedTasks = todaysTasks.filter(t => (t.completions || []).includes(todayStr));
+    const completedCount = completedTasks.length;
     const progress = todaysTasks.length > 0 ? (completedCount / todaysTasks.length) * 100 : 0;
-    return { dailyProgress: progress, completedTodayCount: completedCount };
+    const totalXp = todaysTasks.reduce((acc, t) => acc + getTaskXp(t), 0);
+    const achievedXp = completedTasks.reduce((acc, t) => acc + getTaskXp(t), 0);
+    return { dailyProgress: progress, completedTodayCount: completedCount, todaysTotalXp: totalXp, todaysAchievedXp: achievedXp };
   }, [todaysTasks, today]);
 
   const weeklyChartData = [{ week: "current", achieved: weeklyXp, remaining: Math.max(0, totalWeeklyXp - weeklyXp) }];
@@ -213,6 +217,29 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
 
   return (
     <div className="p-4 md:p-8 space-y-6">
+        <motion.div variants={animationVariants} initial="hidden" animate="visible" custom={0}>
+          <Card className="border-2 border-black rounded-lg shadow-none">
+            <CardHeader className='pb-2'>
+              <CardTitle className='text-center'>Progress Tracker</CardTitle>
+              <Separator className='bg-accent h-0.5' />
+            </CardHeader>
+            <CardContent>
+                <div className='flex items-center justify-between text-sm font-semibold mb-1'>
+                    <span className='flex items-center gap-1.5'><Flame className='w-4 h-4 text-orange-500' /> Your XP</span>
+                    <span>{todaysAchievedXp} / {todaysTotalXp} XP</span>
+                </div>
+                 <div className="w-full bg-muted rounded-full h-4 border-2 border-black p-0.5">
+                    <motion.div
+                        className="bg-gradient-to-r from-green-400 to-teal-400 h-full rounded-full"
+                        initial={{ width: '0%' }}
+                        animate={{ width: `${todaysTotalXp > 0 ? (todaysAchievedXp / todaysTotalXp) * 100 : 0}%`}}
+                        transition={{ duration: 0.5, ease: "easeInOut" }}
+                    />
+                </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+        
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <motion.div
             className="lg:col-span-2 space-y-6"
@@ -227,7 +254,6 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
                     <CardDescription>Tasks scheduled for {format(today, 'MMMM do')}. ({completedTodayCount}/{todaysTasks.length} completed)</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                    <Progress value={dailyProgress} className="h-2 border-2 border-black" />
                     <div className="pt-4 space-y-2">
                         {todaysTasks.length > 0 ? (
                         todaysTasks.map(task => (

@@ -39,15 +39,15 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
         const relevantDate = task.type === 'monthly' ? startOfMonth(today) : today;
         const dateStr = format(relevantDate, 'yyyy-MM-dd');
 
-        const isCompleted = task.completions.includes(dateStr);
+        const isCompleted = (task.completions || []).includes(dateStr);
         
         let newCompletions: string[];
         if (isCompleted) {
           xpChange = -taskXp;
-          newCompletions = task.completions.filter(d => d !== dateStr);
+          newCompletions = (task.completions || []).filter(d => d !== dateStr);
         } else {
           xpChange = taskXp;
-          newCompletions = [...task.completions, dateStr];
+          newCompletions = [...(task.completions || []), dateStr];
         }
 
         if(!isCompleted) {
@@ -75,7 +75,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
     const taskToDelete = data.tasks.find(t => t.id === id);
     if (taskToDelete) {
         const taskXp = getTaskXp(taskToDelete);
-        xpChange = -taskToDelete.completions.reduce((acc, c) => acc + taskXp, 0);
+        xpChange = -(taskToDelete.completions || []).reduce((acc, c) => acc + taskXp, 0);
     }
     const newTasks = data.tasks.filter((task) => task.id !== id);
     onDataChange({ ...data, tasks: newTasks, userStats: { xp: data.userStats.xp + xpChange }});
@@ -132,7 +132,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
             weeklyTotalXp += taskXpValue * 7;
         }
 
-        task.completions.forEach(c => {
+        (task.completions || []).forEach(c => {
             const completionDate = new Date(c);
             if (isSameMonth(completionDate, today)) {
                 monthlyXp += taskXpValue;
@@ -195,7 +195,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
                                 task={task}
                                 onToggle={() => onToggle(task.id)}
                                 onDelete={() => onDelete(task.id)}
-                                isCompleted={task.completions.includes(format(today, 'yyyy-MM-dd')) || (task.type === 'monthly' && task.completions.includes(format(startOfMonth(today), 'yyyy-MM-dd')))}
+                                isCompleted={(task.completions || []).includes(format(today, 'yyyy-MM-dd')) || (task.type === 'monthly' && (task.completions || []).includes(format(startOfMonth(today), 'yyyy-MM-dd')))}
                             />
                         ))
                     ) : (

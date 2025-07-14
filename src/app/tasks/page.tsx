@@ -11,29 +11,12 @@ import TaskList from '@/components/notora/TaskList';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, ClipboardList, CalendarDays } from 'lucide-react';
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, addMonths, subMonths, isSameDay, startOfWeek, endOfWeek, eachWeekOfInterval, getWeek, isSameWeek, startOfDay, addDays, subDays } from 'date-fns';
+import { format, startOfMonth, addMonths, subMonths, isSameDay, startOfDay, addDays, subDays } from 'date-fns';
 import type { Task } from '@/lib/types';
 import TaskItem from '@/components/notora/TaskItem';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-const getTaskXp = (task: Task): number => {
-    const dailyXp: Record<Task['priority'], number> = {
-        Easy: 10,
-        Medium: 25,
-        Hard: 50,
-    };
-    const monthlyXp: Record<Task['priority'], number> = {
-        Easy: 50,
-        Medium: 100,
-        Hard: 200,
-    };
-
-    if (task.type === 'monthly') {
-        return monthlyXp[task.priority];
-    }
-    return dailyXp[task.priority];
-};
+import { getTaskXp } from '@/lib/utils';
 
 export default function TasksPage() {
   const { user, loading: authLoading } = useAuth();
@@ -83,15 +66,15 @@ export default function TasksPage() {
         const relevantDate = task.type === 'monthly' ? startOfMonth(date) : startOfDay(date);
         const dateStr = format(relevantDate, 'yyyy-MM-dd');
 
-        const isCompleted = task.completions.includes(dateStr);
+        const isCompleted = (task.completions || []).includes(dateStr);
         
         let newCompletions: string[];
         if (isCompleted) {
           xpChange = -taskXp;
-          newCompletions = task.completions.filter(d => d !== dateStr);
+          newCompletions = (task.completions || []).filter(d => d !== dateStr);
         } else {
           xpChange = taskXp;
-          newCompletions = [...task.completions, dateStr];
+          newCompletions = [...(task.completions || []), dateStr];
         }
 
         if(!isCompleted) {
@@ -119,7 +102,7 @@ export default function TasksPage() {
     const taskToDelete = data.tasks.find(t => t.id === id);
     if (taskToDelete) {
         const taskXp = getTaskXp(taskToDelete);
-        xpChange = -taskXp * taskToDelete.completions.length;
+        xpChange = -(taskToDelete.completions || []).length * taskXp;
     }
     const newTasks = data.tasks.filter((task) => task.id !== id);
     handleDataChange({ ...data, tasks: newTasks, userStats: { xp: data.userStats.xp + xpChange }});
@@ -135,7 +118,7 @@ export default function TasksPage() {
               case 'weekly':
                 if (!task.week) return false;
                 const taskWeekDate = startOfWeek(new Date(task.week.replace(/(\d{4})-(\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
-                return isSameWeek(date, taskWeekDate, { weekStartsOn: 1 });
+                return isSameDay(date, taskWeekDate);
               case 'monthly':
                 return false;
               default: 
@@ -145,25 +128,12 @@ export default function TasksPage() {
   };
   
   const allTasksInMonth = data.tasks.filter(task => {
-    switch (task.type) {
-        case 'monthly':
-            return task.month === format(currentMonth, 'yyyy-MM');
-        case 'weekly': {
-            if (!task.week) return false;
-            const taskWeekDate = startOfWeek(new Date(task.week.replace(/(\d{4})-(\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
-            return isSameMonth(taskWeekDate, currentMonth);
-        }
-        case 'single':
-            return task.date ? isSameMonth(new Date(task.date), currentMonth) : false;
-        case 'recurring':
-            return true;
-        default:
-            return false;
-    }
+    const taskDate = task.date ? new Date(task.date) : (task.week ? new Date(task.week.replace(/(\d{4})-(\d{2})/, '$1-W$2-1')) : new Date(task.month || ''));
+    return task.type === 'recurring' || (task.month && task.month === format(currentMonth, 'yyyy-MM')) || isSameDay(taskDate, currentMonth);
   });
 
   const monthlyXp = allTasksInMonth.reduce((acc, task) => {
-    const completionsForMonth = task.completions.filter(c => isSameMonth(new Date(c), currentMonth));
+    const completionsForMonth = (task.completions || []).filter(c => isSameDay(new Date(c), currentMonth));
     if (task.type === 'monthly') {
         return acc + (completionsForMonth.length > 0 ? getTaskXp(task) : 0);
     }
@@ -174,7 +144,7 @@ export default function TasksPage() {
   const totalPossibleMonthlyXp = monthlyTasks.reduce((acc, task) => acc + getTaskXp(task), 0);
   
   const tasksForCurrentDay = getTasksForDate(currentDay);
-  const completedCountForDay = tasksForCurrentDay.filter(t => t.completions.includes(format(currentDay, 'yyyy-MM-dd'))).length;
+  const completedCountForDay = tasksForCurrentDay.filter(t => (t.completions || []).includes(format(currentDay, 'yyyy-MM-dd'))).length;
   const dailyProgress = tasksForCurrentDay.length > 0 ? (completedCountForDay / tasksForCurrentDay.length) * 100 : 0;
 
   return (
@@ -236,7 +206,7 @@ export default function TasksPage() {
                                     task={task}
                                     onToggle={() => onToggle(task.id, currentDay)}
                                     onDelete={() => onDelete(task.id)}
-                                    isCompleted={task.completions.includes(format(startOfDay(currentDay), 'yyyy-MM-dd'))}
+                                    isCompleted={(task.completions || []).includes(format(startOfDay(currentDay), 'yyyy-MM-dd'))}
                                 />
                             ))}
                             </div>
@@ -267,7 +237,7 @@ export default function TasksPage() {
                                     task={task}
                                     onToggle={() => onToggle(task.id, currentMonth)}
                                     onDelete={() => onDelete(task.id)}
-                                    isCompleted={task.completions.includes(format(startOfMonth(currentMonth), 'yyyy-MM-dd'))}
+                                    isCompleted={(task.completions || []).includes(format(startOfMonth(currentMonth), 'yyyy-MM-dd'))}
                                />
                             ))}
                             {monthlyTasks.length === 0 && (

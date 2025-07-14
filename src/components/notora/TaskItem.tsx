@@ -37,8 +37,7 @@ export default function TaskItem({ task, onToggle, onDelete, isCompleted }: Task
       exit={{ scale: 0.9, opacity: 0 }}
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
       className={cn(
-        "flex items-center gap-4 p-3 border-2 border-black rounded-lg bg-card hover:shadow-[4px_4px_0px_#000] transition-shadow duration-200",
-        resolvedTheme === 'dark' && isCompleted && "neon-border-green"
+        "flex items-center gap-4 p-3 border-2 border-black rounded-lg bg-card hover:shadow-[4px_4px_0px_#000] transition-shadow duration-200"
       )}
     >
       <div
@@ -55,12 +54,14 @@ export default function TaskItem({ task, onToggle, onDelete, isCompleted }: Task
           id={`${uniqueId}-label`}
           htmlFor={uniqueId}
           className={cn(
-            'flex-1 text-sm font-medium cursor-pointer transition-all', 
-            isCompleted ? 'text-muted-foreground line-through' : '',
-            isCompleted && resolvedTheme === 'dark' && "neon-text-accent"
+            'flex-1 text-sm font-medium cursor-pointer transition-all'
           )}
         >
-          {task.title}
+          <span className={cn(
+            isCompleted && 'line-through bg-primary/70 text-muted-foreground px-2 rounded-sm'
+          )}>
+            {task.title}
+          </span>
         </label>
       </div>
       

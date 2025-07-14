@@ -1,10 +1,10 @@
 'use client';
 
 import type { User, AppData, Task } from '@/lib/types';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { useMemo } from 'react';
-import { Calendar, Target, Flame, TrendingUp } from 'lucide-react';
-import { format, isSameDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, addDays, isSameMonth, isAfter } from 'date-fns';
+import { Calendar, Flame, TrendingUp } from 'lucide-react';
+import { format, isSameDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, addDays, isSameMonth, isAfter, startOfDay } from 'date-fns';
 import { getTaskXp } from '@/lib/utils';
 import { useApp } from '@/hooks/use-app';
 import { PolarGrid, PolarRadiusAxis, RadialBar, RadialBarChart, Label } from "recharts"
@@ -15,6 +15,7 @@ import {
 import TaskList from './TaskList';
 import TaskItem from './TaskItem';
 import { motion } from 'framer-motion';
+import { Progress } from '../ui/progress';
 
 const weeklyChartConfig = {
   xp: {
@@ -118,33 +119,34 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
 
     tasks.forEach(task => {
         const taskXpValue = getTaskXp(task);
+        const taskDate = task.date ? new Date(task.date) : new Date(task.createdAt);
+
         if (task.type === 'weekly' && task.week) {
             const taskWeekDate = startOfWeek(new Date(task.week.replace(/(\d{4})-(\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
             if (isSameDay(taskWeekDate, weekStart)) {
                 total += taskXpValue;
-                if ((task.completions || []).some(c => isWithinInterval(new Date(c), { start: weekStart, end: weekEnd }))) {
+                 if ((task.completions || []).some(c => isWithinInterval(new Date(c), { start: weekStart, end: weekEnd }))) {
                     achieved += taskXpValue;
                 }
             }
-        } else if (task.type === 'recurring' || task.type === 'single') {
-            const taskDate = task.date ? new Date(task.date) : new Date(task.createdAt);
-            if (isWithinInterval(taskDate, { start: weekStart, end: weekEnd })) {
-                 if (task.type === 'recurring') {
-                    for (let i = 0; i < 7; i++) {
-                        const day = addDays(weekStart, i);
-                        if (isSameDay(day, taskDate) || isAfter(day, taskDate)) {
-                            total += taskXpValue;
+        } else if (task.type === 'recurring') {
+             if (isWithinInterval(taskDate, { start: weekStart, end: weekEnd }) || isAfter(weekStart, taskDate)) {
+                 for (let i = 0; i < 7; i++) {
+                    const day = addDays(weekStart, i);
+                    if (isSameDay(day, taskDate) || isAfter(day, taskDate)) {
+                        total += taskXpValue;
+                         if ((task.completions || []).includes(format(day, 'yyyy-MM-dd'))) {
+                            achieved += taskXpValue;
                         }
                     }
-                 } else {
-                    total += taskXpValue;
-                 }
-
-                (task.completions || []).forEach(c => {
-                    if (isWithinInterval(new Date(c), { start: weekStart, end: weekEnd })) {
-                        achieved += taskXpValue;
-                    }
-                });
+                }
+             }
+        } else if (task.type === 'single' && task.date) {
+            if (isWithinInterval(new Date(task.date), { start: weekStart, end: weekEnd })) {
+                total += taskXpValue;
+                if ((task.completions || []).some(c => isWithinInterval(new Date(c), { start: weekStart, end: weekEnd }))) {
+                    achieved += taskXpValue;
+                }
             }
         }
     });
@@ -362,6 +364,9 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
                         </ChartContainer>
                     </CardContent>
                     <CardFooter className="flex-col gap-2 text-sm">
+                       <div className="flex items-center gap-2 font-medium leading-none">
+                          Trending up by {totalWeeklyXp > 0 ? ((weeklyXp/totalWeeklyXp) * 100).toFixed(1) : 0}% this week <TrendingUp className="h-4 w-4" />
+                      </div>
                       <div className="text-muted-foreground leading-none text-center">
                         You've earned {weeklyXp} of {totalWeeklyXp} possible XP this week.
                       </div>
@@ -437,6 +442,9 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
                         </ChartContainer>
                     </CardContent>
                     <CardFooter className="flex-col gap-2 text-sm">
+                      <div className="flex items-center gap-2 font-medium leading-none">
+                        Trending up by {totalPossibleMonthlyXp > 0 ? ((monthlyXp/totalPossibleMonthlyXp) * 100).toFixed(1) : 0}% this month <TrendingUp className="h-4 w-4" />
+                      </div>
                       <div className="text-muted-foreground leading-none text-center">
                         You've earned {monthlyXp} of {totalPossibleMonthlyXp} possible XP this month.
                       </div>

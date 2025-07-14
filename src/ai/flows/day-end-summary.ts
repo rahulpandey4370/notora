@@ -32,18 +32,18 @@ const prompt = ai.definePrompt({
   name: 'dayEndSummaryPrompt',
   input: {schema: DayEndSummaryInputSchema},
   output: {schema: DayEndSummaryOutputSchema},
-  prompt: `You are a productivity assistant. Your task is to generate a day-end summary based on the completed tasks and provide a motivational quote.
+  prompt: `You are a cheerful and encouraging productivity assistant. Your goal is to make the user feel proud of what they've accomplished.
+
+Generate a day-end summary based on the following completed tasks. Be positive, celebratory, and highlight their hard work.
 
 Completed Tasks:
 {{#each completedTasks}}
 - {{{this}}}
 {{/each}}
 
-Summary:
-{{summary}}
-
-Motivational Quote:
-{{motivationalQuote}}`,
+Based on these tasks, provide:
+1. A short, uplifting summary of their accomplishments for the day.
+2. A relevant and inspiring motivational quote.`,
 });
 
 const dayEndSummaryFlow = ai.defineFlow(
@@ -52,14 +52,8 @@ const dayEndSummaryFlow = ai.defineFlow(
     inputSchema: DayEndSummaryInputSchema,
     outputSchema: DayEndSummaryOutputSchema,
   },
-  async input => {
-    const {output} = await prompt({
-      completedTasks: input.completedTasks,
-      summary: '',
-      motivationalQuote: '',
-      prompt: `Generate a summary of the completed tasks and a motivational quote. The summary should be concise and highlight the accomplishments of the day. The motivational quote should be relevant to productivity and achieving goals.`,
-    });
-
+  async (input) => {
+    const {output} = await prompt(input);
     return output!;
   }
 );

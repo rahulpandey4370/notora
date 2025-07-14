@@ -14,6 +14,7 @@ import { generateDayEndSummary } from '@/ai/flows/day-end-summary';
 import type { Task } from '@/lib/types';
 import { Sparkle } from 'lucide-react';
 import { Skeleton } from '../ui/skeleton';
+import { format } from 'date-fns';
 
 interface DayEndSummaryDialogProps {
   open: boolean;
@@ -32,7 +33,12 @@ export default function DayEndSummaryDialog({ open, onOpenChange, tasks }: DayEn
         setLoading(true);
         setSummary('');
         setQuote('');
-        const completedTasks = tasks.filter((task) => task.completed).map((task) => task.title);
+        
+        const todayStr = format(new Date(), 'yyyy-MM-dd');
+        const completedTasks = tasks
+          .filter((task) => (task.completions || []).includes(todayStr))
+          .map((task) => task.title);
+
         if (completedTasks.length === 0) {
           setSummary("You didn't complete any tasks today. Let's aim to get at least one done tomorrow!");
           setQuote("The secret of getting ahead is getting started. - Mark Twain");

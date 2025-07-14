@@ -98,10 +98,10 @@ export default function LinkManager({ savedLinks, data, onDataChange }: LinkMana
           value={newUrl}
           onChange={(e) => setNewUrl(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleAddLink()}
-          className="w-full"
+          className="w-full border-2 border-black rounded-md h-9"
           disabled={loading}
         />
-        <Button onClick={handleAddLink} className="w-full sm:w-auto" disabled={loading}>
+        <Button onClick={handleAddLink} className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground border-2 border-black rounded-md h-9 shadow-[2px_2px_0px_#000]" disabled={loading}>
           {loading ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           ) : (
@@ -115,6 +115,7 @@ export default function LinkManager({ savedLinks, data, onDataChange }: LinkMana
         <Button 
             variant={activeFilter === null ? 'default' : 'outline'}
             onClick={() => setActiveFilter(null)}
+            className="border-2 border-black rounded-md h-9 shadow-[2px_2px_0px_#000]"
         >
             All
         </Button>
@@ -123,6 +124,7 @@ export default function LinkManager({ savedLinks, data, onDataChange }: LinkMana
                 key={category} 
                 variant={activeFilter === category ? 'default' : 'outline'}
                 onClick={() => setActiveFilter(category)}
+                className="border-2 border-black rounded-md h-9 shadow-[2px_2px_0px_#000]"
             >
                 {category}
             </Button>

@@ -17,12 +17,12 @@ interface LinkCardProps {
   onUpdate: (id: string, updatedData: Partial<Omit<SavedLink, 'id'>>) => void;
 }
 
-const categoryColors: Record<typeof linkCategories[number], string> = {
-    Article: "bg-blue-500/20 text-blue-700 border-blue-500/30 dark:text-blue-300 dark:border-blue-500/50",
-    Video: "bg-red-500/20 text-red-700 border-red-500/30 dark:text-red-300 dark:border-red-500/50",
-    Course: "bg-purple-500/20 text-purple-700 border-purple-500/30 dark:text-purple-300 dark:border-purple-500/50",
-    Image: "bg-orange-500/20 text-orange-700 border-orange-500/30 dark:text-orange-300 dark:border-orange-500/50",
-    Other: "bg-gray-500/20 text-gray-700 border-gray-500/30 dark:text-gray-300 dark:border-gray-500/50",
+const categoryStyles: Record<typeof linkCategories[number], string> = {
+    Article: "border-blue-500/50 bg-blue-500/10 text-blue-700 dark:text-blue-300",
+    Video: "border-red-500/50 bg-red-500/10 text-red-700 dark:text-red-300",
+    Course: "border-purple-500/50 bg-purple-500/10 text-purple-700 dark:text-purple-300",
+    Image: "border-orange-500/50 bg-orange-500/10 text-orange-700 dark:text-orange-300",
+    Other: "border-gray-500/50 bg-gray-500/10 text-gray-700 dark:text-gray-300",
 };
 
 export default function LinkCard({ link, onDelete, onUpdate }: LinkCardProps) {
@@ -65,7 +65,7 @@ export default function LinkCard({ link, onDelete, onUpdate }: LinkCardProps) {
     };
 
     return (
-        <Card className="flex flex-col h-full">
+        <Card className="flex flex-col h-full border-2 border-black rounded-lg shadow-none hover:shadow-[4px_4px_0px_#000] transition-shadow">
             {videoId && !isEditing ? (
                 <div className='aspect-video w-full rounded-t-lg overflow-hidden'>
                     <iframe
@@ -80,7 +80,7 @@ export default function LinkCard({ link, onDelete, onUpdate }: LinkCardProps) {
             ) : (
                 <CardHeader>
                     {isEditing ? (
-                         <Input value={editedTitle} onChange={(e) => setEditedTitle(e.target.value)} className="text-base font-semibold" />
+                         <Input value={editedTitle} onChange={(e) => setEditedTitle(e.target.value)} className="text-base font-semibold border-2 border-black rounded-md" />
                     ) : (
                         <CardTitle className="flex items-start gap-3 text-base">
                             <img src={getFaviconUrl(link.url)} alt="favicon" className="w-8 h-8 mt-1 rounded-md flex-shrink-0" />
@@ -94,7 +94,7 @@ export default function LinkCard({ link, onDelete, onUpdate }: LinkCardProps) {
         
             <CardContent className={`flex-1 ${videoId && !isEditing ? 'pt-6' : ''}`}>
                 {isEditing ? (
-                    <Textarea value={editedSummary} onChange={(e) => setEditedSummary(e.target.value)} className="text-sm h-24" />
+                    <Textarea value={editedSummary} onChange={(e) => setEditedSummary(e.target.value)} className="text-sm h-24 border-2 border-black rounded-md" />
                 ) : (
                     <p className="text-sm text-muted-foreground">{link.summary}</p>
                 )}
@@ -103,7 +103,7 @@ export default function LinkCard({ link, onDelete, onUpdate }: LinkCardProps) {
                 <div className="flex flex-col gap-2">
                     {isEditing ? (
                         <Select value={editedCategory} onValueChange={(v: typeof linkCategories[number]) => setEditedCategory(v)}>
-                            <SelectTrigger className="w-[120px]">
+                            <SelectTrigger className="w-[120px] border-2 border-black rounded-md shadow-[2px_2px_0px_#000]">
                                 <SelectValue placeholder="Category" />
                             </SelectTrigger>
                             <SelectContent>
@@ -111,7 +111,7 @@ export default function LinkCard({ link, onDelete, onUpdate }: LinkCardProps) {
                             </SelectContent>
                         </Select>
                     ) : (
-                        <Badge variant="outline" className={categoryColors[link.category] || categoryColors.Other}>
+                        <Badge variant="outline" className={`border-black ${categoryStyles[link.category] || categoryStyles.Other}`}>
                             {link.category}
                         </Badge>
                     )}
@@ -122,19 +122,19 @@ export default function LinkCard({ link, onDelete, onUpdate }: LinkCardProps) {
                 <div className="flex items-center gap-1">
                     {isEditing ? (
                         <>
-                            <Button variant="ghost" size="icon" onClick={handleSave} className="text-green-500 hover:text-green-500">
+                            <Button variant="ghost" size="icon" onClick={handleSave} className="text-green-500 hover:text-green-500 rounded-full">
                                 <Save className="h-4 w-4" />
                             </Button>
-                            <Button variant="ghost" size="icon" onClick={handleCancel} className="text-destructive hover:text-destructive">
+                            <Button variant="ghost" size="icon" onClick={handleCancel} className="text-destructive hover:text-destructive rounded-full">
                                 <X className="h-4 w-4" />
                             </Button>
                         </>
                     ) : (
                         <>
-                            <Button variant="ghost" size="icon" onClick={() => setIsEditing(true)} className="text-muted-foreground hover:text-foreground">
+                            <Button variant="ghost" size="icon" onClick={() => setIsEditing(true)} className="text-black/60 hover:text-black rounded-full">
                                 <Edit className="h-4 w-4" />
                             </Button>
-                            <Button variant="ghost" size="icon" onClick={() => onDelete(link.id)} className="text-destructive hover:text-destructive">
+                            <Button variant="ghost" size="icon" onClick={() => onDelete(link.id)} className="text-black/60 hover:text-destructive hover:bg-destructive/10 rounded-full">
                                 <Trash2 className="h-4 w-4" />
                             </Button>
                         </>

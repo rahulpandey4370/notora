@@ -67,6 +67,10 @@
     @apply bg-background text-foreground;
   }
 
+  .dark body {
+    background-color: #0A0A0A;
+  }
+  
   body::before {
     content: '';
     position: fixed;
@@ -81,7 +85,7 @@
   }
   
   .dark body::before {
-     background: radial-gradient(ellipse at 50% 0%, hsl(var(--primary) / 0.15), transparent 70%);
+     display: none;
   }
 
   @keyframes aurora-glow {

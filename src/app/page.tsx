@@ -1,23 +1,33 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/use-auth';
 import { useApp } from '@/hooks/use-app';
 import Dashboard from '@/components/notora/Dashboard';
 import { Skeleton } from '@/components/ui/skeleton';
 import AppLayout from '@/components/notora/AppLayout';
+import Particles from '@/components/ui/particles';
+import { useTheme } from 'next-themes';
 
 export default function Home() {
   const { user, loading: authLoading } = useAuth();
   const { data, loading: appLoading, handleDataChange } = useApp();
   const router = useRouter();
+  const { resolvedTheme } = useTheme();
+  const [showParticles, setShowParticles] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
       router.push('/login');
     }
   }, [user, authLoading, router]);
+
+  useEffect(() => {
+    // We only want to render this on the client after mount to avoid hydration errors
+    // and only for the dark theme.
+    setShowParticles(resolvedTheme === 'dark');
+  }, [resolvedTheme]);
 
 
   if (authLoading || appLoading || !data || !user) {
@@ -30,6 +40,16 @@ export default function Home() {
 
   return (
     <AppLayout>
+      {showParticles && (
+         <Particles
+            className="absolute inset-0 -z-10"
+            quantity={200}
+            vy={-0.2}
+            vx={-0.2}
+            color="white"
+            ease={20}
+         />
+      )}
       <Dashboard
         user={user}
         data={data}

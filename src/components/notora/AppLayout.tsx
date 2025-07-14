@@ -2,8 +2,8 @@
 
 import { useAuth } from "@/hooks/use-auth";
 import Header from "./Header";
-import Sidebar from "./Sidebar";
 import { useApp } from "@/hooks/use-app";
+import Dock from "./Dock";
 
 interface AppLayoutProps {
     children: React.ReactNode;
@@ -23,12 +23,12 @@ export default function AppLayout({ children }: AppLayoutProps) {
                 tasks={tasks} 
                 userStats={userStats}
             />
-            <div className="flex-1 flex">
-                <Sidebar />
+            <div className="flex-1 flex pb-20">
                 <main className="flex-1 overflow-y-auto">
                     {children}
                 </main>
             </div>
+            <Dock />
         </div>
     );
 }

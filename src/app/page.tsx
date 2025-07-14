@@ -41,12 +41,22 @@ export default function Home() {
 
 function LoadingSkeleton() {
   return (
-    <div className="p-4 md:p-8 space-y-8">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <Skeleton className="h-64 rounded-lg" />
-        <Skeleton className="h-64 rounded-lg" />
+    <div className="p-4 md:p-8 space-y-6">
+      <div className="flex justify-between items-center">
+        <div className="space-y-2">
+            <Skeleton className="h-8 w-64" />
+            <Skeleton className="h-4 w-80" />
+        </div>
+        <Skeleton className="h-8 w-32" />
       </div>
-       <Skeleton className="h-96 rounded-lg" />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <Skeleton className="h-[400px] lg:col-span-2 rounded-lg" />
+        <div className="space-y-6">
+          <Skeleton className="h-48 rounded-lg" />
+          <Skeleton className="h-48 rounded-lg" />
+          <Skeleton className="h-32 rounded-lg" />
+        </div>
+      </div>
     </div>
   );
 }

@@ -10,9 +10,8 @@ import AppLayout from '@/components/notora/AppLayout';
 import TaskList from '@/components/notora/TaskList';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight, ClipboardList, Calendar, CalendarCheck, CalendarDays } from 'lucide-react';
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, addMonths, subMonths, isSameDay, startOfWeek, endOfWeek, eachWeekOfInterval, getWeek, isSameWeek, startOfDay } from 'date-fns';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { ChevronLeft, ChevronRight, ClipboardList, CalendarDays } from 'lucide-react';
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, addMonths, subMonths, isSameDay, startOfWeek, endOfWeek, eachWeekOfInterval, getWeek, isSameWeek, startOfDay, addDays, subDays } from 'date-fns';
 import type { Task } from '@/lib/types';
 import TaskItem from '@/components/notora/TaskItem';
 import { Progress } from '@/components/ui/progress';
@@ -41,12 +40,28 @@ export default function TasksPage() {
   const { data, loading: appLoading, handleDataChange, toast } = useApp();
   const router = useRouter();
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [currentDay, setCurrentDay] = useState(new Date());
 
   useEffect(() => {
     if (!authLoading && !user) {
       router.push('/login');
     }
   }, [user, authLoading, router]);
+  
+  const handlePreviousMonth = () => {
+    const newMonth = subMonths(currentMonth, 1);
+    setCurrentMonth(newMonth);
+    setCurrentDay(newMonth);
+  };
+  const handleNextMonth = () => {
+    const newMonth = addMonths(currentMonth, 1);
+    setCurrentMonth(newMonth);
+    setCurrentDay(newMonth);
+  };
+
+  const handlePreviousDay = () => setCurrentDay(subDays(currentDay, 1));
+  const handleNextDay = () => setCurrentDay(addDays(currentDay, 1));
+
 
   if (authLoading || appLoading || !data || !user) {
     return (
@@ -59,15 +74,11 @@ export default function TasksPage() {
     );
   }
   
-  const handlePreviousMonth = () => setCurrentMonth(subMonths(currentMonth, 1));
-  const handleNextMonth = () => setCurrentMonth(addMonths(currentMonth, 1));
-
   const onToggle = (id: string, date: Date) => {
     let xpChange = 0;
     const newTasks = data.tasks.map((task) => {
       if (task.id === id) {
         const taskXp = getTaskXp(task);
-        xpChange = taskXp;
         
         const relevantDate = task.type === 'monthly' ? startOfMonth(date) : startOfDay(date);
         const dateStr = format(relevantDate, 'yyyy-MM-dd');
@@ -76,9 +87,10 @@ export default function TasksPage() {
         
         let newCompletions: string[];
         if (isCompleted) {
-          xpChange = -xpChange;
+          xpChange = -taskXp;
           newCompletions = task.completions.filter(d => d !== dateStr);
         } else {
+          xpChange = taskXp;
           newCompletions = [...task.completions, dateStr];
         }
 
@@ -125,7 +137,7 @@ export default function TasksPage() {
                 const taskWeekDate = startOfWeek(new Date(task.week.replace(/(\d{4})-(\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
                 return isSameWeek(date, taskWeekDate, { weekStartsOn: 1 });
               case 'monthly':
-                return false; 
+                return false;
               default: 
                 return false;
           }
@@ -150,37 +162,20 @@ export default function TasksPage() {
     }
   });
 
-  const completionsInMonth = allTasksInMonth.flatMap(task =>
-      task.completions.filter(c => isSameMonth(new Date(c), currentMonth))
-  );
-
   const monthlyXp = allTasksInMonth.reduce((acc, task) => {
-    const completedInMonth = task.completions.some(c => isSameMonth(new Date(c), currentMonth));
-    if (completedInMonth) {
-        if (task.type === 'recurring') {
-            const daysInMonth = eachDayOfInterval({start: startOfMonth(currentMonth), end: endOfMonth(currentMonth)});
-            const completionsForMonth = task.completions.filter(c => isSameMonth(new Date(c), currentMonth)).length;
-            return acc + completionsForMonth * getTaskXp(task);
-        }
-        if (task.type === 'weekly') {
-            const weeksInMonth = eachWeekOfInterval({ start: startOfMonth(currentMonth), end: endOfMonth(currentMonth) }, { weekStartsOn: 1 });
-            const completionsForMonth = task.completions.filter(c => isSameMonth(new Date(c), currentMonth)).length;
-            return acc + completionsForMonth * getTaskXp(task);
-        }
-        return acc + getTaskXp(task);
+    const completionsForMonth = task.completions.filter(c => isSameMonth(new Date(c), currentMonth));
+    if (task.type === 'monthly') {
+        return acc + (completionsForMonth.length > 0 ? getTaskXp(task) : 0);
     }
-    return acc;
+    return acc + completionsForMonth.length * getTaskXp(task);
   }, 0);
   
   const monthlyTasks = data.tasks.filter(t => t.type === 'monthly' && t.month === format(currentMonth, 'yyyy-MM'));
   const totalPossibleMonthlyXp = monthlyTasks.reduce((acc, task) => acc + getTaskXp(task), 0);
   
-  const weeksInMonth = eachWeekOfInterval({ start: startOfMonth(currentMonth), end: endOfMonth(currentMonth) }, { weekStartsOn: 1 });
-  
-  const daysInMonthWithTasks = eachDayOfInterval({ start: startOfMonth(currentMonth), end: endOfMonth(currentMonth) })
-      .map(day => ({ day, tasks: getTasksForDate(day) }))
-      .filter(d => d.tasks.length > 0);
-  const defaultOpenAccordion = daysInMonthWithTasks.length > 0 ? [`item-${format(daysInMonthWithTasks[0].day, 'yyyy-MM-dd')}`] : [];
+  const tasksForCurrentDay = getTasksForDate(currentDay);
+  const completedCountForDay = tasksForCurrentDay.filter(t => t.completions.includes(format(currentDay, 'yyyy-MM-dd'))).length;
+  const dailyProgress = tasksForCurrentDay.length > 0 ? (completedCountForDay / tasksForCurrentDay.length) * 100 : 0;
 
   return (
     <AppLayout>
@@ -207,110 +202,48 @@ export default function TasksPage() {
         </Card>
         
         <Tabs defaultValue="daily" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="daily"><CalendarDays className="w-4 h-4 mr-2"/>Daily</TabsTrigger>
-            <TabsTrigger value="weekly"><Calendar className="w-4 h-4 mr-2"/>Weekly</TabsTrigger>
             <TabsTrigger value="monthly"><ClipboardList className="w-4 h-4 mr-2"/>Monthly</TabsTrigger>
           </TabsList>
           
           <TabsContent value="daily" className="mt-6">
               <Card>
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><CalendarDays className="w-5 h-5"/> Daily Breakdown</CardTitle>
-                    <CardDescription>All your scheduled tasks for {format(currentMonth, 'MMMM')}.</CardDescription>
+                    <div className="flex justify-between items-center">
+                        <div>
+                            <CardTitle className="flex items-center gap-2"><CalendarDays className="w-5 h-5"/> Daily Breakdown</CardTitle>
+                            <CardDescription>All your scheduled tasks for the selected day.</CardDescription>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <Button variant="outline" size="icon" onClick={handlePreviousDay}><ChevronLeft className="h-4 w-4" /></Button>
+                            <span className="text-md font-semibold w-40 text-center">{format(currentDay, 'EEEE, MMM do')}</span>
+                            <Button variant="outline" size="icon" onClick={handleNextDay}><ChevronRight className="h-4 w-4" /></Button>
+                        </div>
+                    </div>
                   </CardHeader>
                   <CardContent>
-                    {daysInMonthWithTasks.length > 0 ? (
-                        <Accordion type="multiple" defaultValue={defaultOpenAccordion} className="w-full">
-                            {daysInMonthWithTasks.map(({day, tasks}) => {
-                                const completedCount = tasks.filter(t => t.completions.includes(format(day, 'yyyy-MM-dd'))).length;
-                                const dailyProgress = tasks.length > 0 ? (completedCount / tasks.length) * 100 : 0;
-                                
-                                return (
-                                    <AccordionItem value={`item-${format(day, 'yyyy-MM-dd')}`} key={format(day, 'yyyy-MM-dd')}>
-                                    <AccordionTrigger>
-                                        <div className="flex justify-between w-full items-center pr-4">
-                                            <span>{format(day, 'EEEE, MMMM do')}</span>
-                                            <div className="flex items-center gap-2 w-24">
-                                                <Progress value={dailyProgress} className="h-2 flex-1" />
-                                                <span className="text-xs text-muted-foreground">{Math.round(dailyProgress)}%</span>
-                                            </div>
-                                        </div>
-                                    </AccordionTrigger>
-                                    <AccordionContent>
-                                        {tasks.map(task => (
-                                            <TaskItem
-                                                key={`${task.id}-${format(day, 'yyyy-MM-dd')}`}
-                                                task={task}
-                                                onToggle={() => onToggle(task.id, day)}
-                                                onDelete={() => onDelete(task.id)}
-                                                isCompleted={task.completions.includes(format(startOfDay(day), 'yyyy-MM-dd'))}
-                                            />
-                                        ))}
-                                    </AccordionContent>
-                                    </AccordionItem>
-                                )
-                            })}
-                        </Accordion>
-                    ) : (
-                        <p className="text-center text-muted-foreground py-10">No tasks scheduled for {format(currentMonth, 'MMMM yyyy')}.</p>
-                    )}
-                  </CardContent>
-              </Card>
-          </TabsContent>
-
-          <TabsContent value="weekly" className="mt-6">
-              <Card>
-                  <CardHeader>
-                      <CardTitle className="flex items-center gap-2"><Calendar className="w-5 h-5"/>Weekly Overview</CardTitle>
-                      <CardDescription>Your weekly goals for {format(currentMonth, 'MMMM')}.</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                     {weeksInMonth.map((weekStart) => {
-                         const weekEnd = endOfWeek(weekStart, { weekStartsOn: 1 });
-                         const tasksForWeek = data.tasks.filter(t => {
-                            if (t.type === 'weekly' && t.week === `${format(weekStart, 'yyyy')}-${getWeek(weekStart)}`) return true;
-                            if (t.type === 'single' && t.date) {
-                                const taskDate = new Date(t.date);
-                                return taskDate >= weekStart && taskDate <= weekEnd;
-                            }
-                            if (t.type === 'recurring') return true;
-                            return false;
-                         });
-
-                         const weeklyXp = tasksForWeek.reduce((acc, task) => {
-                            const completionsForWeek = task.completions.filter(c => {
-                                const compDate = new Date(c);
-                                return compDate >= weekStart && compDate <= weekEnd;
-                            }).length;
-                            return acc + (completionsForWeek * getTaskXp(task));
-                         }, 0);
-
-                         const totalPossibleWeeklyXp = tasksForWeek.reduce((acc, task) => {
-                            if (task.type === 'recurring') return acc + (getTaskXp(task) * 7);
-                            return acc + getTaskXp(task);
-                         }, 0); 
-                         
-                         return (
-                            <Accordion type="single" collapsible key={format(weekStart, 'yyyy-MM-dd')}>
-                                <AccordionItem value={`week-${getWeek(weekStart)}`}>
-                                <AccordionTrigger>Week {getWeek(weekStart)} ({format(weekStart, 'MMM d')} - {format(weekEnd, 'MMM d')})</AccordionTrigger>
-                                <AccordionContent>
-                                    <div className="space-y-2">
-                                        <div className="flex items-center gap-2 text-sm text-primary font-semibold mb-2">
-                                            <span>Weekly XP: {weeklyXp}</span>
-                                            <Progress value={(weeklyXp / (totalPossibleWeeklyXp || 1)) * 100} className="w-32 h-2" />
-                                        </div>
-                                        {tasksForWeek.map(task => (
-                                           <div key={task.id} className="p-2 rounded-md bg-secondary/50 text-sm">{task.title}</div>
-                                        ))}
-                                        {tasksForWeek.length === 0 && <p className="text-muted-foreground text-sm">No tasks for this week.</p>}
-                                    </div>
-                                </AccordionContent>
-                                </AccordionItem>
-                            </Accordion>
-                         )
-                     })}
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-2">
+                            <Progress value={dailyProgress} className="h-2 flex-1" />
+                            <span className="text-xs text-muted-foreground">{Math.round(dailyProgress)}%</span>
+                        </div>
+                        {tasksForCurrentDay.length > 0 ? (
+                            <div className="space-y-2">
+                            {tasksForCurrentDay.map(task => (
+                                <TaskItem
+                                    key={`${task.id}-${format(currentDay, 'yyyy-MM-dd')}`}
+                                    task={task}
+                                    onToggle={() => onToggle(task.id, currentDay)}
+                                    onDelete={() => onDelete(task.id)}
+                                    isCompleted={task.completions.includes(format(startOfDay(currentDay), 'yyyy-MM-dd'))}
+                                />
+                            ))}
+                            </div>
+                        ) : (
+                            <p className="text-center text-muted-foreground py-10">No tasks scheduled for {format(currentDay, 'MMMM do, yyyy')}.</p>
+                        )}
+                    </div>
                   </CardContent>
               </Card>
           </TabsContent>
@@ -351,7 +284,3 @@ export default function TasksPage() {
     </AppLayout>
   );
 }
-
-    
-
-    

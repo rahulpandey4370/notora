@@ -47,57 +47,14 @@ export default function TaskList({ data, onDataChange, currentMonth }: TaskListP
     <div className="space-y-4 w-full">
       <div className="flex flex-wrap items-center gap-2">
         <Input
-          placeholder="Add a new task..."
+          placeholder="Read book"
           value={newTaskTitle}
           onChange={(e) => setNewTaskTitle(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleAddTask()}
-          className="flex-grow min-w-[150px]"
+          className="flex-grow min-w-[150px] border-2 border-black rounded-md h-9"
         />
-        <Select value={newTaskPriority} onValueChange={(v: Task['priority']) => setNewTaskPriority(v)}>
-          <SelectTrigger className="w-auto">
-            <SelectValue placeholder="Priority" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="Easy">Easy</SelectItem>
-            <SelectItem value="Medium">Medium</SelectItem>
-            <SelectItem value="Hard">Hard</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select value={addTaskType} onValueChange={(v: 'single' | 'recurring' | 'monthly' | 'weekly') => setAddTaskType(v)}>
-          <SelectTrigger className="w-auto">
-            <SelectValue placeholder="Type" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="single">Single Day</SelectItem>
-            <SelectItem value="weekly">Weekly</SelectItem>
-            <SelectItem value="monthly">Monthly</SelectItem>
-            <SelectItem value="recurring">Recurring</SelectItem>
-          </SelectContent>
-        </Select>
-        {(addTaskType === 'single' || addTaskType === 'weekly') && (
-             <Popover>
-                <PopoverTrigger asChild>
-                <Button
-                    variant={"outline"}
-                    className="w-auto justify-start text-left font-normal"
-                >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {taskDate ? format(taskDate, "PPP") : <span>Pick a date</span>}
-                </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                <Calendar
-                    mode="single"
-                    selected={taskDate}
-                    onSelect={setTaskDate}
-                    initialFocus
-                    defaultMonth={currentMonth}
-                />
-                </PopoverContent>
-            </Popover>
-        )}
-        <Button onClick={handleAddTask} size="icon">
-          <Plus className="h-4 w-4" />
+        <Button onClick={handleAddTask} className="bg-primary/80 hover:bg-primary text-primary-foreground border-2 border-black rounded-md h-9">
+          <Plus className="mr-2 h-4 w-4" /> Add Goal
         </Button>
       </div>
     </div>

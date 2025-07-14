@@ -1,18 +1,11 @@
 'use client';
 
 import type { User, AppData, Task } from '@/lib/types';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  type ChartConfig,
-} from "@/components/ui/chart"
-import { Label, Pie, PieChart, PolarRadiusAxis, RadialBar, RadialBarChart } from "recharts"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import TaskList from './TaskList';
 import TaskItem from './TaskItem';
 import { useMemo } from 'react';
-import { Award, CheckSquare, StickyNote, ArrowRight, Calendar, BarChart, TrendingUp } from 'lucide-react';
+import { Flame, Zap, Trash2, CheckSquare } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '../ui/button';
 import { Progress } from '../ui/progress';
@@ -26,8 +19,14 @@ interface DashboardProps {
   onDataChange: (data: AppData) => void;
 }
 
+const ProgressBar = ({ value, className }: { value: number, className?: string }) => (
+    <div className={`h-4 w-full border-2 border-black bg-card ${className}`}>
+        <div style={{ width: `${value}%`}} className="h-full bg-primary" />
+    </div>
+);
+
 export default function Dashboard({ user, data, onDataChange }: DashboardProps) {
-  const { noteBoards, tasks } = data;
+  const { tasks } = data;
   const { toast } = useApp();
   const today = new Date();
 
@@ -94,118 +93,61 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
     });
   }, [tasks, today]);
 
-  const recentNotes = useMemo(() => {
-    return noteBoards.flatMap(board => board.notes).slice(0, 3);
-  }, [noteBoards]);
-
-  // XP Calculations
-  const { weeklyXp, weeklyTotalXp, monthlyXp, monthlyTotalXp, todaysAchievedXp, todaysTotalPossibleXp } = useMemo(() => {
-    const weekStart = startOfWeek(today, { weekStartsOn: 1 });
-    const weekEnd = endOfWeek(today, { weekStartsOn: 1 });
-    const monthStart = startOfMonth(today);
-    const monthEnd = endOfMonth(today);
-
-    let weeklyXp = 0, weeklyTotalXp = 0, monthlyXp = 0, monthlyTotalXp = 0, todaysAchievedXp = 0, todaysTotalPossibleXp = 0;
-
+  const { todaysAchievedXp } = useMemo(() => {
+    let todaysAchievedXp = 0;
+    
     todaysTasks.forEach(task => {
         const taskXp = getTaskXp(task);
-        todaysTotalPossibleXp += taskXp;
         const relevantDateStr = task.type === 'monthly' ? format(startOfMonth(today), 'yyyy-MM-dd') : format(startOfDay(today), 'yyyy-MM-dd');
         if ((task.completions || []).includes(relevantDateStr)) {
             todaysAchievedXp += taskXp;
         }
     })
     
-    tasks.forEach(task => {
-        const taskXpValue = getTaskXp(task);
-        if (task.type === 'monthly' && task.month === format(today, 'yyyy-MM')) {
-            monthlyTotalXp += taskXpValue;
-        } else if (task.type === 'weekly' && task.week) {
-            const taskWeekDate = startOfWeek(new Date(task.week.replace(/(\d{4})-(\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
-            if(isWithinInterval(taskWeekDate, { start: monthStart, end: monthEnd })) {
-                 monthlyTotalXp += taskXpValue;
-            }
-            if (isSameDay(taskWeekDate, weekStart)) {
-                weeklyTotalXp += taskXpValue;
-            }
-        } else if (task.type === 'single' && task.date) {
-            const taskDate = new Date(task.date);
-            if (isWithinInterval(taskDate, { start: monthStart, end: monthEnd })) {
-                monthlyTotalXp += taskXpValue;
-            }
-            if (isWithinInterval(taskDate, { start: weekStart, end: weekEnd })) {
-                weeklyTotalXp += taskXpValue;
-            }
-        } else if (task.type === 'recurring') {
-            const daysInMonth = (date: Date) => new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
-            monthlyTotalXp += taskXpValue * daysInMonth(today);
-            weeklyTotalXp += taskXpValue * 7;
-        }
-
-        (task.completions || []).forEach(c => {
-            const completionDate = new Date(c);
-            if (isSameMonth(completionDate, today)) {
-                monthlyXp += taskXpValue;
-            }
-            if (isWithinInterval(completionDate, { start: weekStart, end: weekEnd })) {
-                weeklyXp += taskXpValue;
-            }
-        })
-    });
-    return { weeklyXp, weeklyTotalXp, monthlyXp, monthlyTotalXp, todaysAchievedXp, todaysTotalPossibleXp };
+    return { todaysAchievedXp };
   }, [tasks, today, todaysTasks]);
-
-  const todaysProgress = todaysTotalPossibleXp > 0 ? (todaysAchievedXp / todaysTotalPossibleXp) * 100 : 0;
   
-  const weeklyChartData = [{ month: 'this-week', achieved: weeklyXp, remaining: Math.max(0, weeklyTotalXp - weeklyXp) }];
-  const weeklyChartConfig: ChartConfig = {
-    achieved: { label: "Achieved", color: "hsl(var(--chart-1))" },
-    remaining: { label: "Remaining", color: "hsl(var(--muted))" },
-  };
 
-  const monthlyChartData = [{ month: format(today, 'MMMM'), xp: monthlyXp, fill: "hsl(var(--chart-2))" }];
-  const monthlyChartConfig: ChartConfig = {
-    xp: { label: "XP" },
-    month: { label: "Month", color: "hsl(var(--chart-2))" },
-  };
+  const completedTodayCount = useMemo(() => {
+    return todaysTasks.filter(task => (task.completions || []).includes(format(today, 'yyyy-MM-dd'))).length;
+  }, [todaysTasks, today]);
 
-
+  const dailyProgress = todaysTasks.length > 0 ? (completedTodayCount / todaysTasks.length) * 100 : 0;
+  
   return (
-    <div className="p-4 md:p-8 space-y-6">
-        <div className="flex items-center justify-between">
-            <div className="space-y-1">
-                <h1 className="text-2xl font-bold">Welcome back, {user.username}!</h1>
-                <p className="text-muted-foreground">Here's your productivity pulse for today.</p>
-            </div>
-            <div className="flex items-center gap-2 text-lg font-semibold text-primary">
-              <Award className="w-6 h-6" />
-              <span>{todaysAchievedXp} / {todaysTotalPossibleXp} XP Today</span>
-            </div>
-        </div>
+    <div className="p-4 md:p-8 space-y-6 max-w-4xl mx-auto">
         
-        <div className="space-y-2">
-            <span className="text-sm font-medium text-muted-foreground">Today's Progress</span>
-            <Progress value={todaysProgress} className="h-2" />
-        </div>
+        <Card className="border-2 border-black rounded-lg shadow-none">
+            <CardHeader className="text-center">
+                <CardTitle className="text-xl font-bold">Progress Tracker</CardTitle>
+                <div className="w-24 h-1 bg-accent mx-auto mt-2" />
+            </CardHeader>
+            <CardContent className="space-y-4 px-6 pb-6">
+                <div className="flex items-center gap-4">
+                    <Flame className="w-5 h-5 text-orange-500"/>
+                    <span className="font-semibold w-20">Your XP</span>
+                    <div className="flex-1 flex items-center gap-2">
+                        <ProgressBar value={dailyProgress} />
+                        <span className="text-sm font-mono">{Math.round(todaysAchievedXp)} / 1000 XP</span>
+                    </div>
+                </div>
+                 <div className="flex items-center gap-4">
+                    <Zap className="w-5 h-5 text-purple-500"/>
+                    <span className="font-semibold w-20">Rival XP</span>
+                    <div className="flex-1 flex items-center gap-2">
+                        <ProgressBar value={0} />
+                        <span className="text-sm font-mono">0 / 1000 XP</span>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <Card className="lg:col-span-2">
-              <CardHeader className="flex flex-row items-center justify-between">
-                  <div className='flex items-center gap-2'>
-                      <CheckSquare className="w-5 h-5" />
-                      <CardTitle>Today's Focus</CardTitle>
-                  </div>
-                  <Button variant="ghost" size="sm" asChild>
-                      <Link href="/tasks">Manage All Tasks <ArrowRight className="ml-2 w-4 h-4"/></Link>
-                  </Button>
+        <Card className="border-2 border-black rounded-lg shadow-none">
+              <CardHeader className="text-center">
+                  <CardTitle className="text-xl font-bold">Daily Tasks</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                 <TaskList 
-                    data={data}
-                    onDataChange={onDataChange}
-                    currentMonth={today}
-                 />
-                 <div className="space-y-2 pt-4 border-t">
+              <CardContent className="space-y-2 px-6 pb-6">
+                 <div className="space-y-2">
                     {todaysTasks.length > 0 ? (
                         todaysTasks.map(task => (
                             <TaskItem
@@ -217,172 +159,18 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
                             />
                         ))
                     ) : (
-                        <p className="text-center text-muted-foreground py-4">No tasks for today. Add one above!</p>
+                        <p className="text-center text-muted-foreground py-4">No tasks for today. Add one below!</p>
                     )}
+                 </div>
+                 <div className="pt-4">
+                    <TaskList 
+                        data={data}
+                        onDataChange={onDataChange}
+                        currentMonth={today}
+                    />
                  </div>
               </CardContent>
           </Card>
-          <div className='space-y-6'>
-            <Card className="flex flex-col">
-                <CardHeader className="items-center pb-0">
-                    <CardTitle>Weekly Progress</CardTitle>
-                    <CardDescription>{format(startOfWeek(today, { weekStartsOn: 1 }), 'MMM d')} - {format(endOfWeek(today, { weekStartsOn: 1 }), 'MMM d')}</CardDescription>
-                </CardHeader>
-                <CardContent className="flex flex-1 items-center pb-0">
-                    <ChartContainer
-                    config={weeklyChartConfig}
-                    className="mx-auto aspect-square w-full max-w-[250px]"
-                    >
-                    <RadialBarChart
-                        data={weeklyChartData}
-                        endAngle={180}
-                        innerRadius={80}
-                        outerRadius={130}
-                    >
-                        <ChartTooltip
-                        cursor={false}
-                        content={<ChartTooltipContent hideLabel />}
-                        />
-                        <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
-                        <Label
-                            content={({ viewBox }) => {
-                            if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                                return (
-                                <text x={viewBox.cx} y={viewBox.cy} textAnchor="middle">
-                                    <tspan
-                                    x={viewBox.cx}
-                                    y={(viewBox.cy || 0) - 16}
-                                    className="fill-foreground text-2xl font-bold"
-                                    >
-                                    {weeklyXp.toLocaleString()}
-                                    </tspan>
-                                    <tspan
-                                    x={viewBox.cx}
-                                    y={(viewBox.cy || 0) + 4}
-                                    className="fill-muted-foreground"
-                                    >
-                                    XP Earned
-                                    </tspan>
-                                </text>
-                                )
-                            }
-                            }}
-                        />
-                        </PolarRadiusAxis>
-                        <RadialBar
-                          dataKey="achieved"
-                          stackId="a"
-                          cornerRadius={5}
-                          fill="var(--color-achieved)"
-                          className="stroke-transparent stroke-2"
-                        />
-                        <RadialBar
-                          dataKey="remaining"
-                          fill="var(--color-remaining)"
-                          stackId="a"
-                          cornerRadius={5}
-                          className="stroke-transparent stroke-2"
-                        />
-                    </RadialBarChart>
-                    </ChartContainer>
-                </CardContent>
-                <CardFooter className="flex-col gap-2 text-sm">
-                    <div className="flex items-center gap-2 font-medium leading-none">
-                        Target: {Math.round(weeklyTotalXp * 0.7)} XP
-                    </div>
-                    <div className="flex items-center gap-2 leading-none text-muted-foreground">
-                        You've earned {weeklyXp} of {weeklyTotalXp} possible XP this week.
-                    </div>
-                </CardFooter>
-            </Card>
-            <Card className="flex flex-col">
-                <CardHeader className="items-center pb-0">
-                    <CardTitle>Monthly Progress</CardTitle>
-                    <CardDescription>{format(today, 'MMMM yyyy')}</CardDescription>
-                </CardHeader>
-                <CardContent className="flex-1 pb-0">
-                    <ChartContainer
-                    config={monthlyChartConfig}
-                    className="mx-auto aspect-square max-h-[250px]"
-                    >
-                    <RadialBarChart
-                        data={monthlyChartData}
-                        startAngle={0}
-                        endAngle={(monthlyXp / Math.max(1, monthlyTotalXp)) * 360}
-                        innerRadius={80}
-                        outerRadius={110}
-                    >
-                        <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
-                        <Label
-                            content={({ viewBox }) => {
-                            if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                                return (
-                                <text
-                                    x={viewBox.cx}
-                                    y={viewBox.cy}
-                                    textAnchor="middle"
-                                    dominantBaseline="middle"
-                                >
-                                    <tspan
-                                    x={viewBox.cx}
-                                    y={viewBox.cy}
-                                    className="fill-foreground text-4xl font-bold"
-                                    >
-                                    {monthlyXp.toLocaleString()}
-                                    </tspan>
-                                    <tspan
-                                    x={viewBox.cx}
-                                    y={(viewBox.cy || 0) + 24}
-                                    className="fill-muted-foreground"
-                                    >
-                                    XP Earned
-                                    </tspan>
-                                </text>
-                                )
-                            }
-                            }}
-                        />
-                        </PolarRadiusAxis>
-                        <RadialBar dataKey="xp" background cornerRadius={10} />
-                    </RadialBarChart>
-                    </ChartContainer>
-                </CardContent>
-                <CardFooter className="flex-col gap-2 text-sm">
-                    <div className="flex items-center gap-2 font-medium leading-none">
-                       Target: {Math.round(monthlyTotalXp * 0.7)} XP
-                    </div>
-                    <div className="text-muted-foreground leading-none">
-                        You've earned {monthlyXp} of {monthlyTotalXp} possible XP this month.
-                    </div>
-                </CardFooter>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
-                  <CardTitle className="flex items-center gap-2">
-                      <StickyNote className="w-5 h-5" />
-                      Recent Notes
-                  </CardTitle>
-                  <Button variant="ghost" size="sm" asChild>
-                      <Link href="/notes">View All Notes <ArrowRight className="ml-2 w-4 h-4"/></Link>
-                  </Button>
-              </CardHeader>
-              <CardContent>
-                 {recentNotes.length > 0 ? (
-                      <div className="space-y-2">
-                          {recentNotes.map(note => (
-                              <div key={note.id} className="p-2 rounded-md bg-secondary/50">
-                                  <p className="text-sm text-muted-foreground truncate">{note.content || "Empty Note"}</p>
-                              </div>
-                          ))}
-                      </div>
-                  ) : (
-                      <p className="text-sm text-muted-foreground text-center py-4">No recent notes.</p>
-                  )}
-              </CardContent>
-            </Card>
-          </div>
-      </div>
     </div>
   );
 }

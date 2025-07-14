@@ -118,7 +118,7 @@ export default function NoteBoardsManager({ noteBoards, data, onDataChange }: No
                                             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                                             <AlertDialogDescription>
                                             This action cannot be undone. This will permanently delete your note board and all the notes within it.
-                                            </d>
+                                            </AlertDialogDescription>
                                         </AlertDialogHeader>
                                         <AlertDialogFooter>
                                             <AlertDialogCancel>Cancel</AlertDialogCancel>

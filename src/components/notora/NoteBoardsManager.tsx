@@ -4,12 +4,13 @@ import { useState } from 'react';
 import type { AppData, NoteBoard } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Plus, Trash2, Edit, Check, X } from 'lucide-react';
+import { Plus, Trash2, Edit, Check, X, MoreVertical } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import StickyNotesBoard from './StickyNotesBoard';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '../ui/alert-dialog';
 import { ScrollArea, ScrollBar } from '../ui/scroll-area';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu';
 
 interface NoteBoardsManagerProps {
   noteBoards: NoteBoard[];
@@ -75,7 +76,7 @@ export default function NoteBoardsManager({ noteBoards, data, onDataChange }: No
         <ScrollArea className="w-full whitespace-nowrap">
             <TabsList>
             {noteBoards.map(board => (
-                <div key={board.id} className="relative group flex-shrink-0">
+                <div key={board.id} className="relative group flex items-center pr-1 rounded-md hover:bg-muted has-[[data-state=active]]:bg-background">
                 {editingBoard?.id === board.id ? (
                     <div className='flex items-center gap-1 p-1'>
                     <Input 
@@ -92,35 +93,42 @@ export default function NoteBoardsManager({ noteBoards, data, onDataChange }: No
                     <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleCancelEdit}><X className="h-4 w-4" /></Button>
                     </div>
                 ) : (
-                  <div className='relative'>
-                    <TabsTrigger value={board.id} className="pr-10">
-                        {board.title}
-                    </TabsTrigger>
-                     <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center opacity-0 group-hover:opacity-100 transition-opacity bg-muted rounded-md">
-                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleStartEdit(board)}>
-                            <Edit className="h-4 w-4" />
-                        </Button>
-                        <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive">
-                                    <Trash2 className="h-4 w-4" />
+                    <>
+                        <TabsTrigger value={board.id} className="pr-2 data-[state=active]:bg-transparent data-[state=active]:shadow-none hover:bg-transparent">
+                            {board.title}
+                        </TabsTrigger>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon" className="h-8 w-8 opacity-50 group-hover:opacity-100 data-[state=open]:opacity-100">
+                                    <MoreVertical className="h-4 w-4" />
                                 </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                                <AlertDialogHeader>
-                                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                    This action cannot be undone. This will permanently delete your note board and all the notes within it.
-                                    </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                    <AlertDialogAction onClick={() => handleDeleteBoard(board.id)}>Delete</AlertDialogAction>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                        </AlertDialog>
-                    </div>
-                  </div>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                <DropdownMenuItem onClick={() => handleStartEdit(board)}>
+                                    <Edit className="mr-2 h-4 w-4" /> Edit
+                                </DropdownMenuItem>
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-destructive">
+                                            <Trash2 className="mr-2 h-4 w-4" /> Delete
+                                        </DropdownMenuItem>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                            This action cannot be undone. This will permanently delete your note board and all the notes within it.
+                                            </d>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                            <AlertDialogAction onClick={() => handleDeleteBoard(board.id)}>Delete</AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </>
                 )}
                 </div>
             ))}

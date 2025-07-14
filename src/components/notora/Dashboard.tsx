@@ -221,7 +221,6 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
           <Card className="border-2 border-black rounded-lg shadow-none">
             <CardHeader className='pb-2'>
               <CardTitle className='text-center'>Progress Tracker</CardTitle>
-              <Separator className='bg-accent h-0.5' />
             </CardHeader>
             <CardContent>
                 <div className='flex items-center justify-between text-sm font-semibold mb-1'>

@@ -3,8 +3,8 @@
 import type { User, AppData, Task } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useMemo } from 'react';
-import { Flame, Zap, BarChart, Calendar, Target } from 'lucide-react';
-import { format, isSameDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, isSameMonth, startOfDay, getDay } from 'date-fns';
+import { BarChart, Calendar, Target } from 'lucide-react';
+import { format, isSameDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, isSameMonth, startOfDay, isAfter, addDays, differenceInDays } from 'date-fns';
 import { getTaskXp } from '@/lib/utils';
 import { useApp } from '@/hooks/use-app';
 import { Label, PolarRadiusAxis, RadialBar, RadialBarChart } from "recharts"
@@ -87,7 +87,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
     const taskToDelete = data.tasks.find(t => t.id === id);
     if (taskToDelete) {
         const taskXp = getTaskXp(taskToDelete);
-        xpChange = -(taskToDelete.completions || []).length * taskXp;
+        xpChange = -((taskToDelete.completions || []).length * taskXp);
     }
     const newTasks = data.tasks.filter((task) => task.id !== id);
     onDataChange({ ...data, tasks: newTasks, userStats: { xp: data.userStats.xp + xpChange }});
@@ -109,12 +109,6 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
         return false;
     });
   }, [tasks, today]);
-
-  const completedTodayCount = useMemo(() => {
-    return todaysTasks.filter(task => (task.completions || []).includes(format(today, 'yyyy-MM-dd'))).length;
-  }, [todaysTasks, today]);
-
-  const dailyProgress = todaysTasks.length > 0 ? (completedTodayCount / todaysTasks.length) * 100 : 0;
 
   const { weeklyXp, totalWeeklyXp } = useMemo(() => {
     const weekStart = startOfWeek(today, { weekStartsOn: 1 });
@@ -385,3 +379,5 @@ interface DashboardProps {
   data: AppData;
   onDataChange: (data: AppData) => void;
 }
+
+    

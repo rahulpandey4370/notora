@@ -235,7 +235,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
   return (
     <div className="p-4 md:p-8 space-y-6">
         <motion.div variants={animationVariants} initial="hidden" animate="visible" custom={0}>
-          <Card className="border-2 border-black rounded-lg shadow-none dark:neon-border">
+          <Card className="border-2 border-black rounded-lg shadow-none dark:bg-[#1a1122] dark:neon-border-purple">
             <CardHeader className='pb-2'>
               <CardTitle className='text-center'>Progress Tracker</CardTitle>
             </CardHeader>
@@ -265,7 +265,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
             custom={1}
           >
             <motion.div whileHover={{ y: -5, transition: { duration: 0.2 } }}>
-              <Card className="border-2 border-black rounded-lg shadow-none dark:neon-border">
+              <Card className="border-2 border-black rounded-lg shadow-none dark:neon-border-yellow">
                   <CardHeader>
                       <CardTitle className="flex items-center gap-2"><Calendar className="w-5 h-5"/> Today's Focus</CardTitle>
                       <CardDescription>Tasks scheduled for {format(today, 'MMMM do')}. ({completedTodayCount}/{todaysTasks.length} completed)</CardDescription>

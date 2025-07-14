@@ -53,7 +53,7 @@
     --ring: 217 91% 60%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
+    --chart-3: 54 90% 60%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
   }
@@ -149,13 +149,6 @@
     --glow-color-1: hsl(var(--chart-2) / 0.8);
     --glow-color-2: hsl(var(--chart-2) / 0.6);
     --glow-color-3: hsl(var(--chart-2) / 0.4);
-    animation: neon-glow 2s ease-in-out infinite;
-  }
-
-  .dark .neon-border-red {
-    --glow-color-1: hsl(var(--destructive) / 0.8);
-    --glow-color-2: hsl(var(--destructive) / 0.6);
-    --glow-color-3: hsl(var(--destructive) / 0.4);
     animation: neon-glow 2s ease-in-out infinite;
   }
 

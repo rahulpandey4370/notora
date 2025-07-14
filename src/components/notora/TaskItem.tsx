@@ -38,7 +38,7 @@ export default function TaskItem({ task, onToggle, onDelete, isCompleted }: Task
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
       className={cn(
         "flex items-center gap-4 p-3 border-2 border-black rounded-lg bg-card hover:shadow-[4px_4px_0px_#000] transition-shadow duration-200",
-        resolvedTheme === 'dark' && (isCompleted ? "neon-border-green" : "neon-border-red")
+        resolvedTheme === 'dark' && isCompleted && "neon-border-green"
       )}
     >
       <div

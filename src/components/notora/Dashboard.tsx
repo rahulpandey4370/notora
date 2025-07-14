@@ -15,6 +15,7 @@ import { useMemo } from 'react';
 import { Award, CheckSquare, StickyNote, ArrowRight, Calendar, BarChart } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '../ui/button';
+import { Progress } from '../ui/progress';
 import { format, isSameDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, isSameMonth } from 'date-fns';
 import { getTaskXp } from '@/lib/utils';
 import { useApp } from '@/hooks/use-app';
@@ -98,13 +99,22 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
   }, [noteBoards]);
 
   // XP Calculations
-  const { weeklyXp, weeklyTotalXp, monthlyXp, monthlyTotalXp } = useMemo(() => {
+  const { weeklyXp, weeklyTotalXp, monthlyXp, monthlyTotalXp, todaysAchievedXp, todaysTotalPossibleXp } = useMemo(() => {
     const weekStart = startOfWeek(today, { weekStartsOn: 1 });
     const weekEnd = endOfWeek(today, { weekStartsOn: 1 });
     const monthStart = startOfMonth(today);
     const monthEnd = endOfMonth(today);
 
-    let weeklyXp = 0, weeklyTotalXp = 0, monthlyXp = 0, monthlyTotalXp = 0;
+    let weeklyXp = 0, weeklyTotalXp = 0, monthlyXp = 0, monthlyTotalXp = 0, todaysAchievedXp = 0, todaysTotalPossibleXp = 0;
+
+    todaysTasks.forEach(task => {
+        const taskXp = getTaskXp(task);
+        todaysTotalPossibleXp += taskXp;
+        const todayStr = format(today, 'yyyy-MM-dd');
+        if ((task.completions || []).includes(todayStr)) {
+            todaysAchievedXp += taskXp;
+        }
+    })
     
     tasks.forEach(task => {
         const taskXpValue = getTaskXp(task);
@@ -142,11 +152,12 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
             }
         })
     });
-    return { weeklyXp, weeklyTotalXp, monthlyXp, monthlyTotalXp };
-  }, [tasks, today]);
+    return { weeklyXp, weeklyTotalXp, monthlyXp, monthlyTotalXp, todaysAchievedXp, todaysTotalPossibleXp };
+  }, [tasks, today, todaysTasks]);
 
   const weeklyTarget = weeklyTotalXp * 0.7;
   const monthlyTarget = monthlyTotalXp * 0.7;
+  const todaysProgress = todaysTotalPossibleXp > 0 ? (todaysAchievedXp / todaysTotalPossibleXp) * 100 : 0;
   
   const weeklyChartData = [{ name: 'achieved', value: weeklyXp, fill: 'hsl(var(--primary))' }, { name: 'remaining', value: Math.max(0, weeklyTotalXp - weeklyXp), fill: 'hsl(var(--muted))' }];
   const monthlyChartData = [{ name: 'achieved', value: monthlyXp, fill: 'hsl(var(--primary))' }, { name: 'remaining', value: Math.max(0, monthlyTotalXp - monthlyXp), fill: 'hsl(var(--muted))' }];
@@ -155,7 +166,6 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
     achieved: { label: "Achieved", color: "hsl(var(--primary))" },
     remaining: { label: "Remaining", color: "hsl(var(--muted))" },
   };
-
 
   return (
     <div className="p-4 md:p-8 space-y-6">
@@ -166,8 +176,13 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
             </div>
             <div className="flex items-center gap-2 text-lg font-semibold text-primary">
               <Award className="w-6 h-6" />
-              <span>{userStats.xp} XP Total</span>
+              <span>{todaysAchievedXp} / {todaysTotalPossibleXp} XP Today</span>
             </div>
+        </div>
+        
+        <div className="space-y-2">
+            <span className="text-sm font-medium text-muted-foreground">Today's Progress</span>
+            <Progress value={todaysProgress} className="h-2" />
         </div>
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

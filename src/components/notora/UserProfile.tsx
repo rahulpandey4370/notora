@@ -44,7 +44,7 @@ export default function UserProfile({ user, userStats }: UserProfileProps) {
         <DropdownMenuSeparator />
         <DropdownMenuItem disabled>
             <Award className="mr-2 h-4 w-4"/>
-            <span>{userStats.xp} XP</span>
+            <span>{userStats.xp} XP Total</span>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={logout}>

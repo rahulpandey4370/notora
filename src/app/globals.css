@@ -109,6 +109,21 @@
   .dark .neon-text {
     text-shadow: 0 0 5px hsl(var(--primary) / 0.8), 0 0 10px hsl(var(--primary) / 0.6);
   }
+  .dark .neon-border-accent {
+    box-shadow: 0 0 5px hsl(var(--accent) / 0.8), 0 0 10px hsl(var(--accent) / 0.6), 0 0 20px hsl(var(--accent) / 0.4);
+    border-color: hsl(var(--accent) / 0.8);
+  }
+  .dark .neon-text-accent {
+    text-shadow: 0 0 5px hsl(var(--accent) / 0.8), 0 0 10px hsl(var(--accent) / 0.6);
+  }
+  .dark .neon-border-chart-3 {
+    box-shadow: 0 0 5px hsl(var(--chart-3) / 0.8), 0 0 10px hsl(var(--chart-3) / 0.6), 0 0 20px hsl(var(--chart-3) / 0.4);
+    border-color: hsl(var(--chart-3) / 0.8);
+  }
+  .dark .neon-border-chart-4 {
+    box-shadow: 0 0 5px hsl(var(--chart-4) / 0.8), 0 0 10px hsl(var(--chart-4) / 0.6), 0 0 20px hsl(var(--chart-4) / 0.4);
+    border-color: hsl(var(--chart-4) / 0.8);
+  }
 }
 
 .sparkle-line {

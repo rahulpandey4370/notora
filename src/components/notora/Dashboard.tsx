@@ -33,7 +33,7 @@ const monthlyChartConfig = {
   },
   monthly: {
     label: "Monthly XP",
-    color: "hsl(var(--accent))",
+    color: "hsl(var(--chart-3))",
   },
 } satisfies ChartConfig
 
@@ -103,7 +103,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
         }
 
         if (task.type === 'weekly' && task.week) {
-             const taskWeekDate = startOfWeek(new Date(task.week.replace(/(\d{4})-(\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
+             const taskWeekDate = startOfWeek(new Date(task.week.replace(/(\\d{4})-(\\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
              return isWithinInterval(today, { start: taskWeekDate, end: endOfWeek(taskWeekDate, { weekStartsOn: 1 }) });
         }
         return false;
@@ -122,7 +122,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
         const taskDate = task.date ? new Date(task.date) : new Date(task.createdAt);
 
         if (task.type === 'weekly' && task.week) {
-            const taskWeekDate = startOfWeek(new Date(task.week.replace(/(\d{4})-(\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
+            const taskWeekDate = startOfWeek(new Date(task.week.replace(/(\\d{4})-(\\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
             if (isSameDay(taskWeekDate, weekStart)) {
                 total += taskXpValue;
                  if ((task.completions || []).some(c => isWithinInterval(new Date(c), { start: weekStart, end: weekEnd }))) {
@@ -163,7 +163,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
             return task.month === format(today, 'yyyy-MM');
         }
         if (task.type === 'weekly' && task.week) {
-            const taskWeekDate = startOfWeek(new Date(task.week.replace(/(\d{4})-(\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
+            const taskWeekDate = startOfWeek(new Date(task.week.replace(/(\\d{4})-(\\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
             return isSameMonth(taskWeekDate, today);
         }
         if (task.type === 'single' && task.date) {
@@ -304,7 +304,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
                 custom={2}
             >
               <motion.div whileHover={{ y: -5, transition: { duration: 0.2 } }}>
-                <Card className="flex flex-col border-2 border-black rounded-lg shadow-none dark:neon-border">
+                <Card className="flex flex-col border-2 border-black rounded-lg shadow-none dark:neon-border-accent">
                     <CardHeader className="items-center pb-0">
                         <CardTitle>Weekly Progress</CardTitle>
                         <CardDescription>{format(startOfWeek(today, { weekStartsOn: 1 }), "MMM d")} - {format(endOfWeek(today, { weekStartsOn: 1 }), "MMM d")}</CardDescription>
@@ -382,7 +382,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
                 custom={3}
             >
               <motion.div whileHover={{ y: -5, transition: { duration: 0.2 } }}>
-                <Card className="flex flex-col border-2 border-black rounded-lg shadow-none dark:neon-border">
+                <Card className="flex flex-col border-2 border-black rounded-lg shadow-none dark:neon-border-chart-3">
                     <CardHeader className="items-center pb-0">
                         <CardTitle>Monthly Goal</CardTitle>
                         <CardDescription>{format(today, 'MMMM yyyy')}</CardDescription>

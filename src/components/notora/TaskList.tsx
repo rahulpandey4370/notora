@@ -53,6 +53,51 @@ export default function TaskList({ data, onDataChange, currentMonth }: TaskListP
           onKeyDown={(e) => e.key === 'Enter' && handleAddTask()}
           className="flex-grow min-w-[150px] border-2 border-black rounded-md h-9"
         />
+        <Select value={addTaskType} onValueChange={(v) => setAddTaskType(v as any)}>
+          <SelectTrigger className="w-auto border-2 border-black rounded-md h-9 shadow-[2px_2px_0px_#000]">
+            <SelectValue placeholder="Task type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="single">Single</SelectItem>
+            <SelectItem value="recurring">Recurring</SelectItem>
+            <SelectItem value="weekly">Weekly</SelectItem>
+            <SelectItem value="monthly">Monthly</SelectItem>
+          </SelectContent>
+        </Select>
+        
+        {(addTaskType === 'single' || addTaskType === 'weekly') && (
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant={"outline"}
+                className="w-auto border-2 border-black rounded-md h-9 shadow-[2px_2px_0px_#000]"
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {taskDate ? format(taskDate, "PPP") : <span>Pick a date</span>}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0">
+              <Calendar
+                mode="single"
+                selected={taskDate}
+                onSelect={setTaskDate}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
+        )}
+
+        <Select value={newTaskPriority} onValueChange={(v) => setNewTaskPriority(v as any)}>
+          <SelectTrigger className="w-auto border-2 border-black rounded-md h-9 shadow-[2px_2px_0px_#000]">
+            <SelectValue placeholder="Priority" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="Easy">Easy</SelectItem>
+            <SelectItem value="Medium">Medium</SelectItem>
+            <SelectItem value="Hard">Hard</SelectItem>
+          </SelectContent>
+        </Select>
+
         <Button onClick={handleAddTask} className="bg-primary hover:bg-primary/90 text-primary-foreground border-2 border-black rounded-md h-9 shadow-[2px_2px_0px_#000]">
           <Plus className="mr-2 h-4 w-4" /> Add Goal
         </Button>

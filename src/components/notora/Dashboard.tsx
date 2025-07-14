@@ -3,11 +3,11 @@
 import type { User, AppData, Task } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useMemo } from 'react';
-import { BarChart, Calendar, Target, Flame } from 'lucide-react';
-import { format, isSameDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, isSameMonth, startOfDay, isAfter, addDays, differenceInDays } from 'date-fns';
+import { BarChart as BarChartIcon, Calendar, Target, Flame } from 'lucide-react';
+import { format, isSameDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, isSameMonth, startOfDay, isAfter, addDays, differenceInDays, getDaysInMonth } from 'date-fns';
 import { getTaskXp } from '@/lib/utils';
 import { useApp } from '@/hooks/use-app';
-import { Label, PolarRadiusAxis, RadialBar, RadialBarChart } from "recharts"
+import { Label, PolarRadiusAxis, RadialBar, RadialBarChart, Bar, XAxis, YAxis, Tooltip, BarChart } from "recharts"
 import {
   ChartConfig,
   ChartContainer,
@@ -154,38 +154,28 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
     return { weeklyXp: achieved, totalWeeklyXp: total };
   }, [tasks, today]);
   
-  const { monthlyXp, totalMonthlyXp } = useMemo(() => {
-    let mXp = 0;
-    let tMXp = 0;
-    
+  const monthlyChartData = useMemo(() => {
+    const monthStart = startOfMonth(today);
+    const daysInMonth = getDaysInMonth(today);
+    const dailyData = Array.from({ length: daysInMonth }, (_, i) => ({
+      date: format(addDays(monthStart, i), 'MMM d'),
+      xp: 0,
+    }));
+
     tasks.forEach(task => {
         const taskXpValue = getTaskXp(task);
-        const createdAt = new Date(task.createdAt);
-        
-        if (task.type === 'monthly' && task.month === format(today, 'yyyy-MM')) {
-            tMXp += taskXpValue;
-        } else if (task.type === 'recurring' && isSameMonth(createdAt, today)) {
-             const monthEnd = endOfMonth(today);
-             let daysInMonth = differenceInDays(monthEnd, createdAt) + 1;
-             tMXp += daysInMonth * taskXpValue;
-        } else if (task.type === 'single' && task.date && isSameMonth(new Date(task.date), today)) {
-            tMXp += taskXpValue;
-        } else if (task.type === 'weekly' && task.week) {
-            const taskWeekDate = startOfWeek(new Date(task.week.replace(/(\d{4})-(\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
-            if(isSameMonth(taskWeekDate, today)) {
-                tMXp += taskXpValue;
-            }
-        }
-
-        (task.completions || []).forEach(c => {
-            const completionDate = new Date(c);
+        (task.completions || []).forEach(completionStr => {
+            const completionDate = new Date(completionStr);
             if (isSameMonth(completionDate, today)) {
-                mXp += taskXpValue;
+                const dayIndex = completionDate.getDate() - 1;
+                if(dailyData[dayIndex]) {
+                  dailyData[dayIndex].xp += taskXpValue;
+                }
             }
         });
     });
 
-    return { monthlyXp: mXp, totalMonthlyXp: tMXp };
+    return dailyData;
   }, [tasks, today]);
 
   const { completedTodayCount, todaysTotalXp, todaysAchievedXp } = useMemo(() => {
@@ -198,8 +188,6 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
   }, [todaysTasks, today]);
 
   const weeklyChartData = [{ week: "current", achieved: weeklyXp, remaining: Math.max(0, totalWeeklyXp - weeklyXp) }];
-  const monthlyChartData = [{ month: "current", xp: monthlyXp }];
-  const monthlyProgress = totalMonthlyXp > 0 ? (monthlyXp / totalMonthlyXp) * 100 : 0;
   
   const animationVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -287,7 +275,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
               <motion.div whileHover={{ y: -5, transition: { duration: 0.2 } }}>
                 <Card className="border-2 border-black rounded-lg shadow-none">
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2"><BarChart className="w-5 h-5"/> Weekly Progress</CardTitle>
+                        <CardTitle className="flex items-center gap-2"><BarChartIcon className="w-5 h-5"/> Weekly Progress</CardTitle>
                         <CardDescription>Your XP summary for this week.</CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -361,62 +349,36 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
             >
               <motion.div whileHover={{ y: -5, transition: { duration: 0.2 } }}>
                 <Card className="border-2 border-black rounded-lg shadow-none">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2"><Target className="w-5 h-5"/> Monthly Goal</CardTitle>
-                        <CardDescription>Your XP goal for {format(today, 'MMMM')}.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <ChartContainer
-                            config={monthlyChartConfig}
-                            className="mx-auto aspect-square max-h-[250px]"
-                        >
-                        <RadialBarChart
-                            data={monthlyChartData}
-                            startAngle={90}
-                            endAngle={90 - (360 * (monthlyProgress / 100))}
-                            innerRadius={80}
-                            outerRadius={110}
-                        >
-                            <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
-                            <Label
-                                content={({ viewBox }) => {
-                                    if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                                        return (
-                                            <text
-                                                x={viewBox.cx}
-                                                y={viewBox.cy}
-                                                textAnchor="middle"
-                                                dominantBaseline="middle"
-                                            >
-                                                <tspan
-                                                x={viewBox.cx}
-                                                y={viewBox.cy}
-                                                className="fill-foreground text-4xl font-bold"
-                                                >
-                                                {monthlyXp.toLocaleString()}
-                                                </tspan>
-                                                <tspan
-                                                x={viewBox.cx}
-                                                y={(viewBox.cy || 0) + 24}
-                                                className="fill-muted-foreground"
-                                                >
-                                                Monthly XP
-                                                </tspan>
-                                            </text>
-                                        )
-                                    }
-                                }}
-                            />
-                            </PolarRadiusAxis>
-                            <RadialBar 
-                                dataKey="xp" 
-                                background 
-                                cornerRadius={10} 
-                                fill="var(--color-xp)"
-                            />
-                        </RadialBarChart>
-                        </ChartContainer>
-                    </CardContent>
+                  <CardHeader>
+                      <CardTitle className="flex items-center gap-2"><Target className="w-5 h-5"/> Monthly Progress</CardTitle>
+                      <CardDescription>Daily XP earned for {format(today, 'MMMM')}.</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                      <ChartContainer config={monthlyChartConfig} className="w-full h-[250px]">
+                          <BarChart data={monthlyChartData} margin={{ top: 20, right: 0, left: -20, bottom: 0 }}>
+                              <defs>
+                                <linearGradient id="colorXp" x1="0" y1="0" x2="0" y2="1">
+                                  <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.8}/>
+                                  <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0.1}/>
+                                </linearGradient>
+                              </defs>
+                              <XAxis dataKey="date" tickLine={false} axisLine={false} tickMargin={8} fontSize={12} />
+                              <YAxis tickLine={false} axisLine={false} tickMargin={8} fontSize={12} />
+                              <Tooltip 
+                                  cursor={{ fill: 'hsl(var(--accent) / 0.1)' }}
+                                  content={({ active, payload, label }) =>
+                                  active && payload && payload.length ? (
+                                    <div className="bg-background/80 backdrop-blur-sm border rounded-lg p-2 text-sm shadow-lg">
+                                      <p className="font-bold">{`${label}`}</p>
+                                      <p className="text-primary">{`XP: ${payload[0].value}`}</p>
+                                    </div>
+                                  ) : null
+                                }
+                              />
+                              <Bar dataKey="xp" fill="url(#colorXp)" radius={[4, 4, 0, 0]} />
+                          </BarChart>
+                      </ChartContainer>
+                  </CardContent>
                 </Card>
               </motion.div>
             </motion.div>

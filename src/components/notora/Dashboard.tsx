@@ -18,7 +18,6 @@ import TaskList from './TaskList';
 import TaskItem from './TaskItem';
 import { motion } from 'framer-motion';
 import { Progress } from '../ui/progress';
-import { Separator } from '../ui/separator';
 
 
 const weeklyChartConfig = {
@@ -97,9 +96,9 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
 
   const todaysTasks = useMemo(() => {
     return tasks.filter(task => {
+        const createdAt = new Date(task.createdAt);
         if (task.type === 'single' && task.date && isSameDay(new Date(task.date), today)) return true;
         
-        const createdAt = new Date(task.createdAt);
         if (task.type === 'recurring') {
             return isSameDay(today, createdAt) || isAfter(today, createdAt);
         }
@@ -189,14 +188,13 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
     return { monthlyXp: mXp, totalMonthlyXp: tMXp };
   }, [tasks, today]);
 
-  const { dailyProgress, completedTodayCount, todaysTotalXp, todaysAchievedXp } = useMemo(() => {
+  const { completedTodayCount, todaysTotalXp, todaysAchievedXp } = useMemo(() => {
     const todayStr = format(today, 'yyyy-MM-dd');
     const completedTasks = todaysTasks.filter(t => (t.completions || []).includes(todayStr));
     const completedCount = completedTasks.length;
-    const progress = todaysTasks.length > 0 ? (completedCount / todaysTasks.length) * 100 : 0;
     const totalXp = todaysTasks.reduce((acc, t) => acc + getTaskXp(t), 0);
     const achievedXp = completedTasks.reduce((acc, t) => acc + getTaskXp(t), 0);
-    return { dailyProgress: progress, completedTodayCount: completedCount, todaysTotalXp: totalXp, todaysAchievedXp: achievedXp };
+    return { completedTodayCount: completedCount, todaysTotalXp: totalXp, todaysAchievedXp: achievedXp };
   }, [todaysTasks, today]);
 
   const weeklyChartData = [{ week: "current", achieved: weeklyXp, remaining: Math.max(0, totalWeeklyXp - weeklyXp) }];
@@ -247,34 +245,36 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
             animate="visible"
             custom={3}
           >
-            <Card className="border-2 border-black rounded-lg shadow-none">
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><Calendar className="w-5 h-5"/> Today's Focus</CardTitle>
-                    <CardDescription>Tasks scheduled for {format(today, 'MMMM do')}. ({completedTodayCount}/{todaysTasks.length} completed)</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="pt-4 space-y-2">
-                        {todaysTasks.length > 0 ? (
-                        todaysTasks.map(task => (
-                            <TaskItem
-                                key={`${task.id}-${format(today, 'yyyy-MM-dd')}`}
-                                task={task}
-                                onToggle={() => onToggle(task.id, today)}
-                                onDelete={() => onDelete(task.id)}
-                                isCompleted={(task.completions || []).includes(format(today, 'yyyy-MM-dd'))}
-                            />
-                        ))
-                        ) : (
-                        <p className="text-center text-muted-foreground py-4">No tasks scheduled for today.</p>
-                        )}
-                    </div>
-                    <TaskList 
-                        data={data}
-                        onDataChange={onDataChange}
-                        currentMonth={today}
-                    />
-                </CardContent>
-            </Card>
+            <motion.div whileHover={{ y: -5, transition: { duration: 0.2 } }}>
+              <Card className="border-2 border-black rounded-lg shadow-none">
+                  <CardHeader>
+                      <CardTitle className="flex items-center gap-2"><Calendar className="w-5 h-5"/> Today's Focus</CardTitle>
+                      <CardDescription>Tasks scheduled for {format(today, 'MMMM do')}. ({completedTodayCount}/{todaysTasks.length} completed)</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                      <div className="pt-4 space-y-2">
+                          {todaysTasks.length > 0 ? (
+                          todaysTasks.map(task => (
+                              <TaskItem
+                                  key={`${task.id}-${format(today, 'yyyy-MM-dd')}`}
+                                  task={task}
+                                  onToggle={() => onToggle(task.id, today)}
+                                  onDelete={() => onDelete(task.id)}
+                                  isCompleted={(task.completions || []).includes(format(today, 'yyyy-MM-dd'))}
+                              />
+                          ))
+                          ) : (
+                          <p className="text-center text-muted-foreground py-4">No tasks scheduled for today.</p>
+                          )}
+                      </div>
+                      <TaskList 
+                          data={data}
+                          onDataChange={onDataChange}
+                          currentMonth={today}
+                      />
+                  </CardContent>
+              </Card>
+            </motion.div>
           </motion.div>
 
           <div className="space-y-6">
@@ -284,6 +284,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
                 animate="visible"
                 custom={1}
             >
+              <motion.div whileHover={{ y: -5, transition: { duration: 0.2 } }}>
                 <Card className="border-2 border-black rounded-lg shadow-none">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2"><BarChart className="w-5 h-5"/> Weekly Progress</CardTitle>
@@ -349,6 +350,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
                         </ChartContainer>
                     </CardContent>
                 </Card>
+              </motion.div>
             </motion.div>
 
             <motion.div
@@ -357,6 +359,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
                 animate="visible"
                 custom={2}
             >
+              <motion.div whileHover={{ y: -5, transition: { duration: 0.2 } }}>
                 <Card className="border-2 border-black rounded-lg shadow-none">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2"><Target className="w-5 h-5"/> Monthly Goal</CardTitle>
@@ -415,6 +418,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
                         </ChartContainer>
                     </CardContent>
                 </Card>
+              </motion.div>
             </motion.div>
           </div>
         </div>

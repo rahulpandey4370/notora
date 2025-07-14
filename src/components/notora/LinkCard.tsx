@@ -10,6 +10,7 @@ import { linkCategories } from '@/lib/types';
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { motion } from 'framer-motion';
 
 interface LinkCardProps {
   link: SavedLink;
@@ -65,82 +66,84 @@ export default function LinkCard({ link, onDelete, onUpdate }: LinkCardProps) {
     };
 
     return (
-        <Card className="flex flex-col h-full border-2 border-black rounded-lg shadow-none hover:shadow-[4px_4px_0px_#000] transition-shadow">
-            {videoId && !isEditing ? (
-                <div className='aspect-video w-full rounded-t-lg overflow-hidden'>
-                    <iframe
-                        src={`https://www.youtube.com/embed/${videoId}`}
-                        title="YouTube video player"
-                        frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                        className='w-full h-full'
-                    ></iframe>
-                </div>
-            ) : (
-                <CardHeader>
-                    {isEditing ? (
-                         <Input value={editedTitle} onChange={(e) => setEditedTitle(e.target.value)} className="text-base font-semibold border-2 border-black rounded-md" />
-                    ) : (
-                        <CardTitle className="flex items-start gap-3 text-base">
-                            <img src={getFaviconUrl(link.url)} alt="favicon" className="w-8 h-8 mt-1 rounded-md flex-shrink-0" />
-                            <a href={link.url} target="_blank" rel="noopener noreferrer" className="hover:underline flex-1 break-words">
-                                {link.title}
-                            </a>
-                        </CardTitle>
-                    )}
-                </CardHeader>
-            )}
-        
-            <CardContent className={`flex-1 ${videoId && !isEditing ? 'pt-6' : ''}`}>
-                {isEditing ? (
-                    <Textarea value={editedSummary} onChange={(e) => setEditedSummary(e.target.value)} className="text-sm h-24 border-2 border-black rounded-md" />
+        <motion.div whileHover={{ scale: 1.03, transition: { duration: 0.2 } }}>
+            <Card className="flex flex-col h-full border-2 border-black rounded-lg shadow-none hover:shadow-[4px_4px_0px_#000] transition-shadow">
+                {videoId && !isEditing ? (
+                    <div className='aspect-video w-full rounded-t-lg overflow-hidden'>
+                        <iframe
+                            src={`https://www.youtube.com/embed/${videoId}`}
+                            title="YouTube video player"
+                            frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                            className='w-full h-full'
+                        ></iframe>
+                    </div>
                 ) : (
-                    <p className="text-sm text-muted-foreground">{link.summary}</p>
+                    <CardHeader>
+                        {isEditing ? (
+                            <Input value={editedTitle} onChange={(e) => setEditedTitle(e.target.value)} className="text-base font-semibold border-2 border-black rounded-md" />
+                        ) : (
+                            <CardTitle className="flex items-start gap-3 text-base">
+                                <img src={getFaviconUrl(link.url)} alt="favicon" className="w-8 h-8 mt-1 rounded-md flex-shrink-0" />
+                                <a href={link.url} target="_blank" rel="noopener noreferrer" className="hover:underline flex-1 break-words">
+                                    {link.title}
+                                </a>
+                            </CardTitle>
+                        )}
+                    </CardHeader>
                 )}
-            </CardContent>
-            <CardFooter className="flex justify-between items-center">
-                <div className="flex flex-col gap-2">
+            
+                <CardContent className={`flex-1 ${videoId && !isEditing ? 'pt-6' : ''}`}>
                     {isEditing ? (
-                        <Select value={editedCategory} onValueChange={(v: typeof linkCategories[number]) => setEditedCategory(v)}>
-                            <SelectTrigger className="w-[120px] border-2 border-black rounded-md shadow-[2px_2px_0px_#000]">
-                                <SelectValue placeholder="Category" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {linkCategories.map(cat => <SelectItem key={cat} value={cat}>{cat}</SelectItem>)}
-                            </SelectContent>
-                        </Select>
+                        <Textarea value={editedSummary} onChange={(e) => setEditedSummary(e.target.value)} className="text-sm h-24 border-2 border-black rounded-md" />
                     ) : (
-                        <Badge variant="outline" className={`border-black ${categoryStyles[link.category] || categoryStyles.Other}`}>
-                            {link.category}
-                        </Badge>
+                        <p className="text-sm text-muted-foreground">{link.summary}</p>
                     )}
-                    <p className="text-xs text-muted-foreground">
-                        Added: {new Date(link.dateAdded).toLocaleDateString()}
-                    </p>
-                </div>
-                <div className="flex items-center gap-1">
-                    {isEditing ? (
-                        <>
-                            <Button variant="ghost" size="icon" onClick={handleSave} className="text-green-500 hover:text-green-500 rounded-full">
-                                <Save className="h-4 w-4" />
-                            </Button>
-                            <Button variant="ghost" size="icon" onClick={handleCancel} className="text-destructive hover:text-destructive rounded-full">
-                                <X className="h-4 w-4" />
-                            </Button>
-                        </>
-                    ) : (
-                        <>
-                            <Button variant="ghost" size="icon" onClick={() => setIsEditing(true)} className="text-black/60 hover:text-black rounded-full">
-                                <Edit className="h-4 w-4" />
-                            </Button>
-                            <Button variant="ghost" size="icon" onClick={() => onDelete(link.id)} className="text-black/60 hover:text-destructive hover:bg-destructive/10 rounded-full">
-                                <Trash2 className="h-4 w-4" />
-                            </Button>
-                        </>
-                    )}
-                </div>
-            </CardFooter>
-        </Card>
+                </CardContent>
+                <CardFooter className="flex justify-between items-center">
+                    <div className="flex flex-col gap-2">
+                        {isEditing ? (
+                            <Select value={editedCategory} onValueChange={(v: typeof linkCategories[number]) => setEditedCategory(v)}>
+                                <SelectTrigger className="w-[120px] border-2 border-black rounded-md shadow-[2px_2px_0px_#000]">
+                                    <SelectValue placeholder="Category" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {linkCategories.map(cat => <SelectItem key={cat} value={cat}>{cat}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
+                        ) : (
+                            <Badge variant="outline" className={`border-black ${categoryStyles[link.category] || categoryStyles.Other}`}>
+                                {link.category}
+                            </Badge>
+                        )}
+                        <p className="text-xs text-muted-foreground">
+                            Added: {new Date(link.dateAdded).toLocaleDateString()}
+                        </p>
+                    </div>
+                    <div className="flex items-center gap-1">
+                        {isEditing ? (
+                            <>
+                                <Button variant="ghost" size="icon" onClick={handleSave} className="text-green-500 hover:text-green-500 rounded-full">
+                                    <Save className="h-4 w-4" />
+                                </Button>
+                                <Button variant="ghost" size="icon" onClick={handleCancel} className="text-destructive hover:text-destructive rounded-full">
+                                    <X className="h-4 w-4" />
+                                </Button>
+                            </>
+                        ) : (
+                            <>
+                                <Button variant="ghost" size="icon" onClick={() => setIsEditing(true)} className="text-black/60 hover:text-black rounded-full">
+                                    <Edit className="h-4 w-4" />
+                                </Button>
+                                <Button variant="ghost" size="icon" onClick={() => onDelete(link.id)} className="text-black/60 hover:text-destructive hover:bg-destructive/10 rounded-full">
+                                    <Trash2 className="h-4 w-4" />
+                                </Button>
+                            </>
+                        )}
+                    </div>
+                </CardFooter>
+            </Card>
+        </motion.div>
     );
 }

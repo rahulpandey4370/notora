@@ -176,7 +176,6 @@ export default function TasksPage() {
     const newTasks = data.tasks.map(t => {
       if (t.id === id) {
         const originalXp = t.originalXp || getTaskXp(t);
-        const newXp = originalXp - penalty * ((t.carryForwardCount || 0) + 1);
 
         return {
           ...t,
@@ -277,16 +276,21 @@ export default function TasksPage() {
                         </div>
                         {tasksForCurrentDay.length > 0 ? (
                             <div className="space-y-2">
-                            {tasksForCurrentDay.map(task => (
-                                <TaskItem
-                                    key={`${task.id}-${format(currentDay, 'yyyy-MM-dd')}`}
-                                    task={task}
-                                    onToggle={() => onToggle(task.id, currentDay)}
-                                    onDelete={() => onDelete(task.id)}
-                                    isCompleted={(task.completions || []).includes(format(startOfDay(currentDay), 'yyyy-MM-dd'))}
-                                    onCarryForward={isPastDay ? () => handleCarryForward(task.id) : undefined}
-                                />
-                            ))}
+                            {tasksForCurrentDay.map(task => {
+                                const isCompleted = (task.completions || []).includes(format(startOfDay(currentDay), 'yyyy-MM-dd'));
+                                const canCarryForward = isPastDay && !isCompleted && task.type === 'single';
+
+                                return (
+                                    <TaskItem
+                                        key={`${task.id}-${format(currentDay, 'yyyy-MM-dd')}`}
+                                        task={task}
+                                        onToggle={() => onToggle(task.id, currentDay)}
+                                        onDelete={() => onDelete(task.id)}
+                                        isCompleted={isCompleted}
+                                        onCarryForward={canCarryForward ? () => handleCarryForward(task.id) : undefined}
+                                    />
+                                );
+                            })}
                             </div>
                         ) : (
                             <p className="text-center text-muted-foreground py-10">No tasks scheduled for {format(currentDay, 'MMMM do, yyyy')}.</p>

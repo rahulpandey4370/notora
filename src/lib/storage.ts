@@ -1,19 +1,20 @@
 'use server';
 
-import { BlobServiceClient } from '@azure/storage-blob';
+import { BlobServiceClient, type ContainerClient, type BlockBlobClient } from '@azure/storage-blob';
 import type { AppData } from '@/lib/types';
 
 const connectionString = process.env.AZURE_STORAGE_CONNECTION_STRING;
 const containerName = 'to-do-notes';
 
-const getBlobClient = (username: string) => {
+const getClients = (username: string): { containerClient: ContainerClient, blockBlobClient: BlockBlobClient } => {
   if (!connectionString) {
     throw new Error("Azure Storage connection string is not configured. Please set the AZURE_STORAGE_CONNECTION_STRING environment variable.");
   }
   const blobServiceClient = BlobServiceClient.fromConnectionString(connectionString);
   const containerClient = blobServiceClient.getContainerClient(containerName);
   const blobName = `notora-data-${username.toLowerCase()}.json`;
-  return containerClient.getBlockBlobClient(blobName);
+  const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+  return { containerClient, blockBlobClient };
 };
 
 export async function getAppData(username: string): Promise<AppData | null> {
@@ -23,10 +24,9 @@ export async function getAppData(username: string): Promise<AppData | null> {
   }
   
   try {
-    const blockBlobClient = getBlobClient(username);
+    const { containerClient, blockBlobClient } = getClients(username);
 
     // Ensure container exists before trying to read from it
-    const containerClient = blockBlobClient.getContainerClient();
     await containerClient.createIfNotExists({ access: 'blob' });
 
     const downloadBlockBlobResponse = await blockBlobClient.download(0);
@@ -61,10 +61,9 @@ export async function saveAppData(username: string, data: AppData): Promise<void
   }
   
   try {
-    const blockBlobClient = getBlobClient(username);
+    const { containerClient, blockBlobClient } = getClients(username);
     
     // Ensure container exists and is public before upload
-    const containerClient = blockBlobClient.getContainerClient();
     await containerClient.createIfNotExists({ access: 'blob' });
 
     const dataString = JSON.stringify(data);

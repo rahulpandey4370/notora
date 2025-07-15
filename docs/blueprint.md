@@ -8,7 +8,7 @@
 - AI Productivity Assistant: AI-powered tool suggesting better task ordering and providing a day-end summary of completed work and a motivational quote, using Firebase Genkit and Gemini.
 - Interactive Sticky Notes: Draggable, animated sticky notes with pastel themes and bounce/hover animations (Framer Motion), stored using Vercel Blob.
 - AI Note Tools: AI-powered tool that provides 'Polish This', 'Summarize This', 'Bullet-ify' or 'Simplify' options for refining sticky note content using Gemini.
-- Basic Login System: A basic login system that authenticates two users (Rahul & Shivangi) against a local TypeScript file, using localStorage for session persistence. The persistent sessions rely on usage of BLOB_READ_WRITE_TOKEN that you shared with value 'vercel_blob_rw_5ZNTwPv6UoElQjL7_KDJkK18qrQkqPMwv6yCBWo7uHXFFUZ'.
+- Basic Login System: A basic login system that authenticates two users against a local TypeScript file, using localStorage for session persistence.
 
 ## Style Guidelines:
 

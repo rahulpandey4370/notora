@@ -37,7 +37,7 @@ Follow these steps:
 3.  Rewrite and restructure the main content for clarity and professionalism.
 4.  Use appropriate formatting such as paragraphs for prose, numbered lists for sequential steps, or bullet points for distinct items.
 5.  Correct any grammatical errors or awkward phrasing.
-6.  The final output should be a single block of text containing the new heading and the polished, formatted content.
+6.  The final output should be a single block of plain text, without any Markdown formatting (e.g., no "**" for bold).
 
 Original Content:
 {{{content}}}

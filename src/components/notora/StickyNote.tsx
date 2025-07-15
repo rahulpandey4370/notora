@@ -1,12 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { motion, useMotionValue, useDragControls } from 'framer-motion';
 import { Textarea } from '@/components/ui/textarea';
 import type { StickyNote as StickyNoteType } from '@/lib/types';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { MoreVertical, Trash2, Wand2, BookText, List, BrainCircuit, Loader2, Paintbrush, TextCursorInput } from 'lucide-react';
+import { MoreVertical, Trash2, Wand2, BookText, List, BrainCircuit, Loader2, Paintbrush, TextCursorInput, RotateCcw } from 'lucide-react';
 import { polishStickyNote } from '@/ai/flows/polish-sticky-note';
 import { summarizeStickyNote } from '@/ai/flows/summarize-sticky-note';
 import { bulletifyStickyNote } from '@/ai/flows/bullet-ify-sticky-note';
@@ -18,6 +18,7 @@ interface StickyNoteProps {
   onChange: (id: string, newContent: Partial<StickyNoteType>) => void;
   onDelete: (id: string) => void;
   onStopDrag: (id: string, position: { x: number; y: number }) => void;
+  onStopResize: (id: string, size: { width: number; height: number }) => void;
   constraintsRef: React.RefObject<HTMLDivElement>;
 }
 
@@ -36,10 +37,11 @@ type AIOperation = 'polish' | 'summarize' | 'bulletify' | 'simplify';
 const MIN_WIDTH = 256;
 const MIN_HEIGHT = 256;
 
-export default function StickyNote({ note, onChange, onDelete, onStopDrag, constraintsRef }: StickyNoteProps) {
+export default function StickyNote({ note, onChange, onDelete, onStopDrag, onStopResize, constraintsRef }: StickyNoteProps) {
   const [isFocused, setIsFocused] = useState(false);
   const [aiLoading, setAiLoading] = useState<AIOperation | null>(null);
   const [isPromptDialogOpen, setIsPromptDialogOpen] = useState(false);
+  const [previousContent, setPreviousContent] = useState<string | null>(null);
 
   const x = useMotionValue(note.position.x);
   const y = useMotionValue(note.position.y);
@@ -49,6 +51,7 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
 
   const handleAIAction = async (operation: AIOperation) => {
     setAiLoading(operation);
+    setPreviousContent(note.content);
     try {
         let result;
         switch (operation) {
@@ -71,10 +74,23 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
         }
     } catch (error) {
         console.error(`Failed to ${operation} note:`, error);
+        setPreviousContent(null); // Clear previous content on error
     } finally {
         setAiLoading(null);
     }
   };
+
+  const handleUndo = () => {
+    if (previousContent !== null) {
+      onChange(note.id, { content: previousContent });
+      setPreviousContent(null);
+    }
+  };
+  
+  const handleCustomPrompt = () => {
+    setPreviousContent(note.content);
+    setIsPromptDialogOpen(true);
+  }
 
   return (
     <>
@@ -82,7 +98,10 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
         drag
         dragListener={false}
         onPointerDown={(e) => {
-          if (e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLButtonElement || e.target.closest('button')) return;
+          const target = e.target as HTMLElement;
+          if (target.closest('.resize-handle') || target.closest('button') || target instanceof HTMLTextAreaElement) {
+              return;
+          }
           dragControls.start(e)
         }}
         dragControls={dragControls}
@@ -114,7 +133,7 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
                   <DropdownMenuItem onClick={() => handleAIAction('summarize')} disabled={!!aiLoading}>
                       {aiLoading === 'summarize' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <BookText className="mr-2 h-4 w-4" />} Summarize This
                   </DropdownMenuItem>
-                   <DropdownMenuItem onClick={() => setIsPromptDialogOpen(true)} disabled={!!aiLoading}>
+                   <DropdownMenuItem onClick={handleCustomPrompt} disabled={!!aiLoading}>
                       <TextCursorInput className="mr-2 h-4 w-4" /> Transform...
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => handleAIAction('bulletify')} disabled={!!aiLoading}>
@@ -123,6 +142,11 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
                   <DropdownMenuItem onClick={() => handleAIAction('simplify')} disabled={!!aiLoading}>
                       {aiLoading === 'simplify' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <BrainCircuit className="mr-2 h-4 w-4" />} Simplify
                   </DropdownMenuItem>
+                  {previousContent !== null && (
+                    <DropdownMenuItem onClick={handleUndo}>
+                      <RotateCcw className="mr-2 h-4 w-4" /> Undo
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuSeparator />
                    <DropdownMenuItem>
                       <Paintbrush className="mr-2 h-4 w-4" /> Change Color
@@ -142,40 +166,31 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
               </DropdownMenuContent>
           </DropdownMenu>
         </div>
-
+        
         <motion.div
-          drag="x"
-          onDrag={() => {
-            const newWidth = Math.max(MIN_WIDTH, width.get());
-            width.set(newWidth);
-            onChange(note.id, { width: newWidth });
-          }}
-          className="absolute bottom-0 right-0 w-4 h-4 cursor-nwse-resize"
-        />
-         <motion.div
-            drag="y"
-            onDrag={() => {
-                const newHeight = Math.max(MIN_HEIGHT, height.get());
-                height.set(newHeight);
-                onChange(note.id, { height: newHeight });
-            }}
-            className="absolute bottom-0 right-0 w-4 h-4 cursor-nwse-resize z-10"
-        />
-        <motion.div
-            drag
-            onDrag={() => {
-                const newWidth = Math.max(MIN_WIDTH, width.get());
-                const newHeight = Math.max(MIN_HEIGHT, height.get());
+            className="resize-handle absolute bottom-0 right-0 w-4 h-4 cursor-nwse-resize z-10"
+            drag="both"
+            dragMomentum={false}
+            onDrag={(_, info) => {
+                const newWidth = Math.max(MIN_WIDTH, width.get() + info.delta.x);
+                const newHeight = Math.max(MIN_HEIGHT, height.get() + info.delta.y);
                 width.set(newWidth);
                 height.set(newHeight);
-                onChange(note.id, { width: newWidth, height: newHeight });
             }}
-            className="absolute bottom-0 right-0 w-4 h-4 cursor-nwse-resize z-20"
+            onDragEnd={() => {
+                onStopResize(note.id, { width: width.get(), height: height.get() });
+            }}
         />
+
       </motion.div>
       <CustomPromptDialog
         open={isPromptDialogOpen}
-        onOpenChange={setIsPromptDialogOpen}
+        onOpenChange={(isOpen) => {
+            setIsPromptDialogOpen(isOpen);
+            if (!isOpen) {
+              setPreviousContent(null);
+            }
+        }}
         noteContent={note.content}
         noteId={note.id}
         onContentChange={onChange}

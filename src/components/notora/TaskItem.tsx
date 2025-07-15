@@ -2,7 +2,7 @@
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
+import { Trash2, ChevronsRight } from "lucide-react";
 import type { Task } from "@/lib/types";
 import { getTaskXp } from "@/lib/utils";
 import { Badge } from "../ui/badge";
@@ -16,6 +16,7 @@ interface TaskItemProps {
   onToggle: () => void;
   onDelete: () => void;
   isCompleted: boolean;
+  onCarryForward?: () => void;
 }
 
 const priorityStyles = {
@@ -24,7 +25,7 @@ const priorityStyles = {
     Hard: "border-red-500/50 bg-red-500/10 text-red-700 dark:text-red-300",
 }
 
-export default function TaskItem({ task, onToggle, onDelete, isCompleted }: TaskItemProps) {
+export default function TaskItem({ task, onToggle, onDelete, isCompleted, onCarryForward }: TaskItemProps) {
   const uniqueId = `task-${task.id}-${task.date || ''}`;
   const taskXp = getTaskXp(task);
   const { resolvedTheme } = useTheme();
@@ -49,6 +50,7 @@ export default function TaskItem({ task, onToggle, onDelete, isCompleted }: Task
           onCheckedChange={onToggle}
           aria-labelledby={`${uniqueId}-label`}
           className="w-5 h-5 border-2 border-black rounded-sm data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:border-slate-700"
+          disabled={!!onCarryForward && !isCompleted}
         />
         <label
           id={`${uniqueId}-label`}
@@ -66,6 +68,12 @@ export default function TaskItem({ task, onToggle, onDelete, isCompleted }: Task
       </div>
       
       <Badge variant="outline" className={`font-mono text-xs ${priorityStyles[task.priority]}`}>{taskXp} XP</Badge>
+
+      {onCarryForward && !isCompleted && (
+        <Button variant="ghost" size="icon" onClick={onCarryForward} className="h-8 w-8 text-blue-500 hover:text-blue-500 rounded-full">
+            <ChevronsRight className="h-4 w-4" />
+        </Button>
+      )}
 
       <Button variant="ghost" size="icon" onClick={onDelete} className="h-8 w-8 text-black/60 hover:text-destructive hover:bg-destructive/10 rounded-full dark:text-slate-400 dark:hover:text-destructive">
         <Trash2 className="h-4 w-4" />

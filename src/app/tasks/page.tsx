@@ -11,12 +11,18 @@ import TaskList from '@/components/notora/TaskList';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, ClipboardList, CalendarDays } from 'lucide-react';
-import { format, startOfMonth, addMonths, subMonths, isSameDay, startOfDay, addDays, subDays, isAfter, isSameMonth, endOfMonth, startOfWeek, isWithinInterval } from 'date-fns';
+import { format, startOfMonth, addMonths, subMonths, isSameDay, startOfDay, addDays, subDays, isAfter, isSameMonth, endOfMonth, startOfWeek, isWithinInterval, isBefore } from 'date-fns';
 import type { Task } from '@/lib/types';
 import TaskItem from '@/components/notora/TaskItem';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getTaskXp } from '@/lib/utils';
+
+const XP_PENALTY: Record<Task['priority'], number> = {
+  Easy: 5,
+  Medium: 10,
+  Hard: 15,
+};
 
 export default function TasksPage() {
   const { user, loading: authLoading } = useAuth();
@@ -152,6 +158,43 @@ export default function TasksPage() {
     handleDataChange({ ...data, tasks: newTasks, userStats: { xp: data.userStats.xp + xpChange }});
   };
 
+  const handleCarryForward = (id: string) => {
+    const task = data.tasks.find(t => t.id === id);
+    if (!task) return;
+
+    if ((task.carryForwardCount || 0) >= 2) {
+      toast({
+        variant: 'destructive',
+        title: 'Cannot Carry Forward',
+        description: 'This task has already been carried forward twice.',
+      });
+      return;
+    }
+
+    const penalty = XP_PENALTY[task.priority];
+
+    const newTasks = data.tasks.map(t => {
+      if (t.id === id) {
+        const originalXp = t.originalXp || getTaskXp(t);
+        const newXp = originalXp - penalty * ((t.carryForwardCount || 0) + 1);
+
+        return {
+          ...t,
+          date: addDays(new Date(t.date!), 1).toISOString(),
+          carryForwardCount: (t.carryForwardCount || 0) + 1,
+          originalXp: originalXp,
+        };
+      }
+      return t;
+    });
+
+    handleDataChange({ ...data, tasks: newTasks });
+    toast({
+      title: 'Task Carried Forward',
+      description: `"${task.title}" moved to tomorrow with a ${penalty} XP penalty.`,
+    });
+  };
+
   const getTasksForDate = (date: Date): Task[] => {
       return data.tasks.filter(task => {
           switch (task.type) {
@@ -178,6 +221,8 @@ export default function TasksPage() {
   const tasksForCurrentDay = getTasksForDate(currentDay);
   const completedCountForDay = tasksForCurrentDay.filter(t => (t.completions || []).includes(format(currentDay, 'yyyy-MM-dd'))).length;
   const dailyProgress = tasksForCurrentDay.length > 0 ? (completedCountForDay / tasksForCurrentDay.length) * 100 : 0;
+  
+  const isPastDay = isBefore(currentDay, startOfDay(new Date()));
 
   return (
     <AppLayout>
@@ -239,6 +284,7 @@ export default function TasksPage() {
                                     onToggle={() => onToggle(task.id, currentDay)}
                                     onDelete={() => onDelete(task.id)}
                                     isCompleted={(task.completions || []).includes(format(startOfDay(currentDay), 'yyyy-MM-dd'))}
+                                    onCarryForward={isPastDay ? () => handleCarryForward(task.id) : undefined}
                                 />
                             ))}
                             </div>

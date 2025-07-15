@@ -39,7 +39,7 @@ const prompt = ai.definePrompt({
   {{{content}}}
   ---
   
-  Provide only the transformed text in your response.`,
+  Provide only the transformed, plain text in your response, without any Markdown formatting.`,
 });
 
 const customTransformStickyNoteFlow = ai.defineFlow(

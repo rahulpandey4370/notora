@@ -15,6 +15,8 @@ export interface Task {
   date?: string; // ISO 8601 date string, for single tasks
   month?: string; // 'yyyy-MM', for monthly tasks
   week?: string; // 'yyyy-ww', for weekly tasks
+  carryForwardCount?: number;
+  originalXp?: number;
 }
 
 export interface StickyNote {

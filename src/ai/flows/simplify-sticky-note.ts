@@ -29,7 +29,12 @@ const prompt = ai.definePrompt({
   name: 'simplifyStickyNotePrompt',
   input: {schema: SimplifyStickyNoteInputSchema},
   output: {schema: SimplifyStickyNoteOutputSchema},
-  prompt: `You are an AI assistant that simplifies text to make it easier to understand. Rephrase the following text using simpler language:\n\n{{{text}}}`,
+  prompt: `You are an AI assistant that simplifies text to make it easier to understand. Rephrase the following text using simpler language.
+
+Provide the output as plain text only, without any Markdown formatting.
+
+Input Text:
+{{{text}}}`,
 });
 
 const simplifyStickyNoteFlow = ai.defineFlow(

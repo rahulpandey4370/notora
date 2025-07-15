@@ -18,8 +18,14 @@ export const getTaskXp = (task: Task): number => {
         Hard: 200,
     };
 
-    if (task.type === 'monthly') {
+    if (task.type === 'monthly' || task.type === 'weekly') {
         return monthlyXp[task.priority];
     }
+
+    if (task.originalXp && task.carryForwardCount && task.carryForwardCount > 0) {
+        const penalty: Record<Task['priority'], number> = { Easy: 5, Medium: 10, Hard: 15 };
+        return Math.max(0, task.originalXp - (penalty[task.priority] * task.carryForwardCount));
+    }
+    
     return dailyXp[task.priority];
 };

@@ -28,7 +28,9 @@ const prompt = ai.definePrompt({
   name: 'summarizeStickyNotePrompt',
   input: {schema: SummarizeStickyNoteInputSchema},
   output: {schema: SummarizeStickyNoteOutputSchema},
-  prompt: `Summarize the following sticky note content:
+  prompt: `Summarize the following sticky note content. 
+  
+Provide the output as plain text only, without any Markdown formatting.
 
 {{{content}}}
 `,

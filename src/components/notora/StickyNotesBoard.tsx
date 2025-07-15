@@ -98,6 +98,16 @@ export default function StickyNotesBoard({ board, data, onDataChange }: StickyNo
     );
     onDataChange({ ...data, noteBoards: newNoteBoards });
   }
+  
+  const handleStopResize = (noteId: string, size: { width: number; height: number }) => {
+    const newNoteBoards = data.noteBoards.map(b => 
+        b.id === board.id 
+        ? { ...b, notes: b.notes.map(note => note.id === noteId ? {...note, width: size.width, height: size.height} : note) } 
+        : b
+    );
+    onDataChange({ ...data, noteBoards: newNoteBoards });
+  };
+
 
   return (
     <div 
@@ -112,6 +122,7 @@ export default function StickyNotesBoard({ board, data, onDataChange }: StickyNo
           onChange={handleChange}
           onDelete={handleDelete}
           onStopDrag={handleStopDrag}
+          onStopResize={handleStopResize}
           constraintsRef={constraintsRef}
         />
       ))}

@@ -10,13 +10,13 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-export const CustomTransformStickyNoteInputSchema = z.object({
+const CustomTransformStickyNoteInputSchema = z.object({
   content: z.string().describe('The original content of the sticky note.'),
   prompt: z.string().describe('The user-provided prompt detailing how to transform the content.'),
 });
 export type CustomTransformStickyNoteInput = z.infer<typeof CustomTransformStickyNoteInputSchema>;
 
-export const CustomTransformStickyNoteOutputSchema = z.object({
+const CustomTransformStickyNoteOutputSchema = z.object({
   transformedContent: z.string().describe('The content of the sticky note after applying the custom transformation.'),
 });
 export type CustomTransformStickyNoteOutput = z.infer<typeof CustomTransformStickyNoteOutputSchema>;

@@ -54,7 +54,7 @@ export default function TaskList({ data, onDataChange, currentMonth }: TaskListP
           className="flex-grow min-w-[150px] border-2 border-black rounded-md h-9"
         />
         <Select value={addTaskType} onValueChange={(v) => setAddTaskType(v as any)}>
-          <SelectTrigger className="w-auto border-2 border-black rounded-md h-9 shadow-[2px_2px_0px_#000]">
+          <SelectTrigger className="w-auto min-w-[120px] border-2 border-black rounded-md h-9 shadow-[2px_2px_0px_#000]">
             <SelectValue placeholder="Task type" />
           </SelectTrigger>
           <SelectContent>
@@ -70,7 +70,7 @@ export default function TaskList({ data, onDataChange, currentMonth }: TaskListP
             <PopoverTrigger asChild>
               <Button
                 variant={"outline"}
-                className="w-auto border-2 border-black rounded-md h-9 shadow-[2px_2px_0px_#000]"
+                className="w-auto min-w-[150px] justify-start text-left font-normal border-2 border-black rounded-md h-9 shadow-[2px_2px_0px_#000]"
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 {taskDate ? format(taskDate, "PPP") : <span>Pick a date</span>}
@@ -88,7 +88,7 @@ export default function TaskList({ data, onDataChange, currentMonth }: TaskListP
         )}
 
         <Select value={newTaskPriority} onValueChange={(v) => setNewTaskPriority(v as any)}>
-          <SelectTrigger className="w-auto border-2 border-black rounded-md h-9 shadow-[2px_2px_0px_#000]">
+          <SelectTrigger className="w-auto min-w-[120px] border-2 border-black rounded-md h-9 shadow-[2px_2px_0px_#000]">
             <SelectValue placeholder="Priority" />
           </SelectTrigger>
           <SelectContent>

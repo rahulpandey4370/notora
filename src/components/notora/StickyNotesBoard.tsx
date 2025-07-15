@@ -15,10 +15,10 @@ interface StickyNotesBoardProps {
 }
 
 const themes: StickyNoteType['theme'][] = ['yellow', 'blue', 'green', 'pink', 'purple'];
-const NOTE_WIDTH = 256; // w-64
-const NOTE_HEIGHT = 256; // h-64
-const HORIZONTAL_OFFSET = 32; // Gap between notes horizontally
-const VERTICAL_OFFSET = 32; // Gap between notes vertically
+const NOTE_WIDTH = 256;
+const NOTE_HEIGHT = 256;
+const HORIZONTAL_OFFSET = 32;
+const VERTICAL_OFFSET = 32;
 const PADDING = 20;
 
 export default function StickyNotesBoard({ board, data, onDataChange }: StickyNotesBoardProps) {
@@ -28,8 +28,8 @@ export default function StickyNotesBoard({ board, data, onDataChange }: StickyNo
     if (!board.notes || board.notes.length === 0) {
       return 500; // default height
     }
-    const maxY = Math.max(...board.notes.map(note => note.position.y));
-    return Math.max(500, maxY + NOTE_HEIGHT + PADDING);
+    const maxY = Math.max(...board.notes.map(note => note.position.y + (note.height || NOTE_HEIGHT)));
+    return Math.max(500, maxY + PADDING);
   }, [board.notes]);
 
   const handleAddNote = () => {
@@ -38,13 +38,20 @@ export default function StickyNotesBoard({ board, data, onDataChange }: StickyNo
 
     if (board.notes.length > 0) {
         const lastNote = board.notes[board.notes.length - 1];
-        let nextX = lastNote.position.x + NOTE_WIDTH + HORIZONTAL_OFFSET;
+        let nextX = lastNote.position.x + (lastNote.width || NOTE_WIDTH) + HORIZONTAL_OFFSET;
 
         if (nextX + NOTE_WIDTH > boardWidth) {
             // Wrap to a new row
             newPosition.x = PADDING;
-            const maxY = Math.max(...board.notes.map(n => n.position.y));
-            newPosition.y = maxY + NOTE_HEIGHT + VERTICAL_OFFSET;
+            const columnTops = [PADDING];
+            board.notes.forEach(note => {
+                for(let i=0; i < columnTops.length; i++) {
+                    if (note.position.x === PADDING) {
+                        columnTops[i] = Math.max(columnTops[i], note.position.y + (note.height || NOTE_HEIGHT) + VERTICAL_OFFSET);
+                    }
+                }
+            });
+            newPosition.y = Math.min(...columnTops);
         } else {
             // Place on the same row
             newPosition.x = nextX;
@@ -57,6 +64,8 @@ export default function StickyNotesBoard({ board, data, onDataChange }: StickyNo
       content: '',
       position: newPosition,
       theme: themes[board.notes.length % themes.length],
+      width: NOTE_WIDTH,
+      height: NOTE_HEIGHT,
     };
     
     const newNoteBoards = data.noteBoards.map(b => 
@@ -109,7 +118,7 @@ export default function StickyNotesBoard({ board, data, onDataChange }: StickyNo
       <Button
         onClick={handleAddNote}
         variant="outline"
-        className="absolute top-4 right-4 z-10"
+        className="absolute top-4 right-4 z-30"
       >
         <Plus className="mr-2 h-4 w-4" /> Add Note
       </Button>

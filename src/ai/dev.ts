@@ -9,3 +9,4 @@ import '@/ai/flows/polish-sticky-note.ts';
 import '@/ai/flows/simplify-sticky-note.ts';
 import '@/ai/flows/bullet-ify-sticky-note.ts';
 import '@/ai/flows/analyze-link.ts';
+import '@/ai/flows/custom-transform-sticky-note.ts';

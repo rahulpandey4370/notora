@@ -17,7 +17,7 @@ const PolishStickyNoteInputSchema = z.object({
 export type PolishStickyNoteInput = z.infer<typeof PolishStickyNoteInputSchema>;
 
 const PolishStickyNoteOutputSchema = z.object({
-  polishedContent: z.string().describe('The polished content of the sticky note.'),
+  polishedContent: z.string().describe('The polished content of the sticky note, with a heading and improved formatting.'),
 });
 export type PolishStickyNoteOutput = z.infer<typeof PolishStickyNoteOutputSchema>;
 
@@ -29,12 +29,19 @@ const polishStickyNotePrompt = ai.definePrompt({
   name: 'polishStickyNotePrompt',
   input: {schema: PolishStickyNoteInputSchema},
   output: {schema: PolishStickyNoteOutputSchema},
-  prompt: `You are an AI assistant that helps polish the content of sticky notes.
+  prompt: `You are an expert editor and formatter. Your task is to polish the following text from a sticky note to make it professional, clear, and well-organized.
 
-  Please refine the following content to make it more professional and presentable:
+Follow these steps:
+1.  Read the content to understand its core message.
+2.  Create a short, descriptive, and fitting heading for the content. The heading should be on its own line and clearly separated from the body.
+3.  Rewrite and restructure the main content for clarity and professionalism.
+4.  Use appropriate formatting such as paragraphs for prose, numbered lists for sequential steps, or bullet points for distinct items.
+5.  Correct any grammatical errors or awkward phrasing.
+6.  The final output should be a single block of text containing the new heading and the polished, formatted content.
 
-  {{{content}}}
-  `,
+Original Content:
+{{{content}}}
+`,
 });
 
 const polishStickyNoteFlow = ai.defineFlow(

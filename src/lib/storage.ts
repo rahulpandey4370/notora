@@ -4,7 +4,7 @@ import { BlobServiceClient } from '@azure/storage-blob';
 import type { AppData } from '@/lib/types';
 
 const connectionString = process.env.AZURE_STORAGE_CONNECTION_STRING;
-const containerName = 'notora-data';
+const containerName = 'to-do-notes';
 
 const getBlobClient = (username: string) => {
   if (!connectionString) {

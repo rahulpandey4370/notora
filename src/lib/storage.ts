@@ -27,7 +27,7 @@ export async function getAppData(username: string): Promise<AppData | null> {
     const { containerClient, blockBlobClient } = getClients(username);
 
     // Ensure container exists before trying to read from it
-    await containerClient.createIfNotExists({ access: 'blob' });
+    await containerClient.createIfNotExists();
 
     const downloadBlockBlobResponse = await blockBlobClient.download(0);
     if (!downloadBlockBlobResponse.readableStreamBody) {
@@ -63,8 +63,8 @@ export async function saveAppData(username: string, data: AppData): Promise<void
   try {
     const { containerClient, blockBlobClient } = getClients(username);
     
-    // Ensure container exists and is public before upload
-    await containerClient.createIfNotExists({ access: 'blob' });
+    // Ensure container exists before upload
+    await containerClient.createIfNotExists();
 
     const dataString = JSON.stringify(data);
     await blockBlobClient.upload(dataString, dataString.length, {

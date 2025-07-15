@@ -4,7 +4,7 @@ import type { User, AppData, Task } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { useMemo } from 'react';
 import { Calendar, Flame, TrendingUp } from 'lucide-react';
-import { format, isSameDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, addDays, isSameMonth, isAfter, startOfDay } from 'date-fns';
+import { format, isSameDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, addDays, isSameMonth, isAfter, startOfDay, isBefore } from 'date-fns';
 import { getTaskXp } from '@/lib/utils';
 import { useApp } from '@/hooks/use-app';
 import { PolarGrid, PolarRadiusAxis, RadialBar, RadialBarChart, Label } from "recharts"
@@ -37,10 +37,53 @@ const monthlyChartConfig = {
   },
 } satisfies ChartConfig
 
+const XP_PENALTY: Record<Task['priority'], number> = {
+  Easy: 5,
+  Medium: 10,
+  Hard: 15,
+};
+
+
 export default function Dashboard({ user, data, onDataChange }: DashboardProps) {
   const { tasks } = data;
   const { toast } = useApp();
   const today = new Date();
+
+  const handleCarryForward = (id: string) => {
+    const task = data.tasks.find(t => t.id === id);
+    if (!task) return;
+
+    if ((task.carryForwardCount || 0) >= 2) {
+      toast({
+        variant: 'destructive',
+        title: 'Cannot Carry Forward',
+        description: 'This task has already been carried forward twice.',
+      });
+      return;
+    }
+
+    const penalty = XP_PENALTY[task.priority];
+
+    const newTasks = data.tasks.map(t => {
+      if (t.id === id) {
+        const originalXp = t.originalXp || getTaskXp(t);
+
+        return {
+          ...t,
+          date: addDays(new Date(t.date!), 1).toISOString(),
+          carryForwardCount: (t.carryForwardCount || 0) + 1,
+          originalXp: originalXp,
+        };
+      }
+      return t;
+    });
+
+    onDataChange({ ...data, tasks: newTasks });
+    toast({
+      title: 'Task Carried Forward',
+      description: `"${task.title}" moved to tomorrow with a ${penalty} XP penalty.`,
+    });
+  };
 
   const onToggle = (id: string, date: Date) => {
     let xpChange = 0;
@@ -94,21 +137,22 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
   };
 
   const todaysTasks = useMemo(() => {
+    const startOfToday = startOfDay(new Date());
     return tasks.filter(task => {
         const createdAt = new Date(task.createdAt);
-        if (task.type === 'single' && task.date && isSameDay(new Date(task.date), today)) return true;
+        if (task.type === 'single' && task.date && isSameDay(new Date(task.date), startOfToday)) return true;
         
         if (task.type === 'recurring') {
-            return isSameDay(today, createdAt) || isAfter(today, createdAt);
+            return isSameDay(startOfToday, createdAt) || isAfter(startOfToday, createdAt);
         }
 
         if (task.type === 'weekly' && task.week) {
              const taskWeekDate = startOfWeek(new Date(task.week.replace(/(\\d{4})-(\\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
-             return isWithinInterval(today, { start: taskWeekDate, end: endOfWeek(taskWeekDate, { weekStartsOn: 1 }) });
+             return isWithinInterval(startOfToday, { start: taskWeekDate, end: endOfWeek(taskWeekDate, { weekStartsOn: 1 }) });
         }
         return false;
     });
-  }, [tasks, today]);
+  }, [tasks]);
 
   const { weeklyXp, totalWeeklyXp } = useMemo(() => {
     const weekStart = startOfWeek(today, { weekStartsOn: 1 });
@@ -273,15 +317,22 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
                   <CardContent className="space-y-4">
                       <div className="pt-4 space-y-2">
                           {todaysTasks.length > 0 ? (
-                          todaysTasks.map(task => (
-                              <TaskItem
-                                  key={`${task.id}-${format(today, 'yyyy-MM-dd')}`}
-                                  task={task}
-                                  onToggle={() => onToggle(task.id, today)}
-                                  onDelete={() => onDelete(task.id)}
-                                  isCompleted={(todaysTasks.find(t => t.id === task.id)?.completions || []).includes(format(today, 'yyyy-MM-dd'))}
-                              />
-                          ))
+                          todaysTasks.map(task => {
+                              const isCompleted = (task.completions || []).includes(format(today, 'yyyy-MM-dd'));
+                              const isPast = task.date ? isBefore(startOfDay(new Date(task.date)), startOfDay(today)) : false;
+                              const canCarryForward = isPast && !isCompleted && task.type === 'single';
+
+                              return (
+                                <TaskItem
+                                    key={`${task.id}-${format(today, 'yyyy-MM-dd')}`}
+                                    task={task}
+                                    onToggle={() => onToggle(task.id, today)}
+                                    onDelete={() => onDelete(task.id)}
+                                    isCompleted={isCompleted}
+                                    onCarryForward={canCarryForward ? () => handleCarryForward(task.id) : undefined}
+                                />
+                              );
+                          })
                           ) : (
                           <p className="text-center text-muted-foreground py-4">No tasks scheduled for today.</p>
                           )}

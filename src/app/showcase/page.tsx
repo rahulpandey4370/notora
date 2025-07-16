@@ -37,7 +37,7 @@ function ShowcaseDashboard() {
   }
 
   return (
-    <AppLayout>
+    <AppLayout data={data}>
       {showParticles && (
          <Particles
             className="absolute inset-0 -z-10"

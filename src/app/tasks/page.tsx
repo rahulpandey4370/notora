@@ -17,6 +17,7 @@ import TaskItem from '@/components/notora/TaskItem';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getTaskXp } from '@/lib/utils';
+import { useShowcase } from '@/contexts/showcase-context';
 
 const XP_PENALTY: Record<Task['priority'], number> = {
   Easy: 5,
@@ -24,18 +25,29 @@ const XP_PENALTY: Record<Task['priority'], number> = {
   Hard: 15,
 };
 
-export default function TasksPage() {
-  const { user, loading: authLoading } = useAuth();
-  const { data, loading: appLoading, handleDataChange, toast } = useApp();
+interface TasksPageProps {
+  showcase?: boolean;
+}
+
+export default function TasksPage({ showcase = false }: TasksPageProps) {
   const router = useRouter();
+  
+  // Conditional hooks
+  const { user, loading: authLoading } = useAuth();
+  const appData = useApp();
+  const showcaseData = useShowcase();
+
+  const { data, loading: appLoading, handleDataChange, toast } = showcase ? showcaseData : appData;
+  const currentUser = showcase ? showcaseData.demoUser : user;
+  
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [currentDay, setCurrentDay] = useState(new Date());
 
   useEffect(() => {
-    if (!authLoading && !user) {
+    if (!showcase && !authLoading && !currentUser) {
       router.push('/login');
     }
-  }, [user, authLoading, router]);
+  }, [currentUser, authLoading, router, showcase]);
   
   const handlePreviousMonth = () => {
     const newMonth = subMonths(currentMonth, 1);
@@ -59,7 +71,7 @@ export default function TasksPage() {
             return task.month === format(currentMonth, 'yyyy-MM');
         }
         if (task.type === 'weekly' && task.week) {
-            const taskWeekDate = startOfWeek(new Date(task.week.replace(/(\\d{4})-(\\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
+            const taskWeekDate = startOfWeek(new Date(task.week.replace(/(\d{4})-(\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
             return isSameMonth(taskWeekDate, currentMonth);
         }
         if (task.type === 'single' && task.date) {
@@ -96,9 +108,9 @@ export default function TasksPage() {
   }, [data, currentMonth]);
 
 
-  if (authLoading || appLoading || !data || !user) {
+  if (authLoading || appLoading || !data || !currentUser) {
     return (
-      <AppLayout>
+      <AppLayout data={data}>
         <div className="p-4 md:p-8 space-y-4">
           <Skeleton className="h-10 w-full" />
           <Skeleton className="h-96 w-full" />
@@ -127,7 +139,7 @@ export default function TasksPage() {
           newCompletions = [...(task.completions || []), dateStr];
         }
 
-        if(!isCompleted) {
+        if(!isCompleted && toast) {
             toast({
                 title: `+${taskXp} XP! ✨`,
                 description: `You've completed "${task.title}". Great job!`,
@@ -163,11 +175,13 @@ export default function TasksPage() {
     if (!task) return;
 
     if ((task.carryForwardCount || 0) >= 2) {
-      toast({
-        variant: 'destructive',
-        title: 'Cannot Carry Forward',
-        description: 'This task has already been carried forward twice.',
-      });
+      if (toast) {
+        toast({
+          variant: 'destructive',
+          title: 'Cannot Carry Forward',
+          description: 'This task has already been carried forward twice.',
+        });
+      }
       return;
     }
 
@@ -188,10 +202,12 @@ export default function TasksPage() {
     });
 
     handleDataChange({ ...data, tasks: newTasks });
-    toast({
-      title: 'Task Carried Forward',
-      description: `"${task.title}" moved to tomorrow with a ${penalty} XP penalty.`,
-    });
+    if(toast) {
+        toast({
+        title: 'Task Carried Forward',
+        description: `"${task.title}" moved to tomorrow with a ${penalty} XP penalty.`,
+        });
+    }
   };
 
   const getTasksForDate = (date: Date): Task[] => {
@@ -224,7 +240,7 @@ export default function TasksPage() {
   const isPastDay = isBefore(currentDay, startOfDay(new Date()));
 
   return (
-    <AppLayout>
+    <AppLayout data={data}>
       <main className="p-4 md:p-8 space-y-6">
         <Card className="dark:neon-border">
             <CardHeader className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">

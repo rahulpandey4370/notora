@@ -1,6 +1,7 @@
+
 'use client';
 
-import { motion, useMotionValue } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Home, CheckSquare, StickyNote, Link2 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -12,21 +13,34 @@ import {
 } from '@/components/ui/tooltip';
 
 const navItems = [
-  { href: '/', label: 'Dashboard', icon: Home },
+  { href: '/dashboard', label: 'Dashboard', icon: Home },
   { href: '/tasks', label: 'Tasks', icon: CheckSquare },
   { href: '/notes', label: 'Notes', icon: StickyNote },
   { href: '/links', label: 'Links', icon: Link2 },
 ];
 
 export default function Dock() {
-  const mouseX = useMotionValue(Infinity);
   const pathname = usePathname();
+  const isShowcase = pathname.startsWith('/showcase');
+
+  const getHref = (href: string) => {
+    if (href === '/dashboard' && isShowcase) return '/showcase/dashboard';
+    if (href === '/dashboard' && !isShowcase) return '/';
+    return isShowcase ? `/showcase${href}` : href;
+  };
+
+  const getIsActive = (href: string) => {
+    if (href === '/dashboard') {
+        return pathname === '/' || pathname === '/showcase/dashboard';
+    }
+    return pathname.startsWith(getHref(href));
+  }
 
   return (
     <div className="fixed bottom-5 left-0 right-0 flex justify-center z-50">
       <motion.div
-        onMouseMove={(e) => mouseX.set(e.nativeEvent.x)}
-        onMouseLeave={() => mouseX.set(Infinity)}
+        onMouseMove={(e) => {}}
+        onMouseLeave={() => {}}
         className="mx-auto flex h-16 items-end gap-4 rounded-2xl bg-black/10 backdrop-blur-md px-4 pb-3"
       >
         <TooltipProvider>
@@ -38,10 +52,10 @@ export default function Dock() {
                   whileTap={{ scale: 0.95 }}
                   className="relative"
                 >
-                    <Link href={href}>
+                    <Link href={getHref(href)}>
                         <div
                             className={`flex h-12 w-12 flex-col items-center justify-center rounded-full transition-colors
-                                ${pathname === href ? 'bg-primary text-primary-foreground' : 'bg-background/80 text-foreground hover:bg-accent hover:text-accent-foreground'}`}
+                                ${getIsActive(href) ? 'bg-primary text-primary-foreground' : 'bg-background/80 text-foreground hover:bg-accent hover:text-accent-foreground'}`}
                         >
                             <Icon className="h-6 w-6" />
                         </div>

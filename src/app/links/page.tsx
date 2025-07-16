@@ -9,29 +9,43 @@ import { Skeleton } from '@/components/ui/skeleton';
 import AppLayout from '@/components/notora/AppLayout';
 import LinkManager from '@/components/notora/LinkManager';
 import { useShowcase } from '@/contexts/showcase-context';
+import type { AppData, User } from '@/lib/types';
 
 interface LinksPageProps {
   showcase?: boolean;
 }
 
+function useLinksPageData(isShowcase: boolean) {
+  if (isShowcase) {
+    const showcaseData = useShowcase();
+    return {
+      data: showcaseData.data,
+      loading: !showcaseData.data,
+      user: showcaseData.demoUser,
+      handleDataChange: showcaseData.handleDataChange,
+    };
+  }
+  const appData = useApp();
+  const auth = useAuth();
+  return {
+    data: appData.data,
+    loading: auth.loading || appData.loading,
+    user: auth.user,
+    handleDataChange: appData.handleDataChange,
+  };
+}
+
 export default function LinksPage({ showcase = false }: LinksPageProps) {
   const router = useRouter();
-
-  // Conditional hooks
-  const { user, loading: authLoading } = useAuth();
-  const appData = useApp();
-  const showcaseData = useShowcase();
-
-  const { data, loading: appLoading, handleDataChange } = showcase ? showcaseData : appData;
-  const currentUser = showcase ? showcaseData.demoUser : user;
+  const { data, loading, user, handleDataChange } = useLinksPageData(showcase);
   
   useEffect(() => {
-    if (!showcase && !authLoading && !currentUser) {
+    if (!showcase && !loading && !user) {
       router.push('/login');
     }
-  }, [currentUser, authLoading, router, showcase]);
+  }, [user, loading, router, showcase]);
 
-  if (authLoading || appLoading || !data || !currentUser) {
+  if (loading || !data || !user) {
     return (
       <AppLayout data={data}>
         <div className="p-4 md:p-8 space-y-4">

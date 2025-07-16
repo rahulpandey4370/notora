@@ -18,6 +18,7 @@ import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getTaskXp } from '@/lib/utils';
 import { useShowcase } from '@/contexts/showcase-context';
+import type { Toast } from '@/hooks/use-toast';
 
 const XP_PENALTY: Record<Task['priority'], number> = {
   Easy: 5,
@@ -29,25 +30,41 @@ interface TasksPageProps {
   showcase?: boolean;
 }
 
+function useTasksPageData(isShorwcase: boolean) {
+  if (isShorwcase) {
+    const showcaseData = useShowcase();
+    return {
+      data: showcaseData.data,
+      loading: !showcaseData.data,
+      user: showcaseData.demoUser,
+      handleDataChange: showcaseData.handleDataChange,
+      toast: showcaseData.toast,
+    };
+  }
+
+  const appData = useApp();
+  const auth = useAuth();
+  return {
+    data: appData.data,
+    loading: auth.loading || appData.loading,
+    user: auth.user,
+    handleDataChange: appData.handleDataChange,
+    toast: appData.toast,
+  };
+}
+
 export default function TasksPage({ showcase = false }: TasksPageProps) {
   const router = useRouter();
-  
-  // Conditional hooks
-  const { user, loading: authLoading } = useAuth();
-  const appData = useApp();
-  const showcaseData = useShowcase();
-
-  const { data, loading: appLoading, handleDataChange, toast } = showcase ? showcaseData : appData;
-  const currentUser = showcase ? showcaseData.demoUser : user;
+  const { data, loading, user, handleDataChange, toast } = useTasksPageData(showcase);
   
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [currentDay, setCurrentDay] = useState(new Date());
 
   useEffect(() => {
-    if (!showcase && !authLoading && !currentUser) {
+    if (!showcase && !loading && !user) {
       router.push('/login');
     }
-  }, [currentUser, authLoading, router, showcase]);
+  }, [user, loading, router, showcase]);
   
   const handlePreviousMonth = () => {
     const newMonth = subMonths(currentMonth, 1);
@@ -108,7 +125,7 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
   }, [data, currentMonth]);
 
 
-  if (authLoading || appLoading || !data || !currentUser) {
+  if (loading || !data || !user) {
     return (
       <AppLayout data={data}>
         <div className="p-4 md:p-8 space-y-4">

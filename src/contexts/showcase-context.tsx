@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useState, useCallback, useContext, type ReactNode } from 'react';
+import { createContext, useState, useCallback, useContext, type ReactNode, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import type { AppData, User } from '@/lib/types';
 import { v4 as uuidv4 } from 'uuid';
@@ -84,8 +84,13 @@ interface ShowcaseContextType {
 const ShowcaseContext = createContext<ShowcaseContextType | undefined>(undefined);
 
 export function ShowcaseProvider({ children }: { children: ReactNode }) {
-  const [data, setData] = useState<AppData | null>(getDefaultDemoData());
+  const [data, setData] = useState<AppData | null>(null);
   const { toast } = useToast();
+
+  useEffect(() => {
+    // Generate data on the client side only to prevent hydration errors
+    setData(getDefaultDemoData());
+  }, []);
 
   const handleDataChange = (newData: AppData) => {
     // In demo mode, we just update the local state. No data is saved.

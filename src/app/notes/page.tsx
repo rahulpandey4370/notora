@@ -15,7 +15,7 @@ interface NotesPageProps {
 }
 
 function useNotesPageData(isShowcase: boolean) {
-  if (isShorwcase) {
+  if (isShowcase) {
     const showcaseData = useShowcase();
     return {
       data: showcaseData.data,

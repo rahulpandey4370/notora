@@ -9,6 +9,8 @@ import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
+import Link from 'next/link';
+import { Separator } from '@/components/ui/separator';
 
 export default function LoginPage() {
   const [username, setUsername] = useState('');
@@ -74,10 +76,18 @@ export default function LoginPage() {
               />
             </div>
           </CardContent>
-          <CardFooter>
+          <CardFooter className="flex-col gap-4">
             <Button type="submit" className="w-full" disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Log In
+            </Button>
+            <div className="w-full flex items-center gap-2">
+                <Separator className="flex-1"/>
+                <span className="text-xs text-muted-foreground">OR</span>
+                <Separator className="flex-1"/>
+            </div>
+             <Button variant="outline" className="w-full" asChild>
+                <Link href="/showcase">View Demo</Link>
             </Button>
           </CardFooter>
         </form>

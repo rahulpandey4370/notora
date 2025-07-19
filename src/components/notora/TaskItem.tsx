@@ -18,6 +18,7 @@ interface TaskItemProps {
   onDelete: () => void;
   isCompleted: boolean;
   onCarryForward?: () => void;
+  className?: string;
 }
 
 const priorityStyles = {
@@ -26,7 +27,7 @@ const priorityStyles = {
     Hard: "border-red-500/50 bg-red-500/10 text-red-700 dark:text-red-300",
 }
 
-export default function TaskItem({ task, onToggle, onDelete, isCompleted, onCarryForward }: TaskItemProps) {
+export default function TaskItem({ task, onToggle, onDelete, isCompleted, onCarryForward, className }: TaskItemProps) {
   const uniqueId = `task-${task.id}-${task.date || ''}`;
   const taskXp = getTaskXp(task);
   const { resolvedTheme } = useTheme();
@@ -41,7 +42,8 @@ export default function TaskItem({ task, onToggle, onDelete, isCompleted, onCarr
       exit={{ scale: 0.9, opacity: 0 }}
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
       className={cn(
-        "flex items-center gap-4 p-3 border-2 border-black rounded-lg bg-card hover:shadow-[4px_4px_0px_#000] transition-shadow duration-200"
+        "flex items-center gap-4 p-3 border-2 border-black rounded-lg bg-card hover:shadow-[4px_4px_0px_#000] transition-shadow duration-200",
+        className
       )}
     >
       <div

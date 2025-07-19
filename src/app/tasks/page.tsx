@@ -19,6 +19,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getTaskXp } from '@/lib/utils';
 import { useShowcase } from '@/contexts/showcase-context';
 import type { Toast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 
 const XP_PENALTY: Record<Task['priority'], number> = {
   Easy: 5,
@@ -321,6 +322,7 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
                                         onDelete={() => onDelete(task.id)}
                                         isCompleted={isCompleted}
                                         onCarryForward={canCarryForward ? () => handleCarryForward(task.id) : undefined}
+                                        className={cn(canCarryForward ? "bg-muted/50" : "")}
                                     />
                                 );
                             })}

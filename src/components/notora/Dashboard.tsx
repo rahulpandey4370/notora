@@ -136,41 +136,25 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
     const newTasks = data.tasks.filter((task) => task.id !== id);
     onDataChange({ ...data, tasks: newTasks, userStats: { xp: data.userStats.xp + xpChange }});
   };
-
-  const todaysTasks = useMemo(() => {
-    const startOfToday = startOfDay(new Date());
-    return tasks.filter(task => {
-        const createdAt = new Date(task.createdAt);
-        if (task.type === 'single' && task.date && isSameDay(new Date(task.date), startOfToday)) return true;
-        
-        if (task.type === 'recurring') {
-            return isSameDay(startOfToday, createdAt) || isAfter(startOfToday, createdAt);
-        }
-
-        if (task.type === 'weekly' && task.week) {
-             const taskWeekDate = startOfWeek(new Date(task.week.replace(/(\\d{4})-(\\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
-             return isWithinInterval(startOfToday, { start: taskWeekDate, end: endOfWeek(taskWeekDate, { weekStartsOn: 1 }) });
-        }
-        return false;
-    });
-  }, [tasks]);
   
   const allTodaysTasks = useMemo(() => {
+    const todayStart = startOfDay(new Date());
     return tasks.filter(task => {
-        const startOfToday = startOfDay(new Date());
+        const createdAt = new Date(task.createdAt);
+        const isCompleted = (task.completions || []).includes(format(task.date ? new Date(task.date) : createdAt, 'yyyy-MM-dd'));
+
         if (task.type === 'single' && task.date) {
-            const taskDate = startOfDay(new Date(task.date));
-            return isSameDay(taskDate, startOfToday) || isBefore(taskDate, startOfToday);
+             const taskDate = startOfDay(new Date(task.date));
+             return isSameDay(taskDate, todayStart) || (isBefore(taskDate, todayStart) && !isCompleted);
         }
         
-        const createdAt = startOfDay(new Date(task.createdAt));
         if (task.type === 'recurring') {
-            return isSameDay(startOfToday, createdAt) || isAfter(startOfToday, createdAt);
+            return isSameDay(todayStart, createdAt) || isAfter(todayStart, createdAt);
         }
 
         if (task.type === 'weekly' && task.week) {
              const taskWeekDate = startOfWeek(new Date(task.week.replace(/(\\d{4})-(\\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
-             return isWithinInterval(startOfToday, { start: taskWeekDate, end: endOfWeek(taskWeekDate, { weekStartsOn: 1 }) });
+             return isWithinInterval(todayStart, { start: taskWeekDate, end: endOfWeek(taskWeekDate, { weekStartsOn: 1 }) });
         }
         return false;
     }).sort((a,b) => {

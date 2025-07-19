@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Checkbox } from "@/components/ui/checkbox";
@@ -11,13 +10,13 @@ import { motion } from 'framer-motion';
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 
-
 interface TaskItemProps {
   task: Task;
   onToggle: () => void;
   onDelete: () => void;
   isCompleted: boolean;
   onCarryForward?: () => void;
+  isPastDue?: boolean;
   className?: string;
 }
 
@@ -27,12 +26,13 @@ const priorityStyles = {
     Hard: "border-red-500/50 bg-red-500/10 text-red-700 dark:text-red-300",
 }
 
-export default function TaskItem({ task, onToggle, onDelete, isCompleted, onCarryForward, className }: TaskItemProps) {
+export default function TaskItem({ task, onToggle, onDelete, isCompleted, onCarryForward, isPastDue = false, className }: TaskItemProps) {
   const uniqueId = `task-${task.id}-${task.date || ''}`;
   const taskXp = getTaskXp(task);
   const { resolvedTheme } = useTheme();
   
-  const isOverdue = !!onCarryForward && !isCompleted;
+  const isOverdue = isPastDue && !isCompleted;
+  const canCarryForward = !!onCarryForward;
 
   return (
     <motion.div
@@ -43,6 +43,7 @@ export default function TaskItem({ task, onToggle, onDelete, isCompleted, onCarr
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
       className={cn(
         "flex items-center gap-4 p-3 border-2 border-black rounded-lg bg-card hover:shadow-[4px_4px_0px_#000] transition-shadow duration-200",
+        isOverdue && "bg-muted/50 opacity-70",
         className
       )}
     >
@@ -61,7 +62,8 @@ export default function TaskItem({ task, onToggle, onDelete, isCompleted, onCarr
           id={`${uniqueId}-label`}
           htmlFor={uniqueId}
           className={cn(
-            'flex-1 text-sm font-medium cursor-pointer transition-all'
+            'flex-1 text-sm font-medium cursor-pointer transition-all',
+            isOverdue && 'cursor-not-allowed'
           )}
         >
           <span className={cn(
@@ -75,8 +77,8 @@ export default function TaskItem({ task, onToggle, onDelete, isCompleted, onCarr
       
       <Badge variant="outline" className={`font-mono text-xs ${priorityStyles[task.priority]}`}>{taskXp} XP</Badge>
 
-      {isOverdue && (
-        <Button variant="ghost" size="icon" onClick={onCarryForward} className="h-8 w-8 text-blue-500 hover:text-blue-500 rounded-full">
+      {canCarryForward && (
+        <Button variant="ghost" size="icon" onClick={onCarryForward} className="h-8 w-8 text-blue-500 hover:text-blue-500 rounded-full" title="Carry forward to next day">
             <ChevronsRight className="h-4 w-4" />
         </Button>
       )}

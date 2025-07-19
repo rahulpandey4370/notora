@@ -1,4 +1,3 @@
-
 'use client';
 
 import type { User, AppData, Task } from '@/lib/types';
@@ -43,7 +42,6 @@ const XP_PENALTY: Record<Task['priority'], number> = {
   Medium: 10,
   Hard: 15,
 };
-
 
 export default function Dashboard({ user, data, onDataChange }: DashboardProps) {
   const { tasks } = data;
@@ -141,19 +139,21 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
     const todayStart = startOfDay(new Date());
     return tasks.filter(task => {
         const createdAt = new Date(task.createdAt);
-        const isCompleted = (task.completions || []).includes(format(task.date ? new Date(task.date) : createdAt, 'yyyy-MM-dd'));
-
+        
         if (task.type === 'single' && task.date) {
              const taskDate = startOfDay(new Date(task.date));
+             const isCompleted = (task.completions || []).includes(format(taskDate, 'yyyy-MM-dd'));
+             // Show today's tasks and overdue incomplete tasks
              return isSameDay(taskDate, todayStart) || (isBefore(taskDate, todayStart) && !isCompleted);
         }
         
         if (task.type === 'recurring') {
+            // Show if task was created before or on today
             return isSameDay(todayStart, createdAt) || isAfter(todayStart, createdAt);
         }
 
         if (task.type === 'weekly' && task.week) {
-             const taskWeekDate = startOfWeek(new Date(task.week.replace(/(\\d{4})-(\\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
+             const taskWeekDate = startOfWeek(new Date(task.week.replace(/(\d{4})-(\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
              return isWithinInterval(todayStart, { start: taskWeekDate, end: endOfWeek(taskWeekDate, { weekStartsOn: 1 }) });
         }
         return false;
@@ -177,7 +177,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
         const taskDate = task.date ? new Date(task.date) : new Date(task.createdAt);
 
         if (task.type === 'weekly' && task.week) {
-            const taskWeekDate = startOfWeek(new Date(task.week.replace(/(\\d{4})-(\\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
+            const taskWeekDate = startOfWeek(new Date(task.week.replace(/(\d{4})-(\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
             if (isSameDay(taskWeekDate, weekStart)) {
                 total += taskXpValue;
                  if ((task.completions || []).some(c => isWithinInterval(new Date(c), { start: weekStart, end: weekEnd }))) {
@@ -218,7 +218,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
             return task.month === format(today, 'yyyy-MM');
         }
         if (task.type === 'weekly' && task.week) {
-            const taskWeekDate = startOfWeek(new Date(task.week.replace(/(\\d{4})-(\\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
+            const taskWeekDate = startOfWeek(new Date(task.week.replace(/(\d{4})-(\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
             return isSameMonth(taskWeekDate, today);
         }
         if (task.type === 'single' && task.date) {
@@ -255,7 +255,14 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
 
   const { completedTodayCount, todaysTotalXp, todaysAchievedXp } = useMemo(() => {
     const todayStr = format(today, 'yyyy-MM-dd');
-    const completedTasks = allTodaysTasks.filter(t => (t.completions || []).includes(t.date ? format(startOfDay(new Date(t.date)), 'yyyy-MM-dd') : todayStr));
+    const completedTasks = allTodaysTasks.filter(t => {
+      if (t.type === 'single' && t.date) {
+        const taskDate = format(startOfDay(new Date(t.date)), 'yyyy-MM-dd');
+        return (t.completions || []).includes(taskDate);
+      }
+      // For recurring tasks, check today's completion
+      return (t.completions || []).includes(todayStr);
+    });
     const completedCount = completedTasks.length;
     const totalXp = allTodaysTasks.reduce((acc, t) => acc + getTaskXp(t), 0);
     const achievedXp = completedTasks.reduce((acc, t) => acc + getTaskXp(t), 0);
@@ -329,10 +336,25 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
                       <div className="pt-4 space-y-2">
                           {allTodaysTasks.length > 0 ? (
                           allTodaysTasks.map(task => {
-                              const taskDate = task.date ? startOfDay(new Date(task.date)) : startOfDay(new Date());
-                              const isCompleted = (task.completions || []).includes(format(taskDate, 'yyyy-MM-dd'));
-                              const isPast = isBefore(taskDate, startOfDay(today));
-                              const canCarryForward = isPast && !isCompleted && task.type === 'single';
+                              let taskDate, isCompleted, isPast, canCarryForward;
+                              
+                              if (task.type === 'single' && task.date) {
+                                taskDate = startOfDay(new Date(task.date));
+                                isCompleted = (task.completions || []).includes(format(taskDate, 'yyyy-MM-dd'));
+                                isPast = isBefore(taskDate, startOfDay(today));
+                                canCarryForward = isPast && !isCompleted && (task.carryForwardCount || 0) < 2;
+                              } else if (task.type === 'recurring') {
+                                taskDate = startOfDay(today);
+                                const todayStr = format(taskDate, 'yyyy-MM-dd');
+                                isCompleted = (task.completions || []).includes(todayStr);
+                                isPast = false; // Recurring tasks are never "past due"
+                                canCarryForward = false;
+                              } else {
+                                taskDate = startOfDay(today);
+                                isCompleted = false;
+                                isPast = false;
+                                canCarryForward = false;
+                              }
 
                               return (
                                 <TaskItem
@@ -342,6 +364,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
                                     onDelete={() => onDelete(task.id)}
                                     isCompleted={isCompleted}
                                     onCarryForward={canCarryForward ? () => handleCarryForward(task.id) : undefined}
+                                    isPastDue={isPast && !isCompleted}
                                 />
                               );
                           })

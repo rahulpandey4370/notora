@@ -311,9 +311,23 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
                         {tasksForCurrentDay.length > 0 ? (
                             <div className="space-y-2">
                             {tasksForCurrentDay.map(task => {
-                                const isCompleted = (task.completions || []).includes(format(startOfDay(currentDay), 'yyyy-MM-dd'));
-                                const canCarryForward = isPastDay && !isCompleted && task.type === 'single';
-
+                                let isCompleted, isPastDue, canCarryForward;
+                                
+                                if (task.type === 'single' && task.date) {
+                                  const taskDate = startOfDay(new Date(task.date));
+                                  isCompleted = (task.completions || []).includes(format(taskDate, 'yyyy-MM-dd'));
+                                  isPastDue = isBefore(taskDate, startOfDay(new Date())) && !isCompleted;
+                                  canCarryForward = isPastDue && (task.carryForwardCount || 0) < 2;
+                                } else if (task.type === 'recurring') {
+                                  isCompleted = (task.completions || []).includes(format(startOfDay(currentDay), 'yyyy-MM-dd'));
+                                  isPastDue = false;
+                                  canCarryForward = false;
+                                } else {
+                                  isCompleted = (task.completions || []).includes(format(startOfDay(currentDay), 'yyyy-MM-dd'));
+                                  isPastDue = false;
+                                  canCarryForward = false;
+                                }
+          
                                 return (
                                     <TaskItem
                                         key={`${task.id}-${format(currentDay, 'yyyy-MM-dd')}`}
@@ -322,7 +336,8 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
                                         onDelete={() => onDelete(task.id)}
                                         isCompleted={isCompleted}
                                         onCarryForward={canCarryForward ? () => handleCarryForward(task.id) : undefined}
-                                        className={cn(canCarryForward ? "bg-muted/50" : "")}
+                                        isPastDue={isPastDue}
+                                        className={cn(isPastDue ? "bg-muted/50" : "")}
                                     />
                                 );
                             })}

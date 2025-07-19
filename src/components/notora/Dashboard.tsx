@@ -154,6 +154,32 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
         return false;
     });
   }, [tasks]);
+  
+  const allTodaysTasks = useMemo(() => {
+    return tasks.filter(task => {
+        const startOfToday = startOfDay(new Date());
+        if (task.type === 'single' && task.date) {
+            const taskDate = startOfDay(new Date(task.date));
+            return isSameDay(taskDate, startOfToday) || isBefore(taskDate, startOfToday);
+        }
+        
+        const createdAt = startOfDay(new Date(task.createdAt));
+        if (task.type === 'recurring') {
+            return isSameDay(startOfToday, createdAt) || isAfter(startOfToday, createdAt);
+        }
+
+        if (task.type === 'weekly' && task.week) {
+             const taskWeekDate = startOfWeek(new Date(task.week.replace(/(\\d{4})-(\\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
+             return isWithinInterval(startOfToday, { start: taskWeekDate, end: endOfWeek(taskWeekDate, { weekStartsOn: 1 }) });
+        }
+        return false;
+    }).sort((a,b) => {
+        const aDate = a.date ? new Date(a.date) : new Date(a.createdAt);
+        const bDate = b.date ? new Date(b.date) : new Date(b.createdAt);
+        return aDate.getTime() - bDate.getTime();
+    });
+  }, [tasks]);
+
 
   const { weeklyXp, totalWeeklyXp } = useMemo(() => {
     const weekStart = startOfWeek(today, { weekStartsOn: 1 });
@@ -245,12 +271,12 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
 
   const { completedTodayCount, todaysTotalXp, todaysAchievedXp } = useMemo(() => {
     const todayStr = format(today, 'yyyy-MM-dd');
-    const completedTasks = todaysTasks.filter(t => (t.completions || []).includes(todayStr));
+    const completedTasks = allTodaysTasks.filter(t => (t.completions || []).includes(t.date ? format(startOfDay(new Date(t.date)), 'yyyy-MM-dd') : todayStr));
     const completedCount = completedTasks.length;
-    const totalXp = todaysTasks.reduce((acc, t) => acc + getTaskXp(t), 0);
+    const totalXp = allTodaysTasks.reduce((acc, t) => acc + getTaskXp(t), 0);
     const achievedXp = completedTasks.reduce((acc, t) => acc + getTaskXp(t), 0);
     return { completedTodayCount: completedCount, todaysTotalXp: totalXp, todaysAchievedXp: achievedXp };
-  }, [todaysTasks, today]);
+  }, [allTodaysTasks, today]);
   
   const animationVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -313,22 +339,22 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
               <Card className="border-2 border-black rounded-lg shadow-none dark:neon-border-yellow">
                   <CardHeader>
                       <CardTitle className="flex items-center gap-2"><Calendar className="w-5 h-5"/> Today's Focus</CardTitle>
-                      <CardDescription>Tasks scheduled for {format(today, 'MMMM do')}. ({completedTodayCount}/{todaysTasks.length} completed)</CardDescription>
+                      <CardDescription>Tasks for today & overdue tasks. ({completedTodayCount}/{allTodaysTasks.length} completed)</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                       <div className="pt-4 space-y-2">
-                          {todaysTasks.length > 0 ? (
-                          todaysTasks.map(task => {
-                              const isCompleted = (task.completions || []).includes(format(today, 'yyyy-MM-dd'));
+                          {allTodaysTasks.length > 0 ? (
+                          allTodaysTasks.map(task => {
                               const taskDate = task.date ? startOfDay(new Date(task.date)) : startOfDay(new Date());
+                              const isCompleted = (task.completions || []).includes(format(taskDate, 'yyyy-MM-dd'));
                               const isPast = isBefore(taskDate, startOfDay(today));
                               const canCarryForward = isPast && !isCompleted && task.type === 'single';
 
                               return (
                                 <TaskItem
-                                    key={`${task.id}-${format(today, 'yyyy-MM-dd')}`}
+                                    key={`${task.id}-${format(taskDate, 'yyyy-MM-dd')}`}
                                     task={task}
-                                    onToggle={() => onToggle(task.id, today)}
+                                    onToggle={() => onToggle(task.id, taskDate)}
                                     onDelete={() => onDelete(task.id)}
                                     isCompleted={isCompleted}
                                     onCarryForward={canCarryForward ? () => handleCarryForward(task.id) : undefined}

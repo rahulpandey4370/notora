@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Checkbox } from "@/components/ui/checkbox";
@@ -29,6 +30,8 @@ export default function TaskItem({ task, onToggle, onDelete, isCompleted, onCarr
   const uniqueId = `task-${task.id}-${task.date || ''}`;
   const taskXp = getTaskXp(task);
   const { resolvedTheme } = useTheme();
+  
+  const isOverdue = !!onCarryForward && !isCompleted;
 
   return (
     <motion.div
@@ -50,7 +53,7 @@ export default function TaskItem({ task, onToggle, onDelete, isCompleted, onCarr
           onCheckedChange={onToggle}
           aria-labelledby={`${uniqueId}-label`}
           className="w-5 h-5 border-2 border-black rounded-sm data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:border-slate-700"
-          disabled={!!onCarryForward && !isCompleted}
+          disabled={isOverdue}
         />
         <label
           id={`${uniqueId}-label`}
@@ -60,7 +63,8 @@ export default function TaskItem({ task, onToggle, onDelete, isCompleted, onCarr
           )}
         >
           <span className={cn(
-            isCompleted && 'line-through bg-primary/70 text-muted-foreground px-2 rounded-sm'
+            isCompleted && 'line-through bg-primary/70 text-muted-foreground px-2 rounded-sm',
+            isOverdue && 'text-muted-foreground'
           )}>
             {task.title}
           </span>
@@ -69,7 +73,7 @@ export default function TaskItem({ task, onToggle, onDelete, isCompleted, onCarr
       
       <Badge variant="outline" className={`font-mono text-xs ${priorityStyles[task.priority]}`}>{taskXp} XP</Badge>
 
-      {onCarryForward && !isCompleted && (
+      {isOverdue && (
         <Button variant="ghost" size="icon" onClick={onCarryForward} className="h-8 w-8 text-blue-500 hover:text-blue-500 rounded-full">
             <ChevronsRight className="h-4 w-4" />
         </Button>

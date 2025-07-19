@@ -320,7 +320,8 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
                           {todaysTasks.length > 0 ? (
                           todaysTasks.map(task => {
                               const isCompleted = (task.completions || []).includes(format(today, 'yyyy-MM-dd'));
-                              const isPast = task.date ? isBefore(startOfDay(new Date(task.date)), startOfDay(today)) : false;
+                              const taskDate = task.date ? new Date(task.date) : new Date();
+                              const isPast = isBefore(startOfDay(taskDate), startOfDay(today));
                               const canCarryForward = isPast && !isCompleted && task.type === 'single';
 
                               return (

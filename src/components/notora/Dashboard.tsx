@@ -5,7 +5,7 @@ import type { User, AppData, Task } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { useMemo } from 'react';
 import { Calendar, Flame, TrendingUp } from 'lucide-react';
-import { format, isSameDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, addDays, isSameMonth, isAfter, startOfDay, isBefore } from 'date-fns';
+import { format, isSameDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, addDays, isSameMonth, isAfter, startOfDay, isBefore, setHours, setMinutes, setSeconds } from 'date-fns';
 import { getTaskXp } from '@/lib/utils';
 import { useApp } from '@/hooks/use-app';
 import { PolarGrid, PolarRadiusAxis, RadialBar, RadialBarChart, Label } from "recharts"
@@ -143,14 +143,13 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
         
         if (task.type === 'single' && task.date) {
              const taskDate = startOfDay(new Date(task.date));
-             const isCompleted = (task.completions || []).includes(format(taskDate, 'yyyy-MM-dd'));
-             // Show today's tasks and overdue incomplete tasks
-             return isSameDay(taskDate, todayStart) || (isBefore(taskDate, todayStart) && !isCompleted);
+             return isSameDay(taskDate, todayStart);
         }
         
         if (task.type === 'recurring') {
-            // Show if task was created before or on today
-            return isSameDay(todayStart, createdAt) || isAfter(todayStart, createdAt);
+            const createdAtStart = startOfDay(createdAt);
+            const monthEnd = endOfMonth(createdAtStart);
+            return (isSameDay(todayStart, createdAtStart) || isAfter(todayStart, createdAtStart)) && (isSameDay(todayStart, monthEnd) || isBefore(todayStart, monthEnd));
         }
 
         if (task.type === 'weekly' && task.week) {
@@ -326,26 +325,22 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
               <Card className="border-2 border-black rounded-lg shadow-none dark:neon-border-yellow">
                   <CardHeader>
                       <CardTitle className="flex items-center gap-2"><Calendar className="w-5 h-5"/> Today's Focus</CardTitle>
-                      <CardDescription>Tasks for today & overdue tasks. ({completedTodayCount}/{allTodaysTasks.length} completed)</CardDescription>
+                      <CardDescription>Tasks for today. ({completedTodayCount}/{allTodaysTasks.length} completed)</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                       <div className="pt-4 space-y-2">
                           {allTodaysTasks.length > 0 ? (
                           allTodaysTasks.map(task => {
                               const todayStart = startOfDay(today);
-                              let taskDate, isCompleted, isPastDue, canCarryForward;
+                              let taskDate, isCompleted;
                               
                               if (task.type === 'single' && task.date) {
                                 taskDate = startOfDay(new Date(task.date));
                                 isCompleted = (task.completions || []).includes(format(taskDate, 'yyyy-MM-dd'));
-                                isPastDue = isBefore(taskDate, todayStart);
-                                canCarryForward = isPastDue && !isCompleted && (task.carryForwardCount || 0) < 2;
-                              } else { // Covers recurring and weekly
+                              } else { 
                                 taskDate = todayStart;
                                 const todayStr = format(taskDate, 'yyyy-MM-dd');
                                 isCompleted = (task.completions || []).includes(todayStr);
-                                isPastDue = false;
-                                canCarryForward = false;
                               }
 
                               return (
@@ -355,8 +350,6 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
                                     onToggle={() => onToggle(task.id, taskDate)}
                                     onDelete={() => onDelete(task.id)}
                                     isCompleted={isCompleted}
-                                    onCarryForward={canCarryForward ? () => handleCarryForward(task.id) : undefined}
-                                    isPastDue={isPastDue && !isCompleted}
                                 />
                               );
                           })

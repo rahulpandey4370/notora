@@ -30,8 +30,8 @@ interface TasksPageProps {
   showcase?: boolean;
 }
 
-function useTasksPageData(isShorwcase: boolean) {
-  if (isShorwcase) {
+function useTasksPageData(isShowcase: boolean) {
+  if (isShowcase) {
     const showcaseData = useShowcase();
     return {
       data: showcaseData.data,
@@ -254,7 +254,7 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
   const completedCountForDay = tasksForCurrentDay.filter(t => (t.completions || []).includes(format(currentDay, 'yyyy-MM-dd'))).length;
   const dailyProgress = tasksForCurrentDay.length > 0 ? (completedCountForDay / tasksForCurrentDay.length) * 100 : 0;
   
-  const isPastDay = isBefore(currentDay, startOfDay(new Date()));
+  const isPastDay = isBefore(startOfDay(currentDay), startOfDay(new Date()));
 
   return (
     <AppLayout data={data}>

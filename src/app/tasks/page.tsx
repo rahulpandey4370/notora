@@ -234,9 +234,10 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
               case 'single': 
                 return task.date ? isSameDay(new Date(task.date), date) : false;
               case 'recurring':
-                const createdAt = new Date(task.createdAt);
+                const createdAt = startOfDay(new Date(task.createdAt));
                 const monthEnd = endOfMonth(createdAt);
-                return (isSameDay(date, createdAt) || isAfter(date, createdAt)) && (isSameDay(date, monthEnd) || isAfter(monthEnd, date));
+                // Show if date is on or after creation, and within the same month.
+                return (isSameDay(date, createdAt) || isAfter(date, createdAt)) && (isSameDay(date, monthEnd) || isBefore(date, monthEnd));
               case 'weekly':
                 if (!task.week) return false;
                 const taskWeekStartDate = startOfWeek(new Date(task.week.replace(/(\\d{4})-(\\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
@@ -312,19 +313,17 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
                             <div className="space-y-2">
                             {tasksForCurrentDay.map(task => {
                                 let isCompleted, isPastDue, canCarryForward;
-                                
+                                const todayStart = startOfDay(new Date());
+                                const currentDayStart = startOfDay(currentDay);
+
                                 if (task.type === 'single' && task.date) {
                                   const taskDate = startOfDay(new Date(task.date));
                                   isCompleted = (task.completions || []).includes(format(taskDate, 'yyyy-MM-dd'));
-                                  isPastDue = isBefore(taskDate, startOfDay(new Date())) && !isCompleted;
+                                  isPastDue = isBefore(taskDate, todayStart) && !isCompleted;
                                   canCarryForward = isPastDue && (task.carryForwardCount || 0) < 2;
-                                } else if (task.type === 'recurring') {
-                                  isCompleted = (task.completions || []).includes(format(startOfDay(currentDay), 'yyyy-MM-dd'));
-                                  isPastDue = false;
-                                  canCarryForward = false;
-                                } else {
-                                  isCompleted = (task.completions || []).includes(format(startOfDay(currentDay), 'yyyy-MM-dd'));
-                                  isPastDue = false;
+                                } else { // For recurring and weekly tasks
+                                  isCompleted = (task.completions || []).includes(format(currentDayStart, 'yyyy-MM-dd'));
+                                  isPastDue = isBefore(currentDayStart, todayStart) && !isCompleted;
                                   canCarryForward = false;
                                 }
           

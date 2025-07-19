@@ -1,10 +1,11 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
 import type { AppData, SavedLink } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Loader2, Plus, Search } from 'lucide-react';
+import { Loader2, Plus, Search, X } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import { analyzeLink } from '@/ai/flows/analyze-link';
 import { searchLinks } from '@/ai/flows/search-links';
@@ -91,7 +92,7 @@ export default function LinkManager({ savedLinks, data, onDataChange }: LinkMana
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) {
-      setSearchedLinkIds(null);
+      handleClearSearch();
       return;
     }
 
@@ -110,13 +111,19 @@ export default function LinkManager({ savedLinks, data, onDataChange }: LinkMana
       setSearchLoading(false);
     }
   };
+
+  const handleClearSearch = () => {
+    setSearchQuery('');
+    setSearchedLinkIds(null);
+  };
   
   const filteredLinks = useMemo(() => {
     let linksToDisplay = savedLinks;
 
     if (searchedLinkIds !== null) {
       const idSet = new Set(searchedLinkIds);
-      linksToDisplay = linksToDisplay.filter(link => idSet.has(link.id));
+      linksToDisplay = savedLinks.filter(link => idSet.has(link.id))
+        .sort((a, b) => searchedLinkIds.indexOf(a.id) - searchedLinkIds.indexOf(b.id));
     }
 
     if (activeFilter) {
@@ -125,6 +132,8 @@ export default function LinkManager({ savedLinks, data, onDataChange }: LinkMana
 
     return linksToDisplay;
   }, [savedLinks, activeFilter, searchedLinkIds]);
+
+  const isSearchActive = searchedLinkIds !== null;
 
   return (
     <div className="p-4 md:p-8 space-y-6">
@@ -152,13 +161,26 @@ export default function LinkManager({ savedLinks, data, onDataChange }: LinkMana
                     placeholder="Search your links..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        handleSearch();
+                      }
+                      if (e.key === 'Escape') {
+                        handleClearSearch();
+                      }
+                    }}
                     className="w-full border-2 border-black rounded-md h-9"
                     disabled={searchLoading}
                 />
-                 <Button onClick={handleSearch} variant="outline" className="w-full sm:w-auto border-2 border-black rounded-md h-9 shadow-[2px_2px_0px_#000]" disabled={searchLoading}>
-                    {searchLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Search className="mr-2 h-4 w-4" />}
-                    Search
+                 <Button onClick={isSearchActive ? handleClearSearch : handleSearch} variant="outline" className="w-full sm:w-auto border-2 border-black rounded-md h-9 shadow-[2px_2px_0px_#000]" disabled={searchLoading}>
+                    {searchLoading ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : isSearchActive ? (
+                        <X className="mr-2 h-4 w-4" />
+                    ) : (
+                        <Search className="mr-2 h-4 w-4" />
+                    )}
+                    {isSearchActive ? 'Clear' : 'Search'}
                 </Button>
             </div>
         </div>

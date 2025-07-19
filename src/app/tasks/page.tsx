@@ -11,7 +11,7 @@ import TaskList from '@/components/notora/TaskList';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, ClipboardList, CalendarDays } from 'lucide-react';
-import { format, startOfMonth, addMonths, subMonths, isSameDay, startOfDay, addDays, subDays, isAfter, isSameMonth, endOfMonth, startOfWeek, isWithinInterval, isBefore } from 'date-fns';
+import { format, startOfMonth, addMonths, subMonths, isSameDay, startOfDay, addDays, subDays, isAfter, isSameMonth, endOfMonth, startOfWeek, isWithinInterval, isBefore, isYesterday, setHours, setMinutes, setSeconds } from 'date-fns';
 import type { Task } from '@/lib/types';
 import TaskItem from '@/components/notora/TaskItem';
 import { Progress } from '@/components/ui/progress';
@@ -255,8 +255,6 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
   const tasksForCurrentDay = getTasksForDate(currentDay);
   const completedCountForDay = tasksForCurrentDay.filter(t => (t.completions || []).includes(format(currentDay, 'yyyy-MM-dd'))).length;
   const dailyProgress = tasksForCurrentDay.length > 0 ? (completedCountForDay / tasksForCurrentDay.length) * 100 : 0;
-  
-  const isPastDay = isBefore(startOfDay(currentDay), startOfDay(new Date()));
 
   return (
     <AppLayout data={data}>
@@ -312,20 +310,20 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
                         {tasksForCurrentDay.length > 0 ? (
                             <div className="space-y-2">
                             {tasksForCurrentDay.map(task => {
-                                let isCompleted, isPastDue, canCarryForward;
-                                const todayStart = startOfDay(new Date());
+                                const today = new Date();
                                 const currentDayStart = startOfDay(currentDay);
-
-                                if (task.type === 'single' && task.date) {
-                                  const taskDate = startOfDay(new Date(task.date));
-                                  isCompleted = (task.completions || []).includes(format(taskDate, 'yyyy-MM-dd'));
-                                  isPastDue = isBefore(taskDate, todayStart) && !isCompleted;
-                                  canCarryForward = isPastDue && (task.carryForwardCount || 0) < 2;
-                                } else { // For recurring and weekly tasks
-                                  isCompleted = (task.completions || []).includes(format(currentDayStart, 'yyyy-MM-dd'));
-                                  isPastDue = isBefore(currentDayStart, todayStart) && !isCompleted;
-                                  canCarryForward = false;
+                                const isCompleted = (task.completions || []).includes(format(currentDayStart, 'yyyy-MM-dd'));
+                                
+                                // Grace period logic: Noon today
+                                const noonToday = setSeconds(setMinutes(setHours(today, 12), 0), 0);
+                                const isYesterdayView = isYesterday(currentDay);
+                                
+                                let isPastDue = isBefore(currentDayStart, startOfDay(today));
+                                if (isYesterdayView && isBefore(today, noonToday)) {
+                                    isPastDue = false; // It's yesterday, but before noon today, so not past due yet.
                                 }
+                                
+                                const canCarryForward = task.type === 'single' && isPastDue && !isCompleted && (task.carryForwardCount || 0) < 2;
           
                                 return (
                                     <TaskItem
@@ -335,8 +333,8 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
                                         onDelete={() => onDelete(task.id)}
                                         isCompleted={isCompleted}
                                         onCarryForward={canCarryForward ? () => handleCarryForward(task.id) : undefined}
-                                        isPastDue={isPastDue}
-                                        className={cn(isPastDue ? "bg-muted/50" : "")}
+                                        isPastDue={isPastDue && !isCompleted}
+                                        className={cn((isPastDue && !isCompleted) ? "bg-muted/50" : "")}
                                     />
                                 );
                             })}

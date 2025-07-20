@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -22,6 +23,19 @@ interface DayEndSummaryDialogProps {
   tasks: Task[];
 }
 
+const showNotification = (title: string, options: NotificationOptions) => {
+  if ('Notification' in window && Notification.permission === 'granted' && navigator.serviceWorker) {
+    navigator.serviceWorker.ready.then((registration) => {
+      registration.showNotification(title, {
+        ...options,
+        icon: '/notora.png',
+        badge: '/notora.png',
+      });
+    });
+  }
+};
+
+
 export default function DayEndSummaryDialog({ open, onOpenChange, tasks }: DayEndSummaryDialogProps) {
   const [summary, setSummary] = useState('');
   const [quote, setQuote] = useState('');
@@ -40,8 +54,11 @@ export default function DayEndSummaryDialog({ open, onOpenChange, tasks }: DayEn
           .map((task) => task.title);
 
         if (completedTasks.length === 0) {
-          setSummary("You didn't complete any tasks today. Let's aim to get at least one done tomorrow!");
-          setQuote("The secret of getting ahead is getting started. - Mark Twain");
+          const defaultSummary = "You didn't complete any tasks today. Let's aim to get at least one done tomorrow!";
+          const defaultQuote = "The secret of getting ahead is getting started. - Mark Twain";
+          setSummary(defaultSummary);
+          setQuote(defaultQuote);
+          showNotification("Today's Wrap-Up", { body: defaultQuote });
           setLoading(false);
           return;
         }
@@ -50,10 +67,13 @@ export default function DayEndSummaryDialog({ open, onOpenChange, tasks }: DayEn
           const result = await generateDayEndSummary({ completedTasks });
           setSummary(result.summary);
           setQuote(result.motivationalQuote);
+          showNotification("Today's Wrap-Up", { body: result.motivationalQuote });
         } catch (error) {
           console.error('Failed to generate summary:', error);
           setSummary('Could not generate summary at this time.');
-          setQuote('Every moment is a fresh beginning. - T.S. Eliot');
+          const defaultQuote = 'Every moment is a fresh beginning. - T.S. Eliot';
+          setQuote(defaultQuote);
+          showNotification("Today's Wrap-Up", { body: defaultQuote });
         } finally {
           setLoading(false);
         }

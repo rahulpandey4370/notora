@@ -137,7 +137,7 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
                 value={editedTitle}
                 onChange={e => setEditedTitle(e.target.value)}
                 placeholder="Note title..."
-                className="font-bold text-base border-0 border-b-2 rounded-none px-0 mb-2 focus-visible:ring-0"
+                className="font-bold text-base border-0 border-b-2 rounded-none px-0 mb-2 focus-visible:ring-0 bg-transparent"
               />
               <Textarea
                 value={editedContent}
@@ -149,15 +149,15 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
             </>
           ) : (
             <>
-              <h3 className="font-bold mb-2 truncate">{note.title || 'Note'}</h3>
-              <div className="prose prose-sm dark:prose-invert max-w-none flex-grow overflow-y-auto">
+              <h3 className="font-bold mb-2 truncate flex-shrink-0">{note.title || 'Note'}</h3>
+              <div className="prose prose-sm dark:prose-invert max-w-none flex-grow overflow-y-auto pr-2">
                 <ReactMarkdown>{note.content}</ReactMarkdown>
               </div>
             </>
           )}
         </div>
 
-        <div className="absolute bottom-1 right-1 flex items-center bg-transparent/50 rounded-full">
+        <div className="absolute bottom-1 right-1 flex items-center">
             {isEditing && (
                 <>
                 <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={handleSave}><Save className="h-4 w-4 text-green-600" /></Button>

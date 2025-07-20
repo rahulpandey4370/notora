@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useMemo, useCallback } from 'react';
+import { useRef, useMemo, useCallback, useEffect } from 'react';
 import StickyNote from './StickyNote';
 import type { AppData, NoteBoard, StickyNote as StickyNoteType } from '@/lib/types';
 import { Button } from '@/components/ui/button';
@@ -36,7 +36,7 @@ export default function StickyNotesBoard({ board, data, onDataChange, onSwitchVi
 
     return { 
       width: Math.max(containerWidth, maxX + PADDING),
-      height: maxY + PADDING 
+      height: Math.max(500, maxY + PADDING)
     };
   }, [board.notes]);
 
@@ -45,8 +45,20 @@ export default function StickyNotesBoard({ board, data, onDataChange, onSwitchVi
     const notesInBoard = board.notes || [];
 
     if (notesInBoard.length > 0) {
-      const maxY = Math.max(...notesInBoard.map(n => n.position.y + NOTE_HEIGHT));
-      newPosition = { x: PADDING, y: maxY + PADDING };
+      const maxY = Math.max(...notesInBoard.map(n => n.position.y));
+      const rightMostNoteOnBottomRow = notesInBoard
+        .filter(n => n.position.y === maxY)
+        .reduce((prev, current) => (prev.position.x > current.position.x) ? prev : current);
+
+      const boardWidth = constraintsRef.current?.clientWidth || window.innerWidth;
+
+      if (rightMostNoteOnBottomRow.position.x + NOTE_WIDTH * 2 + PADDING > boardWidth) {
+        // New row
+        newPosition = { x: PADDING, y: maxY + NOTE_HEIGHT + PADDING };
+      } else {
+        // Same row
+        newPosition = { x: rightMostNoteOnBottomRow.position.x + NOTE_WIDTH + PADDING, y: maxY };
+      }
     }
 
     const newNote: StickyNoteType = {
@@ -67,8 +79,7 @@ export default function StickyNotesBoard({ board, data, onDataChange, onSwitchVi
     try {
         const result = await generateNoteTitle({ content });
         if (result.title) {
-           const currentData = data; // Use a snapshot of data
-           const newNoteBoards = currentData.noteBoards.map(b =>
+           const newNoteBoards = data.noteBoards.map(b =>
             b.id === board.id
               ? {
                   ...b,
@@ -78,7 +89,7 @@ export default function StickyNotesBoard({ board, data, onDataChange, onSwitchVi
                 }
               : b
           );
-          onDataChange({ ...currentData, noteBoards: newNoteBoards });
+          onDataChange({ ...data, noteBoards: newNoteBoards });
         }
     } catch (error) {
         console.error("Failed to generate title:", error);
@@ -98,7 +109,6 @@ export default function StickyNotesBoard({ board, data, onDataChange, onSwitchVi
     );
     onDataChange({ ...data, noteBoards: newNoteBoards });
     
-    // Trigger title generation if content changes and title is empty
     if (isContentChange && newValues.content && !noteToUpdate.title) {
       if (titleGenerationTimeout.current) {
         clearTimeout(titleGenerationTimeout.current);
@@ -108,6 +118,15 @@ export default function StickyNotesBoard({ board, data, onDataChange, onSwitchVi
       }, 2000); // Debounce AI call
     }
   };
+
+  useEffect(() => {
+    // Cleanup timeout on unmount
+    return () => {
+      if (titleGenerationTimeout.current) {
+        clearTimeout(titleGenerationTimeout.current);
+      }
+    };
+  }, []);
 
   const handleDelete = (noteId: string) => {
     const newNoteBoards = data.noteBoards.map(b => 

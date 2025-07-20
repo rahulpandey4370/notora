@@ -1,6 +1,7 @@
 
 'use client';
 
+import { createRef, useEffect } from 'react';
 import type { AppData, NoteBoard, StickyNote } from '@/lib/types';
 import { ScrollArea } from '../ui/scroll-area';
 import FormattedNoteCard from './FormattedNoteCard';
@@ -10,10 +11,29 @@ interface FormattedNoteViewProps {
   board: NoteBoard;
   data: AppData;
   onDataChange: (data: AppData) => void;
+  noteToFocus?: string | null;
+  onFocusHandled?: () => void;
 }
 
-export default function FormattedNoteView({ board, data, onDataChange }: FormattedNoteViewProps) {
+export default function FormattedNoteView({ board, data, onDataChange, noteToFocus, onFocusHandled }: FormattedNoteViewProps) {
   const notes = board.notes || [];
+  const noteRefs = notes.reduce((acc, note) => {
+    acc[note.id] = createRef<HTMLDivElement>();
+    return acc;
+  }, {} as Record<string, React.RefObject<HTMLDivElement>>);
+
+  useEffect(() => {
+    if (noteToFocus && noteRefs[noteToFocus]?.current) {
+        noteRefs[noteToFocus].current?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+        });
+        // Reset focus after scrolling
+        if (onFocusHandled) {
+            onFocusHandled();
+        }
+    }
+  }, [noteToFocus, noteRefs, onFocusHandled]);
 
   const handleNoteChange = (noteId: string, newContent: Partial<StickyNote>) => {
     const newNoteBoards = data.noteBoards.map(b =>
@@ -51,7 +71,6 @@ export default function FormattedNoteView({ board, data, onDataChange }: Formatt
     },
   };
 
-
   return (
     <ScrollArea className="h-[70vh] pr-4">
       <motion.div 
@@ -68,6 +87,7 @@ export default function FormattedNoteView({ board, data, onDataChange }: Formatt
                     noteNumber={index + 1}
                     onNoteChange={handleNoteChange}
                     onNoteDelete={handleNoteDelete}
+                    scrollRef={noteRefs[note.id]}
                 />
             </motion.div>
           ))

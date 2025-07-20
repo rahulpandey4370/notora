@@ -26,6 +26,7 @@ export default function NoteBoardsManager({ noteBoards, data, onDataChange }: No
   const [editingBoard, setEditingBoard] = useState<{ id: string, title: string } | null>(null);
   const [activeBoardId, setActiveBoardId] = useState<string>(noteBoards[0]?.id || '');
   const [viewMode, setViewMode] = useState<ViewMode>('sticky');
+  const [noteToFocus, setNoteToFocus] = useState<string | null>(null);
 
   const handleAddBoard = () => {
     if (newBoardTitle.trim() === '') return;
@@ -68,8 +69,12 @@ export default function NoteBoardsManager({ noteBoards, data, onDataChange }: No
   }
 
   const handleSwitchToFormattedView = (noteId: string) => {
-    // For now, we just switch the view. In the future you could scroll to the specific note.
+    setNoteToFocus(noteId);
     setViewMode('formatted');
+  }
+  
+  const handleFocusHandled = () => {
+    setNoteToFocus(null);
   }
 
   const activeBoard = noteBoards.find(b => b.id === activeBoardId);
@@ -169,7 +174,13 @@ export default function NoteBoardsManager({ noteBoards, data, onDataChange }: No
             viewMode === 'sticky' ? (
               <StickyNotesBoard board={activeBoard} data={data} onDataChange={onDataChange} onSwitchView={handleSwitchToFormattedView}/>
             ) : (
-              <FormattedNoteView board={activeBoard} data={data} onDataChange={onDataChange}/>
+              <FormattedNoteView 
+                board={activeBoard} 
+                data={data} 
+                onDataChange={onDataChange} 
+                noteToFocus={noteToFocus} 
+                onFocusHandled={handleFocusHandled}
+              />
             )
           )
         ) : (

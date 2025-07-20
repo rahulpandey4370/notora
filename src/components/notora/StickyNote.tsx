@@ -6,7 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import type { StickyNote as StickyNoteType } from '@/lib/types';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { MoreVertical, Trash2, Wand2, BookText, List, BrainCircuit, Loader2, Paintbrush, TextCursorInput, RotateCcw, Newspaper, Edit, Save, X } from 'lucide-react';
+import { MoreVertical, Trash2, Wand2, BookText, List, BrainCircuit, Loader2, Paintbrush, TextCursorInput, RotateCcw, Newspaper, Save, X } from 'lucide-react';
 import { polishStickyNote } from '@/ai/flows/polish-sticky-note';
 import { summarizeStickyNote } from '@/ai/flows/summarize-sticky-note';
 import { bulletifyStickyNote } from '@/ai/flows/bullet-ify-sticky-note';
@@ -50,14 +50,16 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
   const x = useMotionValue(note.position.x);
   const y = useMotionValue(note.position.y);
   const dragControls = useDragControls();
-  const contentRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     if (isEditing && textareaRef.current) {
-      textareaRef.current.focus();
+        textareaRef.current.focus();
+        // Auto-resize textarea
+        textareaRef.current.style.height = 'auto';
+        textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
-  }, [isEditing]);
+  }, [isEditing, editedContent]);
   
   const handleAIAction = async (operation: AIOperation) => {
     setAiLoading(operation);
@@ -125,24 +127,17 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
     setIsEditing(false);
   };
 
-
   return (
     <>
       <motion.div
         drag
-        dragListener={false}
         onPointerDown={(e) => {
-          const target = e.target as HTMLElement;
-          // Allow drag only on the header/title area when not editing
-          if (!isEditing && target.closest('.note-header')) {
-            dragControls.start(e);
-            return;
-          }
-          // Prevent drag when interacting with buttons, inputs, textareas, or scrollbars
-          if (target.closest('button') || target.closest('textarea') || target.closest('input') || target.closest('.prose')) {
-            return;
-          }
-          dragControls.start(e);
+            const target = e.target as HTMLElement;
+            if (isEditing) return; // Disable drag when editing
+            // Allow drag only on the header/title area when not editing
+            if (target.closest('.note-header')) {
+                dragControls.start(e);
+            }
         }}
         dragControls={dragControls}
         dragConstraints={constraintsRef}
@@ -168,7 +163,6 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
         </div>
 
         <div 
-          ref={contentRef}
           className="px-4 pt-1 pb-1 flex-grow flex flex-col min-h-0"
           onClick={() => !isEditing && handleStartEditing()}
         >
@@ -177,7 +171,7 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
               ref={textareaRef}
               value={editedContent}
               onChange={(e) => setEditedContent(e.target.value)}
-              className="w-full h-full bg-transparent border-0 focus-visible:ring-0 resize-none text-sm p-0"
+              className="w-full h-full bg-transparent border-0 focus-visible:ring-0 resize-none text-sm p-0 overflow-y-auto"
               placeholder="What's on your mind?"
             />
           ) : (
@@ -187,12 +181,12 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
           )}
         </div>
 
-        <div className="flex items-center justify-end px-2 pb-1 flex-shrink-0">
+        <div className="flex items-center justify-end px-2 py-1 flex-shrink-0">
             {isEditing && (
-                <>
-                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={handleSave}><Save className="h-4 w-4 text-green-600" /></Button>
-                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={handleCancel}><X className="h-4 w-4 text-red-600" /></Button>
-                </>
+                <div className="flex-1 flex gap-1">
+                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={handleSave}><Save className="h-4 w-4 text-green-600" /></Button>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={handleCancel}><X className="h-4 w-4 text-red-600" /></Button>
+                </div>
             )}
           <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -201,7 +195,6 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
                   </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={handleStartEditing} disabled={isEditing}><Edit className="mr-2 h-4 w-4" /> Edit</DropdownMenuItem>
                   <DropdownMenuItem onClick={() => onSwitchView(note.id)}>
                       <Newspaper className="mr-2 h-4 w-4" /> View in Formatted Mode
                   </DropdownMenuItem>

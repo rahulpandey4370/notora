@@ -1,14 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { motion } from 'framer-motion';
 import type { StickyNote } from '@/lib/types';
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
-import { MoreVertical, Edit, Save, X, Trash2, Wand2, BookText, List, BrainCircuit, TextCursorInput, RotateCcw, Paintbrush, Loader2 } from 'lucide-react';
+import { MoreVertical, Save, Trash2, Wand2, BookText, List, BrainCircuit, TextCursorInput, RotateCcw, Paintbrush, Loader2 } from 'lucide-react';
 import { polishStickyNote } from '@/ai/flows/polish-sticky-note';
 import { summarizeStickyNote } from '@/ai/flows/summarize-sticky-note';
 import { bulletifyStickyNote } from '@/ai/flows/bullet-ify-sticky-note';
@@ -22,6 +22,7 @@ interface FormattedNoteCardProps {
   noteNumber: number;
   onNoteChange: (id: string, newContent: Partial<StickyNote>) => void;
   onNoteDelete: (id: string) => void;
+  scrollRef?: React.RefObject<HTMLDivElement>;
 }
 
 const themeColors: Record<StickyNote['theme'], string> = {
@@ -36,13 +37,21 @@ const themes: StickyNote['theme'][] = ['yellow', 'blue', 'green', 'pink', 'purpl
 
 type AIOperation = 'polish' | 'summarize' | 'bulletify' | 'simplify';
 
-export default function FormattedNoteCard({ note, noteNumber, onNoteChange, onNoteDelete }: FormattedNoteCardProps) {
+export default function FormattedNoteCard({ note, noteNumber, onNoteChange, onNoteDelete, scrollRef }: FormattedNoteCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState(note.title || '');
   const [editedContent, setEditedContent] = useState(note.content);
   const [aiLoading, setAiLoading] = useState<AIOperation | null>(null);
   const [isPromptDialogOpen, setIsPromptDialogOpen] = useState(false);
   const [previousContent, setPreviousContent] = useState<string | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (isEditing && textareaRef.current) {
+        textareaRef.current.style.height = 'auto';
+        textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  }, [isEditing, editedContent]);
 
   const handleSave = () => {
     onNoteChange(note.id, { title: editedTitle, content: editedContent });
@@ -65,18 +74,22 @@ export default function FormattedNoteCard({ note, noteNumber, onNoteChange, onNo
             case 'polish':
                 result = await polishStickyNote({ content: contentToProcess });
                 onNoteChange(note.id, { content: result.polishedContent });
+                if(isEditing) setEditedContent(result.polishedContent);
                 break;
             case 'summarize':
                 result = await summarizeStickyNote({ content: contentToProcess });
                 onNoteChange(note.id, { content: result.summary });
+                if(isEditing) setEditedContent(result.summary);
                 break;
             case 'bulletify':
                 result = await bulletifyStickyNote({ text: contentToProcess });
                 onNoteChange(note.id, { content: result.bulletifiedText });
+                if(isEditing) setEditedContent(result.bulletifiedText);
                 break;
             case 'simplify':
                 result = await simplifyStickyNote({ text: contentToProcess });
                 onNoteChange(note.id, { content: result.simplifiedText });
+                if(isEditing) setEditedContent(result.simplifiedText);
                 break;
         }
     } catch (error) {
@@ -101,7 +114,7 @@ export default function FormattedNoteCard({ note, noteNumber, onNoteChange, onNo
 
   return (
     <>
-      <Card className={cn("dark:bg-card/50 transition-all", themeColors[note.theme])}>
+      <Card ref={scrollRef} className={cn("dark:bg-card/50 transition-all", themeColors[note.theme])}>
         <CardHeader className="flex flex-row items-start justify-between py-3 gap-4">
           {isEditing ? (
              <Input 
@@ -122,10 +135,6 @@ export default function FormattedNoteCard({ note, noteNumber, onNoteChange, onNo
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => setIsEditing(!isEditing)}>
-                <Edit className="mr-2 h-4 w-4" /> {isEditing ? 'Cancel Edit' : 'Edit'}
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => handleAIAction('polish')} disabled={!!aiLoading}>
                 {aiLoading === 'polish' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />} Polish This
               </DropdownMenuItem>
@@ -169,9 +178,10 @@ export default function FormattedNoteCard({ note, noteNumber, onNoteChange, onNo
           {isEditing ? (
             <div className="space-y-2">
               <Textarea
+                ref={textareaRef}
                 value={editedContent}
                 onChange={(e) => setEditedContent(e.target.value)}
-                className="h-32"
+                className="w-full bg-transparent border rounded-md p-2 focus-visible:ring-1 resize-none overflow-hidden"
                 autoFocus
               />
               <div className="flex justify-end gap-2">

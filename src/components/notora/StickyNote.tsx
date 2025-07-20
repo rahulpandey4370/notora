@@ -135,13 +135,14 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
             `rounded-lg shadow-md border ${themeColors[note.theme] || themeColors.yellow} flex flex-col cursor-default overflow-hidden`,
             isMobile ? 'w-full h-auto min-h-[256px]' : 'absolute',
         )}
-        style={isMobile ? {} : { width: NOTE_SIZE, height: NOTE_SIZE }}
+        style={isMobile ? {} : { width: NOTE_SIZE, height: 'auto' }}
         onClick={handleStartEditing}
       >
         <div 
           className="note-header p-2 pb-0 flex-shrink-0 cursor-grab active:cursor-grabbing"
           onPointerDown={(e) => {
               if (isMobile || isEditing) return;
+              e.preventDefault();
               dragControls.start(e);
           }}
           onDoubleClick={handleStartEditing}
@@ -172,13 +173,13 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
               placeholder="What's on your mind?"
             />
           ) : (
-            <div className="prose prose-sm dark:prose-invert max-w-none flex-grow overflow-y-auto pr-2">
+            <div className="prose prose-sm dark:prose-invert max-w-none flex-grow overflow-y-auto pr-2 h-36">
               <ReactMarkdown>{note.content || "Click to start typing..."}</ReactMarkdown>
             </div>
           )}
         </div>
 
-        <div className="flex items-center justify-end px-2 py-1 flex-shrink-0" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-end px-2 py-1 flex-shrink-0 mt-auto" onClick={e => e.stopPropagation()}>
             {isEditing && (
                 <div className="flex-1 flex gap-1">
                     <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={handleSave}><Save className="h-4 w-4 text-green-600" /></Button>

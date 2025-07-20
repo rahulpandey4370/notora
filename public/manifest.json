@@ -1,27 +1,23 @@
 {
   "name": "Notora",
   "short_name": "Notora",
-  "description": "Your magical productivity assistant.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
+  "background_color": "#FFDA63",
   "theme_color": "#FFDA63",
+  "description": "Your magical productivity assistant.",
   "icons": [
     {
       "src": "/notora.png",
       "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "/notora.png",
-      "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "/notora.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "any maskable"
     }
   ]
 }

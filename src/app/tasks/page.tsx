@@ -137,6 +137,18 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
     );
   }
   
+  const showNotification = (title: string, options: NotificationOptions) => {
+    if ('Notification' in window && Notification.permission === 'granted') {
+      navigator.serviceWorker.ready.then((registration) => {
+        registration.showNotification(title, {
+          ...options,
+          icon: '/notora.png',
+          badge: '/notora.png',
+        });
+      });
+    }
+  };
+
   const onToggle = (id: string, date: Date) => {
     let xpChange = 0;
     const newTasks = data.tasks.map((task) => {
@@ -157,16 +169,21 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
           newCompletions = [...(task.completions || []), dateStr];
         }
 
-        if(!isCompleted && toast) {
+        if(!isCompleted) {
+            const message = `You've completed "${task.title}". Great job!`;
             toast({
                 title: `+${taskXp} XP! ✨`,
-                description: `You've completed "${task.title}". Great job!`,
+                description: message,
             });
-            if (data.userStats.xp + xpChange > 100 && data.userStats.xp <= 100) {
+            showNotification(`+${taskXp} XP! ✨`, { body: message });
+
+            if (data.userStats.xp < 100 && data.userStats.xp + xpChange >= 100) {
+              const rewardMessage = 'You have earned over 100 XP. Time for a well-deserved break!';
               toast({
                 title: '🎉 Reward Yourself! 🎉',
-                description: 'You have earned over 100 XP. Time for a well-deserved break!',
+                description: rewardMessage,
               });
+              showNotification('🎉 Reward Yourself! 🎉', { body: rewardMessage });
             }
         }
         return { ...task, completions: newCompletions };

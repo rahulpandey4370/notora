@@ -24,8 +24,6 @@ export interface StickyNote {
   content: string;
   position: { x: number; y: number };
   theme: 'yellow' | 'blue' | 'green' | 'pink' | 'purple';
-  width?: number;
-  height?: number;
 }
 
 export interface NoteBoard {

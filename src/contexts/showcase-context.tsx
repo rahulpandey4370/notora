@@ -52,8 +52,6 @@ const getDefaultDemoData = (): AppData => ({
           content: 'Welcome to the Notora Showcase! ✨\n\nThis is a fully interactive demo. Feel free to add tasks, edit notes, and try the AI features. Your changes are temporary and will reset when you leave.',
           position: { x: 50, y: 50 }, 
           theme: 'yellow',
-          width: 256,
-          height: 256,
         },
       ]
     }

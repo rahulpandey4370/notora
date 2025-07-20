@@ -67,6 +67,11 @@ export default function NoteBoardsManager({ noteBoards, data, onDataChange }: No
     setEditingBoard(null);
   }
 
+  const handleSwitchToFormattedView = (noteId: string) => {
+    // For now, we just switch the view. In the future you could scroll to the specific note.
+    setViewMode('formatted');
+  }
+
   const activeBoard = noteBoards.find(b => b.id === activeBoardId);
 
   return (
@@ -162,7 +167,7 @@ export default function NoteBoardsManager({ noteBoards, data, onDataChange }: No
         {noteBoards.length > 0 ? (
           activeBoard && (
             viewMode === 'sticky' ? (
-              <StickyNotesBoard board={activeBoard} data={data} onDataChange={onDataChange} />
+              <StickyNotesBoard board={activeBoard} data={data} onDataChange={onDataChange} onSwitchView={handleSwitchToFormattedView}/>
             ) : (
               <FormattedNoteView board={activeBoard} data={data} onDataChange={onDataChange}/>
             )

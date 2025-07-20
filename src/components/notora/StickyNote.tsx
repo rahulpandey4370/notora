@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { motion, useMotionValue, useDragControls } from 'framer-motion';
 import { Textarea } from '@/components/ui/textarea';
 import type { StickyNote as StickyNoteType } from '@/lib/types';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { MoreVertical, Trash2, Wand2, BookText, List, BrainCircuit, Loader2, Paintbrush, TextCursorInput, RotateCcw } from 'lucide-react';
+import { MoreVertical, Trash2, Wand2, BookText, List, BrainCircuit, Loader2, Paintbrush, TextCursorInput, RotateCcw, Newspaper } from 'lucide-react';
 import { polishStickyNote } from '@/ai/flows/polish-sticky-note';
 import { summarizeStickyNote } from '@/ai/flows/summarize-sticky-note';
 import { bulletifyStickyNote } from '@/ai/flows/bullet-ify-sticky-note';
@@ -18,8 +18,8 @@ interface StickyNoteProps {
   onChange: (id: string, newContent: Partial<StickyNoteType>) => void;
   onDelete: (id: string) => void;
   onStopDrag: (id: string, position: { x: number; y: number }) => void;
-  onStopResize: (id: string, size: { width: number; height: number }) => void;
   constraintsRef: React.RefObject<HTMLDivElement>;
+  onSwitchView: (noteId: string) => void;
 }
 
 const themeColors: Record<StickyNoteType['theme'], string> = {
@@ -34,19 +34,15 @@ const themes: StickyNoteType['theme'][] = ['yellow', 'blue', 'green', 'pink', 'p
 
 type AIOperation = 'polish' | 'summarize' | 'bulletify' | 'simplify';
 
-const MIN_WIDTH = 256;
-const MIN_HEIGHT = 256;
+const NOTE_SIZE = 256;
 
-export default function StickyNote({ note, onChange, onDelete, onStopDrag, onStopResize, constraintsRef }: StickyNoteProps) {
-  const [isFocused, setIsFocused] = useState(false);
+export default function StickyNote({ note, onChange, onDelete, onStopDrag, constraintsRef, onSwitchView }: StickyNoteProps) {
   const [aiLoading, setAiLoading] = useState<AIOperation | null>(null);
   const [isPromptDialogOpen, setIsPromptDialogOpen] = useState(false);
   const [previousContent, setPreviousContent] = useState<string | null>(null);
 
   const x = useMotionValue(note.position.x);
   const y = useMotionValue(note.position.y);
-  const width = useMotionValue(note.width || MIN_WIDTH);
-  const height = useMotionValue(note.height || MIN_HEIGHT);
   const dragControls = useDragControls();
 
   const handleAIAction = async (operation: AIOperation) => {
@@ -108,15 +104,13 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, onSto
         dragConstraints={constraintsRef}
         whileDrag={{ scale: 1.05, zIndex: 50, boxShadow: "0px 10px 30px rgba(0,0,0,0.2)" }}
         onDragEnd={() => onStopDrag(note.id, { x: x.get(), y: y.get() })}
-        style={{ x, y, width, height }}
+        style={{ x, y, width: NOTE_SIZE, height: NOTE_SIZE }}
         className={`absolute p-4 rounded-lg shadow-md border ${themeColors[note.theme] || themeColors.yellow} flex flex-col cursor-grab active:cursor-grabbing overflow-hidden`}
       >
         <Textarea
           value={note.content}
           onChange={(e) => onChange(note.id, { content: e.target.value })}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
-          className="w-full h-full bg-transparent border-0 focus-visible:ring-0 resize-none text-sm"
+          className="w-full h-full bg-transparent border-0 focus-visible:ring-0 resize-none text-sm overflow-y-auto"
           placeholder="What's on your mind?"
         />
         <div className="absolute bottom-2 right-2 flex items-center">
@@ -127,6 +121,10 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, onSto
                   </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => onSwitchView(note.id)}>
+                      <Newspaper className="mr-2 h-4 w-4" /> View in Formatted Mode
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => handleAIAction('polish')} disabled={!!aiLoading}>
                       {aiLoading === 'polish' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />} Polish This
                   </DropdownMenuItem>
@@ -166,21 +164,6 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, onSto
               </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        
-        <motion.div
-            className="resize-handle absolute bottom-0 right-0 w-4 h-4 cursor-nwse-resize z-10"
-            drag="both"
-            dragMomentum={false}
-            onDrag={(_, info) => {
-                const newWidth = Math.max(MIN_WIDTH, width.get() + info.delta.x);
-                const newHeight = Math.max(MIN_HEIGHT, height.get() + info.delta.y);
-                width.set(newWidth);
-                height.set(newHeight);
-            }}
-            onDragEnd={() => {
-                onStopResize(note.id, { width: width.get(), height: height.get() });
-            }}
-        />
 
       </motion.div>
       <CustomPromptDialog

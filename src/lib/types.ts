@@ -21,6 +21,7 @@ export interface Task {
 
 export interface StickyNote {
   id: string;
+  title?: string;
   content: string;
   position: { x: number; y: number };
   theme: 'yellow' | 'blue' | 'green' | 'pink' | 'purple';

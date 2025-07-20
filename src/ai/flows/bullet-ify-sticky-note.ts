@@ -29,9 +29,9 @@ const prompt = ai.definePrompt({
   name: 'bulletifyStickyNotePrompt',
   input: {schema: BulletifyStickyNoteInputSchema},
   output: {schema: BulletifyStickyNoteOutputSchema},
-  prompt: `Convert the following text into bullet points for better readability and organization.
+  prompt: `Convert the following text into a Markdown-formatted bulleted list.
 
-Provide the output as plain text only, without any Markdown formatting (e.g., use "-" for bullet points instead of "*").
+Use "-" for bullet points.
 
 Input Text:
 {{{text}}}`,

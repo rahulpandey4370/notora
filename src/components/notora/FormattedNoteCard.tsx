@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -16,6 +15,7 @@ import { bulletifyStickyNote } from '@/ai/flows/bullet-ify-sticky-note';
 import { simplifyStickyNote } from '@/ai/flows/simplify-sticky-note';
 import CustomPromptDialog from './CustomPromptDialog';
 import { cn } from '@/lib/utils';
+import { Input } from '../ui/input';
 
 interface FormattedNoteCardProps {
   note: StickyNote;
@@ -38,17 +38,19 @@ type AIOperation = 'polish' | 'summarize' | 'bulletify' | 'simplify';
 
 export default function FormattedNoteCard({ note, noteNumber, onNoteChange, onNoteDelete }: FormattedNoteCardProps) {
   const [isEditing, setIsEditing] = useState(false);
+  const [editedTitle, setEditedTitle] = useState(note.title || '');
   const [editedContent, setEditedContent] = useState(note.content);
   const [aiLoading, setAiLoading] = useState<AIOperation | null>(null);
   const [isPromptDialogOpen, setIsPromptDialogOpen] = useState(false);
   const [previousContent, setPreviousContent] = useState<string | null>(null);
 
   const handleSave = () => {
-    onNoteChange(note.id, { content: editedContent });
+    onNoteChange(note.id, { title: editedTitle, content: editedContent });
     setIsEditing(false);
   };
 
   const handleCancel = () => {
+    setEditedTitle(note.title || '');
     setEditedContent(note.content);
     setIsEditing(false);
   };
@@ -58,21 +60,22 @@ export default function FormattedNoteCard({ note, noteNumber, onNoteChange, onNo
     setPreviousContent(note.content);
     try {
         let result;
+        const contentToProcess = isEditing ? editedContent : note.content;
         switch (operation) {
             case 'polish':
-                result = await polishStickyNote({ content: note.content });
+                result = await polishStickyNote({ content: contentToProcess });
                 onNoteChange(note.id, { content: result.polishedContent });
                 break;
             case 'summarize':
-                result = await summarizeStickyNote({ content: note.content });
+                result = await summarizeStickyNote({ content: contentToProcess });
                 onNoteChange(note.id, { content: result.summary });
                 break;
             case 'bulletify':
-                result = await bulletifyStickyNote({ text: note.content });
+                result = await bulletifyStickyNote({ text: contentToProcess });
                 onNoteChange(note.id, { content: result.bulletifiedText });
                 break;
             case 'simplify':
-                result = await simplifyStickyNote({ text: note.content });
+                result = await simplifyStickyNote({ text: contentToProcess });
                 onNoteChange(note.id, { content: result.simplifiedText });
                 break;
         }
@@ -99,17 +102,28 @@ export default function FormattedNoteCard({ note, noteNumber, onNoteChange, onNo
   return (
     <>
       <Card className={cn("dark:bg-card/50 transition-all", themeColors[note.theme])}>
-        <CardHeader className="flex flex-row items-center justify-between py-3">
-          <CardTitle className="text-base font-semibold">Note {noteNumber}</CardTitle>
+        <CardHeader className="flex flex-row items-start justify-between py-3 gap-4">
+          {isEditing ? (
+             <Input 
+                value={editedTitle}
+                onChange={e => setEditedTitle(e.target.value)}
+                placeholder="Note title..."
+                className="font-bold text-base flex-1 h-8"
+              />
+          ) : (
+            <CardTitle className="text-base font-semibold py-1">
+              {note.title ? `${noteNumber}. ${note.title}` : `Note ${noteNumber}`}
+            </CardTitle>
+          )}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8">
+              <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0">
                 <MoreVertical className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => setIsEditing(true)}>
-                <Edit className="mr-2 h-4 w-4" /> Edit
+              <DropdownMenuItem onClick={() => setIsEditing(!isEditing)}>
+                <Edit className="mr-2 h-4 w-4" /> {isEditing ? 'Cancel Edit' : 'Edit'}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => handleAIAction('polish')} disabled={!!aiLoading}>
@@ -151,7 +165,7 @@ export default function FormattedNoteCard({ note, noteNumber, onNoteChange, onNo
             </DropdownMenuContent>
           </DropdownMenu>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-0">
           {isEditing ? (
             <div className="space-y-2">
               <Textarea

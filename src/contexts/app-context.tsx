@@ -16,7 +16,8 @@ const defaultAppData: AppData = {
       notes: [
         { 
           id: 'note-1', 
-          content: 'Welcome to Notora! ✨\n\nThis is a draggable sticky note. You can edit me or use the AI tools in the menu below.', 
+          title: 'Welcome! ✨',
+          content: 'This is a draggable sticky note. You can edit me or use the AI tools in the menu below.', 
           position: { x: 50, y: 50 }, 
           theme: 'yellow' 
         },
@@ -65,6 +66,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     } else {
       // Backwards compatibility for old data
       appData.tasks = appData.tasks.map(t => ({ ...t, createdAt: t.createdAt || new Date().toISOString() }));
+      appData.noteBoards = appData.noteBoards.map(b => ({
+        ...b,
+        notes: b.notes.map(n => ({...n, title: n.title || ''}))
+      }));
     }
     
     setData(appData);

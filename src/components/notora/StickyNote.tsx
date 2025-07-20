@@ -6,12 +6,14 @@ import { Textarea } from '@/components/ui/textarea';
 import type { StickyNote as StickyNoteType } from '@/lib/types';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { MoreVertical, Trash2, Wand2, BookText, List, BrainCircuit, Loader2, Paintbrush, TextCursorInput, RotateCcw, Newspaper } from 'lucide-react';
+import { MoreVertical, Trash2, Wand2, BookText, List, BrainCircuit, Loader2, Paintbrush, TextCursorInput, RotateCcw, Newspaper, Edit, Save, X } from 'lucide-react';
 import { polishStickyNote } from '@/ai/flows/polish-sticky-note';
 import { summarizeStickyNote } from '@/ai/flows/summarize-sticky-note';
 import { bulletifyStickyNote } from '@/ai/flows/bullet-ify-sticky-note';
 import { simplifyStickyNote } from '@/ai/flows/simplify-sticky-note';
 import CustomPromptDialog from './CustomPromptDialog';
+import ReactMarkdown from 'react-markdown';
+import { Input } from '../ui/input';
 
 interface StickyNoteProps {
   note: StickyNoteType;
@@ -40,6 +42,10 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
   const [aiLoading, setAiLoading] = useState<AIOperation | null>(null);
   const [isPromptDialogOpen, setIsPromptDialogOpen] = useState(false);
   const [previousContent, setPreviousContent] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedContent, setEditedContent] = useState(note.content);
+  const [editedTitle, setEditedTitle] = useState(note.title || '');
+
 
   const x = useMotionValue(note.position.x);
   const y = useMotionValue(note.position.y);
@@ -50,21 +56,22 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
     setPreviousContent(note.content);
     try {
         let result;
+        const contentToProcess = isEditing ? editedContent : note.content;
         switch (operation) {
             case 'polish':
-                result = await polishStickyNote({ content: note.content });
+                result = await polishStickyNote({ content: contentToProcess });
                 onChange(note.id, { content: result.polishedContent });
                 break;
             case 'summarize':
-                result = await summarizeStickyNote({ content: note.content });
+                result = await summarizeStickyNote({ content: contentToProcess });
                 onChange(note.id, { content: result.summary });
                 break;
             case 'bulletify':
-                result = await bulletifyStickyNote({ text: note.content });
+                result = await bulletifyStickyNote({ text: contentToProcess });
                 onChange(note.id, { content: result.bulletifiedText });
                 break;
             case 'simplify':
-                result = await simplifyStickyNote({ text: note.content });
+                result = await simplifyStickyNote({ text: contentToProcess });
                 onChange(note.id, { content: result.simplifiedText });
                 break;
         }
@@ -86,7 +93,23 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
   const handleCustomPrompt = () => {
     setPreviousContent(note.content);
     setIsPromptDialogOpen(true);
-  }
+  };
+  
+  const handleStartEditing = () => {
+    setEditedTitle(note.title || '');
+    setEditedContent(note.content);
+    setIsEditing(true);
+  };
+
+  const handleSave = () => {
+    onChange(note.id, { title: editedTitle, content: editedContent });
+    setIsEditing(false);
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+  };
+
 
   return (
     <>
@@ -95,7 +118,7 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
         dragListener={false}
         onPointerDown={(e) => {
           const target = e.target as HTMLElement;
-          if (target.closest('.resize-handle') || target.closest('button') || target instanceof HTMLTextAreaElement) {
+          if (target.closest('.resize-handle') || target.closest('button') || target instanceof HTMLTextAreaElement || target instanceof HTMLInputElement) {
               return;
           }
           dragControls.start(e)
@@ -105,15 +128,42 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
         whileDrag={{ scale: 1.05, zIndex: 50, boxShadow: "0px 10px 30px rgba(0,0,0,0.2)" }}
         onDragEnd={() => onStopDrag(note.id, { x: x.get(), y: y.get() })}
         style={{ x, y, width: NOTE_SIZE, height: NOTE_SIZE }}
-        className={`absolute p-4 rounded-lg shadow-md border ${themeColors[note.theme] || themeColors.yellow} flex flex-col cursor-grab active:cursor-grabbing overflow-hidden`}
+        className={`absolute rounded-lg shadow-md border ${themeColors[note.theme] || themeColors.yellow} flex flex-col cursor-grab active:cursor-grabbing overflow-hidden`}
       >
-        <Textarea
-          value={note.content}
-          onChange={(e) => onChange(note.id, { content: e.target.value })}
-          className="w-full h-full bg-transparent border-0 focus-visible:ring-0 resize-none text-sm overflow-y-auto"
-          placeholder="What's on your mind?"
-        />
-        <div className="absolute bottom-2 right-2 flex items-center">
+        <div className="p-4 flex-grow flex flex-col min-h-0">
+          {isEditing ? (
+            <>
+              <Input 
+                value={editedTitle}
+                onChange={e => setEditedTitle(e.target.value)}
+                placeholder="Note title..."
+                className="font-bold text-base border-0 border-b-2 rounded-none px-0 mb-2 focus-visible:ring-0"
+              />
+              <Textarea
+                value={editedContent}
+                onChange={(e) => setEditedContent(e.target.value)}
+                className="w-full h-full bg-transparent border-0 focus-visible:ring-0 resize-none text-sm p-0"
+                placeholder="What's on your mind?"
+                autoFocus
+              />
+            </>
+          ) : (
+            <>
+              <h3 className="font-bold mb-2 truncate">{note.title || 'Note'}</h3>
+              <div className="prose prose-sm dark:prose-invert max-w-none flex-grow overflow-y-auto">
+                <ReactMarkdown>{note.content}</ReactMarkdown>
+              </div>
+            </>
+          )}
+        </div>
+
+        <div className="absolute bottom-1 right-1 flex items-center bg-transparent/50 rounded-full">
+            {isEditing && (
+                <>
+                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={handleSave}><Save className="h-4 w-4 text-green-600" /></Button>
+                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={handleCancel}><X className="h-4 w-4 text-red-600" /></Button>
+                </>
+            )}
           <DropdownMenu>
               <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
@@ -121,6 +171,7 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
                   </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+                  {!isEditing && <DropdownMenuItem onClick={handleStartEditing}><Edit className="mr-2 h-4 w-4" /> Edit</DropdownMenuItem>}
                   <DropdownMenuItem onClick={() => onSwitchView(note.id)}>
                       <Newspaper className="mr-2 h-4 w-4" /> View in Formatted Mode
                   </DropdownMenuItem>

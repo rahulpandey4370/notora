@@ -1,12 +1,13 @@
 'use client';
 
-import { useRef, useMemo } from 'react';
+import { useRef, useMemo, useCallback } from 'react';
 import StickyNote from './StickyNote';
 import type { AppData, NoteBoard, StickyNote as StickyNoteType } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import { ScrollArea, ScrollBar } from '../ui/scroll-area';
+import { generateNoteTitle } from '@/ai/flows/generate-note-title';
 
 interface StickyNotesBoardProps {
   board: NoteBoard;
@@ -22,6 +23,7 @@ const PADDING = 24;
 
 export default function StickyNotesBoard({ board, data, onDataChange, onSwitchView }: StickyNotesBoardProps) {
   const constraintsRef = useRef<HTMLDivElement>(null);
+  const titleGenerationTimeout = useRef<NodeJS.Timeout | null>(null);
 
   const boardDimensions = useMemo(() => {
     if (!board.notes || board.notes.length === 0) {
@@ -49,6 +51,7 @@ export default function StickyNotesBoard({ board, data, onDataChange, onSwitchVi
 
     const newNote: StickyNoteType = {
       id: uuidv4(),
+      title: 'New Note',
       content: '',
       position: newPosition,
       theme: themes[notesInBoard.length % themes.length],
@@ -59,14 +62,49 @@ export default function StickyNotesBoard({ board, data, onDataChange, onSwitchVi
     );
     onDataChange({ ...data, noteBoards: newNoteBoards });
   };
+  
+  const generateTitleForNote = useCallback(async (noteId: string, content: string) => {
+    try {
+        const result = await generateNoteTitle({ content });
+        if (result.title) {
+          const newNoteBoards = data.noteBoards.map(b =>
+            b.id === board.id
+              ? {
+                  ...b,
+                  notes: b.notes.map(note =>
+                    note.id === noteId ? { ...note, title: result.title } : note
+                  ),
+                }
+              : b
+          );
+          onDataChange({ ...data, noteBoards: newNoteBoards });
+        }
+    } catch (error) {
+        console.error("Failed to generate title:", error);
+    }
+  }, [data, board.id, onDataChange]);
 
-  const handleChange = (noteId: string, newContent: Partial<StickyNoteType>) => {
+  const handleChange = (noteId: string, newValues: Partial<StickyNoteType>) => {
+    const isContentChange = 'content' in newValues;
+    const noteToUpdate = board.notes.find(n => n.id === noteId);
+
+    if (!noteToUpdate) return;
+    
     const newNoteBoards = data.noteBoards.map(b => 
         b.id === board.id 
-        ? { ...b, notes: b.notes.map(note => note.id === noteId ? {...note, ...newContent} : note) } 
+        ? { ...b, notes: b.notes.map(note => note.id === noteId ? {...note, ...newValues} : note) } 
         : b
     );
     onDataChange({ ...data, noteBoards: newNoteBoards });
+    
+    if (isContentChange && newValues.content && (!noteToUpdate.title || noteToUpdate.title === "New Note")) {
+      if (titleGenerationTimeout.current) {
+        clearTimeout(titleGenerationTimeout.current);
+      }
+      titleGenerationTimeout.current = setTimeout(() => {
+        generateTitleForNote(noteId, newValues.content!);
+      }, 2000); // Debounce AI call
+    }
   };
 
   const handleDelete = (noteId: string) => {

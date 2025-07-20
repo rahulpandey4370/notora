@@ -33,11 +33,10 @@ const polishStickyNotePrompt = ai.definePrompt({
 
 Follow these steps:
 1.  Read the content to understand its core message.
-2.  Create a short, descriptive, and fitting heading for the content. The heading should be on its own line and clearly separated from the body.
-3.  Rewrite and restructure the main content for clarity and professionalism.
-4.  Use appropriate formatting such as paragraphs for prose, numbered lists for sequential steps, or bullet points for distinct items.
-5.  Correct any grammatical errors or awkward phrasing.
-6.  The final output should be a single block of plain text, without any Markdown formatting (e.g., no "**" for bold).
+2.  Rewrite and restructure the main content for clarity and professionalism.
+3.  Use appropriate Markdown formatting such as headings (e.g., "## Title"), bold text, italics, and lists (using "-").
+4.  Correct any grammatical errors or awkward phrasing.
+5.  The final output should be a single block of Markdown-formatted text.
 
 Original Content:
 {{{content}}}

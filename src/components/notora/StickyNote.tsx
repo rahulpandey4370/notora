@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, useMotionValue, useDragControls } from 'framer-motion';
 import { Textarea } from '@/components/ui/textarea';
 import type { StickyNote as StickyNoteType } from '@/lib/types';
@@ -50,7 +50,15 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
   const x = useMotionValue(note.position.x);
   const y = useMotionValue(note.position.y);
   const dragControls = useDragControls();
+  const contentRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  useEffect(() => {
+    if (isEditing && textareaRef.current) {
+      textareaRef.current.focus();
+    }
+  }, [isEditing]);
+  
   const handleAIAction = async (operation: AIOperation) => {
     setAiLoading(operation);
     setPreviousContent(note.content);
@@ -61,18 +69,22 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
             case 'polish':
                 result = await polishStickyNote({ content: contentToProcess });
                 onChange(note.id, { content: result.polishedContent });
+                if(isEditing) setEditedContent(result.polishedContent);
                 break;
             case 'summarize':
                 result = await summarizeStickyNote({ content: contentToProcess });
                 onChange(note.id, { content: result.summary });
+                if(isEditing) setEditedContent(result.summary);
                 break;
             case 'bulletify':
                 result = await bulletifyStickyNote({ text: contentToProcess });
                 onChange(note.id, { content: result.bulletifiedText });
+                if(isEditing) setEditedContent(result.bulletifiedText);
                 break;
             case 'simplify':
                 result = await simplifyStickyNote({ text: contentToProcess });
                 onChange(note.id, { content: result.simplifiedText });
+                if(isEditing) setEditedContent(result.simplifiedText);
                 break;
         }
     } catch (error) {
@@ -86,6 +98,7 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
   const handleUndo = () => {
     if (previousContent !== null) {
       onChange(note.id, { content: previousContent });
+      if (isEditing) setEditedContent(previousContent);
       setPreviousContent(null);
     }
   };
@@ -107,6 +120,8 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
   };
 
   const handleCancel = () => {
+    setEditedTitle(note.title || '');
+    setEditedContent(note.content);
     setIsEditing(false);
   };
 
@@ -118,46 +133,61 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
         dragListener={false}
         onPointerDown={(e) => {
           const target = e.target as HTMLElement;
-          if (target.closest('.resize-handle') || target.closest('button') || target instanceof HTMLTextAreaElement || target instanceof HTMLInputElement) {
-              return;
+          // Allow drag only on the header/title area when not editing
+          if (!isEditing && target.closest('.note-header')) {
+            dragControls.start(e);
+            return;
           }
-          dragControls.start(e)
+          // Prevent drag when interacting with buttons, inputs, textareas, or scrollbars
+          if (target.closest('button') || target.closest('textarea') || target.closest('input') || target.closest('.prose')) {
+            return;
+          }
+          dragControls.start(e);
         }}
         dragControls={dragControls}
         dragConstraints={constraintsRef}
         whileDrag={{ scale: 1.05, zIndex: 50, boxShadow: "0px 10px 30px rgba(0,0,0,0.2)" }}
         onDragEnd={() => onStopDrag(note.id, { x: x.get(), y: y.get() })}
         style={{ x, y, width: NOTE_SIZE, height: NOTE_SIZE }}
-        className={`absolute rounded-lg shadow-md border ${themeColors[note.theme] || themeColors.yellow} flex flex-col cursor-grab active:cursor-grabbing overflow-hidden`}
+        className={`absolute rounded-lg shadow-md border ${themeColors[note.theme] || themeColors.yellow} flex flex-col cursor-default overflow-hidden`}
       >
-        <div className="p-4 flex-grow flex flex-col min-h-0">
+        <div 
+          className="note-header p-2 pb-0 flex-shrink-0 cursor-grab active:cursor-grabbing"
+          onDoubleClick={handleStartEditing}
+        >
           {isEditing ? (
-            <>
-              <Input 
+             <Input 
                 value={editedTitle}
                 onChange={e => setEditedTitle(e.target.value)}
                 placeholder="Note title..."
-                className="font-bold text-base border-0 border-b-2 rounded-none px-0 mb-2 focus-visible:ring-0 bg-transparent"
+                className="font-bold text-sm border-0 border-b rounded-none px-1 h-8 focus-visible:ring-0 bg-transparent"
               />
-              <Textarea
-                value={editedContent}
-                onChange={(e) => setEditedContent(e.target.value)}
-                className="w-full h-full bg-transparent border-0 focus-visible:ring-0 resize-none text-sm p-0"
-                placeholder="What's on your mind?"
-                autoFocus
-              />
-            </>
-          ) : (
-            <>
-              <h3 className="font-bold mb-2 truncate flex-shrink-0">{note.title || 'Note'}</h3>
-              <div className="prose prose-sm dark:prose-invert max-w-none flex-grow overflow-y-auto pr-2">
-                <ReactMarkdown>{note.content}</ReactMarkdown>
-              </div>
-            </>
+          ): (
+            <h3 className="font-bold text-sm p-1 truncate">{note.title || 'Note'}</h3>
           )}
         </div>
 
-        <div className="absolute bottom-1 right-1 flex items-center">
+        <div 
+          ref={contentRef}
+          className="px-4 pt-1 pb-1 flex-grow flex flex-col min-h-0"
+          onClick={() => !isEditing && handleStartEditing()}
+        >
+          {isEditing ? (
+            <Textarea
+              ref={textareaRef}
+              value={editedContent}
+              onChange={(e) => setEditedContent(e.target.value)}
+              className="w-full h-full bg-transparent border-0 focus-visible:ring-0 resize-none text-sm p-0"
+              placeholder="What's on your mind?"
+            />
+          ) : (
+            <div className="prose prose-sm dark:prose-invert max-w-none flex-grow overflow-y-auto pr-2">
+              <ReactMarkdown>{note.content || "Click to start typing..."}</ReactMarkdown>
+            </div>
+          )}
+        </div>
+
+        <div className="flex items-center justify-end px-2 pb-1 flex-shrink-0">
             {isEditing && (
                 <>
                 <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={handleSave}><Save className="h-4 w-4 text-green-600" /></Button>
@@ -171,7 +201,7 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
                   </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                  {!isEditing && <DropdownMenuItem onClick={handleStartEditing}><Edit className="mr-2 h-4 w-4" /> Edit</DropdownMenuItem>}
+                  <DropdownMenuItem onClick={handleStartEditing} disabled={isEditing}><Edit className="mr-2 h-4 w-4" /> Edit</DropdownMenuItem>
                   <DropdownMenuItem onClick={() => onSwitchView(note.id)}>
                       <Newspaper className="mr-2 h-4 w-4" /> View in Formatted Mode
                   </DropdownMenuItem>
@@ -225,9 +255,14 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
               setPreviousContent(null);
             }
         }}
-        noteContent={note.content}
+        noteContent={isEditing ? editedContent : note.content}
         noteId={note.id}
-        onContentChange={onChange}
+        onContentChange={(id, newContent) => {
+          onChange(id, newContent);
+          if (isEditing && newContent.content) {
+            setEditedContent(newContent.content);
+          }
+        }}
       />
     </>
   );

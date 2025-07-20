@@ -51,7 +51,7 @@ export default function StickyNotesBoard({ board, data, onDataChange, onSwitchVi
 
     const newNote: StickyNoteType = {
       id: uuidv4(),
-      title: 'New Note',
+      title: '', // Start with an empty title
       content: '',
       position: newPosition,
       theme: themes[notesInBoard.length % themes.length],
@@ -67,7 +67,8 @@ export default function StickyNotesBoard({ board, data, onDataChange, onSwitchVi
     try {
         const result = await generateNoteTitle({ content });
         if (result.title) {
-          const newNoteBoards = data.noteBoards.map(b =>
+           const currentData = data; // Use a snapshot of data
+           const newNoteBoards = currentData.noteBoards.map(b =>
             b.id === board.id
               ? {
                   ...b,
@@ -77,7 +78,7 @@ export default function StickyNotesBoard({ board, data, onDataChange, onSwitchVi
                 }
               : b
           );
-          onDataChange({ ...data, noteBoards: newNoteBoards });
+          onDataChange({ ...currentData, noteBoards: newNoteBoards });
         }
     } catch (error) {
         console.error("Failed to generate title:", error);
@@ -97,7 +98,8 @@ export default function StickyNotesBoard({ board, data, onDataChange, onSwitchVi
     );
     onDataChange({ ...data, noteBoards: newNoteBoards });
     
-    if (isContentChange && newValues.content && (!noteToUpdate.title || noteToUpdate.title === "New Note")) {
+    // Trigger title generation if content changes and title is empty
+    if (isContentChange && newValues.content && !noteToUpdate.title) {
       if (titleGenerationTimeout.current) {
         clearTimeout(titleGenerationTimeout.current);
       }

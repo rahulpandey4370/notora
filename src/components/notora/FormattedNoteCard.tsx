@@ -165,7 +165,7 @@ export default function FormattedNoteCard({ note, noteNumber, onNoteChange, onNo
             </DropdownMenuContent>
           </DropdownMenu>
         </CardHeader>
-        <CardContent className="pt-0">
+        <CardContent className="pt-0" onClick={() => !isEditing && setIsEditing(true)}>
           {isEditing ? (
             <div className="space-y-2">
               <Textarea
@@ -175,13 +175,13 @@ export default function FormattedNoteCard({ note, noteNumber, onNoteChange, onNo
                 autoFocus
               />
               <div className="flex justify-end gap-2">
-                <Button variant="ghost" onClick={handleCancel}>Cancel</Button>
-                <Button onClick={handleSave}>Save</Button>
+                <Button variant="ghost" onClick={(e) => { e.stopPropagation(); handleCancel(); }}>Cancel</Button>
+                <Button onClick={(e) => { e.stopPropagation(); handleSave(); }}>Save</Button>
               </div>
             </div>
           ) : (
-            <article className="prose prose-sm dark:prose-invert max-w-none">
-              <ReactMarkdown>{note.content}</ReactMarkdown>
+            <article className="prose prose-sm dark:prose-invert max-w-none min-h-[5rem]">
+              <ReactMarkdown>{note.content || 'Click to start typing...'}</ReactMarkdown>
             </article>
           )}
         </CardContent>

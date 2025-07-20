@@ -55,7 +55,7 @@ export default function AboutPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="dark:neon-border">
             <CardHeader>
               <CardTitle>Core Features</CardTitle>
               <CardDescription>A look at what makes Notora special.</CardDescription>
@@ -73,7 +73,7 @@ export default function AboutPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="dark:neon-border">
             <CardHeader>
               <CardTitle>Meet the Creator</CardTitle>
               <CardDescription>This application was built as a portfolio project.</CardDescription>

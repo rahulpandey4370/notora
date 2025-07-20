@@ -80,7 +80,7 @@ export default function AboutPage() {
             </CardHeader>
             <CardContent className="flex flex-col sm:flex-row items-center gap-6">
               <Avatar className="h-24 w-24">
-                <AvatarImage src="https://placehold.co/100x100/E68A59/FFFFFF.png?text=R" alt="Creator Avatar" data-ai-hint="person avatar" />
+                <AvatarImage src="/rahul_pic.png" alt="Creator Avatar" data-ai-hint="person avatar" />
                 <AvatarFallback>R</AvatarFallback>
               </Avatar>
               <div className="text-center sm:text-left">

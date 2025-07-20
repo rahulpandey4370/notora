@@ -4,8 +4,9 @@
 import AppLayout from '@/components/notora/AppLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { CheckCircle, Wand2, Link, StickyNote, Tasks } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
+import { CheckCircle, Wand2, Link as LinkIcon, StickyNote, ArrowUpRight } from 'lucide-react';
 
 export default function AboutPage() {
   const features = [
@@ -25,7 +26,7 @@ export default function AboutPage() {
       description: 'Capture ideas in two different views: a free-form sticky notes canvas for brainstorming and a formatted, Markdown-enabled view for structured content.',
     },
     {
-      icon: <Link className="h-6 w-6 text-blue-500" />,
+      icon: <LinkIcon className="h-6 w-6 text-blue-500" />,
       title: 'Intelligent Link Saving',
       description: 'Save any URL and let AI automatically analyze it, providing a title, summary, and category. Find links later with an intuitive, AI-powered semantic search.',
     },
@@ -80,19 +81,20 @@ export default function AboutPage() {
             <CardContent className="flex flex-col sm:flex-row items-center gap-6">
               <Avatar className="h-24 w-24">
                 <AvatarImage src="https://placehold.co/100x100/E68A59/FFFFFF.png?text=R" alt="Creator Avatar" data-ai-hint="person avatar" />
-                <AvatarFallback>U</AvatarFallback>
+                <AvatarFallback>R</AvatarFallback>
               </Avatar>
               <div className="text-center sm:text-left">
-                <h3 className="text-xl font-semibold">Rahul</h3>
+                <h3 className="text-xl font-semibold">Rahul Pandey</h3>
                 <p className="text-muted-foreground">
                   This project showcases my ability to build full-stack, responsive, and AI-integrated web applications.
                   I am passionate about creating intuitive and powerful tools that solve real-world problems.
                 </p>
-                <div className="mt-4 flex justify-center sm:justify-start gap-2">
-                    <Badge variant="outline">Next.js</Badge>
-                    <Badge variant="outline">React</Badge>
-                    <Badge variant="outline">Genkit</Badge>
-                    <Badge variant="outline">Tailwind CSS</Badge>
+                <div className="mt-4 flex justify-center sm:justify-start">
+                  <Button asChild variant="outline">
+                    <Link href="https://rahul-pandey-ai-portfolio.vercel.app/" target="_blank" rel="noopener noreferrer">
+                      View My Portfolio <ArrowUpRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
                 </div>
               </div>
             </CardContent>

@@ -4,10 +4,11 @@ import { useState } from 'react';
 import type { AppData, NoteBoard } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Plus, Trash2, Edit, Check, X, MoreVertical } from 'lucide-react';
+import { Plus, Trash2, Edit, Check, X, MoreVertical, StickyNote, Newspaper } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import StickyNotesBoard from './StickyNotesBoard';
+import FormattedNoteView from './FormattedNoteView';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '../ui/alert-dialog';
 import { ScrollArea, ScrollBar } from '../ui/scroll-area';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu';
@@ -18,9 +19,13 @@ interface NoteBoardsManagerProps {
   onDataChange: (data: AppData) => void;
 }
 
+type ViewMode = 'sticky' | 'formatted';
+
 export default function NoteBoardsManager({ noteBoards, data, onDataChange }: NoteBoardsManagerProps) {
   const [newBoardTitle, setNewBoardTitle] = useState('');
   const [editingBoard, setEditingBoard] = useState<{ id: string, title: string } | null>(null);
+  const [activeBoardId, setActiveBoardId] = useState<string>(noteBoards[0]?.id || '');
+  const [viewMode, setViewMode] = useState<ViewMode>('sticky');
 
   const handleAddBoard = () => {
     if (newBoardTitle.trim() === '') return;
@@ -31,13 +36,18 @@ export default function NoteBoardsManager({ noteBoards, data, onDataChange }: No
       notes: [],
     };
 
-    onDataChange({ ...data, noteBoards: [...data.noteBoards, newBoard] });
+    const newNoteBoards = [...data.noteBoards, newBoard];
+    onDataChange({ ...data, noteBoards: newNoteBoards });
     setNewBoardTitle('');
+    setActiveBoardId(newBoard.id);
   };
 
   const handleDeleteBoard = (boardId: string) => {
     const newNoteBoards = data.noteBoards.filter(b => b.id !== boardId);
     onDataChange({ ...data, noteBoards: newNoteBoards });
+    if (activeBoardId === boardId) {
+      setActiveBoardId(newNoteBoards[0]?.id || '');
+    }
   };
   
   const handleStartEdit = (board: NoteBoard) => {
@@ -57,92 +67,110 @@ export default function NoteBoardsManager({ noteBoards, data, onDataChange }: No
     setEditingBoard(null);
   }
 
+  const activeBoard = noteBoards.find(b => b.id === activeBoardId);
+
   return (
     <div className="p-4 md:p-8 space-y-6">
        <div className="flex flex-col sm:flex-row items-center gap-2">
             <Input
-            placeholder="New board title..."
-            value={newBoardTitle}
-            onChange={(e) => setNewBoardTitle(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleAddBoard()}
-            className="w-full sm:w-auto"
+              placeholder="New board title..."
+              value={newBoardTitle}
+              onChange={(e) => setNewBoardTitle(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleAddBoard()}
+              className="w-full sm:w-auto"
             />
             <Button onClick={handleAddBoard} className="w-full sm:w-auto">
-            <Plus className="mr-2 h-4 w-4" /> Add Board
+              <Plus className="mr-2 h-4 w-4" /> Add Board
             </Button>
       </div>
 
-      <Tabs defaultValue={noteBoards[0]?.id || ''} className="w-full">
-        <ScrollArea className="w-full whitespace-nowrap">
-            <TabsList>
-            {noteBoards.map(board => (
-                <div key={board.id} className="relative group flex items-center pr-1 rounded-md hover:bg-muted has-[[data-state=active]]:bg-background">
-                {editingBoard?.id === board.id ? (
-                    <div className='flex items-center gap-1 p-1'>
-                    <Input 
-                        value={editingBoard.title}
-                        onChange={(e) => setEditingBoard({...editingBoard, title: e.target.value})}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter') handleConfirmEdit();
-                            if (e.key === 'Escape') handleCancelEdit();
-                        }}
-                        className="h-8 w-32"
-                        autoFocus
-                    />
-                    <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleConfirmEdit}><Check className="h-4 w-4" /></Button>
-                    <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleCancelEdit}><X className="h-4 w-4" /></Button>
-                    </div>
-                ) : (
-                    <>
-                        <TabsTrigger value={board.id} className="pr-2 data-[state=active]:bg-transparent data-[state=active]:shadow-none hover:bg-transparent">
-                            {board.title}
-                        </TabsTrigger>
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-8 w-8 opacity-50 group-hover:opacity-100 data-[state=open]:opacity-100">
-                                    <MoreVertical className="h-4 w-4" />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                                <DropdownMenuItem onClick={() => handleStartEdit(board)}>
-                                    <Edit className="mr-2 h-4 w-4" /> Edit
-                                </DropdownMenuItem>
-                                <AlertDialog>
-                                    <AlertDialogTrigger asChild>
-                                        <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-destructive">
-                                            <Trash2 className="mr-2 h-4 w-4" /> Delete
-                                        </DropdownMenuItem>
-                                    </AlertDialogTrigger>
-                                    <AlertDialogContent>
-                                        <AlertDialogHeader>
-                                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                                            <AlertDialogDescription>
-                                            This action cannot be undone. This will permanently delete your note board and all the notes within it.
-                                            </AlertDialogDescription>
-                                        </AlertDialogHeader>
-                                        <AlertDialogFooter>
-                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                            <AlertDialogAction onClick={() => handleDeleteBoard(board.id)}>Delete</AlertDialogAction>
-                                        </AlertDialogFooter>
-                                    </AlertDialogContent>
-                                </AlertDialog>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    </>
-                )}
-                </div>
-            ))}
-            </TabsList>
-            <ScrollBar orientation="horizontal" />
-        </ScrollArea>
+      <div className="flex flex-col md:flex-row gap-4 justify-between items-center">
+        <Tabs value={activeBoardId} onValueChange={setActiveBoardId} className="w-full md:w-auto">
+          <ScrollArea className="w-full whitespace-nowrap">
+              <TabsList>
+              {noteBoards.map(board => (
+                  <div key={board.id} className="relative group flex items-center pr-1 rounded-md hover:bg-muted has-[[data-state=active]]:bg-background">
+                  {editingBoard?.id === board.id ? (
+                      <div className='flex items-center gap-1 p-1'>
+                        <Input 
+                            value={editingBoard.title}
+                            onChange={(e) => setEditingBoard({...editingBoard, title: e.target.value})}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') handleConfirmEdit();
+                                if (e.key === 'Escape') handleCancelEdit();
+                            }}
+                            className="h-8 w-32"
+                            autoFocus
+                        />
+                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleConfirmEdit}><Check className="h-4 w-4" /></Button>
+                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleCancelEdit}><X className="h-4 w-4" /></Button>
+                      </div>
+                  ) : (
+                      <>
+                          <TabsTrigger value={board.id} className="pr-2 data-[state=active]:bg-transparent data-[state=active]:shadow-none hover:bg-transparent">
+                              {board.title}
+                          </TabsTrigger>
+                          <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" size="icon" className="h-8 w-8 opacity-50 group-hover:opacity-100 data-[state=open]:opacity-100">
+                                      <MoreVertical className="h-4 w-4" />
+                                  </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                  <DropdownMenuItem onClick={() => handleStartEdit(board)}>
+                                      <Edit className="mr-2 h-4 w-4" /> Edit
+                                  </DropdownMenuItem>
+                                  <AlertDialog>
+                                      <AlertDialogTrigger asChild>
+                                          <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-destructive">
+                                              <Trash2 className="mr-2 h-4 w-4" /> Delete
+                                          </DropdownMenuItem>
+                                      </AlertDialogTrigger>
+                                      <AlertDialogContent>
+                                          <AlertDialogHeader>
+                                              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                              <AlertDialogDescription>
+                                              This action cannot be undone. This will permanently delete your note board and all the notes within it.
+                                              </AlertDialogDescription>
+                                          </AlertDialogHeader>
+                                          <AlertDialogFooter>
+                                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                              <AlertDialogAction onClick={() => handleDeleteBoard(board.id)}>Delete</AlertDialogAction>
+                                          </AlertDialogFooter>
+                                      </AlertDialogContent>
+                                  </AlertDialog>
+                              </DropdownMenuContent>
+                          </DropdownMenu>
+                      </>
+                  )}
+                  </div>
+              ))}
+              </TabsList>
+              <ScrollBar orientation="horizontal" />
+          </ScrollArea>
+        </Tabs>
 
-        {noteBoards.map(board => (
-            <TabsContent value={board.id} key={board.id}>
-                <StickyNotesBoard board={board} data={data} onDataChange={onDataChange} />
-            </TabsContent>
-        ))}
-      </Tabs>
-      {noteBoards.length === 0 && <p className='text-center text-muted-foreground pt-10'>Create a board to start organizing your notes!</p>}
+        <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as ViewMode)} className="w-full md:w-auto">
+          <TabsList className="grid w-full grid-cols-2 md:w-auto">
+            <TabsTrigger value="sticky"><StickyNote className="mr-2 h-4 w-4"/>Sticky</TabsTrigger>
+            <TabsTrigger value="formatted"><Newspaper className="mr-2 h-4 w-4"/>Formatted</TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>
+
+      <div>
+        {noteBoards.length > 0 ? (
+          activeBoard && (
+            viewMode === 'sticky' ? (
+              <StickyNotesBoard board={activeBoard} data={data} onDataChange={onDataChange} />
+            ) : (
+              <FormattedNoteView board={activeBoard} data={data} onDataChange={onDataChange}/>
+            )
+          )
+        ) : (
+          <p className='text-center text-muted-foreground pt-10'>Create a board to start organizing your notes!</p>
+        )}
+      </div>
     </div>
   );
 }

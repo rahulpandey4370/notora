@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useRef, useMemo } from 'react';
@@ -7,6 +6,7 @@ import type { AppData, NoteBoard, StickyNote as StickyNoteType } from '@/lib/typ
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
+import { ScrollArea, ScrollBar } from '../ui/scroll-area';
 
 interface StickyNotesBoardProps {
   board: NoteBoard;
@@ -17,59 +17,50 @@ interface StickyNotesBoardProps {
 const themes: StickyNoteType['theme'][] = ['yellow', 'blue', 'green', 'pink', 'purple'];
 const NOTE_WIDTH = 256;
 const NOTE_HEIGHT = 256;
-const HORIZONTAL_OFFSET = 32;
-const VERTICAL_OFFSET = 32;
-const PADDING = 20;
+const PADDING = 24; // Added padding
 
 export default function StickyNotesBoard({ board, data, onDataChange }: StickyNotesBoardProps) {
   const constraintsRef = useRef<HTMLDivElement>(null);
 
-  const boardHeight = useMemo(() => {
+  const boardDimensions = useMemo(() => {
     if (!board.notes || board.notes.length === 0) {
-      return 500; // default height
+      return { width: '100%', height: 500 };
     }
+    const maxX = Math.max(...board.notes.map(note => note.position.x + (note.width || NOTE_WIDTH)));
     const maxY = Math.max(...board.notes.map(note => note.position.y + (note.height || NOTE_HEIGHT)));
-    return Math.max(500, maxY + PADDING);
-  }, [board.notes]);
+    
+    // Ensure the board is at least the size of the container, or larger if notes overflow
+    const containerWidth = constraintsRef.current?.parentElement?.clientWidth || 0;
+
+    return { 
+      width: Math.max(containerWidth, maxX + PADDING),
+      height: maxY + PADDING 
+    };
+  }, [board.notes, constraintsRef.current]);
 
   const handleAddNote = () => {
     const boardWidth = constraintsRef.current?.offsetWidth ?? window.innerWidth;
     let newPosition = { x: PADDING, y: PADDING };
+    const notesInBoard = board.notes || [];
 
-    if (board.notes.length > 0) {
-        const lastNote = board.notes[board.notes.length - 1];
-        let nextX = lastNote.position.x + (lastNote.width || NOTE_WIDTH) + HORIZONTAL_OFFSET;
-
-        if (nextX + NOTE_WIDTH > boardWidth) {
-            // Wrap to a new row
-            newPosition.x = PADDING;
-            const columnTops = [PADDING];
-            board.notes.forEach(note => {
-                for(let i=0; i < columnTops.length; i++) {
-                    if (note.position.x === PADDING) {
-                        columnTops[i] = Math.max(columnTops[i], note.position.y + (note.height || NOTE_HEIGHT) + VERTICAL_OFFSET);
-                    }
-                }
-            });
-            newPosition.y = Math.min(...columnTops);
-        } else {
-            // Place on the same row
-            newPosition.x = nextX;
-            newPosition.y = lastNote.position.y;
-        }
+    if (notesInBoard.length > 0) {
+      // Find the highest Y position of any note on the board
+      const maxY = Math.max(...notesInBoard.map(n => n.position.y + (n.height || NOTE_HEIGHT)));
+      newPosition = { x: PADDING, y: maxY + PADDING };
     }
+
 
     const newNote: StickyNoteType = {
       id: uuidv4(),
       content: '',
       position: newPosition,
-      theme: themes[board.notes.length % themes.length],
+      theme: themes[notesInBoard.length % themes.length],
       width: NOTE_WIDTH,
       height: NOTE_HEIGHT,
     };
     
     const newNoteBoards = data.noteBoards.map(b => 
-      b.id === board.id ? { ...b, notes: [...b.notes, newNote] } : b
+      b.id === board.id ? { ...b, notes: [...notesInBoard, newNote] } : b
     );
     onDataChange({ ...data, noteBoards: newNoteBoards });
   };
@@ -110,34 +101,42 @@ export default function StickyNotesBoard({ board, data, onDataChange }: StickyNo
 
 
   return (
-    <div 
-      className="relative w-full rounded-md border-2 border-dashed bg-secondary/50 p-4 transition-all duration-300" 
-      ref={constraintsRef}
-      style={{ minHeight: `${boardHeight}px` }}
-    >
-      {board.notes.map((note) => (
-        <StickyNote
-          key={note.id}
-          note={note}
-          onChange={handleChange}
-          onDelete={handleDelete}
-          onStopDrag={handleStopDrag}
-          onStopResize={handleStopResize}
-          constraintsRef={constraintsRef}
-        />
-      ))}
-      <Button
-        onClick={handleAddNote}
-        variant="outline"
-        className="absolute top-4 right-4 z-30"
-      >
-        <Plus className="mr-2 h-4 w-4" /> Add Note
-      </Button>
-      {board.notes.length === 0 && (
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <p className="text-muted-foreground">Add a note to this board to get started!</p>
+    <ScrollArea className="w-full h-[60vh] md:h-[70vh] rounded-md border-2 border-dashed bg-secondary/50">
+        <div 
+            className="relative transition-all duration-300" 
+            ref={constraintsRef}
+            style={{ 
+                width: `${boardDimensions.width}px`, 
+                height: `${boardDimensions.height}px`,
+                minHeight: '100%',
+                minWidth: '100%',
+            }}
+        >
+        {(board.notes || []).map((note) => (
+            <StickyNote
+                key={note.id}
+                note={note}
+                onChange={handleChange}
+                onDelete={handleDelete}
+                onStopDrag={handleStopDrag}
+                onStopResize={handleStopResize}
+                constraintsRef={constraintsRef}
+            />
+        ))}
+        <Button
+            onClick={handleAddNote}
+            variant="outline"
+            className="absolute top-4 right-4 z-30"
+        >
+            <Plus className="mr-2 h-4 w-4" /> Add Note
+        </Button>
+        {(board.notes || []).length === 0 && (
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <p className="text-muted-foreground">Add a note to this board to get started!</p>
+            </div>
+        )}
         </div>
-      )}
-    </div>
+        <ScrollBar orientation="horizontal" />
+    </ScrollArea>
   );
 }

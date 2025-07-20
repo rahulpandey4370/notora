@@ -14,6 +14,7 @@ import { simplifyStickyNote } from '@/ai/flows/simplify-sticky-note';
 import CustomPromptDialog from './CustomPromptDialog';
 import ReactMarkdown from 'react-markdown';
 import { Input } from '../ui/input';
+import { cn } from '@/lib/utils';
 
 interface StickyNoteProps {
   note: StickyNoteType;
@@ -22,6 +23,7 @@ interface StickyNoteProps {
   onStopDrag: (id: string, position: { x: number; y: number }) => void;
   constraintsRef: React.RefObject<HTMLDivElement>;
   onSwitchView: (noteId: string) => void;
+  isMobile?: boolean;
 }
 
 const themeColors: Record<StickyNoteType['theme'], string> = {
@@ -38,7 +40,7 @@ type AIOperation = 'polish' | 'summarize' | 'bulletify' | 'simplify';
 
 const NOTE_SIZE = 256;
 
-export default function StickyNote({ note, onChange, onDelete, onStopDrag, constraintsRef, onSwitchView }: StickyNoteProps) {
+export default function StickyNote({ note, onChange, onDelete, onStopDrag, constraintsRef, onSwitchView, isMobile = false }: StickyNoteProps) {
   const [aiLoading, setAiLoading] = useState<AIOperation | null>(null);
   const [isPromptDialogOpen, setIsPromptDialogOpen] = useState(false);
   const [previousContent, setPreviousContent] = useState<string | null>(null);
@@ -55,7 +57,6 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
   useEffect(() => {
     if (isEditing && textareaRef.current) {
         textareaRef.current.focus();
-        // Auto-resize textarea
         textareaRef.current.style.height = 'auto';
         textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
@@ -91,7 +92,7 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
         }
     } catch (error) {
         console.error(`Failed to ${operation} note:`, error);
-        setPreviousContent(null); // Clear previous content on error
+        setPreviousContent(null);
     } finally {
         setAiLoading(null);
     }
@@ -111,6 +112,7 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
   };
   
   const handleStartEditing = () => {
+    if (isEditing) return;
     setEditedTitle(note.title || '');
     setEditedContent(note.content);
     setIsEditing(true);
@@ -126,34 +128,29 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
     setEditedContent(note.content);
     setIsEditing(false);
   };
-
-  return (
-    <>
-      <motion.div
-        drag
-        onPointerDown={(e) => {
-            const target = e.target as HTMLElement;
-            if (isEditing) return; // Disable drag when editing
-            // Allow drag only on the header/title area when not editing
-            if (target.closest('.note-header')) {
-                dragControls.start(e);
-            }
-        }}
-        dragControls={dragControls}
-        dragConstraints={constraintsRef}
-        whileDrag={{ scale: 1.05, zIndex: 50, boxShadow: "0px 10px 30px rgba(0,0,0,0.2)" }}
-        onDragEnd={() => onStopDrag(note.id, { x: x.get(), y: y.get() })}
-        style={{ x, y, width: NOTE_SIZE, height: NOTE_SIZE }}
-        className={`absolute rounded-lg shadow-md border ${themeColors[note.theme] || themeColors.yellow} flex flex-col cursor-default overflow-hidden`}
+  
+  const noteComponent = (
+      <div
+        className={cn(
+            `rounded-lg shadow-md border ${themeColors[note.theme] || themeColors.yellow} flex flex-col cursor-default overflow-hidden`,
+            isMobile ? 'w-full h-auto min-h-[256px]' : 'absolute',
+        )}
+        style={isMobile ? {} : { width: NOTE_SIZE, height: NOTE_SIZE }}
+        onClick={handleStartEditing}
       >
         <div 
           className="note-header p-2 pb-0 flex-shrink-0 cursor-grab active:cursor-grabbing"
+          onPointerDown={(e) => {
+              if (isMobile || isEditing) return;
+              dragControls.start(e);
+          }}
           onDoubleClick={handleStartEditing}
         >
           {isEditing ? (
              <Input 
                 value={editedTitle}
                 onChange={e => setEditedTitle(e.target.value)}
+                onClick={e => e.stopPropagation()}
                 placeholder="Note title..."
                 className="font-bold text-sm border-0 border-b rounded-none px-1 h-8 focus-visible:ring-0 bg-transparent"
               />
@@ -164,13 +161,13 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
 
         <div 
           className="px-4 pt-1 pb-1 flex-grow flex flex-col min-h-0"
-          onClick={() => !isEditing && handleStartEditing()}
         >
           {isEditing ? (
             <Textarea
               ref={textareaRef}
               value={editedContent}
               onChange={(e) => setEditedContent(e.target.value)}
+              onClick={e => e.stopPropagation()}
               className="w-full h-full bg-transparent border-0 focus-visible:ring-0 resize-none text-sm p-0 overflow-y-auto"
               placeholder="What's on your mind?"
             />
@@ -181,7 +178,7 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
           )}
         </div>
 
-        <div className="flex items-center justify-end px-2 py-1 flex-shrink-0">
+        <div className="flex items-center justify-end px-2 py-1 flex-shrink-0" onClick={e => e.stopPropagation()}>
             {isEditing && (
                 <div className="flex-1 flex gap-1">
                     <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={handleSave}><Save className="h-4 w-4 text-green-600" /></Button>
@@ -238,8 +235,25 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
               </DropdownMenuContent>
           </DropdownMenu>
         </div>
+      </div>
+  );
 
-      </motion.div>
+  return (
+    <>
+      {isMobile ? noteComponent : (
+        <motion.div
+            drag
+            dragControls={dragControls}
+            dragConstraints={constraintsRef}
+            whileDrag={{ scale: 1.05, zIndex: 50, boxShadow: "0px 10px 30px rgba(0,0,0,0.2)" }}
+            onDragEnd={() => onStopDrag(note.id, { x: x.get(), y: y.get() })}
+            style={{ x, y, width: NOTE_SIZE, height: 'auto' }}
+            className="absolute cursor-default"
+        >
+            {noteComponent}
+        </motion.div>
+      )}
+
       <CustomPromptDialog
         open={isPromptDialogOpen}
         onOpenChange={(isOpen) => {

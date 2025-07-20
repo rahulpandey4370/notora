@@ -1,4 +1,5 @@
-import type {Metadata} from 'next';
+
+import type {Metadata, Viewport} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 import { AuthProvider } from '@/contexts/auth-context';
@@ -8,7 +9,13 @@ import { AppProvider } from '@/contexts/app-context';
 export const metadata: Metadata = {
   title: 'Notora',
   description: 'Your magical productivity assistant.',
+  manifest: "/manifest.json",
 };
+
+export const viewport: Viewport = {
+  themeColor: "#2179E0",
+};
+
 
 export default function RootLayout({
   children,

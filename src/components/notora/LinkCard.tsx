@@ -66,8 +66,8 @@ export default function LinkCard({ link, onDelete, onUpdate }: LinkCardProps) {
     };
 
     return (
-        <motion.div whileHover={{ scale: 1.03, transition: { duration: 0.2 } }}>
-            <Card className="flex flex-col h-full border-2 border-black rounded-lg shadow-none hover:shadow-[4px_4px_0px_#000] transition-shadow">
+        <motion.div whileHover={{ y: -2, transition: { duration: 0.2 } }}>
+            <Card className="flex flex-col h-full border-2 border-black rounded-lg shadow-none hover:shadow-[4px_4px_0px_#000] dark:hover:shadow-[4px_4px_0px_hsl(var(--primary))] transition-shadow duration-200">
                 {videoId && !isEditing ? (
                     <div className='aspect-video w-full rounded-t-lg overflow-hidden'>
                         <iframe

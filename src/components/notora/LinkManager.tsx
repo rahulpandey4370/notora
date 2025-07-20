@@ -12,6 +12,7 @@ import { searchLinks } from '@/ai/flows/search-links';
 import { linkCategories } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import LinkCard from './LinkCard';
+import { motion } from 'framer-motion';
 
 interface LinkManagerProps {
   savedLinks: SavedLink[];
@@ -147,7 +148,7 @@ export default function LinkManager({ savedLinks, data, onDataChange }: LinkMana
                 className="w-full border-2 border-black rounded-md h-9"
                 disabled={loading}
                 />
-                <Button onClick={handleAddLink} className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground border-2 border-black rounded-md h-9 shadow-[2px_2px_0px_#000]" disabled={loading}>
+                <Button onClick={handleAddLink} className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground border-2 border-black rounded-md h-9 shadow-[2px_2px_0px_#000] dark:shadow-[2px_2px_0px_hsl(var(--primary))]" disabled={loading}>
                 {loading ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
@@ -172,7 +173,7 @@ export default function LinkManager({ savedLinks, data, onDataChange }: LinkMana
                     className="w-full border-2 border-black rounded-md h-9"
                     disabled={searchLoading}
                 />
-                 <Button onClick={isSearchActive ? handleClearSearch : handleSearch} variant="outline" className="w-full sm:w-auto border-2 border-black rounded-md h-9 shadow-[2px_2px_0px_#000]" disabled={searchLoading}>
+                 <Button onClick={isSearchActive ? handleClearSearch : handleSearch} variant="outline" className="w-full sm:w-auto border-2 border-black rounded-md h-9 shadow-[2px_2px_0px_#000] dark:shadow-[2px_2px_0px_hsl(var(--primary))]" disabled={searchLoading}>
                     {searchLoading ? (
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     ) : isSearchActive ? (
@@ -189,7 +190,7 @@ export default function LinkManager({ savedLinks, data, onDataChange }: LinkMana
         <Button 
             variant={activeFilter === null ? 'default' : 'outline'}
             onClick={() => setActiveFilter(null)}
-            className="border-2 border-black rounded-md h-9 shadow-[2px_2px_0px_#000]"
+            className="border-2 border-black rounded-md h-9 shadow-[2px_2px_0px_#000] dark:shadow-[2px_2px_0px_hsl(var(--primary))]"
         >
             All
         </Button>
@@ -198,18 +199,23 @@ export default function LinkManager({ savedLinks, data, onDataChange }: LinkMana
                 key={category} 
                 variant={activeFilter === category ? 'default' : 'outline'}
                 onClick={() => setActiveFilter(category)}
-                className="border-2 border-black rounded-md h-9 shadow-[2px_2px_0px_#000]"
+                className="border-2 border-black rounded-md h-9 shadow-[2px_2px_0px_#000] dark:shadow-[2px_2px_0px_hsl(var(--primary))]"
             >
                 {category}
             </Button>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <motion.div 
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ staggerChildren: 0.1 }}
+      >
         {filteredLinks.map((link) => (
           <LinkCard key={link.id} link={link} onDelete={handleDeleteLink} onUpdate={handleUpdateLink} />
         ))}
-      </div>
+      </motion.div>
       
       {savedLinks.length > 0 && filteredLinks.length === 0 && (
          <p className="text-center text-muted-foreground pt-10">

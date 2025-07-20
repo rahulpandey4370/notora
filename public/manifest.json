@@ -1,22 +1,51 @@
-
 {
-  "name": "Notora - Your Magical Productivity Assistant",
+  "name": "Notora",
   "short_name": "Notora",
-  "description": "An AI-powered productivity application for tasks, notes, and links.",
+  "description": "Your magical productivity assistant.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0A0A0A",
+  "theme_color": "#2179E0",
   "icons": [
     {
-      "src": "/notora.png",
+      "src": "/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/notora.png",
+      "src": "/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
-  ],
-  "start_url": "/",
-  "display": "standalone",
-  "background_color": "#0A0A0A",
-  "theme_color": "#ffe599"
+  ]
 }

@@ -10,6 +10,9 @@ export const metadata: Metadata = {
   title: 'Notora',
   description: 'Your magical productivity assistant.',
   manifest: "/manifest.json",
+  icons: {
+    apple: "/apple-touch-icon.png",
+  },
 };
 
 export const viewport: Viewport = {
@@ -28,6 +31,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&display=swap" rel="stylesheet" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png"></link>
       </head>
       <body className="font-body antialiased">
         <ThemeProvider

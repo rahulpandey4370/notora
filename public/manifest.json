@@ -5,12 +5,12 @@
   "description": "An AI-powered productivity application for tasks, notes, and links.",
   "icons": [
     {
-      "src": "/icon-192x192.png",
+      "src": "/notora.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/icon-512x512.png",
+      "src": "/notora.png",
       "sizes": "512x512",
       "type": "image/png"
     }
@@ -18,5 +18,5 @@
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0A0A0A",
-  "theme_color": "#2179E0"
+  "theme_color": "#ffe599"
 }

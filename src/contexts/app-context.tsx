@@ -28,6 +28,7 @@ const defaultAppData: AppData = {
     xp: 0,
   },
   savedLinks: [],
+  logTrackers: [],
 };
 
 interface AppContextType {
@@ -60,6 +61,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           notes: [{...defaultAppData.noteBoards[0].notes[0], id: uuidv4()}] 
         }],
         savedLinks: [],
+        logTrackers: [],
       };
       await saveAppData(username, newDefaultData);
       appData = newDefaultData;
@@ -70,6 +72,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
         ...b,
         notes: b.notes.map(n => ({...n, title: n.title || ''}))
       }));
+      if (!appData.logTrackers) {
+        appData.logTrackers = [];
+      }
     }
     
     setData(appData);

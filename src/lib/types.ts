@@ -38,7 +38,7 @@ export interface UserStats {
 }
 
 export interface SavedLink {
-    id: string;
+    id:string;
     url: string;
     title: string;
     summary: string;
@@ -46,9 +46,25 @@ export interface SavedLink {
     dateAdded: string; // ISO 8601 date string
 }
 
+export interface LogEntry {
+    id: string;
+    date: string; // 'yyyy-MM-dd'
+    value: number;
+    notes?: string;
+}
+
+export interface LogTracker {
+    id: string;
+    name: string;
+    unit: string;
+    logs: LogEntry[];
+    goal?: number;
+}
+
 export interface AppData {
   tasks: Task[];
   noteBoards: NoteBoard[];
   userStats: UserStats;
   savedLinks: SavedLink[];
+  logTrackers: LogTracker[];
 }

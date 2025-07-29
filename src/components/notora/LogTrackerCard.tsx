@@ -1,0 +1,290 @@
+
+'use client';
+
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { format, parseISO, isValid } from 'date-fns';
+import { v4 as uuidv4 } from 'uuid';
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '../ui/alert-dialog';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { CalendarIcon, Edit, Save, Trash2, X, Wand2, Loader2, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import type { LogEntry, LogTracker } from '@/lib/types';
+import { getLogInsights } from '@/ai/flows/get-log-insights';
+import { Skeleton } from '../ui/skeleton';
+
+interface LogTrackerCardProps {
+    tracker: LogTracker;
+    onDelete: () => void;
+    onTrackerChange: (updatedData: Partial<LogTracker>) => void;
+}
+
+interface AiInsight {
+    feedback: string;
+    trend: 'upward' | 'downward' | 'stable' | 'fluctuating';
+}
+
+export default function LogTrackerCard({ tracker, onDelete, onTrackerChange }: LogTrackerCardProps) {
+    const [date, setDate] = useState<Date>(new Date());
+    const [value, setValue] = useState<string>('');
+    const [notes, setNotes] = useState('');
+    const [editingLog, setEditingLog] = useState<LogEntry | null>(null);
+    const [aiInsight, setAiInsight] = useState<AiInsight | null>(null);
+    const [loadingInsight, setLoadingInsight] = useState(false);
+
+    const sortedLogs = tracker.logs.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    const chartData = sortedLogs.slice(-30).map(log => ({
+        name: format(parseISO(log.date), 'MMM d'),
+        [tracker.unit]: log.value,
+    }));
+
+    const handleAddOrUpdateLog = () => {
+        const numValue = parseFloat(value);
+        if (isNaN(numValue)) return;
+        
+        const logDate = format(date, 'yyyy-MM-dd');
+        
+        if (editingLog) {
+            // Update existing log
+            const updatedLogs = tracker.logs.map(log =>
+                log.id === editingLog.id ? { ...log, date: logDate, value: numValue, notes } : log
+            );
+            onTrackerChange({ logs: updatedLogs });
+            setEditingLog(null);
+        } else {
+            // Add new log, but first check if one for this date already exists
+            const existingLogIndex = tracker.logs.findIndex(log => log.date === logDate);
+            let newLogs: LogEntry[];
+
+            if (existingLogIndex > -1) {
+                // Update the existing log for the selected date
+                newLogs = [...tracker.logs];
+                newLogs[existingLogIndex] = { ...newLogs[existingLogIndex], value: numValue, notes };
+            } else {
+                // Add a new log
+                const newLog: LogEntry = {
+                    id: uuidv4(),
+                    date: logDate,
+                    value: numValue,
+                    notes,
+                };
+                newLogs = [...tracker.logs, newLog];
+            }
+            onTrackerChange({ logs: newLogs });
+        }
+        
+        setValue('');
+        setNotes('');
+        setDate(new Date());
+    };
+
+    const handleEditClick = (log: LogEntry) => {
+        setEditingLog(log);
+        const logDate = parseISO(log.date);
+        setDate(isValid(logDate) ? logDate : new Date());
+        setValue(String(log.value));
+        setNotes(log.notes || '');
+    };
+
+    const handleCancelEdit = () => {
+        setEditingLog(null);
+        setValue('');
+        setNotes('');
+        setDate(new Date());
+    };
+
+    const handleDeleteLog = (logId: string) => {
+        const updatedLogs = tracker.logs.filter(log => log.id !== logId);
+        onTrackerChange({ logs: updatedLogs });
+    };
+
+    const handleGetInsights = async () => {
+        if (tracker.logs.length < 2) return;
+        setLoadingInsight(true);
+        setAiInsight(null);
+        try {
+            const result = await getLogInsights({
+                trackerName: tracker.name,
+                unit: tracker.unit,
+                goal: tracker.goal,
+                logHistory: sortedLogs.slice(-30).map(l => ({...l, notes: l.notes || ''})),
+            });
+            setAiInsight(result);
+        } catch (error) {
+            console.error("Failed to get AI insights:", error);
+        } finally {
+            setLoadingInsight(false);
+        }
+    };
+    
+    const TrendIcon = ({trend}: {trend: AiInsight['trend']}) => {
+        switch(trend) {
+            case 'upward': return <TrendingUp className="h-5 w-5 text-green-500" />;
+            case 'downward': return <TrendingDown className="h-5 w-5 text-red-500" />;
+            case 'stable': return <Minus className="h-5 w-5 text-yellow-500" />;
+            case 'fluctuating': return <TrendingUp className="h-5 w-5 text-blue-500" />; // Or some other icon
+        }
+    }
+
+    return (
+        <motion.div
+            layout
+            initial={{ opacity: 0, y: 50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ type: 'spring' }}
+        >
+            <Card className="dark:neon-border-accent">
+                <CardHeader>
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <CardTitle>{tracker.name}</CardTitle>
+                            <CardDescription>Unit: {tracker.unit}</CardDescription>
+                        </div>
+                        <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <Button variant="ghost" size="icon">
+                                    <Trash2 className="h-4 w-4 text-destructive" />
+                                </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                    <AlertDialogDescription>This will permanently delete the "{tracker.name}" tracker and all its logs. This action cannot be undone.</AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction onClick={onDelete}>Delete</AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+                    </div>
+                </CardHeader>
+                <CardContent className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div className="space-y-4">
+                        <h3 className="font-semibold text-lg">{editingLog ? 'Edit Log Entry' : 'Add New Log'}</h3>
+                        <div className="flex flex-col sm:flex-row gap-2">
+                             <Popover>
+                                <PopoverTrigger asChild>
+                                <Button
+                                    variant={"outline"}
+                                    className={cn(
+                                    "w-full sm:w-[280px] justify-start text-left font-normal",
+                                    !date && "text-muted-foreground"
+                                    )}
+                                >
+                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                    {date ? format(date, "PPP") : <span>Pick a date</span>}
+                                </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0">
+                                    <Calendar mode="single" selected={date} onSelect={(d) => d && setDate(d)} initialFocus />
+                                </PopoverContent>
+                            </Popover>
+                            <Input 
+                                type="number"
+                                placeholder={`Value in ${tracker.unit}`}
+                                value={value}
+                                onChange={e => setValue(e.target.value)}
+                                className="w-full sm:flex-1"
+                            />
+                        </div>
+                        <Textarea 
+                            placeholder="Add any notes (optional)..."
+                            value={notes}
+                            onChange={e => setNotes(e.target.value)}
+                        />
+                        <div className="flex gap-2">
+                            <Button onClick={handleAddOrUpdateLog} className="w-full">
+                                {editingLog ? <Save className="mr-2 h-4 w-4" /> : <Plus className="mr-2 h-4 w-4" />}
+                                {editingLog ? 'Save Changes' : 'Add Log'}
+                            </Button>
+                            {editingLog && (
+                                <Button onClick={handleCancelEdit} variant="outline" className="w-full">
+                                    <X className="mr-2 h-4 w-4" /> Cancel
+                                </Button>
+                            )}
+                        </div>
+                        <div className="space-y-2 pt-4">
+                            <h4 className="font-semibold">Recent Logs:</h4>
+                            <div className="max-h-60 overflow-y-auto pr-2">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Date</TableHead>
+                                            <TableHead>Value</TableHead>
+                                            <TableHead className="text-right">Actions</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {sortedLogs.slice(-5).reverse().map(log => (
+                                            <TableRow key={log.id}>
+                                                <TableCell>{format(parseISO(log.date), 'MMM d, yyyy')}</TableCell>
+                                                <TableCell>{log.value} {tracker.unit}</TableCell>
+                                                <TableCell className="text-right">
+                                                    <Button variant="ghost" size="icon" onClick={() => handleEditClick(log)}><Edit className="h-4 w-4" /></Button>
+                                                    <Button variant="ghost" size="icon" onClick={() => handleDeleteLog(log.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                                {sortedLogs.length === 0 && <p className="text-sm text-muted-foreground text-center py-4">No logs yet.</p>}
+                            </div>
+                        </div>
+                    </div>
+                    <div className="space-y-4">
+                        <h3 className="font-semibold text-lg">Progress Chart (Last 30 entries)</h3>
+                        <ResponsiveContainer width="100%" height={250}>
+                            <BarChart data={chartData}>
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="name" />
+                                <YAxis />
+                                <Tooltip />
+                                <Legend />
+                                <Bar dataKey={tracker.unit} fill="hsl(var(--primary))" />
+                            </BarChart>
+                        </ResponsiveContainer>
+                        
+                        <div>
+                             <Button onClick={handleGetInsights} disabled={loadingInsight || tracker.logs.length < 2} className="w-full">
+                                {loadingInsight ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
+                                Get AI Coach Insights
+                            </Button>
+                            {tracker.logs.length < 2 && <p className="text-xs text-muted-foreground text-center mt-1">Need at least 2 logs for insights.</p>}
+                        </div>
+
+                        {loadingInsight && (
+                            <div className="space-y-2 mt-2">
+                                <Skeleton className="h-4 w-1/4" />
+                                <Skeleton className="h-4 w-full" />
+                                <Skeleton className="h-4 w-3/4" />
+                            </div>
+                        )}
+                        
+                        {aiInsight && (
+                            <Card className="bg-muted/50">
+                                <CardHeader>
+                                    <CardTitle className="text-base flex items-center gap-2">
+                                        <TrendIcon trend={aiInsight.trend}/>
+                                        AI Coach says... (Trend: {aiInsight.trend})
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <p className="text-sm text-muted-foreground italic">"{aiInsight.feedback}"</p>
+                                </CardContent>
+                            </Card>
+                        )}
+                    </div>
+                </CardContent>
+            </Card>
+        </motion.div>
+    );
+}

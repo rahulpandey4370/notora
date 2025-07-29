@@ -12,3 +12,4 @@ import '@/ai/flows/analyze-link.ts';
 import '@/ai/flows/custom-transform-sticky-note.ts';
 import '@/ai/flows/search-links.ts';
 import '@/ai/flows/generate-note-title.ts';
+import '@/ai/flows/get-log-insights.ts';

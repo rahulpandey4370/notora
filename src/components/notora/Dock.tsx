@@ -2,7 +2,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Home, CheckSquare, StickyNote, Link2 } from 'lucide-react';
+import { Home, CheckSquare, StickyNote, Link2, ListChecks } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -17,6 +17,7 @@ const navItems = [
   { href: '/tasks', label: 'Tasks', icon: CheckSquare },
   { href: '/notes', label: 'Notes', icon: StickyNote },
   { href: '/links', label: 'Links', icon: Link2 },
+  { href: '/logs', label: 'Logs', icon: ListChecks },
 ];
 
 export default function Dock() {

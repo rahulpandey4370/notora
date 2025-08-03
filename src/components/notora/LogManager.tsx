@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -48,6 +49,10 @@ export default function LogManager({ logTrackers, data, onDataChange }: LogManag
         setNewTrackerName('');
         setNewTrackerUnit('');
         setNewTrackerGoal('');
+        toast({
+            title: 'Tracker Added!',
+            description: `You can now start logging your "${newTracker.name}".`,
+        })
     };
 
     const handleDeleteTracker = (trackerId: string) => {

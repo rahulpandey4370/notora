@@ -1,8 +1,9 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { format, parseISO, isValid, differenceInDays } from 'date-fns';
+import { format, parseISO, isValid, differenceInDays, isAfter, startOfDay } from 'date-fns';
 import { v4 as uuidv4 } from 'uuid';
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, ReferenceLine, Dot } from 'recharts';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -47,6 +48,15 @@ const chartColors = [
     "hsl(var(--chart-5))",
 ]
 
+const chartBgColors = [
+    "hsl(var(--chart-1) / 0.1)",
+    "hsl(var(--chart-2) / 0.1)",
+    "hsl(var(--chart-3) / 0.1)",
+    "hsl(var(--chart-4) / 0.1)",
+    "hsl(var(--chart-5) / 0.1)",
+]
+
+
 export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTrackerChange }: LogTrackerCardProps) {
     const [date, setDate] = useState<Date>(new Date());
     const [value, setValue] = useState<string>('');
@@ -68,21 +78,17 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
         if (recentLogs.length === 0) return null;
         const values = recentLogs.map(l => l.value);
         const latest = values[values.length - 1];
-        const average = values.reduce((a, b) => a + b, 0) / values.length;
+        const average30d = values.reduce((a, b) => a + b, 0) / values.length;
+        
+        const sevenDayLogs = recentLogs.filter(log => differenceInDays(new Date(), parseISO(log.date)) <= 7);
+        const average7d = sevenDayLogs.length > 0
+            ? sevenDayLogs.map(l => l.value).reduce((a, b) => a + b, 0) / sevenDayLogs.length
+            : null;
+
         const high = Math.max(...values);
         const low = Math.min(...values);
 
-        let trend = 'stable';
-        if (recentLogs.length > 1) {
-            const lastSevenDaysLogs = recentLogs.filter(log => differenceInDays(new Date(), parseISO(log.date)) <= 7);
-            if (lastSevenDaysLogs.length > 1) {
-                const first = lastSevenDaysLogs[0].value;
-                const last = lastSevenDaysLogs[lastSevenDaysLogs.length - 1].value;
-                if (last > first) trend = 'upward';
-                if (last < first) trend = 'downward';
-            }
-        }
-        return { latest, average, high, low, trend };
+        return { latest, average30d, average7d, high, low };
     }, [recentLogs]);
 
 
@@ -176,6 +182,7 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
     
     const cardColorClass = cardColors[cardIndex % cardColors.length];
     const chartColor = chartColors[cardIndex % chartColors.length];
+    const chartBgColor = chartBgColors[cardIndex % chartColors.length];
 
     return (
         <motion.div
@@ -190,7 +197,7 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
                     <div className="flex justify-between items-start">
                         <div>
                             <CardTitle>{tracker.name}</CardTitle>
-                            <CardDescription>Unit: {tracker.unit}</CardDescription>
+                            <CardDescription>Unit: {tracker.unit} {tracker.goal ? `| Goal: ${tracker.goal}` : ''}</CardDescription>
                         </div>
                         <AlertDialog>
                             <AlertDialogTrigger asChild>
@@ -246,7 +253,11 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
                             onChange={e => setNotes(e.target.value)}
                         />
                         <div className="flex gap-2">
-                            <Button onClick={handleAddOrUpdateLog} className="w-full">
+                            <Button 
+                                onClick={handleAddOrUpdateLog} 
+                                className="w-full"
+                                style={{ backgroundColor: chartColor }}
+                            >
                                 {editingLog ? <Save className="mr-2 h-4 w-4" /> : <Plus className="mr-2 h-4 w-4" />}
                                 {editingLog ? 'Save Changes' : 'Add Log'}
                             </Button>
@@ -288,20 +299,28 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
                         <div className='space-y-4'>
                             <h3 className="font-semibold text-lg">At a Glance</h3>
                             {kpis ? (
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                                    <div className="bg-background/50 p-2 rounded-lg">
+                                <div 
+                                    className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-2 text-center"
+                                >
+                                    <div className="p-2 rounded-lg" style={{ backgroundColor: chartBgColor }}>
                                         <p className="text-xs text-muted-foreground">Latest</p>
                                         <p className="text-lg font-bold">{kpis.latest.toLocaleString()}</p>
                                     </div>
-                                    <div className="bg-background/50 p-2 rounded-lg">
+                                    {kpis.average7d !== null && (
+                                        <div className="p-2 rounded-lg" style={{ backgroundColor: chartBgColor }}>
+                                            <p className="text-xs text-muted-foreground">7d Avg</p>
+                                            <p className="text-lg font-bold">{kpis.average7d.toFixed(1)}</p>
+                                        </div>
+                                    )}
+                                    <div className="p-2 rounded-lg" style={{ backgroundColor: chartBgColor }}>
                                         <p className="text-xs text-muted-foreground">30d Avg</p>
-                                        <p className="text-lg font-bold">{kpis.average.toFixed(1)}</p>
+                                        <p className="text-lg font-bold">{kpis.average30d.toFixed(1)}</p>
                                     </div>
-                                    <div className="bg-background/50 p-2 rounded-lg">
+                                    <div className="p-2 rounded-lg" style={{ backgroundColor: chartBgColor }}>
                                         <p className="text-xs text-muted-foreground">30d High</p>
                                         <p className="text-lg font-bold">{kpis.high.toLocaleString()}</p>
                                     </div>
-                                    <div className="bg-background/50 p-2 rounded-lg">
+                                    <div className="p-2 rounded-lg" style={{ backgroundColor: chartBgColor }}>
                                         <p className="text-xs text-muted-foreground">30d Low</p>
                                         <p className="text-lg font-bold">{kpis.low.toLocaleString()}</p>
                                     </div>
@@ -324,7 +343,7 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
                                         }}
                                     />
                                     <Legend />
-                                    {tracker.goal && <ReferenceLine y={tracker.goal} label={{ value: `Goal`, position: 'insideTopLeft' }} stroke="hsl(var(--primary))" strokeDasharray="3 3" />}
+                                    {tracker.goal && <ReferenceLine y={tracker.goal} label={{ value: `Goal: ${tracker.goal}`, position: 'insideTopLeft' }} stroke="hsl(var(--primary))" strokeDasharray="3 3" />}
                                     <Line type="monotone" dataKey={tracker.unit} stroke={chartColor} strokeWidth={2} dot={<Dot r={4} fill={chartColor} />} activeDot={{ r: 6 }} />
                                 </LineChart>
                             </ResponsiveContainer>
@@ -364,3 +383,4 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
         </motion.div>
     );
 }
+

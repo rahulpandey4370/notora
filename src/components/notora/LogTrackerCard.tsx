@@ -1,11 +1,10 @@
-
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { format, parseISO, isValid } from 'date-fns';
+import { format, parseISO, isValid, differenceInDays } from 'date-fns';
 import { v4 as uuidv4 } from 'uuid';
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, ReferenceLine, Dot } from 'recharts';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,7 +13,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '../ui/alert-dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { CalendarIcon, Edit, Save, Trash2, X, Wand2, Loader2, TrendingUp, TrendingDown, Minus, Plus } from 'lucide-react';
+import { CalendarIcon, Edit, Save, Trash2, X, Wand2, Loader2, TrendingUp, TrendingDown, Minus, ArrowRight, Target } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { LogEntry, LogTracker } from '@/lib/types';
 import { getLogInsights } from '@/ai/flows/get-log-insights';
@@ -22,6 +21,7 @@ import { Skeleton } from '../ui/skeleton';
 
 interface LogTrackerCardProps {
     tracker: LogTracker;
+    cardIndex: number;
     onDelete: () => void;
     onTrackerChange: (updatedData: Partial<LogTracker>) => void;
 }
@@ -31,7 +31,23 @@ interface AiInsight {
     trend: 'upward' | 'downward' | 'stable' | 'fluctuating';
 }
 
-export default function LogTrackerCard({ tracker, onDelete, onTrackerChange }: LogTrackerCardProps) {
+const cardColors = [
+    "dark:neon-border-chart-1",
+    "dark:neon-border-chart-2",
+    "dark:neon-border-chart-3",
+    "dark:neon-border-chart-4",
+    "dark:neon-border-chart-5",
+];
+
+const chartColors = [
+    "hsl(var(--chart-1))",
+    "hsl(var(--chart-2))",
+    "hsl(var(--chart-3))",
+    "hsl(var(--chart-4))",
+    "hsl(var(--chart-5))",
+]
+
+export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTrackerChange }: LogTrackerCardProps) {
     const [date, setDate] = useState<Date>(new Date());
     const [value, setValue] = useState<string>('');
     const [notes, setNotes] = useState('');
@@ -40,10 +56,35 @@ export default function LogTrackerCard({ tracker, onDelete, onTrackerChange }: L
     const [loadingInsight, setLoadingInsight] = useState(false);
 
     const sortedLogs = tracker.logs.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-    const chartData = sortedLogs.slice(-30).map(log => ({
+    const recentLogs = sortedLogs.slice(-30);
+    
+    const chartData = recentLogs.map(log => ({
         name: format(parseISO(log.date), 'MMM d'),
         [tracker.unit]: log.value,
+        ...log
     }));
+    
+    const kpis = useMemo(() => {
+        if (recentLogs.length === 0) return null;
+        const values = recentLogs.map(l => l.value);
+        const latest = values[values.length - 1];
+        const average = values.reduce((a, b) => a + b, 0) / values.length;
+        const high = Math.max(...values);
+        const low = Math.min(...values);
+
+        let trend = 'stable';
+        if (recentLogs.length > 1) {
+            const lastSevenDaysLogs = recentLogs.filter(log => differenceInDays(new Date(), parseISO(log.date)) <= 7);
+            if (lastSevenDaysLogs.length > 1) {
+                const first = lastSevenDaysLogs[0].value;
+                const last = lastSevenDaysLogs[lastSevenDaysLogs.length - 1].value;
+                if (last > first) trend = 'upward';
+                if (last < first) trend = 'downward';
+            }
+        }
+        return { latest, average, high, low, trend };
+    }, [recentLogs]);
+
 
     const handleAddOrUpdateLog = () => {
         const numValue = parseFloat(value);
@@ -124,14 +165,17 @@ export default function LogTrackerCard({ tracker, onDelete, onTrackerChange }: L
         }
     };
     
-    const TrendIcon = ({trend}: {trend: AiInsight['trend']}) => {
+    const TrendIcon = ({trend}: {trend: 'upward' | 'downward' | 'stable' | 'fluctuating'}) => {
         switch(trend) {
             case 'upward': return <TrendingUp className="h-5 w-5 text-green-500" />;
             case 'downward': return <TrendingDown className="h-5 w-5 text-red-500" />;
             case 'stable': return <Minus className="h-5 w-5 text-yellow-500" />;
-            case 'fluctuating': return <TrendingUp className="h-5 w-5 text-blue-500" />; // Or some other icon
+            case 'fluctuating': return <TrendingUp className="h-5 w-5 text-blue-500" />;
         }
     }
+    
+    const cardColorClass = cardColors[cardIndex % cardColors.length];
+    const chartColor = chartColors[cardIndex % chartColors.length];
 
     return (
         <motion.div
@@ -141,7 +185,7 @@ export default function LogTrackerCard({ tracker, onDelete, onTrackerChange }: L
             exit={{ opacity: 0, scale: 0.8 }}
             transition={{ type: 'spring' }}
         >
-            <Card className="dark:neon-border-accent">
+            <Card className={cardColorClass}>
                 <CardHeader>
                     <div className="flex justify-between items-start">
                         <div>
@@ -241,18 +285,50 @@ export default function LogTrackerCard({ tracker, onDelete, onTrackerChange }: L
                         </div>
                     </div>
                     <div className="space-y-4">
-                        <h3 className="font-semibold text-lg">Progress Chart (Last 30 entries)</h3>
-                        <ResponsiveContainer width="100%" height={250}>
-                            <BarChart data={chartData}>
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="name" />
-                                <YAxis />
-                                <Tooltip />
-                                <Legend />
-                                <Bar dataKey={tracker.unit} fill="hsl(var(--primary))" />
-                            </BarChart>
-                        </ResponsiveContainer>
-                        
+                        <div className='space-y-4'>
+                            <h3 className="font-semibold text-lg">At a Glance</h3>
+                            {kpis ? (
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                                    <div className="bg-background/50 p-2 rounded-lg">
+                                        <p className="text-xs text-muted-foreground">Latest</p>
+                                        <p className="text-lg font-bold">{kpis.latest.toLocaleString()}</p>
+                                    </div>
+                                    <div className="bg-background/50 p-2 rounded-lg">
+                                        <p className="text-xs text-muted-foreground">30d Avg</p>
+                                        <p className="text-lg font-bold">{kpis.average.toFixed(1)}</p>
+                                    </div>
+                                    <div className="bg-background/50 p-2 rounded-lg">
+                                        <p className="text-xs text-muted-foreground">30d High</p>
+                                        <p className="text-lg font-bold">{kpis.high.toLocaleString()}</p>
+                                    </div>
+                                    <div className="bg-background/50 p-2 rounded-lg">
+                                        <p className="text-xs text-muted-foreground">30d Low</p>
+                                        <p className="text-lg font-bold">{kpis.low.toLocaleString()}</p>
+                                    </div>
+                                </div>
+                            ) : (
+                                 <p className="text-sm text-muted-foreground text-center py-4">Not enough data for KPIs.</p>
+                            )}
+                        </div>
+                        <div className='space-y-2'>
+                            <h3 className="font-semibold text-lg pt-4">Progress Chart</h3>
+                            <ResponsiveContainer width="100%" height={200}>
+                                <LineChart data={chartData}>
+                                    <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.2} />
+                                    <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                                    <YAxis tick={{ fontSize: 12 }} domain={['dataMin - 1', 'dataMax + 1']} />
+                                    <Tooltip 
+                                        contentStyle={{
+                                            backgroundColor: 'hsl(var(--background))',
+                                            borderColor: 'hsl(var(--border))'
+                                        }}
+                                    />
+                                    <Legend />
+                                    {tracker.goal && <ReferenceLine y={tracker.goal} label={{ value: `Goal`, position: 'insideTopLeft' }} stroke="hsl(var(--primary))" strokeDasharray="3 3" />}
+                                    <Line type="monotone" dataKey={tracker.unit} stroke={chartColor} strokeWidth={2} dot={<Dot r={4} fill={chartColor} />} activeDot={{ r: 6 }} />
+                                </LineChart>
+                            </ResponsiveContainer>
+                        </div>
                         <div>
                              <Button onClick={handleGetInsights} disabled={loadingInsight || tracker.logs.length < 2} className="w-full">
                                 {loadingInsight ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
@@ -278,7 +354,7 @@ export default function LogTrackerCard({ tracker, onDelete, onTrackerChange }: L
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent>
-                                    <p className="text-sm text-muted-foreground italic">"{aiInsight.feedback}"</p>
+                                    <p className="text-sm text-muted-foreground italic whitespace-pre-wrap">"{aiInsight.feedback}"</p>
                                 </CardContent>
                             </Card>
                         )}
@@ -288,3 +364,5 @@ export default function LogTrackerCard({ tracker, onDelete, onTrackerChange }: L
         </motion.div>
     );
 }
+
+    

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -23,6 +22,7 @@ interface LogManagerProps {
 export default function LogManager({ logTrackers, data, onDataChange }: LogManagerProps) {
     const [newTrackerName, setNewTrackerName] = useState('');
     const [newTrackerUnit, setNewTrackerUnit] = useState('');
+    const [newTrackerGoal, setNewTrackerGoal] = useState('');
     const { toast } = useToast();
 
     const handleAddTracker = () => {
@@ -39,6 +39,7 @@ export default function LogManager({ logTrackers, data, onDataChange }: LogManag
             id: uuidv4(),
             name: newTrackerName.trim(),
             unit: newTrackerUnit.trim(),
+            goal: newTrackerGoal ? parseFloat(newTrackerGoal) : undefined,
             logs: [],
         };
 
@@ -46,6 +47,7 @@ export default function LogManager({ logTrackers, data, onDataChange }: LogManag
         onDataChange({ ...data, logTrackers: updatedTrackers });
         setNewTrackerName('');
         setNewTrackerUnit('');
+        setNewTrackerGoal('');
     };
 
     const handleDeleteTracker = (trackerId: string) => {
@@ -92,6 +94,13 @@ export default function LogManager({ logTrackers, data, onDataChange }: LogManag
                         onChange={(e) => setNewTrackerUnit(e.target.value)}
                         className="w-full sm:w-32"
                     />
+                     <Input
+                        placeholder="Goal (Optional)"
+                        type="number"
+                        value={newTrackerGoal}
+                        onChange={(e) => setNewTrackerGoal(e.target.value)}
+                        className="w-full sm:w-32"
+                    />
                     <Button onClick={handleAddTracker} className="w-full sm:w-auto">
                         <Plus className="mr-2 h-4 w-4" /> Add Tracker
                     </Button>
@@ -105,10 +114,11 @@ export default function LogManager({ logTrackers, data, onDataChange }: LogManag
                     initial="hidden"
                     animate="visible"
                 >
-                    {logTrackers.map(tracker => (
+                    {logTrackers.map((tracker, index) => (
                         <LogTrackerCard 
                             key={tracker.id}
                             tracker={tracker}
+                            cardIndex={index}
                             onDelete={() => handleDeleteTracker(tracker.id)}
                             onTrackerChange={(updatedData) => handleTrackerDataChange(tracker.id, updatedData)}
                         />
@@ -124,3 +134,5 @@ export default function LogManager({ logTrackers, data, onDataChange }: LogManag
         </div>
     );
 }
+
+    

@@ -14,11 +14,13 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '../ui/alert-dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { CalendarIcon, Edit, Save, Trash2, X, Wand2, Loader2, TrendingUp, TrendingDown, Minus, ArrowRight, Target, Plus } from 'lucide-react';
+import { CalendarIcon, Edit, Save, Trash2, X, Wand2, Loader2, TrendingUp, TrendingDown, Minus, ArrowRight, Target, Plus, LineChart as LineChartIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { LogEntry, LogTracker } from '@/lib/types';
 import { getLogInsights } from '@/ai/flows/get-log-insights';
 import { Skeleton } from '../ui/skeleton';
+import { Switch } from '../ui/switch';
+import { Label } from '../ui/label';
 
 interface LogTrackerCardProps {
     tracker: LogTracker;
@@ -64,15 +66,16 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
     const [editingLog, setEditingLog] = useState<LogEntry | null>(null);
     const [aiInsight, setAiInsight] = useState<AiInsight | null>(null);
     const [loadingInsight, setLoadingInsight] = useState(false);
+    const [showTrendLine, setShowTrendLine] = useState(false);
 
-    const sortedLogs = tracker.logs.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-    const recentLogs = sortedLogs.slice(-30);
+    const sortedLogs = useMemo(() => tracker.logs.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()), [tracker.logs]);
+    const recentLogs = useMemo(() => sortedLogs.slice(-30), [sortedLogs]);
     
-    const chartData = recentLogs.map(log => ({
+    const chartData = useMemo(() => recentLogs.map(log => ({
         name: format(parseISO(log.date), 'MMM d'),
         [tracker.unit]: log.value,
         ...log
-    }));
+    })), [recentLogs, tracker.unit]);
     
     const kpis = useMemo(() => {
         if (recentLogs.length === 0) return null;
@@ -90,6 +93,32 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
 
         return { latest, average30d, average7d, high, low };
     }, [recentLogs]);
+
+    const chartDataWithTrend = useMemo(() => {
+        if (recentLogs.length < 2) return chartData.map(d => ({ ...d, trend: d[tracker.unit] }));
+    
+        const n = recentLogs.length;
+        let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+    
+        recentLogs.forEach((log, i) => {
+            const x = i;
+            const y = log.value;
+            sumX += x;
+            sumY += y;
+            sumXY += x * y;
+            sumX2 += x * x;
+        });
+    
+        const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+        const intercept = (sumY - slope * sumX) / n;
+    
+        if (isNaN(slope) || isNaN(intercept)) return chartData.map(d => ({ ...d, trend: d[tracker.unit] }));;
+    
+        return chartData.map((dataPoint, i) => ({
+            ...dataPoint,
+            trend: slope * i + intercept,
+        }));
+    }, [recentLogs, chartData, tracker.unit]);
 
 
     const handleAddOrUpdateLog = () => {
@@ -113,7 +142,7 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
             if (existingLogIndex > -1) {
                 // Update the existing log for the selected date
                 newLogs = [...tracker.logs];
-                newLogs[existingLogIndex] = { ...newLogs[existingLogIndex], value: numValue, notes };
+                newLogs[existingLogIndex] = { ...newLogs[existingLogIndex], value: numValue, notes: notes || newLogs[existingLogIndex].notes };
             } else {
                 // Add a new log
                 const newLog: LogEntry = {
@@ -330,9 +359,23 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
                             )}
                         </div>
                         <div className='space-y-2'>
-                            <h3 className="font-semibold text-lg pt-4">Progress Chart</h3>
+                             <div className="flex items-center justify-between pt-4">
+                                <h3 className="font-semibold text-lg">Progress Chart</h3>
+                                {chartData.length >= 2 && (
+                                    <div className="flex items-center space-x-2">
+                                        <Switch
+                                            id={`trend-switch-${tracker.id}`}
+                                            checked={showTrendLine}
+                                            onCheckedChange={setShowTrendLine}
+                                        />
+                                        <Label htmlFor={`trend-switch-${tracker.id}`} className="flex items-center gap-1 text-sm">
+                                            <LineChartIcon className="h-4 w-4" /> Trend
+                                        </Label>
+                                    </div>
+                                )}
+                            </div>
                             <ResponsiveContainer width="100%" height={200}>
-                                <LineChart data={chartData}>
+                                <LineChart data={chartDataWithTrend}>
                                     <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.2} />
                                     <XAxis dataKey="name" tick={{ fontSize: 12 }} />
                                     <YAxis tick={{ fontSize: 12 }} domain={['dataMin - 1', 'dataMax + 1']} />
@@ -345,6 +388,17 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
                                     <Legend />
                                     {tracker.goal && <ReferenceLine y={tracker.goal} label={{ value: `Goal: ${tracker.goal}`, position: 'insideTopLeft' }} stroke="hsl(var(--primary))" strokeDasharray="3 3" />}
                                     <Line type="monotone" dataKey={tracker.unit} stroke={chartColor} strokeWidth={2} dot={<Dot r={4} fill={chartColor} />} activeDot={{ r: 6 }} />
+                                    {showTrendLine && (
+                                        <Line
+                                            type="monotone"
+                                            dataKey="trend"
+                                            stroke={chartColor}
+                                            strokeWidth={2}
+                                            strokeOpacity={0.8}
+                                            strokeDasharray="5 5"
+                                            dot={false}
+                                        />
+                                    )}
                                 </LineChart>
                             </ResponsiveContainer>
                         </div>
@@ -383,4 +437,3 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
         </motion.div>
     );
 }
-

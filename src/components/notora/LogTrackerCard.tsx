@@ -284,7 +284,7 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
                         <div className="flex gap-2">
                             <Button 
                                 onClick={handleAddOrUpdateLog} 
-                                className="w-full"
+                                className="w-full text-white"
                                 style={{ backgroundColor: chartColor }}
                             >
                                 {editingLog ? <Save className="mr-2 h-4 w-4" /> : <Plus className="mr-2 h-4 w-4" />}
@@ -437,3 +437,5 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
         </motion.div>
     );
 }
+
+    

@@ -184,18 +184,18 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
             }
         } else if (task.type === 'recurring') {
              const taskStartDate = startOfDay(new Date(task.createdAt));
-             // Consider tasks created before or during this week
-             if (isBefore(taskStartDate, weekEnd) || isSameDay(taskStartDate, weekEnd)) {
-                for (let i = 0; i < 7; i++) {
-                    const dayInWeek = addDays(weekStart, i);
-                    if (isAfter(dayInWeek, taskStartDate) || isSameDay(dayInWeek, taskStartDate)) {
-                        total += taskXpValue;
-                        if ((task.completions || []).includes(format(dayInWeek, 'yyyy-MM-dd'))) {
-                           achieved += taskXpValue;
-                        }
+             // Iterate through each day of the current week
+             for (let i = 0; i < 7; i++) {
+                const dayInWeek = addDays(weekStart, i);
+                // The task is active on this day if the day is on or after the task was created
+                // AND the day is in the same month as the task's creation month (prevents spillover)
+                if ((isAfter(dayInWeek, taskStartDate) || isSameDay(dayInWeek, taskStartDate)) && isSameMonth(dayInWeek, taskStartDate)) {
+                    total += taskXpValue;
+                    if ((task.completions || []).includes(format(dayInWeek, 'yyyy-MM-dd'))) {
+                       achieved += taskXpValue;
                     }
                 }
-             }
+            }
         } else if (task.type === 'single' && task.date) {
             const taskDate = startOfDay(new Date(task.date));
             if (isWithinInterval(taskDate, { start: weekStart, end: weekEnd })) {
@@ -205,6 +205,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
                 }
             }
         }
+        // Monthly tasks are explicitly excluded from weekly counts
     });
 
     return { weeklyXp: achieved, totalWeeklyXp: total };

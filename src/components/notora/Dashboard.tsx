@@ -5,7 +5,7 @@ import type { User, AppData, Task } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { useMemo } from 'react';
 import { Calendar, Flame, TrendingUp } from 'lucide-react';
-import { format, isSameDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, addDays, isSameMonth, isAfter, startOfDay, isBefore, setHours, setMinutes, setSeconds, getDay } from 'date-fns';
+import { format, isSameDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, addDays, isSameMonth, isAfter, startOfDay, isBefore, setHours, setMinutes, setSeconds, getDay, getDaysInMonth } from 'date-fns';
 import { getTaskXp } from '@/lib/utils';
 import { useApp } from '@/hooks/use-app';
 import { PolarGrid, PolarRadiusAxis, RadialBar, RadialBarChart, Label } from "recharts"
@@ -187,9 +187,8 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
              // Iterate through each day of the current week
              for (let i = 0; i < 7; i++) {
                 const dayInWeek = addDays(weekStart, i);
-                // The task is active on this day if the day is on or after the task was created
-                // AND the day is in the same month as the task's creation month (prevents spillover)
-                if ((isAfter(dayInWeek, taskStartDate) || isSameDay(dayInWeek, taskStartDate)) && isSameMonth(dayInWeek, taskStartDate)) {
+                // Check if the day is within the task's active month and on or after its creation.
+                if (isSameMonth(dayInWeek, taskStartDate) && (isAfter(dayInWeek, taskStartDate) || isSameDay(dayInWeek, taskStartDate))) {
                     total += taskXpValue;
                     if ((task.completions || []).includes(format(dayInWeek, 'yyyy-MM-dd'))) {
                        achieved += taskXpValue;
@@ -205,54 +204,60 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
                 }
             }
         }
-        // Monthly tasks are explicitly excluded from weekly counts
     });
 
     return { weeklyXp: achieved, totalWeeklyXp: total };
   }, [tasks, today]);
   
   const { monthlyXp, totalPossibleMonthlyXp } = useMemo(() => {
+    const monthStart = startOfMonth(today);
+    const monthEnd = endOfMonth(today);
     let achieved = 0;
     let total = 0;
-    
-    const allTasksInMonth = data.tasks.filter(task => {
-        if (task.type === 'monthly') {
-            return task.month === format(today, 'yyyy-MM');
-        }
-        if (task.type === 'weekly' && task.week) {
-            const taskWeekDate = startOfWeek(new Date(task.week.replace(/(\\d{4})-(\\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
-            return isSameMonth(taskWeekDate, today);
-        }
-        if (task.type === 'single' && task.date) {
-            return isSameMonth(new Date(task.date), today);
-        }
-        if (task.type === 'recurring') {
-            const createdAt = new Date(task.createdAt);
-            return isSameMonth(createdAt, today);
-        }
-        return false;
-    });
 
-    allTasksInMonth.forEach(task => {
-      const taskXpValue = getTaskXp(task);
-      const completionsForMonth = (task.completions || []).filter(c => isSameMonth(new Date(c), today));
-      achieved += completionsForMonth.length * taskXpValue;
-    
-      if (task.type === 'recurring') {
-          const start = startOfDay(new Date(task.createdAt));
-          if (!isSameMonth(start, today)) return;
+    tasks.forEach(task => {
+        const taskXpValue = getTaskXp(task);
+        const completionsForMonth = (task.completions || []).filter(c => isSameMonth(new Date(c), today));
 
-          const end = endOfMonth(today);
-          const daysInRange = Array.from({ length: end.getDate() }, (_, i) => addDays(startOfMonth(today), i));
-          const applicableDays = daysInRange.filter(day => isAfter(day, start) || isSameDay(day, start)).length;
-          total += (applicableDays * taskXpValue);
-      } else {
-          total += taskXpValue;
-      }
+        if (task.type === 'monthly' && task.month === format(today, 'yyyy-MM')) {
+            total += taskXpValue;
+            if (completionsForMonth.length > 0) {
+                achieved += taskXpValue;
+            }
+        } else if (task.type === 'weekly' && task.week) {
+            const taskWeekStartDate = startOfWeek(new Date(task.week.replace(/(\d{4})-(\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
+            if (isSameMonth(taskWeekStartDate, today)) {
+                total += taskXpValue;
+                if (completionsForMonth.length > 0) {
+                    achieved += taskXpValue;
+                }
+            }
+        } else if (task.type === 'single' && task.date) {
+            if (isSameMonth(new Date(task.date), today)) {
+                total += taskXpValue;
+                if (completionsForMonth.length > 0) {
+                    achieved += taskXpValue;
+                }
+            }
+        } else if (task.type === 'recurring') {
+            const taskStartDate = startOfDay(new Date(task.createdAt));
+            if (isSameMonth(taskStartDate, today)) {
+                const daysInMonth = getDaysInMonth(today);
+                for (let i = 0; i < daysInMonth; i++) {
+                    const dayInMonth = addDays(monthStart, i);
+                    if (isAfter(dayInMonth, taskStartDate) || isSameDay(dayInMonth, taskStartDate)) {
+                        total += taskXpValue;
+                        if ((task.completions || []).includes(format(dayInMonth, 'yyyy-MM-dd'))) {
+                            achieved += taskXpValue;
+                        }
+                    }
+                }
+            }
+        }
     });
     
     return { monthlyXp: achieved, totalPossibleMonthlyXp: total };
-  }, [data, today]);
+  }, [tasks, today]);
 
 
   const { completedTodayCount, todaysTotalXp, todaysAchievedXp } = useMemo(() => {
@@ -537,3 +542,5 @@ interface DashboardProps {
   data: AppData;
   onDataChange: (data: AppData) => void;
 }
+
+    

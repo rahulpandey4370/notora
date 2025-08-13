@@ -67,6 +67,8 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
     const [aiInsight, setAiInsight] = useState<AiInsight | null>(null);
     const [loadingInsight, setLoadingInsight] = useState(false);
     const [showTrendLine, setShowTrendLine] = useState(false);
+    const [show7dTotal, setShow7dTotal] = useState(false);
+    const [show30dTotal, setShow30dTotal] = useState(false);
 
     const sortedLogs = useMemo(() => tracker.logs.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()), [tracker.logs]);
     const recentLogs = useMemo(() => sortedLogs.slice(-30), [sortedLogs]);
@@ -81,18 +83,37 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
         if (recentLogs.length === 0) return null;
         const values = recentLogs.map(l => l.value);
         const latest = values[values.length - 1];
-        const average30d = values.reduce((a, b) => a + b, 0) / values.length;
+
+        const total30d = values.reduce((a, b) => a + b, 0);
+        const average30d = total30d / values.length;
         
         const sevenDayLogs = recentLogs.filter(log => differenceInDays(new Date(), parseISO(log.date)) <= 7);
+        const sevenDayValues = sevenDayLogs.map(l => l.value);
+        const total7d = sevenDayValues.reduce((a, b) => a + b, 0);
+
         const average7d = sevenDayLogs.length > 0
-            ? sevenDayLogs.map(l => l.value).reduce((a, b) => a + b, 0) / sevenDayLogs.length
+            ? total7d / sevenDayLogs.length
             : null;
 
         const high = Math.max(...values);
         const low = Math.min(...values);
 
-        return { latest, average30d, average7d, high, low };
+        return { latest, average30d, average7d, high, low, total7d, total30d };
     }, [recentLogs]);
+
+    const isFlippable = tracker.name === 'Protein Intake' || tracker.name === 'Steps';
+
+    const handleToggle7dView = () => {
+        if (isFlippable) {
+            setShow7dTotal(prev => !prev);
+        }
+    };
+
+    const handleToggle30dView = () => {
+        if (isFlippable) {
+            setShow30dTotal(prev => !prev);
+        }
+    };
 
     const chartDataWithTrend = useMemo(() => {
         if (recentLogs.length < 2) return chartData.map(d => ({ ...d, trend: d[tracker.unit] }));
@@ -336,14 +357,28 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
                                         <p className="text-lg font-bold">{kpis.latest.toLocaleString()}</p>
                                     </div>
                                     {kpis.average7d !== null && (
-                                        <div className="p-2 rounded-lg" style={{ backgroundColor: chartBgColor }}>
-                                            <p className="text-xs text-muted-foreground">7d Avg</p>
-                                            <p className="text-lg font-bold">{kpis.average7d.toFixed(1)}</p>
+                                        <div 
+                                            className={cn("p-2 rounded-lg", isFlippable && "cursor-pointer")}
+                                            style={{ backgroundColor: chartBgColor }}
+                                            onDoubleClick={handleToggle7dView}
+                                            title={isFlippable ? "Double-click to toggle total/average" : ""}
+                                        >
+                                            <p className="text-xs text-muted-foreground">{show7dTotal ? '7d Total' : '7d Avg'}</p>
+                                            <p className="text-lg font-bold">
+                                                {show7dTotal ? kpis.total7d.toLocaleString() : kpis.average7d.toFixed(1)}
+                                            </p>
                                         </div>
                                     )}
-                                    <div className="p-2 rounded-lg" style={{ backgroundColor: chartBgColor }}>
-                                        <p className="text-xs text-muted-foreground">30d Avg</p>
-                                        <p className="text-lg font-bold">{kpis.average30d.toFixed(1)}</p>
+                                    <div 
+                                        className={cn("p-2 rounded-lg", isFlippable && "cursor-pointer")}
+                                        style={{ backgroundColor: chartBgColor }}
+                                        onDoubleClick={handleToggle30dView}
+                                        title={isFlippable ? "Double-click to toggle total/average" : ""}
+                                    >
+                                        <p className="text-xs text-muted-foreground">{show30dTotal ? '30d Total' : '30d Avg'}</p>
+                                        <p className="text-lg font-bold">
+                                            {show30dTotal ? kpis.total30d.toLocaleString() : kpis.average30d.toFixed(1)}
+                                        </p>
                                     </div>
                                     <div className="p-2 rounded-lg" style={{ backgroundColor: chartBgColor }}>
                                         <p className="text-xs text-muted-foreground">30d High</p>
@@ -437,5 +472,3 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
         </motion.div>
     );
 }
-
-    

@@ -5,7 +5,7 @@ import type { User, AppData, Task } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { useMemo } from 'react';
 import { Calendar, Flame, TrendingUp } from 'lucide-react';
-import { format, isSameDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, addDays, isSameMonth, isAfter, startOfDay, isBefore, setHours, setMinutes, setSeconds } from 'date-fns';
+import { format, isSameDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, addDays, isSameMonth, isAfter, startOfDay, isBefore, setHours, setMinutes, setSeconds, getDay } from 'date-fns';
 import { getTaskXp } from '@/lib/utils';
 import { useApp } from '@/hooks/use-app';
 import { PolarGrid, PolarRadiusAxis, RadialBar, RadialBarChart, Label } from "recharts"
@@ -173,10 +173,9 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
 
     tasks.forEach(task => {
         const taskXpValue = getTaskXp(task);
-        const taskDate = task.date ? new Date(task.date) : new Date(task.createdAt);
-
+        
         if (task.type === 'weekly' && task.week) {
-            const taskWeekDate = startOfWeek(new Date(task.week.replace(/(\\d{4})-(\\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
+            const taskWeekDate = startOfWeek(new Date(task.week.replace(/(\d{4})-(\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
             if (isSameDay(taskWeekDate, weekStart)) {
                 total += taskXpValue;
                  if ((task.completions || []).some(c => isWithinInterval(new Date(c), { start: weekStart, end: weekEnd }))) {
@@ -184,21 +183,24 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
                 }
             }
         } else if (task.type === 'recurring') {
-             if (isWithinInterval(taskDate, { start: weekStart, end: weekEnd }) || isAfter(weekStart, taskDate)) {
-                 for (let i = 0; i < 7; i++) {
-                    const day = addDays(weekStart, i);
-                    if (isSameDay(day, taskDate) || isAfter(day, taskDate)) {
+             const taskStartDate = startOfDay(new Date(task.createdAt));
+             // Consider tasks created before or during this week
+             if (isBefore(taskStartDate, weekEnd) || isSameDay(taskStartDate, weekEnd)) {
+                for (let i = 0; i < 7; i++) {
+                    const dayInWeek = addDays(weekStart, i);
+                    if (isAfter(dayInWeek, taskStartDate) || isSameDay(dayInWeek, taskStartDate)) {
                         total += taskXpValue;
-                         if ((task.completions || []).includes(format(day, 'yyyy-MM-dd'))) {
-                            achieved += taskXpValue;
+                        if ((task.completions || []).includes(format(dayInWeek, 'yyyy-MM-dd'))) {
+                           achieved += taskXpValue;
                         }
                     }
                 }
              }
         } else if (task.type === 'single' && task.date) {
-            if (isWithinInterval(new Date(task.date), { start: weekStart, end: weekEnd })) {
+            const taskDate = startOfDay(new Date(task.date));
+            if (isWithinInterval(taskDate, { start: weekStart, end: weekEnd })) {
                 total += taskXpValue;
-                if ((task.completions || []).some(c => isWithinInterval(new Date(c), { start: weekStart, end: weekEnd }))) {
+                if ((task.completions || []).includes(format(taskDate, 'yyyy-MM-dd'))) {
                     achieved += taskXpValue;
                 }
             }

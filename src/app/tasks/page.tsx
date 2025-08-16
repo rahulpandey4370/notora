@@ -84,45 +84,51 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
   const { monthlyXp, totalPossibleMonthlyXp } = useMemo(() => {
     if (!data) return { monthlyXp: 0, totalPossibleMonthlyXp: 0 };
 
-    const allTasksInMonth = data.tasks.filter(task => {
-        if (task.type === 'monthly') {
-            return task.month === format(currentMonth, 'yyyy-MM');
-        }
-        if (task.type === 'weekly' && task.week) {
-            const taskWeekDate = startOfWeek(new Date(task.week.replace(/(\d{4})-(\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
-            return isSameMonth(taskWeekDate, currentMonth);
-        }
-        if (task.type === 'single' && task.date) {
-            return isSameMonth(new Date(task.date), currentMonth);
-        }
-        if (task.type === 'recurring') {
-            const createdAt = new Date(task.createdAt);
-            // check if the task's creation month is the same as the current month
-            return isSameMonth(createdAt, currentMonth);
-        }
-        return false;
-    });
+    let achieved = 0;
+    let total = 0;
 
-    const xp = allTasksInMonth.reduce((acc, task) => {
-        const taskXp = getTaskXp(task);
+    data.tasks.forEach(task => {
+        const taskXpValue = getTaskXp(task);
         const completionsForMonth = (task.completions || []).filter(c => isSameMonth(new Date(c), currentMonth));
-        return acc + completionsForMonth.length * taskXp;
-    }, 0);
 
-    const totalXp = allTasksInMonth.reduce((acc, task) => {
-        if (task.type === 'recurring') {
-            const start = startOfDay(new Date(task.createdAt));
-            if (!isSameMonth(start, currentMonth)) return acc;
+        if (task.type === 'monthly' && task.month === format(currentMonth, 'yyyy-MM')) {
+            total += taskXpValue;
+            if (completionsForMonth.length > 0) {
+                achieved += taskXpValue;
+            }
+        } else if (task.type === 'weekly' && task.week) {
+            const taskWeekStartDate = startOfWeek(new Date(task.week.replace(/(\d{4})-(\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
+            if (isSameMonth(taskWeekStartDate, currentMonth)) {
+                total += taskXpValue;
+                if (completionsForMonth.length > 0) {
+                    achieved += taskXpValue;
+                }
+            }
+        } else if (task.type === 'single' && task.date) {
+            if (isSameMonth(new Date(task.date), currentMonth)) {
+                total += taskXpValue;
+                if (completionsForMonth.length > 0) {
+                    achieved += taskXpValue;
+                }
+            }
+        } else if (task.type === 'recurring') {
+            const taskStartDate = startOfDay(new Date(task.createdAt));
+            const monthStart = startOfMonth(currentMonth);
 
-            const end = endOfMonth(currentMonth);
-            const daysInRange = Array.from({ length: end.getDate() }, (_, i) => addDays(startOfMonth(currentMonth), i));
-            const applicableDays = daysInRange.filter(day => isAfter(day, start) || isSameDay(day, start)).length;
-            return acc + (applicableDays * getTaskXp(task));
+            const daysInMonth = Array.from({ length: endOfMonth(currentMonth).getDate() }, (_, i) => addDays(monthStart, i));
+            
+            daysInMonth.forEach(dayInMonth => {
+                if (isAfter(dayInMonth, taskStartDate) || isSameDay(dayInMonth, taskStartDate)) {
+                    total += taskXpValue;
+                    if ((task.completions || []).includes(format(dayInMonth, 'yyyy-MM-dd'))) {
+                        achieved += taskXpValue;
+                    }
+                }
+            });
         }
-        return acc + getTaskXp(task);
-    }, 0);
+    });
     
-    return { monthlyXp: xp, totalPossibleMonthlyXp: totalXp };
+    return { monthlyXp: achieved, totalPossibleMonthlyXp: total };
   }, [data, currentMonth]);
 
 
@@ -252,9 +258,8 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
                 return task.date ? isSameDay(new Date(task.date), date) : false;
               case 'recurring':
                 const createdAt = startOfDay(new Date(task.createdAt));
-                const monthEnd = endOfMonth(createdAt);
-                // Show if date is on or after creation, and within the same month.
-                return (isSameDay(date, createdAt) || isAfter(date, createdAt)) && (isSameDay(date, monthEnd) || isBefore(date, monthEnd));
+                // Show if date is on or after creation
+                return (isSameDay(date, createdAt) || isAfter(date, createdAt));
               case 'weekly':
                 if (!task.week) return false;
                 const taskWeekStartDate = startOfWeek(new Date(task.week.replace(/(\\d{4})-(\\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
@@ -331,13 +336,13 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
                                 const currentDayStart = startOfDay(currentDay);
                                 const isCompleted = (task.completions || []).includes(format(currentDayStart, 'yyyy-MM-dd'));
                                 
-                                // Grace period logic: Noon today
-                                const noonToday = setSeconds(setMinutes(setHours(today, 23), 0), 0);
+                                // Grace period logic: 11 PM today
+                                const elevenPmToday = setSeconds(setMinutes(setHours(today, 23), 0), 0);
                                 const isYesterdayView = isYesterday(currentDay);
                                 
                                 let isPastDue = isBefore(currentDayStart, startOfDay(today));
-                                if (isYesterdayView && isBefore(today, noonToday)) {
-                                    isPastDue = false; // It's yesterday, but before noon today, so not past due yet.
+                                if (isYesterdayView && isBefore(today, elevenPmToday)) {
+                                    isPastDue = false; // It's yesterday, but before 11 PM today, so not past due yet.
                                 }
                                 
                                 const canCarryForward = task.type === 'single' && isPastDue && !isCompleted && (task.carryForwardCount || 0) < 2;

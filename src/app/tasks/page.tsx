@@ -332,7 +332,7 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
                                 const isCompleted = (task.completions || []).includes(format(currentDayStart, 'yyyy-MM-dd'));
                                 
                                 // Grace period logic: Noon today
-                                const noonToday = setSeconds(setMinutes(setHours(today, 12), 0), 0);
+                                const noonToday = setSeconds(setMinutes(setHours(today, 23), 0), 0);
                                 const isYesterdayView = isYesterday(currentDay);
                                 
                                 let isPastDue = isBefore(currentDayStart, startOfDay(today));

@@ -70,6 +70,7 @@ const getDefaultDemoData = (): AppData => ({
         dateAdded: new Date().toISOString(),
     }
   ],
+  logTrackers: [],
 });
 
 

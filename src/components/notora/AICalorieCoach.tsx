@@ -1,22 +1,26 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Calendar } from '../ui/calendar';
-import { CalendarIcon, Loader2, Wand2, ArrowDown, ArrowUp, User as UserIcon } from 'lucide-react';
+import { CalendarIcon, Loader2, Wand2, ArrowDown, ArrowUp, User as UserIcon, Info, LogIn } from 'lucide-react';
 import { format, startOfToday } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { analyzeDailyCalories, type AnalyzeDailyCaloriesOutput } from '@/ai/flows/analyze-daily-calories';
-import type { Task } from '@/lib/types';
+import type { Task, AppData, LogTracker, LogEntry } from '@/lib/types';
 import { Skeleton } from '../ui/skeleton';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
 import { cn } from '@/lib/utils';
 import { Textarea } from '../ui/textarea';
+import { useApp } from '@/hooks/use-app';
+import { v4 as uuidv4 } from 'uuid';
+import { useShowcase } from '@/contexts/showcase-context';
+
 
 interface AICalorieCoachProps {
   getCompletedTasksForDate: (date: Date) => Task[];
@@ -32,12 +36,33 @@ interface UserStats {
   height: string;
 }
 
+function useCalorieCoachData() {
+  // A bit of a trick to use hooks conditionally, not ideal but works for this case.
+  // In a real app, you might structure this differently.
+  try {
+    const app = useApp();
+    return {
+      data: app.data,
+      handleDataChange: app.handleDataChange,
+      isShowcase: false
+    };
+  } catch (e) {
+    const showcase = useShowcase();
+    return {
+      data: showcase.data,
+      handleDataChange: showcase.handleDataChange,
+      isShowcase: true
+    };
+  }
+}
+
 export default function AICalorieCoach({ 
     getCompletedTasksForDate, 
     getCalorieIntakeForDate,
     getStepsForDate,
     weeklyCalorieData 
 }: AICalorieCoachProps) {
+  const { data, handleDataChange } = useCalorieCoachData();
   const [stats, setStats] = useState<UserStats>({
     age: '',
     gender: 'male',
@@ -113,6 +138,56 @@ export default function AICalorieCoach({
     }
   };
   
+  const handleLogTotalBurn = () => {
+    if (!analysis || !data) return;
+
+    const trackerName = "Calories Burned";
+    let tracker = data.logTrackers.find(t => t.name === trackerName);
+    let updatedTrackers: LogTracker[];
+
+    const logDate = format(date, 'yyyy-MM-dd');
+    const newLogEntry: LogEntry = {
+      id: uuidv4(),
+      date: logDate,
+      value: analysis.totalCalorieBurn,
+      notes: 'AI-estimated burn'
+    };
+
+    if (tracker) {
+      // Tracker exists, add or update log
+      updatedTrackers = data.logTrackers.map(t => {
+        if (t.id === tracker?.id) {
+          const existingLogIndex = t.logs.findIndex(l => l.date === logDate);
+          let newLogs: LogEntry[];
+          if (existingLogIndex > -1) {
+            newLogs = [...t.logs];
+            newLogs[existingLogIndex] = { ...newLogs[existingLogIndex], value: analysis.totalCalorieBurn };
+          } else {
+            newLogs = [...t.logs, newLogEntry];
+          }
+          return { ...t, logs: newLogs };
+        }
+        return t;
+      });
+    } else {
+      // Tracker does not exist, create it
+      const newTracker: LogTracker = {
+        id: uuidv4(),
+        name: trackerName,
+        unit: 'kcal',
+        logs: [newLogEntry],
+        isFlippable: true,
+      };
+      updatedTrackers = [...data.logTrackers, newTracker];
+    }
+
+    handleDataChange({ ...data, logTrackers: updatedTrackers });
+    toast({
+      title: "Log Saved",
+      description: `${analysis.totalCalorieBurn} kcal logged as 'Calories Burned' for ${format(date, 'PPP')}.`
+    });
+  };
+
   const weeklyNet = weeklyCalorieData.reduce((acc, day) => acc + (day.calories || 0), 0) - (analysis ? analysis.maintenanceCalories * 7 : 0);
 
   return (
@@ -199,30 +274,48 @@ export default function AICalorieCoach({
 
           {analysis && (
             <Card className="bg-muted/50">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Analysis for {format(date, 'MMM d, yyyy')}</CardTitle>
-                <CardDescription>{analysis.summary}</CardDescription>
-              </CardHeader>
-              <CardContent className="flex justify-around text-center">
-                <div className="p-2">
-                    <p className="text-xs text-muted-foreground">Maintenance</p>
-                    <p className="text-2xl font-bold">{analysis.maintenanceCalories}</p>
-                    <p className="text-xs text-muted-foreground">kcal</p>
-                </div>
-                <div className="p-2">
-                    <p className="text-xs text-muted-foreground">Total Burn</p>
-                    <p className="text-2xl font-bold">{analysis.totalCalorieBurn}</p>
-                    <p className="text-xs text-muted-foreground">kcal</p>
-                </div>
-                <div className="p-2">
-                    <p className="text-xs text-muted-foreground">Net Balance</p>
-                    <p className={`text-2xl font-bold flex items-center justify-center gap-1 ${analysis.netCalories > 0 ? 'text-red-500' : 'text-green-500'}`}>
-                        {analysis.netCalories > 0 ? <ArrowUp /> : <ArrowDown /> }
-                        {Math.abs(analysis.netCalories)}
-                    </p>
-                    <p className="text-xs text-muted-foreground">{analysis.netCalories > 0 ? 'Surplus' : 'Deficit'}</p>
-                </div>
-              </CardContent>
+                <CardHeader className="pb-2 relative">
+                    <CardTitle className="text-lg">Analysis for {format(date, 'MMM d, yyyy')}</CardTitle>
+                    <CardDescription>{analysis.summary}</CardDescription>
+                     <Popover>
+                        <PopoverTrigger asChild>
+                            <Button variant="ghost" size="icon" className="absolute top-2 right-2">
+                                <Info className="h-4 w-4" />
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-80">
+                            <div className="space-y-2">
+                                <h4 className="font-medium leading-none">Calculation Breakdown</h4>
+                                <p className="text-sm text-muted-foreground whitespace-pre-wrap">{analysis.reasoning}</p>
+                            </div>
+                        </PopoverContent>
+                    </Popover>
+                </CardHeader>
+                <CardContent className="flex justify-around text-center">
+                    <div className="p-2">
+                        <p className="text-xs text-muted-foreground">Maintenance</p>
+                        <p className="text-2xl font-bold">{analysis.maintenanceCalories}</p>
+                        <p className="text-xs text-muted-foreground">kcal</p>
+                    </div>
+                    <div className="p-2">
+                        <p className="text-xs text-muted-foreground">Total Burn</p>
+                        <p className="text-2xl font-bold">{analysis.totalCalorieBurn}</p>
+                        <p className="text-xs text-muted-foreground">kcal</p>
+                    </div>
+                    <div className="p-2">
+                        <p className="text-xs text-muted-foreground">Net Balance</p>
+                        <p className={`text-2xl font-bold flex items-center justify-center gap-1 ${analysis.netCalories > 0 ? 'text-red-500' : 'text-green-500'}`}>
+                            {analysis.netCalories > 0 ? <ArrowUp /> : <ArrowDown /> }
+                            {Math.abs(analysis.netCalories)}
+                        </p>
+                        <p className="text-xs text-muted-foreground">{analysis.netCalories > 0 ? 'Surplus' : 'Deficit'}</p>
+                    </div>
+                </CardContent>
+                <CardFooter>
+                    <Button variant="outline" className="w-full" onClick={handleLogTotalBurn}>
+                       <LogIn className="mr-2 h-4 w-4" /> Log Total Burn
+                    </Button>
+                </CardFooter>
             </Card>
           )}
 

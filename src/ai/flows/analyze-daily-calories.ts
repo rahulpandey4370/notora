@@ -30,6 +30,7 @@ const AnalyzeDailyCaloriesOutputSchema = z.object({
   totalCalorieBurn: z.number().int().describe('The estimated Total Daily Energy Expenditure (TDEE) including calories burned from tasks, steps, and other activities.'),
   netCalories: z.number().int().describe('The net calorie balance for the day (Calorie Intake - Total Calorie Burn). Positive for surplus, negative for deficit.'),
   summary: z.string().describe("A brief, one-sentence summary of the user's day (e.g., 'You were in a slight calorie deficit today.')."),
+  reasoning: z.string().describe("A detailed step-by-step breakdown of the calculation process, explaining how BMR, task burn, step burn, and other activity burn were calculated."),
 });
 export type AnalyzeDailyCaloriesOutput = z.infer<typeof AnalyzeDailyCaloriesOutputSchema>;
 
@@ -78,7 +79,7 @@ const prompt = ai.definePrompt({
         - 'Easy' priority tasks: ~50-100 kcal
         - 'Medium' priority tasks: ~150-250 kcal
         - 'Hard' priority tasks: ~300-500 kcal
-    -   Analyze the 'Other Activities' text for workout details (e.g., "30 minute run", "1 hour of weightlifting").
+    -   Analyze the 'Other Activities' text for workout details (e.g., "30 minute run", "1 hour of weightlifting"). Use standard metabolic equivalent (MET) values for estimation if possible.
     -   Calculate calories burned from steps. A common estimate is ~40-50 kcal per 1000 steps.
     -   Sum up the calories burned from tasks, other activities, and steps.
 
@@ -93,6 +94,13 @@ const prompt = ai.definePrompt({
 
 5.  **Generate a Summary:**
     -   Provide a brief, one-sentence summary based on the net calorie balance.
+
+6.  **Provide Detailed Reasoning:**
+    -   Create a step-by-step breakdown of your calculations for the 'reasoning' field.
+    -   Start with the BMR calculation and its result.
+    -   List the estimated calorie burn for each type of activity (Tasks, Steps, Other) and sum them up.
+    -   Show the final TDEE calculation (BMR + Total Activity Burn).
+    -   This should be a clear, human-readable explanation. Example: "1. BMR calculated as 1800 kcal. 2. Activity Burn: 150 kcal from tasks + 200 kcal from 5000 steps = 350 kcal. 3. Total Burn = 1800 + 350 = 2150 kcal."
 
 Provide the final output in the requested JSON format.`,
 });

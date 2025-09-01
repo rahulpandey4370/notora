@@ -16,10 +16,12 @@ import type { Task } from '@/lib/types';
 import { Skeleton } from '../ui/skeleton';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
 import { cn } from '@/lib/utils';
+import { Textarea } from '../ui/textarea';
 
 interface AICalorieCoachProps {
   getCompletedTasksForDate: (date: Date) => Task[];
   getCalorieIntakeForDate: (date: Date) => number | undefined;
+  getStepsForDate: (date: Date) => number | undefined;
   weeklyCalorieData: { date: string; calories?: number }[];
 }
 
@@ -33,6 +35,7 @@ interface UserStats {
 export default function AICalorieCoach({ 
     getCompletedTasksForDate, 
     getCalorieIntakeForDate,
+    getStepsForDate,
     weeklyCalorieData 
 }: AICalorieCoachProps) {
   const [stats, setStats] = useState<UserStats>({
@@ -42,6 +45,7 @@ export default function AICalorieCoach({
     height: '',
   });
   const [date, setDate] = useState<Date>(startOfToday());
+  const [otherActivities, setOtherActivities] = useState('');
   const [analysis, setAnalysis] = useState<AnalyzeDailyCaloriesOutput | null>(null);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -93,6 +97,8 @@ export default function AICalorieCoach({
         },
         tasks: getCompletedTasksForDate(date),
         calorieIntake: calorieIntake,
+        steps: getStepsForDate(date),
+        otherActivities,
       });
       setAnalysis(result);
     } catch (error) {
@@ -149,6 +155,19 @@ export default function AICalorieCoach({
             </div>
           </div>
           
+          <div className="p-4 rounded-lg border bg-muted/50 space-y-2">
+            <Label htmlFor="other-activities">Other Activities</Label>
+            <Textarea 
+                id="other-activities"
+                placeholder="e.g., 30 minute run, 1 hour of weightlifting..."
+                value={otherActivities}
+                onChange={(e) => setOtherActivities(e.target.value)}
+            />
+            <p className="text-xs text-muted-foreground">
+                Also include your daily step count in your Logs below for a more accurate analysis.
+            </p>
+          </div>
+
           <div className="flex flex-col sm:flex-row items-center gap-2">
             <Popover>
               <PopoverTrigger asChild>

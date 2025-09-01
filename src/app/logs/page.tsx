@@ -62,6 +62,15 @@ export default function LogsPage({ showcase = false }: LogsPageProps) {
     return log?.value;
   };
   
+  const getStepsForDate = (date: Date): number | undefined => {
+    if (!data) return undefined;
+    const stepsTracker = data.logTrackers.find(t => t.name === 'Steps');
+    if (!stepsTracker) return undefined;
+    const dateStr = format(startOfDay(date), 'yyyy-MM-dd');
+    const log = stepsTracker.logs.find(l => l.date === dateStr);
+    return log?.value;
+  };
+  
   const weeklyCalorieData = useMemo(() => {
     if (!data) return [];
     const calorieTracker = data.logTrackers.find(t => t.name === 'Daily Calorie Intake');
@@ -101,6 +110,7 @@ export default function LogsPage({ showcase = false }: LogsPageProps) {
         <AICalorieCoach 
             getCompletedTasksForDate={getCompletedTasksForDate}
             getCalorieIntakeForDate={getCalorieIntakeForDate}
+            getStepsForDate={getStepsForDate}
             weeklyCalorieData={weeklyCalorieData}
         />
         <LogManager

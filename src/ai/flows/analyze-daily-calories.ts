@@ -42,7 +42,7 @@ export type AnalyzeDailyCaloriesInput = z.infer<typeof AnalyzeDailyCaloriesInput
 
 const AnalyzeDailyCaloriesOutputSchema = z.object({
   maintenanceCalories: z.number().int().describe('The estimated Basal Metabolic Rate (BMR) or maintenance calories for a sedentary day.'),
-  totalCalorieBurn: z.number().int().describe('The estimated Total Daily Energy Expenditure (TDEE) including calories burned from steps and other activities.'),
+  totalCalorieBurn: z.number().int().describe('The estimated Total Daily Energy Expenditure (TDEE) including calories burned from steps and other activities. This MUST be the sum of maintenanceCalories and the total activity burn calculated in the reasoning.'),
   netCalories: z.number().int().describe('The net calorie balance for the day (Calorie Intake - Total Calorie Burn). Positive for surplus, negative for deficit.'),
   summary: z.string().describe("A brief, one-sentence summary of the user's day (e.g., 'You were in a slight calorie deficit today.')."),
   reasoning: z.string().describe("A detailed step-by-step breakdown of the calculation process, explaining how BMR, step burn, and other activity burn were calculated."),
@@ -92,7 +92,7 @@ const prompt = ai.definePrompt({
 
 3.  **Calculate Total Daily Energy Expenditure (TDEE):**
     -   TDEE = BMR + Total Estimated Activity Burn (from steps and other activities only).
-    -   Set the 'totalCalorieBurn' output field to this TDEE value.
+    -   Set the 'totalCalorieBurn' output field to this TDEE value. **This value must exactly match the final sum shown in your 'reasoning' field.**
 
 4.  **Determine Net Calorie Balance:**
     -   Net Calories = Calorie Intake - TDEE.
@@ -109,7 +109,7 @@ const prompt = ai.definePrompt({
     -   Show the final TDEE calculation (BMR + Total Activity Burn).
     -   This should be a clear, human-readable explanation. Example: "1. BMR calculated as 1800 kcal. 2. Activity Burn: 200 kcal from 5000 steps + 350 kcal from 30 min run = 550 kcal. 3. Total Burn = 1800 + 550 = 2350 kcal."
 
-Provide the final output in the requested JSON format.`,
+Provide the final output in the requested JSON format. Ensure all numerical fields in the output are consistent with the final calculation in the 'reasoning' field.`,
 });
 
 const analyzeDailyCaloriesFlow = ai.defineFlow(

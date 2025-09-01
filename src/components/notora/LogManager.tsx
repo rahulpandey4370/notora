@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -13,6 +12,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '../ui/alert-dialog';
 import LogTrackerCard from './LogTrackerCard';
+import { Switch } from '../ui/switch';
+import { Label } from '../ui/label';
 
 interface LogManagerProps {
   logTrackers: LogTracker[];
@@ -24,6 +25,7 @@ export default function LogManager({ logTrackers, data, onDataChange }: LogManag
     const [newTrackerName, setNewTrackerName] = useState('');
     const [newTrackerUnit, setNewTrackerUnit] = useState('');
     const [newTrackerGoal, setNewTrackerGoal] = useState('');
+    const [newTrackerFlippable, setNewTrackerFlippable] = useState(false);
     const { toast } = useToast();
 
     const handleAddTracker = () => {
@@ -42,6 +44,7 @@ export default function LogManager({ logTrackers, data, onDataChange }: LogManag
             unit: newTrackerUnit.trim(),
             goal: newTrackerGoal ? parseFloat(newTrackerGoal) : undefined,
             logs: [],
+            isFlippable: newTrackerFlippable
         };
 
         const updatedTrackers = [...(data.logTrackers || []), newTracker];
@@ -49,6 +52,7 @@ export default function LogManager({ logTrackers, data, onDataChange }: LogManag
         setNewTrackerName('');
         setNewTrackerUnit('');
         setNewTrackerGoal('');
+        setNewTrackerFlippable(false);
         toast({
             title: 'Tracker Added!',
             description: `You can now start logging your "${newTracker.name}".`,
@@ -86,29 +90,37 @@ export default function LogManager({ logTrackers, data, onDataChange }: LogManag
                         Create a new category to track daily. Examples: Weight (kg), Water Intake (ml), Steps.
                     </CardDescription>
                 </CardHeader>
-                <CardContent className="flex flex-col sm:flex-row items-center gap-2">
-                    <Input
-                        placeholder="Tracker Name (e.g., Weight)"
-                        value={newTrackerName}
-                        onChange={(e) => setNewTrackerName(e.target.value)}
-                        className="flex-1"
-                    />
-                    <Input
-                        placeholder="Unit (e.g., kg)"
-                        value={newTrackerUnit}
-                        onChange={(e) => setNewTrackerUnit(e.target.value)}
-                        className="w-full sm:w-32"
-                    />
-                     <Input
-                        placeholder="Goal (Optional)"
-                        type="number"
-                        value={newTrackerGoal}
-                        onChange={(e) => setNewTrackerGoal(e.target.value)}
-                        className="w-full sm:w-32"
-                    />
-                    <Button onClick={handleAddTracker} className="w-full sm:w-auto">
-                        <Plus className="mr-2 h-4 w-4" /> Add Tracker
-                    </Button>
+                <CardContent className="space-y-4">
+                    <div className="flex flex-col sm:flex-row items-center gap-2">
+                        <Input
+                            placeholder="Tracker Name (e.g., Weight)"
+                            value={newTrackerName}
+                            onChange={(e) => setNewTrackerName(e.target.value)}
+                            className="flex-1"
+                        />
+                        <Input
+                            placeholder="Unit (e.g., kg)"
+                            value={newTrackerUnit}
+                            onChange={(e) => setNewTrackerUnit(e.target.value)}
+                            className="w-full sm:w-32"
+                        />
+                        <Input
+                            placeholder="Goal (Optional)"
+                            type="number"
+                            value={newTrackerGoal}
+                            onChange={(e) => setNewTrackerGoal(e.target.value)}
+                            className="w-full sm:w-32"
+                        />
+                    </div>
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div className="flex items-center space-x-2">
+                            <Switch id="flippable-kpi" checked={newTrackerFlippable} onCheckedChange={setNewTrackerFlippable} />
+                            <Label htmlFor="flippable-kpi">Flippable KPI (Avg/Total)</Label>
+                        </div>
+                        <Button onClick={handleAddTracker} className="w-full sm:w-auto">
+                            <Plus className="mr-2 h-4 w-4" /> Add Tracker
+                        </Button>
+                    </div>
                 </CardContent>
             </Card>
             
@@ -139,5 +151,3 @@ export default function LogManager({ logTrackers, data, onDataChange }: LogManag
         </div>
     );
 }
-
-    

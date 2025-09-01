@@ -1,9 +1,8 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { format, parseISO, isValid, differenceInDays, isAfter, startOfDay } from 'date-fns';
+import { format, parseISO, isValid, differenceInDays, isAfter, startOfDay, getWeek, getYear, startOfToday, subWeeks, isWithinInterval, endOfWeek, startOfWeek } from 'date-fns';
 import { v4 as uuidv4 } from 'uuid';
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, ReferenceLine, Dot } from 'recharts';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -14,13 +13,15 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '../ui/alert-dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { CalendarIcon, Edit, Save, Trash2, X, Wand2, Loader2, TrendingUp, TrendingDown, Minus, ArrowRight, Target, Plus, LineChart as LineChartIcon } from 'lucide-react';
+import { CalendarIcon, Edit, Save, Trash2, X, Wand2, Loader2, TrendingUp, TrendingDown, Minus, ArrowRight, Target, Plus, LineChart as LineChartIcon, BookOpen } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { LogEntry, LogTracker } from '@/lib/types';
 import { getLogInsights } from '@/ai/flows/get-log-insights';
 import { Skeleton } from '../ui/skeleton';
 import { Switch } from '../ui/switch';
 import { Label } from '../ui/label';
+import AllLogsDialog from './AllLogsDialog';
+import { Tooltip as UiTooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface LogTrackerCardProps {
     tracker: LogTracker;
@@ -69,6 +70,7 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
     const [showTrendLine, setShowTrendLine] = useState(false);
     const [show7dTotal, setShow7dTotal] = useState(false);
     const [show30dTotal, setShow30dTotal] = useState(false);
+    const [allLogsOpen, setAllLogsOpen] = useState(false);
 
     const sortedLogs = useMemo(() => tracker.logs.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()), [tracker.logs]);
     const recentLogs = useMemo(() => sortedLogs.slice(-30), [sortedLogs]);
@@ -80,28 +82,38 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
     })), [recentLogs, tracker.unit]);
     
     const kpis = useMemo(() => {
-        if (recentLogs.length === 0) return null;
-        const values = recentLogs.map(l => l.value);
-        const latest = values[values.length - 1];
+        if (sortedLogs.length === 0) return null;
 
-        const total30d = values.reduce((a, b) => a + b, 0);
-        const average30d = total30d / values.length;
+        const today = startOfToday();
+        const thisWeek = { start: startOfWeek(today), end: endOfWeek(today) };
+        const lastWeek = { start: startOfWeek(subWeeks(today, 1)), end: endOfWeek(subWeeks(today, 1)) };
         
-        const sevenDayLogs = recentLogs.filter(log => differenceInDays(new Date(), parseISO(log.date)) <= 7);
-        const sevenDayValues = sevenDayLogs.map(l => l.value);
-        const total7d = sevenDayValues.reduce((a, b) => a + b, 0);
+        const logsThisWeek = sortedLogs.filter(l => isWithinInterval(parseISO(l.date), thisWeek));
+        const logsLastWeek = sortedLogs.filter(l => isWithinInterval(parseISO(l.date), lastWeek));
 
-        const average7d = sevenDayLogs.length > 0
-            ? total7d / sevenDayLogs.length
-            : null;
+        const avgThisWeek = logsThisWeek.length > 0 ? logsThisWeek.reduce((acc, l) => acc + l.value, 0) / logsThisWeek.length : 0;
+        const avgLastWeek = logsLastWeek.length > 0 ? logsLastWeek.reduce((acc, l) => acc + l.value, 0) / logsLastWeek.length : 0;
+        
+        let weeklyChange: number | null = null;
+        if (avgThisWeek > 0 && avgLastWeek > 0) {
+            weeklyChange = ((avgThisWeek - avgLastWeek) / avgLastWeek) * 100;
+        }
 
-        const high = Math.max(...values);
-        const low = Math.min(...values);
+        const latest = sortedLogs.length > 0 ? sortedLogs[sortedLogs.length - 1].value : 0;
+        const total30d = recentLogs.reduce((a, b) => a + b.value, 0);
+        const average30d = recentLogs.length > 0 ? total30d / recentLogs.length : 0;
+        
+        const sevenDayLogs = sortedLogs.filter(log => differenceInDays(new Date(), parseISO(log.date)) < 7);
+        const total7d = sevenDayLogs.reduce((a, b) => a + b.value, 0);
+        const average7d = sevenDayLogs.length > 0 ? total7d / sevenDayLogs.length : 0;
 
-        return { latest, average30d, average7d, high, low, total7d, total30d };
-    }, [recentLogs]);
+        const high = Math.max(...recentLogs.map(l => l.value));
+        const low = Math.min(...recentLogs.map(l => l.value));
 
-    const isFlippable = tracker.name === 'Protein Intake' || tracker.name === 'Steps' || tracker.name === 'Daily Calorie Intake';
+        return { latest, average30d, average7d, high, low, total7d, total30d, weeklyChange };
+    }, [sortedLogs, recentLogs]);
+
+    const isFlippable = tracker.isFlippable || tracker.name === 'Protein Intake' || tracker.name === 'Steps' || tracker.name === 'Daily Calorie Intake';
 
     const handleToggle7dView = () => {
         if (isFlippable) {
@@ -119,17 +131,14 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
         if (recentLogs.length < 2) return chartData.map(d => ({ ...d, trend: d[tracker.unit] }));
     
         const n = recentLogs.length;
-        let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
-    
-        recentLogs.forEach((log, i) => {
-            const x = i;
-            const y = log.value;
-            sumX += x;
-            sumY += y;
-            sumXY += x * y;
-            sumX2 += x * x;
-        });
-    
+        const x = recentLogs.map((_, i) => i);
+        const y = recentLogs.map(log => log.value);
+
+        const sumX = x.reduce((a, b) => a + b, 0);
+        const sumY = y.reduce((a, b) => a + b, 0);
+        const sumXY = x.reduce((acc, _, i) => acc + x[i] * y[i], 0);
+        const sumX2 = x.reduce((acc, val) => acc + val * val, 0);
+
         const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
         const intercept = (sumY - slope * sumX) / n;
     
@@ -226,7 +235,7 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
             case 'upward': return <TrendingUp className="h-5 w-5 text-green-500" />;
             case 'downward': return <TrendingDown className="h-5 w-5 text-red-500" />;
             case 'stable': return <Minus className="h-5 w-5 text-yellow-500" />;
-            case 'fluctuating': return <TrendingUp className="h-5 w-5 text-blue-500" />;
+            case 'fluctuating': return <ArrowRight className="h-5 w-5 text-blue-500" />; // changed this icon
         }
     }
     
@@ -235,6 +244,7 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
     const chartBgColor = chartBgColors[cardIndex % chartColors.length];
 
     return (
+        <>
         <motion.div
             layout
             initial={{ opacity: 0, y: 50, scale: 0.9 }}
@@ -249,23 +259,28 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
                             <CardTitle>{tracker.name}</CardTitle>
                             <CardDescription>Unit: {tracker.unit} {tracker.goal ? `| Goal: ${tracker.goal}` : ''}</CardDescription>
                         </div>
-                        <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                                <Button variant="ghost" size="icon">
-                                    <Trash2 className="h-4 w-4 text-destructive" />
-                                </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                                <AlertDialogHeader>
-                                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                                    <AlertDialogDescription>This will permanently delete the "{tracker.name}" tracker and all its logs. This action cannot be undone.</AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                    <AlertDialogAction onClick={onDelete}>Delete</AlertDialogAction>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                        </AlertDialog>
+                        <div className="flex items-center">
+                            <Button variant="outline" size="sm" className="mr-2" onClick={() => setAllLogsOpen(true)}>
+                                <BookOpen className="mr-2 h-4 w-4" /> View All
+                            </Button>
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <Button variant="ghost" size="icon">
+                                        <Trash2 className="h-4 w-4 text-destructive" />
+                                    </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                        <AlertDialogDescription>This will permanently delete the "{tracker.name}" tracker and all its logs. This action cannot be undone.</AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                        <AlertDialogAction onClick={onDelete}>Delete</AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+                        </div>
                     </div>
                 </CardHeader>
                 <CardContent className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -349,35 +364,58 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
                         <div className='space-y-4'>
                             <h3 className="font-semibold text-lg">At a Glance</h3>
                             {kpis ? (
-                                <div 
-                                    className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-2 text-center"
-                                >
+                                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-2 text-center">
                                     <div className="p-2 rounded-lg" style={{ backgroundColor: chartBgColor }}>
                                         <p className="text-xs text-muted-foreground">Latest</p>
                                         <p className="text-lg font-bold">{kpis.latest.toLocaleString()}</p>
                                     </div>
-                                    {kpis.average7d !== null && (
+                                    <TooltipProvider>
+                                    <UiTooltip delayDuration={0}>
+                                        <TooltipTrigger asChild>
                                         <div 
                                             className={cn("p-2 rounded-lg", isFlippable && "cursor-pointer")}
                                             style={{ backgroundColor: chartBgColor }}
-                                            onDoubleClick={handleToggle7dView}
-                                            title={isFlippable ? "Double-click to toggle total/average" : ""}
+                                            onClick={handleToggle7dView}
                                         >
                                             <p className="text-xs text-muted-foreground">{show7dTotal ? '7d Total' : '7d Avg'}</p>
                                             <p className="text-lg font-bold">
                                                 {show7dTotal ? kpis.total7d.toLocaleString() : kpis.average7d.toFixed(1)}
                                             </p>
                                         </div>
-                                    )}
-                                    <div 
-                                        className={cn("p-2 rounded-lg", isFlippable && "cursor-pointer")}
-                                        style={{ backgroundColor: chartBgColor }}
-                                        onDoubleClick={handleToggle30dView}
-                                        title={isFlippable ? "Double-click to toggle total/average" : ""}
-                                    >
-                                        <p className="text-xs text-muted-foreground">{show30dTotal ? '30d Total' : '30d Avg'}</p>
-                                        <p className="text-lg font-bold">
-                                            {show30dTotal ? kpis.total30d.toLocaleString() : kpis.average30d.toFixed(1)}
+                                        </TooltipTrigger>
+                                        {isFlippable && (
+                                            <TooltipContent>
+                                                <p>Click to toggle total/average</p>
+                                            </TooltipContent>
+                                        )}
+                                    </UiTooltip>
+                                    <UiTooltip delayDuration={0}>
+                                        <TooltipTrigger asChild>
+                                        <div 
+                                            className={cn("p-2 rounded-lg", isFlippable && "cursor-pointer")}
+                                            style={{ backgroundColor: chartBgColor }}
+                                            onClick={handleToggle30dView}
+                                        >
+                                            <p className="text-xs text-muted-foreground">{show30dTotal ? '30d Total' : '30d Avg'}</p>
+                                            <p className="text-lg font-bold">
+                                                {show30dTotal ? kpis.total30d.toLocaleString() : kpis.average30d.toFixed(1)}
+                                            </p>
+                                        </div>
+                                        </TooltipTrigger>
+                                        {isFlippable && (
+                                            <TooltipContent>
+                                                <p>Click to toggle total/average</p>
+                                            </TooltipContent>
+                                        )}
+                                    </UiTooltip>
+                                    </TooltipProvider>
+                                    <div className="p-2 rounded-lg" style={{ backgroundColor: chartBgColor }}>
+                                        <p className="text-xs text-muted-foreground">WoW Change</p>
+                                        <p className={cn(
+                                            "text-lg font-bold",
+                                            kpis.weeklyChange === null ? "" : kpis.weeklyChange > 0 ? "text-green-500" : "text-red-500"
+                                        )}>
+                                            {kpis.weeklyChange === null ? "N/A" : `${kpis.weeklyChange.toFixed(1)}%`}
                                         </p>
                                     </div>
                                     <div className="p-2 rounded-lg" style={{ backgroundColor: chartBgColor }}>
@@ -470,5 +508,7 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
                 </CardContent>
             </Card>
         </motion.div>
+        <AllLogsDialog open={allLogsOpen} onOpenChange={setAllLogsOpen} tracker={tracker} />
+        </>
     );
 }

@@ -59,6 +59,7 @@ export interface LogTracker {
     unit: string;
     logs: LogEntry[];
     goal?: number;
+    isFlippable?: boolean;
 }
 
 export interface AppData {

@@ -5,6 +5,9 @@ import Header from "./Header";
 import { useApp } from "@/hooks/use-app";
 import Dock from "./Dock";
 import type { AppData } from "@/lib/types";
+import ContextualChatbot from "./ContextualChatbot";
+import { usePathname } from "next/navigation";
+import { useMemo } from "react";
 
 interface AppLayoutProps {
     children: React.ReactNode;
@@ -14,12 +17,35 @@ interface AppLayoutProps {
 export default function AppLayout({ children, data: dataFromProp }: AppLayoutProps) {
     const { user } = useAuth();
     const { data: dataFromContext } = useApp();
+    const pathname = usePathname();
     
     // Use data from props if available (for showcase), otherwise use data from context
     const data = dataFromProp !== undefined ? dataFromProp : dataFromContext;
     
     const tasks = data?.tasks || [];
     const userStats = data?.userStats || { xp: 0 };
+
+    const pageContext = useMemo(() => {
+        const baseContext = {
+            currentPage: pathname,
+            user,
+        };
+
+        if (pathname.includes('/tasks')) {
+            return { ...baseContext, tasks: data?.tasks };
+        }
+        if (pathname.includes('/notes')) {
+            return { ...baseContext, noteBoards: data?.noteBoards };
+        }
+        if (pathname.includes('/links')) {
+            return { ...baseContext, savedLinks: data?.savedLinks };
+        }
+        if (pathname.includes('/logs')) {
+            return { ...baseContext, logTrackers: data?.logTrackers };
+        }
+        // For dashboard
+        return { ...baseContext, ...data };
+    }, [pathname, user, data]);
 
     return (
         <div className="flex flex-col min-h-screen bg-background text-foreground">
@@ -34,6 +60,7 @@ export default function AppLayout({ children, data: dataFromProp }: AppLayoutPro
                 </main>
             </div>
             <Dock />
+            {user && data && <ContextualChatbot pageContext={pageContext} />}
         </div>
     );
 }

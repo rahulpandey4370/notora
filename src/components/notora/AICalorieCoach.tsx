@@ -78,14 +78,32 @@ export default function AICalorieCoach({
   useEffect(() => {
     const savedStats = localStorage.getItem('notora-user-stats');
     if (savedStats) {
-      setStats(JSON.parse(savedStats));
+      const parsedStats = JSON.parse(savedStats);
+      setStats(prevStats => ({...prevStats, ...parsedStats}));
     }
   }, []);
 
+  // Effect to update weight from logs when date changes
+  useEffect(() => {
+    if (!data) return;
+    const weightTracker = data.logTrackers.find(t => t.name === 'Weight');
+    if (!weightTracker) return;
+
+    const logForDate = weightTracker.logs.find(l => l.date === format(date, 'yyyy-MM-dd'));
+    if (logForDate) {
+      handleStatChange('weight', String(logForDate.value));
+    }
+
+  }, [date, data]);
+
   const handleStatChange = (key: keyof UserStats, value: string) => {
-    const newStats = { ...stats, [key]: value };
-    setStats(newStats);
-    localStorage.setItem('notora-user-stats', JSON.stringify(newStats));
+    setStats(prevStats => {
+      const newStats = { ...prevStats, [key]: value };
+      // Save all stats except weight, as it's date-dependent
+      const { weight, ...statsToSave } = newStats;
+      localStorage.setItem('notora-user-stats', JSON.stringify(statsToSave));
+      return newStats;
+    });
   };
 
   const handleAnalyze = async () => {
@@ -221,13 +239,14 @@ export default function AICalorieCoach({
                 </div>
                 <div className="space-y-1">
                     <Label htmlFor="weight">Weight (kg)</Label>
-                    <Input id="weight" type="number" placeholder="e.g., 70" value={stats.weight} onChange={(e) => handleStatChange('weight', e.target.value)} />
+                    <Input id="weight" type="number" placeholder="Logged or manual" value={stats.weight} onChange={(e) => handleStatChange('weight', e.target.value)} />
                 </div>
                 <div className="space-y-1">
                     <Label htmlFor="height">Height (cm)</Label>
                     <Input id="height" type="number" placeholder="e.g., 175" value={stats.height} onChange={(e) => handleStatChange('height', e.target.value)} />
                 </div>
             </div>
+            <p className="text-xs text-muted-foreground">Your age, height, and gender are saved. Your weight is fetched from your logs for the selected date.</p>
           </div>
           
           <div className="p-4 rounded-lg border bg-muted/50 space-y-2">
@@ -239,7 +258,7 @@ export default function AICalorieCoach({
                 onChange={(e) => setOtherActivities(e.target.value)}
             />
             <p className="text-xs text-muted-foreground">
-                Also include your daily step count in your Logs below for a more accurate analysis.
+                The AI will consider steps logged in your 'Steps' tracker and any activities you describe here.
             </p>
           </div>
 

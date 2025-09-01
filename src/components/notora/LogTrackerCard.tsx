@@ -114,7 +114,7 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
         return { latest, average30d, average7d, high, low, total7d, total30d, weeklyChange };
     }, [sortedLogs, recentLogs]);
 
-    const isFlippable = tracker.isFlippable || tracker.name === 'Protein Intake' || tracker.name === 'Steps' || tracker.name === 'Daily Calorie Intake';
+    const isFlippable = tracker.isFlippable || tracker.name === 'Protein Intake' || tracker.name === 'Steps' || tracker.name === 'Daily Calorie Intake' || tracker.name === 'Calories Burned';
 
     const handleToggle7dView = () => {
         if (isFlippable) {
@@ -389,7 +389,6 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
                                             className={cn("p-2 rounded-lg", isFlippable && "cursor-pointer")}
                                             style={{ backgroundColor: chartBgColor }}
                                             onClick={handleToggle7dView}
-                                            onDoubleClick={handleToggle7dView}
                                         >
                                             <p className="text-xs text-muted-foreground">{show7dTotal ? '7d Total' : '7d Avg'}</p>
                                             <p className="text-lg font-bold">
@@ -399,7 +398,7 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
                                         </TooltipTrigger>
                                         {isFlippable && (
                                             <TooltipContent>
-                                                <p>Double-click to toggle total/average</p>
+                                                <p>Click to toggle total/average</p>
                                             </TooltipContent>
                                         )}
                                     </UiTooltip>
@@ -409,7 +408,6 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
                                             className={cn("p-2 rounded-lg", isFlippable && "cursor-pointer")}
                                             style={{ backgroundColor: chartBgColor }}
                                             onClick={handleToggle30dView}
-                                            onDoubleClick={handleToggle30dView}
                                         >
                                             <p className="text-xs text-muted-foreground">{show30dTotal ? '30d Total' : '30d Avg'}</p>
                                             <p className="text-lg font-bold">
@@ -419,7 +417,7 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
                                         </TooltipTrigger>
                                         {isFlippable && (
                                             <TooltipContent>
-                                                <p>Double-click to toggle total/average</p>
+                                                <p>Click to toggle total/average</p>
                                             </TooltipContent>
                                         )}
                                     </UiTooltip>

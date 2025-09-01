@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -82,7 +83,7 @@ export default function ContextualChatbot({ pageContext }: ContextualChatbotProp
 
   return (
     <>
-      <div className="fixed bottom-6 right-6 z-50">
+      <div className="fixed bottom-24 md:bottom-6 right-6 z-50">
         <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
           <Button
             onClick={() => setIsOpen(!isOpen)}
@@ -101,7 +102,7 @@ export default function ContextualChatbot({ pageContext }: ContextualChatbotProp
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 50, scale: 0.9 }}
             transition={{ type: 'spring', stiffness: 200, damping: 25 }}
-            className="fixed bottom-24 right-6 z-50"
+            className="fixed bottom-[120px] md:bottom-24 right-6 z-50"
           >
             <Card className="w-[350px] h-[500px] flex flex-col shadow-2xl dark:neon-border-accent">
               <CardHeader>

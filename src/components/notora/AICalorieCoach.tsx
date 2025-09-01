@@ -15,7 +15,7 @@ import { useToast } from '@/hooks/use-toast';
 import { analyzeDailyCalories, type AnalyzeDailyCaloriesOutput } from '@/ai/flows/analyze-daily-calories';
 import type { Task, AppData, LogTracker, LogEntry } from '@/lib/types';
 import { Skeleton } from '../ui/skeleton';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Cell, Legend } from 'recharts';
 import { cn } from '@/lib/utils';
 import { Textarea } from '../ui/textarea';
 import { useApp } from '@/hooks/use-app';
@@ -27,7 +27,7 @@ interface AICalorieCoachProps {
   getCompletedTasksForDate: (date: Date) => Task[];
   getCalorieIntakeForDate: (date: Date) => number | undefined;
   getStepsForDate: (date: Date) => number | undefined;
-  weeklyCalorieData: { date: string; calories?: number }[];
+  weeklyChartData: { date: string; intake?: number, burned?: number }[];
 }
 
 interface UserStats {
@@ -61,7 +61,7 @@ export default function AICalorieCoach({
     getCompletedTasksForDate, 
     getCalorieIntakeForDate,
     getStepsForDate,
-    weeklyCalorieData 
+    weeklyChartData 
 }: AICalorieCoachProps) {
   const { data, handleDataChange } = useCalorieCoachData();
   const [stats, setStats] = useState<UserStats>({
@@ -207,7 +207,14 @@ export default function AICalorieCoach({
     });
   };
 
-  const weeklyNet = weeklyCalorieData.reduce((acc, day) => acc + (day.calories || 0), 0) - (analysis ? analysis.maintenanceCalories * 7 : 0);
+  const { weeklyNet, weeklyIntake, weeklyBurn } = useMemo(() => {
+    return weeklyChartData.reduce((acc, day) => {
+        acc.weeklyIntake += day.intake || 0;
+        acc.weeklyBurn += day.burned || 0;
+        acc.weeklyNet = acc.weeklyIntake - acc.weeklyBurn;
+        return acc;
+    }, { weeklyNet: 0, weeklyIntake: 0, weeklyBurn: 0 });
+  }, [weeklyChartData]);
 
   return (
     <Card className="dark:neon-border-green">
@@ -228,7 +235,7 @@ export default function AICalorieCoach({
                 </div>
                 <div className="space-y-1">
                     <Label htmlFor="gender">Gender</Label>
-                    <Select value={stats.gender} onValueChange={(v) => handleStatChange('gender', v)}>
+                    <Select value={stats.gender} onValueChange={(v) => handleStatChange('gender', v as 'male' | 'female')}>
                     <SelectTrigger id="gender">
                         <SelectValue placeholder="Select gender" />
                     </SelectTrigger>
@@ -342,9 +349,9 @@ export default function AICalorieCoach({
         </div>
 
         <div className="space-y-4">
-            <h4 className="font-semibold">Last 7 Days Intake vs. Maintenance</h4>
+            <h4 className="font-semibold">Last 7 Days: Intake vs. Burn</h4>
             <ResponsiveContainer width="100%" height={250}>
-                <BarChart data={weeklyCalorieData} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
+                <BarChart data={weeklyChartData} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.2}/>
                     <XAxis dataKey="date" tickFormatter={(val) => format(new Date(val), 'MMM d')} tick={{ fontSize: 12 }} />
                     <YAxis tick={{ fontSize: 12 }} />
@@ -355,6 +362,7 @@ export default function AICalorieCoach({
                         }}
                         labelFormatter={(label) => format(new Date(label), 'PPP')}
                     />
+                    <Legend iconType='circle' iconSize={8} />
                     {analysis?.maintenanceCalories && (
                          <ReferenceLine 
                            y={analysis.maintenanceCalories} 
@@ -363,14 +371,11 @@ export default function AICalorieCoach({
                            strokeDasharray="3 3" 
                          />
                     )}
-                    <Bar dataKey="calories" name="Calorie Intake">
-                        {weeklyCalorieData.map((entry, index) => (
-                           <Cell key={`cell-${index}`} fill={cn(entry.calories && analysis && entry.calories > analysis.maintenanceCalories ? 'hsl(var(--destructive))' : 'hsl(var(--chart-2))')} />
-                        ))}
-                    </Bar>
+                    <Bar dataKey="intake" name="Intake" fill="hsl(var(--chart-2))" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="burned" name="Burned" fill="hsl(var(--chart-4))" radius={[4, 4, 0, 0]} />
                 </BarChart>
             </ResponsiveContainer>
-            {analysis && (
+            {weeklyIntake > 0 && weeklyBurn > 0 && (
                  <div className="text-center font-semibold">
                     Weekly Net: 
                     <span className={cn('ml-2', weeklyNet > 0 ? 'text-red-500' : 'text-green-500')}>
@@ -383,5 +388,3 @@ export default function AICalorieCoach({
     </Card>
   );
 }
-
-    

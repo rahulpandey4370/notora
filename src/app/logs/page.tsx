@@ -11,7 +11,7 @@ import { useShowcase } from '@/contexts/showcase-context';
 import LogManager from '@/components/notora/LogManager';
 import AICalorieCoach from '@/components/notora/AICalorieCoach';
 import type { Task, LogEntry, AppData } from '@/lib/types';
-import { format, startOfDay } from 'date-fns';
+import { format, startOfDay, subDays } from 'date-fns';
 
 interface LogsPageProps {
   showcase?: boolean;
@@ -71,19 +71,24 @@ export default function LogsPage({ showcase = false }: LogsPageProps) {
     return log?.value;
   };
   
-  const weeklyCalorieData = useMemo(() => {
+  const weeklyChartData = useMemo(() => {
     if (!data) return [];
-    const calorieTracker = data.logTrackers.find(t => t.name === 'Daily Calorie Intake');
-    if (!calorieTracker) return [];
-    // Get last 7 days of logs
+    const intakeTracker = data.logTrackers.find(t => t.name === 'Daily Calorie Intake');
+    const burnedTracker = data.logTrackers.find(t => t.name === 'Calories Burned');
+    
     const today = startOfDay(new Date());
+    
     return Array.from({ length: 7 }).map((_, i) => {
-        const date = new Date(today.getTime() - i * 24 * 60 * 60 * 1000);
+        const date = subDays(today, i);
         const dateStr = format(date, 'yyyy-MM-dd');
-        const log = calorieTracker.logs.find(l => l.date === dateStr);
+        
+        const intakeLog = intakeTracker?.logs.find(l => l.date === dateStr);
+        const burnedLog = burnedTracker?.logs.find(l => l.date === dateStr);
+
         return {
             date: dateStr,
-            calories: log?.value,
+            intake: intakeLog?.value,
+            burned: burnedLog?.value,
         };
     }).reverse();
   }, [data]);
@@ -111,7 +116,7 @@ export default function LogsPage({ showcase = false }: LogsPageProps) {
             getCompletedTasksForDate={getCompletedTasksForDate}
             getCalorieIntakeForDate={getCalorieIntakeForDate}
             getStepsForDate={getStepsForDate}
-            weeklyCalorieData={weeklyCalorieData}
+            weeklyChartData={weeklyChartData}
         />
         <LogManager
           logTrackers={data.logTrackers || []}

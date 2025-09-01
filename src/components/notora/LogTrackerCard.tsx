@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -59,6 +60,7 @@ const chartBgColors = [
     "hsl(var(--chart-5) / 0.1)",
 ]
 
+const trackersWhereDecreaseIsGood = ['Weight', 'Daily Calorie Intake'];
 
 export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTrackerChange }: LogTrackerCardProps) {
     const [date, setDate] = useState<Date>(new Date());
@@ -235,9 +237,21 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
             case 'upward': return <TrendingUp className="h-5 w-5 text-green-500" />;
             case 'downward': return <TrendingDown className="h-5 w-5 text-red-500" />;
             case 'stable': return <Minus className="h-5 w-5 text-yellow-500" />;
-            case 'fluctuating': return <ArrowRight className="h-5 w-5 text-blue-500" />; // changed this icon
+            case 'fluctuating': return <ArrowRight className="h-5 w-5 text-blue-500" />;
         }
     }
+
+    const getWeeklyChangeColor = () => {
+        if (kpis?.weeklyChange === null || kpis?.weeklyChange === 0) return "";
+        
+        const decreaseIsGood = trackersWhereDecreaseIsGood.includes(tracker.name);
+
+        if (decreaseIsGood) {
+            return kpis.weeklyChange > 0 ? "text-red-500" : "text-green-500";
+        } else {
+            return kpis.weeklyChange > 0 ? "text-green-500" : "text-red-500";
+        }
+    };
     
     const cardColorClass = cardColors[cardIndex % cardColors.length];
     const chartColor = chartColors[cardIndex % chartColors.length];
@@ -370,7 +384,7 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
                                         <p className="text-lg font-bold">{kpis.latest.toLocaleString()}</p>
                                     </div>
                                     <TooltipProvider>
-                                    <UiTooltip delayDuration={0}>
+                                    <UiTooltip delayDuration={100}>
                                         <TooltipTrigger asChild>
                                         <div 
                                             className={cn("p-2 rounded-lg", isFlippable && "cursor-pointer")}
@@ -389,7 +403,7 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
                                             </TooltipContent>
                                         )}
                                     </UiTooltip>
-                                    <UiTooltip delayDuration={0}>
+                                    <UiTooltip delayDuration={100}>
                                         <TooltipTrigger asChild>
                                         <div 
                                             className={cn("p-2 rounded-lg", isFlippable && "cursor-pointer")}
@@ -411,10 +425,7 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
                                     </TooltipProvider>
                                     <div className="p-2 rounded-lg" style={{ backgroundColor: chartBgColor }}>
                                         <p className="text-xs text-muted-foreground">WoW Change</p>
-                                        <p className={cn(
-                                            "text-lg font-bold",
-                                            kpis.weeklyChange === null ? "" : kpis.weeklyChange > 0 ? "text-green-500" : "text-red-500"
-                                        )}>
+                                        <p className={cn("text-lg font-bold", getWeeklyChangeColor())}>
                                             {kpis.weeklyChange === null ? "N/A" : `${kpis.weeklyChange.toFixed(1)}%`}
                                         </p>
                                     </div>

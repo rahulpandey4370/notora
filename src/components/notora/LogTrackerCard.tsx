@@ -101,7 +101,7 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
         return { latest, average30d, average7d, high, low, total7d, total30d };
     }, [recentLogs]);
 
-    const isFlippable = tracker.name === 'Protein Intake' || tracker.name === 'Steps';
+    const isFlippable = tracker.name === 'Protein Intake' || tracker.name === 'Steps' || tracker.name === 'Daily Calorie Intake';
 
     const handleToggle7dView = () => {
         if (isFlippable) {
@@ -305,8 +305,8 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
                         <div className="flex gap-2">
                             <Button 
                                 onClick={handleAddOrUpdateLog} 
-                                className="w-full text-white"
-                                style={{ backgroundColor: chartColor }}
+                                className="w-full"
+                                style={{backgroundColor: chartColor}}
                             >
                                 {editingLog ? <Save className="mr-2 h-4 w-4" /> : <Plus className="mr-2 h-4 w-4" />}
                                 {editingLog ? 'Save Changes' : 'Add Log'}

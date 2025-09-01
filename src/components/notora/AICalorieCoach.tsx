@@ -15,7 +15,7 @@ import { useToast } from '@/hooks/use-toast';
 import { analyzeDailyCalories, type AnalyzeDailyCaloriesOutput } from '@/ai/flows/analyze-daily-calories';
 import type { Task, AppData, LogTracker, LogEntry } from '@/lib/types';
 import { Skeleton } from '../ui/skeleton';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Cell } from 'recharts';
 import { cn } from '@/lib/utils';
 import { Textarea } from '../ui/textarea';
 import { useApp } from '@/hooks/use-app';
@@ -344,7 +344,7 @@ export default function AICalorieCoach({
         <div className="space-y-4">
             <h4 className="font-semibold">Last 7 Days Intake vs. Maintenance</h4>
             <ResponsiveContainer width="100%" height={250}>
-                <BarChart data={weeklyCalorieData}>
+                <BarChart data={weeklyCalorieData} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.2}/>
                     <XAxis dataKey="date" tickFormatter={(val) => format(new Date(val), 'MMM d')} tick={{ fontSize: 12 }} />
                     <YAxis tick={{ fontSize: 12 }} />
@@ -356,11 +356,16 @@ export default function AICalorieCoach({
                         labelFormatter={(label) => format(new Date(label), 'PPP')}
                     />
                     {analysis?.maintenanceCalories && (
-                         <ReferenceLine y={analysis.maintenanceCalories} label={{ value: 'Maintenance', position: 'insideTopLeft' }} stroke="hsl(var(--primary))" strokeDasharray="3 3" />
+                         <ReferenceLine 
+                           y={analysis.maintenanceCalories} 
+                           label={{ value: 'Maintenance', position: 'insideTopLeft', fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} 
+                           stroke="hsl(var(--primary))" 
+                           strokeDasharray="3 3" 
+                         />
                     )}
                     <Bar dataKey="calories" name="Calorie Intake">
                         {weeklyCalorieData.map((entry, index) => (
-                           <Bar key={`cell-${index}`} fill={cn(entry.calories && analysis && entry.calories > analysis.maintenanceCalories ? 'hsl(var(--destructive))' : 'hsl(var(--chart-2))')} />
+                           <Cell key={`cell-${index}`} fill={cn(entry.calories && analysis && entry.calories > analysis.maintenanceCalories ? 'hsl(var(--destructive))' : 'hsl(var(--chart-2))')} />
                         ))}
                     </Bar>
                 </BarChart>
@@ -378,3 +383,5 @@ export default function AICalorieCoach({
     </Card>
   );
 }
+
+    

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -390,6 +389,7 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
                                             className={cn("p-2 rounded-lg", isFlippable && "cursor-pointer")}
                                             style={{ backgroundColor: chartBgColor }}
                                             onClick={handleToggle7dView}
+                                            onDoubleClick={handleToggle7dView}
                                         >
                                             <p className="text-xs text-muted-foreground">{show7dTotal ? '7d Total' : '7d Avg'}</p>
                                             <p className="text-lg font-bold">
@@ -399,7 +399,7 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
                                         </TooltipTrigger>
                                         {isFlippable && (
                                             <TooltipContent>
-                                                <p>Click to toggle total/average</p>
+                                                <p>Double-click to toggle total/average</p>
                                             </TooltipContent>
                                         )}
                                     </UiTooltip>
@@ -409,6 +409,7 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
                                             className={cn("p-2 rounded-lg", isFlippable && "cursor-pointer")}
                                             style={{ backgroundColor: chartBgColor }}
                                             onClick={handleToggle30dView}
+                                            onDoubleClick={handleToggle30dView}
                                         >
                                             <p className="text-xs text-muted-foreground">{show30dTotal ? '30d Total' : '30d Avg'}</p>
                                             <p className="text-lg font-bold">
@@ -418,7 +419,7 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
                                         </TooltipTrigger>
                                         {isFlippable && (
                                             <TooltipContent>
-                                                <p>Click to toggle total/average</p>
+                                                <p>Double-click to toggle total/average</p>
                                             </TooltipContent>
                                         )}
                                     </UiTooltip>

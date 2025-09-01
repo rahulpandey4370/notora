@@ -3,14 +3,13 @@
 import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus } from 'lucide-react';
 
-import type { AppData, LogTracker, LogEntry } from '@/lib/types';
+import type { AppData, LogTracker } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '../ui/alert-dialog';
 import LogTrackerCard from './LogTrackerCard';
 import { Switch } from '../ui/switch';
 import { Label } from '../ui/label';
@@ -82,7 +81,7 @@ export default function LogManager({ logTrackers, data, onDataChange }: LogManag
     };
 
     return (
-        <div className="p-4 md:p-8 space-y-6">
+        <div className="space-y-6">
             <Card className="dark:neon-border">
                 <CardHeader>
                     <CardTitle>Add New Log Tracker</CardTitle>

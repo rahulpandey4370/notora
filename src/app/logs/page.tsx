@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/use-auth';
 import { useApp } from '@/hooks/use-app';
@@ -9,6 +9,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import AppLayout from '@/components/notora/AppLayout';
 import { useShowcase } from '@/contexts/showcase-context';
 import LogManager from '@/components/notora/LogManager';
+import AICalorieCoach from '@/components/notora/AICalorieCoach';
+import type { Task, LogEntry, AppData } from '@/lib/types';
+import { format, startOfDay } from 'date-fns';
 
 interface LogsPageProps {
   showcase?: boolean;
@@ -43,11 +46,45 @@ export default function LogsPage({ showcase = false }: LogsPageProps) {
       router.push('/login');
     }
   }, [user, loading, router, showcase]);
+  
+  const getCompletedTasksForDate = (date: Date): Task[] => {
+    if (!data) return [];
+    const dateStr = format(startOfDay(date), 'yyyy-MM-dd');
+    return data.tasks.filter(task => (task.completions || []).includes(dateStr));
+  };
+
+  const getCalorieIntakeForDate = (date: Date): number | undefined => {
+    if (!data) return undefined;
+    const calorieTracker = data.logTrackers.find(t => t.name === 'Daily Calorie Intake');
+    if (!calorieTracker) return undefined;
+    const dateStr = format(startOfDay(date), 'yyyy-MM-dd');
+    const log = calorieTracker.logs.find(l => l.date === dateStr);
+    return log?.value;
+  };
+  
+  const weeklyCalorieData = useMemo(() => {
+    if (!data) return [];
+    const calorieTracker = data.logTrackers.find(t => t.name === 'Daily Calorie Intake');
+    if (!calorieTracker) return [];
+    // Get last 7 days of logs
+    const today = startOfDay(new Date());
+    return Array.from({ length: 7 }).map((_, i) => {
+        const date = new Date(today.getTime() - i * 24 * 60 * 60 * 1000);
+        const dateStr = format(date, 'yyyy-MM-dd');
+        const log = calorieTracker.logs.find(l => l.date === dateStr);
+        return {
+            date: dateStr,
+            calories: log?.value,
+        };
+    }).reverse();
+  }, [data]);
+
 
   if (loading || !data || !user) {
     return (
       <AppLayout data={data}>
         <div className="p-4 md:p-8 space-y-4">
+          <Skeleton className="h-48 w-full" />
           <Skeleton className="h-10 w-full" />
           <div className="grid grid-cols-1 gap-4">
             <Skeleton className="h-64 w-full" />
@@ -60,11 +97,18 @@ export default function LogsPage({ showcase = false }: LogsPageProps) {
 
   return (
     <AppLayout data={data}>
-      <LogManager
-        logTrackers={data.logTrackers || []}
-        data={data}
-        onDataChange={handleDataChange}
-      />
+      <div className="p-4 md:p-8 space-y-6">
+        <AICalorieCoach 
+            getCompletedTasksForDate={getCompletedTasksForDate}
+            getCalorieIntakeForDate={getCalorieIntakeForDate}
+            weeklyCalorieData={weeklyCalorieData}
+        />
+        <LogManager
+          logTrackers={data.logTrackers || []}
+          data={data}
+          onDataChange={handleDataChange}
+        />
+      </div>
     </AppLayout>
   );
 }

@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 export const linkCategories = ['Article', 'Video', 'Course', 'Image', 'Other'] as const;
 
 export interface User {
@@ -5,19 +7,21 @@ export interface User {
   avatarUrl: string;
 }
 
-export interface Task {
-  id: string;
-  title: string;
-  priority: 'Easy' | 'Medium' | 'Hard';
-  type: 'single' | 'recurring' | 'monthly' | 'weekly';
-  completions: string[]; // Array of ISO date strings 'yyyy-MM-dd'
-  createdAt: string; // ISO 8601 date string
-  date?: string; // ISO 8601 date string, for single tasks
-  month?: string; // 'yyyy-MM', for monthly tasks
-  week?: string; // 'yyyy-ww', for weekly tasks
-  carryForwardCount?: number;
-  originalXp?: number;
-}
+export const TaskSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  priority: z.enum(['Easy', 'Medium', 'Hard']),
+  type: z.enum(['single', 'recurring', 'monthly', 'weekly']),
+  completions: z.array(z.string()),
+  createdAt: z.string(),
+  date: z.string().optional(),
+  month: z.string().optional(),
+  week: z.string().optional(),
+  carryForwardCount: z.number().optional(),
+  originalXp: z.number().optional(),
+});
+export type Task = z.infer<typeof TaskSchema>;
+
 
 export interface StickyNote {
   id: string;

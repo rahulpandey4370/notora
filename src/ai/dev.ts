@@ -14,3 +14,4 @@ import '@/ai/flows/search-links.ts';
 import '@/ai/flows/generate-note-title.ts';
 import '@/ai/flows/get-log-insights.ts';
 import '@/ai/flows/contextual-chat.ts';
+import '@/ai/flows/analyze-daily-calories.ts';

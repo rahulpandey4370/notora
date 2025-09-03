@@ -11,7 +11,7 @@ import TaskList from '@/components/notora/TaskList';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, ClipboardList, CalendarDays } from 'lucide-react';
-import { format, startOfMonth, addMonths, subMonths, isSameDay, startOfDay, addDays, subDays, isAfter, isSameMonth, endOfMonth, startOfWeek, isWithinInterval, isBefore, isYesterday, setHours, setMinutes, setSeconds } from 'date-fns';
+import { format, startOfMonth, addMonths, subMonths, isSameDay, startOfDay, addDays, subDays, isAfter, isSameMonth, endOfMonth, startOfWeek, isWithinInterval, isBefore, isYesterday, setHours, setMinutes, setSeconds, endOfDay } from 'date-fns';
 import type { Task } from '@/lib/types';
 import TaskItem from '@/components/notora/TaskItem';
 import { Progress } from '@/components/ui/progress';
@@ -118,7 +118,7 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
             const daysInMonth = Array.from({ length: endOfMonth(currentMonth).getDate() }, (_, i) => addDays(monthStart, i));
             
             daysInMonth.forEach(dayInMonth => {
-                if (isAfter(dayInMonth, taskStartDate) || isSameDay(dayInMonth, taskStartDate)) {
+                if (isSameMonth(dayInMonth, taskStartDate) && (isAfter(dayInMonth, taskStartDate) || isSameDay(dayInMonth, taskStartDate))) {
                     total += taskXpValue;
                     if ((task.completions || []).includes(format(dayInMonth, 'yyyy-MM-dd'))) {
                         achieved += taskXpValue;
@@ -258,11 +258,11 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
                 return task.date ? isSameDay(new Date(task.date), date) : false;
               case 'recurring':
                 const createdAt = startOfDay(new Date(task.createdAt));
-                // Show if date is on or after creation
-                return (isSameDay(date, createdAt) || isAfter(date, createdAt));
+                // Show if date is in the same month as creation and on or after creation day
+                return isSameMonth(date, createdAt) && (isSameDay(date, createdAt) || isAfter(date, createdAt));
               case 'weekly':
                 if (!task.week) return false;
-                const taskWeekStartDate = startOfWeek(new Date(task.week.replace(/(\\d{4})-(\\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
+                const taskWeekStartDate = startOfWeek(new Date(task.week.replace(/(\d{4})-(\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
                 return isWithinInterval(date, { start: taskWeekStartDate, end: addDays(taskWeekStartDate, 6) });
               case 'monthly':
                 return false;

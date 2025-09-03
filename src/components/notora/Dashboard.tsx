@@ -5,7 +5,7 @@ import type { User, AppData, Task } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { useMemo } from 'react';
 import { Calendar, Flame, TrendingUp } from 'lucide-react';
-import { format, isSameDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, addDays, isSameMonth, isAfter, startOfDay, isBefore, setHours, setMinutes, setSeconds, getDay, getDaysInMonth } from 'date-fns';
+import { format, isSameDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, addDays, isSameMonth, isAfter, startOfDay, isBefore, setHours, setMinutes, setSeconds, getDay, getDaysInMonth, endOfDay } from 'date-fns';
 import { getTaskXp } from '@/lib/utils';
 import { useApp } from '@/hooks/use-app';
 import { PolarGrid, PolarRadiusAxis, RadialBar, RadialBarChart, Label } from "recharts"
@@ -43,6 +43,13 @@ const XP_PENALTY: Record<Task['priority'], number> = {
   Medium: 10,
   Hard: 15,
 };
+
+interface DashboardProps {
+  user: User;
+  data: AppData;
+  onDataChange: (data: AppData) => void;
+}
+
 
 export default function Dashboard({ user, data, onDataChange }: DashboardProps) {
   const { tasks } = data;
@@ -139,7 +146,6 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
   const allTodaysTasks = useMemo(() => {
     const todayStart = startOfDay(today);
     return tasks.filter(task => {
-        const createdAt = new Date(task.createdAt);
         
         if (task.type === 'single' && task.date) {
              const taskDate = startOfDay(new Date(task.date));
@@ -147,13 +153,13 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
         }
         
         if (task.type === 'recurring') {
-            const createdAtStart = startOfDay(createdAt);
-            const monthEnd = endOfMonth(createdAtStart);
-            return (isSameDay(todayStart, createdAtStart) || isAfter(todayStart, createdAtStart)) && (isSameDay(todayStart, monthEnd) || isBefore(todayStart, monthEnd));
+            const createdAt = new Date(task.createdAt);
+            // Show if date is in the same month as creation and on or after creation day
+            return isSameMonth(today, createdAt) && (isSameDay(today, createdAt) || isAfter(today, createdAt));
         }
 
         if (task.type === 'weekly' && task.week) {
-             const taskWeekDate = startOfWeek(new Date(task.week.replace(/(\\d{4})-(\\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
+             const taskWeekDate = startOfWeek(new Date(task.week.replace(/(\d{4})-(\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
              return isWithinInterval(todayStart, { start: taskWeekDate, end: endOfWeek(taskWeekDate, { weekStartsOn: 1 }) });
         }
         return false;
@@ -211,7 +217,6 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
   
   const { monthlyXp, totalPossibleMonthlyXp } = useMemo(() => {
     const monthStart = startOfMonth(today);
-    const monthEnd = endOfMonth(today);
     let achieved = 0;
     let total = 0;
 
@@ -365,11 +370,6 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
                           <p className="text-center text-muted-foreground py-4">No tasks scheduled for today.</p>
                           )}
                       </div>
-                      <TaskList 
-                          data={data}
-                          onDataChange={onDataChange}
-                          currentMonth={today}
-                      />
                   </CardContent>
               </Card>
             </motion.div>
@@ -536,11 +536,3 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
     </div>
   );
 }
-
-interface DashboardProps {
-  user: User;
-  data: AppData;
-  onDataChange: (data: AppData) => void;
-}
-
-    

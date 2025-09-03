@@ -258,7 +258,7 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
                 return task.date ? isSameDay(new Date(task.date), date) : false;
               case 'recurring':
                 const createdAt = startOfDay(new Date(task.createdAt));
-                // Show if date is in the same month as creation and on or after creation day
+                // Show if the task is viewed for a day in the same month as its creation.
                 return isSameMonth(date, createdAt) && (isSameDay(date, createdAt) || isAfter(date, createdAt));
               case 'weekly':
                 if (!task.week) return false;

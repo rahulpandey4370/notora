@@ -10,8 +10,9 @@ import AppLayout from '@/components/notora/AppLayout';
 import { useShowcase } from '@/contexts/showcase-context';
 import LogManager from '@/components/notora/LogManager';
 import AICalorieCoach from '@/components/notora/AICalorieCoach';
-import type { Task, LogEntry, AppData } from '@/lib/types';
+import type { Task, AppData, LogEntry } from '@/lib/types';
 import { format, startOfDay, subDays } from 'date-fns';
+import AddNewLogCard from '@/components/notora/AddNewLogCard';
 
 interface LogsPageProps {
   showcase?: boolean;
@@ -99,7 +100,7 @@ export default function LogsPage({ showcase = false }: LogsPageProps) {
       <AppLayout data={data}>
         <div className="p-4 md:p-8 space-y-4">
           <Skeleton className="h-48 w-full" />
-          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-40 w-full" />
           <div className="grid grid-cols-1 gap-4">
             <Skeleton className="h-64 w-full" />
             <Skeleton className="h-64 w-full" />
@@ -118,6 +119,7 @@ export default function LogsPage({ showcase = false }: LogsPageProps) {
             getStepsForDate={getStepsForDate}
             weeklyChartData={weeklyChartData}
         />
+        <AddNewLogCard data={data} onDataChange={handleDataChange} />
         <LogManager
           logTrackers={data.logTrackers || []}
           data={data}

@@ -1,21 +1,16 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { format, parseISO, isValid, differenceInDays, isAfter, startOfDay, getWeek, getYear, startOfToday, subWeeks, isWithinInterval, endOfWeek, startOfWeek } from 'date-fns';
-import { v4 as uuidv4 } from 'uuid';
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, ReferenceLine, Dot } from 'recharts';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '../ui/alert-dialog';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { CalendarIcon, Edit, Save, Trash2, X, Wand2, Loader2, TrendingUp, TrendingDown, Minus, ArrowRight, Target, Plus, LineChart as LineChartIcon, BookOpen } from 'lucide-react';
+import { Trash2, Wand2, Loader2, TrendingUp, TrendingDown, Minus, ArrowRight, BookOpen, LineChart as LineChartIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { LogEntry, LogTracker } from '@/lib/types';
+import type { LogTracker } from '@/lib/types';
 import { getLogInsights } from '@/ai/flows/get-log-insights';
 import { Skeleton } from '../ui/skeleton';
 import { Switch } from '../ui/switch';
@@ -62,10 +57,6 @@ const chartBgColors = [
 const trackersWhereDecreaseIsGood = ['Weight', 'Daily Calorie Intake'];
 
 export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTrackerChange }: LogTrackerCardProps) {
-    const [date, setDate] = useState<Date>(new Date());
-    const [value, setValue] = useState<string>('');
-    const [notes, setNotes] = useState('');
-    const [editingLog, setEditingLog] = useState<LogEntry | null>(null);
     const [aiInsight, setAiInsight] = useState<AiInsight | null>(null);
     const [loadingInsight, setLoadingInsight] = useState(false);
     const [showTrendLine, setShowTrendLine] = useState(false);
@@ -151,67 +142,6 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
         }));
     }, [recentLogs, chartData, tracker.unit]);
 
-
-    const handleAddOrUpdateLog = () => {
-        const numValue = parseFloat(value);
-        if (isNaN(numValue)) return;
-        
-        const logDate = format(date, 'yyyy-MM-dd');
-        
-        if (editingLog) {
-            // Update existing log
-            const updatedLogs = tracker.logs.map(log =>
-                log.id === editingLog.id ? { ...log, date: logDate, value: numValue, notes } : log
-            );
-            onTrackerChange({ logs: updatedLogs });
-            setEditingLog(null);
-        } else {
-            // Add new log, but first check if one for this date already exists
-            const existingLogIndex = tracker.logs.findIndex(log => log.date === logDate);
-            let newLogs: LogEntry[];
-
-            if (existingLogIndex > -1) {
-                // Update the existing log for the selected date
-                newLogs = [...tracker.logs];
-                newLogs[existingLogIndex] = { ...newLogs[existingLogIndex], value: numValue, notes: notes || newLogs[existingLogIndex].notes };
-            } else {
-                // Add a new log
-                const newLog: LogEntry = {
-                    id: uuidv4(),
-                    date: logDate,
-                    value: numValue,
-                    notes,
-                };
-                newLogs = [...tracker.logs, newLog];
-            }
-            onTrackerChange({ logs: newLogs });
-        }
-        
-        setValue('');
-        setNotes('');
-        setDate(new Date());
-    };
-
-    const handleEditClick = (log: LogEntry) => {
-        setEditingLog(log);
-        const logDate = parseISO(log.date);
-        setDate(isValid(logDate) ? logDate : new Date());
-        setValue(String(log.value));
-        setNotes(log.notes || '');
-    };
-
-    const handleCancelEdit = () => {
-        setEditingLog(null);
-        setValue('');
-        setNotes('');
-        setDate(new Date());
-    };
-
-    const handleDeleteLog = (logId: string) => {
-        const updatedLogs = tracker.logs.filter(log => log.id !== logId);
-        onTrackerChange({ logs: updatedLogs });
-    };
-
     const handleGetInsights = async () => {
         if (tracker.logs.length < 2) return;
         setLoadingInsight(true);
@@ -265,7 +195,7 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
             exit={{ opacity: 0, scale: 0.8 }}
             transition={{ type: 'spring' }}
         >
-            <Card className={cardColorClass}>
+            <Card className={cn("flex flex-col h-full", cardColorClass)}>
                 <CardHeader>
                     <div className="flex justify-between items-start">
                         <div>
@@ -296,86 +226,8 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
                         </div>
                     </div>
                 </CardHeader>
-                <CardContent className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div className="space-y-4">
-                        <h3 className="font-semibold text-lg">{editingLog ? 'Edit Log Entry' : 'Add New Log'}</h3>
-                        <div className="flex flex-col sm:flex-row gap-2">
-                             <Popover>
-                                <PopoverTrigger asChild>
-                                <Button
-                                    variant={"outline"}
-                                    className={cn(
-                                    "w-full sm:w-[280px] justify-start text-left font-normal",
-                                    !date && "text-muted-foreground"
-                                    )}
-                                >
-                                    <CalendarIcon className="mr-2 h-4 w-4" />
-                                    {date ? format(date, "PPP") : <span>Pick a date</span>}
-                                </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0">
-                                    <Calendar mode="single" selected={date} onSelect={(d) => d && setDate(d)} initialFocus />
-                                </PopoverContent>
-                            </Popover>
-                            <Input 
-                                type="number"
-                                placeholder={`Value in ${tracker.unit}`}
-                                value={value}
-                                onChange={e => setValue(e.target.value)}
-                                className="w-full sm:flex-1"
-                            />
-                        </div>
-                        <Textarea 
-                            placeholder="Add any notes (optional)..."
-                            value={notes}
-                            onChange={e => setNotes(e.target.value)}
-                        />
-                        <div className="flex gap-2">
-                            <Button 
-                                onClick={handleAddOrUpdateLog} 
-                                className="w-full"
-                                style={{backgroundColor: chartColor}}
-                            >
-                                {editingLog ? <Save className="mr-2 h-4 w-4" /> : <Plus className="mr-2 h-4 w-4" />}
-                                {editingLog ? 'Save Changes' : 'Add Log'}
-                            </Button>
-                            {editingLog && (
-                                <Button onClick={handleCancelEdit} variant="outline" className="w-full">
-                                    <X className="mr-2 h-4 w-4" /> Cancel
-                                </Button>
-                            )}
-                        </div>
-                        <div className="space-y-2 pt-4">
-                            <h4 className="font-semibold">Recent Logs:</h4>
-                            <div className="max-h-60 overflow-y-auto pr-2">
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead>Date</TableHead>
-                                            <TableHead>Value</TableHead>
-                                            <TableHead className="text-right">Actions</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {sortedLogs.slice(-5).reverse().map(log => (
-                                            <TableRow key={log.id}>
-                                                <TableCell>{format(parseISO(log.date), 'MMM d, yyyy')}</TableCell>
-                                                <TableCell>{log.value} {tracker.unit}</TableCell>
-                                                <TableCell className="text-right">
-                                                    <Button variant="ghost" size="icon" onClick={() => handleEditClick(log)}><Edit className="h-4 w-4" /></Button>
-                                                    <Button variant="ghost" size="icon" onClick={() => handleDeleteLog(log.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                                {sortedLogs.length === 0 && <p className="text-sm text-muted-foreground text-center py-4">No logs yet.</p>}
-                            </div>
-                        </div>
-                    </div>
-                    <div className="space-y-4">
-                        <div className='space-y-4'>
-                            <h3 className="font-semibold text-lg">At a Glance</h3>
+                <CardContent className="space-y-4 flex-grow flex flex-col">
+                     <div className='space-y-4 flex-grow'>
                             {kpis ? (
                                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-2 text-center">
                                     <div className="p-2 rounded-lg" style={{ backgroundColor: chartBgColor }}>
@@ -443,7 +295,7 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
                         </div>
                         <div className='space-y-2'>
                              <div className="flex items-center justify-between pt-4">
-                                <h3 className="font-semibold text-lg">Progress Chart</h3>
+                                <h3 className="font-semibold">30-Day Progress Chart</h3>
                                 {chartData.length >= 2 && (
                                     <div className="flex items-center space-x-2">
                                         <Switch
@@ -457,7 +309,8 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
                                     </div>
                                 )}
                             </div>
-                            <ResponsiveContainer width="100%" height={200}>
+                            <div className='h-52'>
+                            <ResponsiveContainer width="100%" height="100%">
                                 <LineChart data={chartDataWithTrend}>
                                     <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.2} />
                                     <XAxis dataKey="name" tick={{ fontSize: 12 }} />
@@ -484,9 +337,10 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
                                     )}
                                 </LineChart>
                             </ResponsiveContainer>
+                            </div>
                         </div>
                         <div>
-                             <Button onClick={handleGetInsights} disabled={loadingInsight || tracker.logs.length < 2} className="w-full">
+                             <Button onClick={handleGetInsights} disabled={loadingInsight || tracker.logs.length < 2} className="w-full mt-4">
                                 {loadingInsight ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
                                 Get AI Coach Insights
                             </Button>
@@ -502,8 +356,8 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
                         )}
                         
                         {aiInsight && (
-                            <Card className="bg-muted/50">
-                                <CardHeader>
+                            <Card className="bg-muted/50 mt-4">
+                                <CardHeader className="pb-2">
                                     <CardTitle className="text-base flex items-center gap-2">
                                         <TrendIcon trend={aiInsight.trend}/>
                                         AI Coach says... (Trend: {aiInsight.trend})
@@ -514,7 +368,6 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
                                 </CardContent>
                             </Card>
                         )}
-                    </div>
                 </CardContent>
             </Card>
         </motion.div>

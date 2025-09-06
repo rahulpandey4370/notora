@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -84,9 +85,9 @@ export default function LogManager({ logTrackers, data, onDataChange }: LogManag
         <div className="space-y-6">
             <Card className="dark:neon-border">
                 <CardHeader>
-                    <CardTitle>Add New Log Tracker</CardTitle>
+                    <CardTitle>Manage Trackers</CardTitle>
                     <CardDescription>
-                        Create a new category to track daily. Examples: Weight (kg), Water Intake (ml), Steps.
+                        Create a new category to track. Examples: Weight (kg), Water Intake (ml), Steps.
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -125,7 +126,7 @@ export default function LogManager({ logTrackers, data, onDataChange }: LogManag
             
             <AnimatePresence>
                 <motion.div
-                    className="space-y-6"
+                    className="grid grid-cols-1 lg:grid-cols-2 gap-6"
                     variants={containerVariants}
                     initial="hidden"
                     animate="visible"

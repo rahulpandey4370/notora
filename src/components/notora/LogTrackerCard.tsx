@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -77,8 +76,8 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
         if (sortedLogs.length === 0) return null;
 
         const today = startOfToday();
-        const thisWeek = { start: startOfWeek(today), end: endOfWeek(today) };
-        const lastWeek = { start: startOfWeek(subWeeks(today, 1)), end: endOfWeek(subWeeks(today, 1)) };
+        const thisWeek = { start: startOfWeek(today, { weekStartsOn: 1 }), end: endOfWeek(today, { weekStartsOn: 1 }) };
+        const lastWeek = { start: startOfWeek(subWeeks(today, 1), { weekStartsOn: 1 }), end: endOfWeek(subWeeks(today, 1), { weekStartsOn: 1 }) };
         
         const logsThisWeek = sortedLogs.filter(l => isWithinInterval(parseISO(l.date), thisWeek));
         const logsLastWeek = sortedLogs.filter(l => isWithinInterval(parseISO(l.date), lastWeek));
@@ -92,17 +91,18 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
         }
 
         const latest = sortedLogs.length > 0 ? sortedLogs[sortedLogs.length - 1].value : 0;
-        const total30d = recentLogs.reduce((a, b) => a + b.value, 0);
-        const average30d = recentLogs.length > 0 ? total30d / recentLogs.length : 0;
         
-        const sevenDayLogs = sortedLogs.filter(log => differenceInDays(new Date(), parseISO(log.date)) < 7);
+        const sevenDayLogs = sortedLogs.slice(-7);
         const total7d = sevenDayLogs.reduce((a, b) => a + b.value, 0);
         const average7d = sevenDayLogs.length > 0 ? total7d / sevenDayLogs.length : 0;
+        
+        const total30d = recentLogs.reduce((a, b) => a + b.value, 0);
+        const average30d = recentLogs.length > 0 ? total30d / recentLogs.length : 0;
 
         const high = Math.max(...recentLogs.map(l => l.value));
         const low = Math.min(...recentLogs.map(l => l.value));
 
-        return { latest, average30d, average7d, high, low, total7d, total30d, weeklyChange };
+        return { latest, average30d, average7d, high, low, total7d, total30d, weeklyChange, avgThisWeek, avgLastWeek };
     }, [sortedLogs, recentLogs]);
 
     const isFlippable = tracker.isFlippable || tracker.name === 'Protein Intake' || tracker.name === 'Steps' || tracker.name === 'Daily Calorie Intake' || tracker.name === 'Calories Burned';
@@ -229,51 +229,19 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
                 <CardContent className="space-y-4 flex-grow flex flex-col">
                      <div className='space-y-4 flex-grow'>
                             {kpis ? (
-                                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-2 text-center">
+                                <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 gap-2 text-center">
                                     <div className="p-2 rounded-lg" style={{ backgroundColor: chartBgColor }}>
                                         <p className="text-xs text-muted-foreground">Latest</p>
                                         <p className="text-lg font-bold">{kpis.latest.toLocaleString()}</p>
                                     </div>
-                                    <TooltipProvider>
-                                    <UiTooltip delayDuration={100}>
-                                        <TooltipTrigger asChild>
-                                        <div 
-                                            className={cn("p-2 rounded-lg", isFlippable && "cursor-pointer")}
-                                            style={{ backgroundColor: chartBgColor }}
-                                            onClick={handleToggle7dView}
-                                        >
-                                            <p className="text-xs text-muted-foreground">{show7dTotal ? '7d Total' : '7d Avg'}</p>
-                                            <p className="text-lg font-bold">
-                                                {show7dTotal ? kpis.total7d.toLocaleString() : kpis.average7d.toFixed(1)}
-                                            </p>
-                                        </div>
-                                        </TooltipTrigger>
-                                        {isFlippable && (
-                                            <TooltipContent>
-                                                <p>Click to toggle total/average</p>
-                                            </TooltipContent>
-                                        )}
-                                    </UiTooltip>
-                                    <UiTooltip delayDuration={100}>
-                                        <TooltipTrigger asChild>
-                                        <div 
-                                            className={cn("p-2 rounded-lg", isFlippable && "cursor-pointer")}
-                                            style={{ backgroundColor: chartBgColor }}
-                                            onClick={handleToggle30dView}
-                                        >
-                                            <p className="text-xs text-muted-foreground">{show30dTotal ? '30d Total' : '30d Avg'}</p>
-                                            <p className="text-lg font-bold">
-                                                {show30dTotal ? kpis.total30d.toLocaleString() : kpis.average30d.toFixed(1)}
-                                            </p>
-                                        </div>
-                                        </TooltipTrigger>
-                                        {isFlippable && (
-                                            <TooltipContent>
-                                                <p>Click to toggle total/average</p>
-                                            </TooltipContent>
-                                        )}
-                                    </UiTooltip>
-                                    </TooltipProvider>
+                                    <div className="p-2 rounded-lg" style={{ backgroundColor: chartBgColor }}>
+                                        <p className="text-xs text-muted-foreground">This Week Avg</p>
+                                        <p className="text-lg font-bold">{kpis.avgThisWeek.toFixed(1)}</p>
+                                    </div>
+                                    <div className="p-2 rounded-lg" style={{ backgroundColor: chartBgColor }}>
+                                        <p className="text-xs text-muted-foreground">Last Week Avg</p>
+                                        <p className="text-lg font-bold">{kpis.avgLastWeek.toFixed(1)}</p>
+                                    </div>
                                     <div className="p-2 rounded-lg" style={{ backgroundColor: chartBgColor }}>
                                         <p className="text-xs text-muted-foreground">WoW Change</p>
                                         <p className={cn("text-lg font-bold", getWeeklyChangeColor())}>
@@ -288,6 +256,48 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
                                         <p className="text-xs text-muted-foreground">30d Low</p>
                                         <p className="text-lg font-bold">{kpis.low.toLocaleString()}</p>
                                     </div>
+                                    <TooltipProvider>
+                                    <UiTooltip delayDuration={100}>
+                                        <TooltipTrigger asChild>
+                                        <div 
+                                            className={cn("p-2 rounded-lg", isFlippable && "cursor-pointer")}
+                                            style={{ backgroundColor: chartBgColor }}
+                                            onClick={handleToggle7dView}
+                                        >
+                                            <p className="text-xs text-muted-foreground">{show7dTotal ? '7d Total' : '7d Avg (Roll)'}</p>
+                                            <p className="text-lg font-bold">
+                                                {show7dTotal ? kpis.total7d.toLocaleString() : kpis.average7d.toFixed(1)}
+                                            </p>
+                                        </div>
+                                        </TooltipTrigger>
+                                        {isFlippable && (
+                                            <TooltipContent>
+                                                <p>Click to toggle total/average</p>
+                                            </TooltipContent>
+                                        )}
+                                    </UiTooltip>
+                                    </TooltipProvider>
+                                    <TooltipProvider>
+                                    <UiTooltip delayDuration={100}>
+                                        <TooltipTrigger asChild>
+                                        <div 
+                                            className={cn("p-2 rounded-lg", isFlippable && "cursor-pointer")}
+                                            style={{ backgroundColor: chartBgColor }}
+                                            onClick={handleToggle30dView}
+                                        >
+                                            <p className="text-xs text-muted-foreground">{show30dTotal ? '30d Total' : '30d Avg (Roll)'}</p>
+                                            <p className="text-lg font-bold">
+                                                {show30dTotal ? kpis.total30d.toLocaleString() : kpis.average30d.toFixed(1)}
+                                            </p>
+                                        </div>
+                                        </TooltipTrigger>
+                                        {isFlippable && (
+                                            <TooltipContent>
+                                                <p>Click to toggle total/average</p>
+                                            </TooltipContent>
+                                        )}
+                                    </UiTooltip>
+                                    </TooltipProvider>
                                 </div>
                             ) : (
                                  <p className="text-sm text-muted-foreground text-center py-4">Not enough data for KPIs.</p>

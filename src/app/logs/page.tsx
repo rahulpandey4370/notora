@@ -113,17 +113,17 @@ export default function LogsPage({ showcase = false }: LogsPageProps) {
   return (
     <AppLayout data={data}>
       <div className="p-4 md:p-8 space-y-6">
-        <AICalorieCoach 
-            getCompletedTasksForDate={getCompletedTasksForDate}
-            getCalorieIntakeForDate={getCalorieIntakeForDate}
-            getStepsForDate={getStepsForDate}
-            weeklyChartData={weeklyChartData}
-        />
         <AddNewLogCard data={data} onDataChange={handleDataChange} />
         <LogManager
           logTrackers={data.logTrackers || []}
           data={data}
           onDataChange={handleDataChange}
+        />
+        <AICalorieCoach 
+            getCompletedTasksForDate={getCompletedTasksForDate}
+            getCalorieIntakeForDate={getCalorieIntakeForDate}
+            getStepsForDate={getStepsForDate}
+            weeklyChartData={weeklyChartData}
         />
       </div>
     </AppLayout>

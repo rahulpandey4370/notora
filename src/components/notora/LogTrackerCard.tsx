@@ -61,6 +61,8 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
     const [showTrendLine, setShowTrendLine] = useState(false);
     const [show7dTotal, setShow7dTotal] = useState(false);
     const [show30dTotal, setShow30dTotal] = useState(false);
+    const [showThisWeekTotal, setShowThisWeekTotal] = useState(false);
+    const [showLastWeekTotal, setShowLastWeekTotal] = useState(false);
     const [allLogsOpen, setAllLogsOpen] = useState(false);
 
     const sortedLogs = useMemo(() => tracker.logs.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()), [tracker.logs]);
@@ -83,7 +85,10 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
         const logsLastWeek = sortedLogs.filter(l => isWithinInterval(parseISO(l.date), lastWeek));
 
         const avgThisWeek = logsThisWeek.length > 0 ? logsThisWeek.reduce((acc, l) => acc + l.value, 0) / logsThisWeek.length : 0;
+        const totalThisWeek = logsThisWeek.reduce((acc, l) => acc + l.value, 0);
+
         const avgLastWeek = logsLastWeek.length > 0 ? logsLastWeek.reduce((acc, l) => acc + l.value, 0) / logsLastWeek.length : 0;
+        const totalLastWeek = logsLastWeek.reduce((acc, l) => acc + l.value, 0);
         
         let weeklyChange: number | null = null;
         if (avgThisWeek > 0 && avgLastWeek > 0) {
@@ -102,7 +107,7 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
         const high = Math.max(...recentLogs.map(l => l.value));
         const low = Math.min(...recentLogs.map(l => l.value));
 
-        return { latest, average30d, average7d, high, low, total7d, total30d, weeklyChange, avgThisWeek, avgLastWeek };
+        return { latest, average30d, average7d, high, low, total7d, total30d, weeklyChange, avgThisWeek, avgLastWeek, totalThisWeek, totalLastWeek };
     }, [sortedLogs, recentLogs]);
 
     const isFlippable = tracker.isFlippable || tracker.name === 'Protein Intake' || tracker.name === 'Steps' || tracker.name === 'Daily Calorie Intake' || tracker.name === 'Calories Burned';
@@ -234,14 +239,44 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
                                         <p className="text-xs text-muted-foreground">Latest</p>
                                         <p className="text-lg font-bold">{kpis.latest.toLocaleString()}</p>
                                     </div>
-                                    <div className="p-2 rounded-lg" style={{ backgroundColor: chartBgColor }}>
-                                        <p className="text-xs text-muted-foreground">This Week Avg</p>
-                                        <p className="text-lg font-bold">{kpis.avgThisWeek.toFixed(1)}</p>
-                                    </div>
-                                    <div className="p-2 rounded-lg" style={{ backgroundColor: chartBgColor }}>
-                                        <p className="text-xs text-muted-foreground">Last Week Avg</p>
-                                        <p className="text-lg font-bold">{kpis.avgLastWeek.toFixed(1)}</p>
-                                    </div>
+                                    <TooltipProvider>
+                                        <UiTooltip delayDuration={100}>
+                                            <TooltipTrigger asChild>
+                                            <div 
+                                                className="p-2 rounded-lg cursor-pointer"
+                                                style={{ backgroundColor: chartBgColor }}
+                                                onClick={() => setShowThisWeekTotal(p => !p)}
+                                            >
+                                                <p className="text-xs text-muted-foreground">{showThisWeekTotal ? 'This Week Total' : 'This Week Avg'}</p>
+                                                <p className="text-lg font-bold">
+                                                    {showThisWeekTotal ? kpis.totalThisWeek.toLocaleString() : kpis.avgThisWeek.toFixed(1)}
+                                                </p>
+                                            </div>
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                                <p>Click to toggle total/average</p>
+                                            </TooltipContent>
+                                        </UiTooltip>
+                                    </TooltipProvider>
+                                     <TooltipProvider>
+                                        <UiTooltip delayDuration={100}>
+                                            <TooltipTrigger asChild>
+                                            <div 
+                                                className="p-2 rounded-lg cursor-pointer"
+                                                style={{ backgroundColor: chartBgColor }}
+                                                onClick={() => setShowLastWeekTotal(p => !p)}
+                                            >
+                                                <p className="text-xs text-muted-foreground">{showLastWeekTotal ? 'Last Week Total' : 'Last Week Avg'}</p>
+                                                <p className="text-lg font-bold">
+                                                    {showLastWeekTotal ? kpis.totalLastWeek.toLocaleString() : kpis.avgLastWeek.toFixed(1)}
+                                                </p>
+                                            </div>
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                                <p>Click to toggle total/average</p>
+                                            </TooltipContent>
+                                        </UiTooltip>
+                                    </TooltipProvider>
                                     <div className="p-2 rounded-lg" style={{ backgroundColor: chartBgColor }}>
                                         <p className="text-xs text-muted-foreground">WoW Change</p>
                                         <p className={cn("text-lg font-bold", getWeeklyChangeColor())}>

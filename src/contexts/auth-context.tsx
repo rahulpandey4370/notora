@@ -3,12 +3,11 @@
 import { createContext, useState, useEffect, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import type { User } from '@/lib/types';
-import { users } from '@/lib/users';
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (username: string, pass: string) => Promise<boolean>;
+  login: (email: string, pass: string) => Promise<boolean>;
   logout: () => void;
 }
 
@@ -32,17 +31,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(false);
   }, []);
 
-  const login = async (username: string, pass: string): Promise<boolean> => {
-    const foundUser = users.find(
-      (u) => u.username.toLowerCase() === username.toLowerCase() && u.password === pass
-    );
+  const login = async (email: string, pass: string): Promise<boolean> => {
+    const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password: pass }),
+    });
 
-    if (foundUser) {
-      const userData = { username: foundUser.username, avatarUrl: foundUser.avatarUrl };
-      setUser(userData);
-      localStorage.setItem('notora-user', JSON.stringify(userData));
-      return true;
+    if (response.ok) {
+        const userData: User = await response.json();
+        setUser(userData);
+        localStorage.setItem('notora-user', JSON.stringify(userData));
+        return true;
     }
+
     return false;
   };
 

@@ -13,7 +13,7 @@ import Link from 'next/link';
 import { Separator } from '@/components/ui/separator';
 
 export default function LoginPage() {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -23,21 +23,29 @@ export default function LoginPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const success = await login(username, password);
-    setLoading(false);
-
-    if (success) {
-      toast({
-        title: 'Login Successful',
-        description: `Welcome back, ${username}!`,
-      });
-      router.push('/');
-    } else {
-      toast({
+    try {
+      const success = await login(email, password);
+      if (success) {
+        toast({
+          title: 'Login Successful',
+          description: 'Welcome back!',
+        });
+        router.push('/');
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Login Failed',
+          description: 'Invalid email or password.',
+        });
+      }
+    } catch (error) {
+       toast({
         variant: 'destructive',
-        title: 'Login Failed',
-        description: 'Invalid username or password.',
+        title: 'An Error Occurred',
+        description: 'Could not log in. Please try again later.',
       });
+    } finally {
+        setLoading(false);
     }
   };
 
@@ -54,13 +62,13 @@ export default function LoginPage() {
         <form onSubmit={handleLogin}>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="email">Email</Label>
               <Input
-                id="username"
-                type="text"
-                placeholder="Enter your username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                id="email"
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </div>

@@ -15,6 +15,8 @@ import CustomPromptDialog from './CustomPromptDialog';
 import ReactMarkdown from 'react-markdown';
 import { Input } from '../ui/input';
 import { cn } from '@/lib/utils';
+import { generateNoteTitle } from '@/ai/flows/generate-note-title';
+import { SparkleIcon } from './SparkleIcon';
 
 interface StickyNoteProps {
   note: StickyNoteType;
@@ -36,7 +38,7 @@ const themeColors: Record<StickyNoteType['theme'], string> = {
 
 const themes: StickyNoteType['theme'][] = ['yellow', 'blue', 'green', 'pink', 'purple'];
 
-type AIOperation = 'polish' | 'summarize' | 'bulletify' | 'simplify';
+type AIOperation = 'polish' | 'summarize' | 'bulletify' | 'simplify' | 'title';
 
 const NOTE_SIZE = 256;
 
@@ -64,11 +66,22 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
   
   const handleAIAction = async (operation: AIOperation) => {
     setAiLoading(operation);
-    setPreviousContent(note.content);
+    
+    if (operation !== 'title') {
+      setPreviousContent(note.content);
+    }
+
     try {
         let result;
         const contentToProcess = isEditing ? editedContent : note.content;
+
         switch (operation) {
+            case 'title':
+              if (!contentToProcess) return;
+              result = await generateNoteTitle({ content: contentToProcess });
+              onChange(note.id, { title: result.title });
+              if (isEditing) setEditedTitle(result.title);
+              break;
             case 'polish':
                 result = await polishStickyNote({ content: contentToProcess });
                 onChange(note.id, { content: result.polishedContent });
@@ -139,7 +152,7 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
         onClick={handleStartEditing}
       >
         <div 
-          className="note-header p-2 pb-0 flex-shrink-0 cursor-grab active:cursor-grabbing"
+          className="note-header p-2 pb-0 flex-shrink-0 cursor-grab active:cursor-grabbing flex items-center gap-1"
           onPointerDown={(e) => {
               if (isMobile || isEditing) return;
               e.preventDefault();
@@ -153,11 +166,14 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
                 onChange={e => setEditedTitle(e.target.value)}
                 onClick={e => e.stopPropagation()}
                 placeholder="Note title..."
-                className="font-bold text-sm border-0 border-b rounded-none px-1 h-8 focus-visible:ring-0 bg-transparent"
+                className="font-bold text-sm border-0 border-b rounded-none px-1 h-8 focus-visible:ring-0 bg-transparent flex-1"
               />
           ): (
-            <h3 className="font-bold text-sm p-1 truncate">{note.title || 'Note'}</h3>
+            <h3 className="font-bold text-sm p-1 truncate flex-1">{note.title || 'Note'}</h3>
           )}
+          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full flex-shrink-0" onClick={(e) => { e.stopPropagation(); handleAIAction('title'); }} disabled={aiLoading === 'title'}>
+            {aiLoading === 'title' ? <Loader2 className="h-4 w-4 animate-spin"/> : <SparkleIcon className="h-4 w-4" />}
+          </Button>
         </div>
 
         <div 

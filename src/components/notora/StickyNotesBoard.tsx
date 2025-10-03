@@ -1,15 +1,13 @@
 'use client';
 
-import { useRef, useMemo, useCallback, useEffect } from 'react';
+import { useRef, useMemo } from 'react';
 import StickyNote from './StickyNote';
 import type { AppData, NoteBoard, StickyNote as StickyNoteType } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import { ScrollArea, ScrollBar } from '../ui/scroll-area';
-import { generateNoteTitle } from '@/ai/flows/generate-note-title';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 
 interface StickyNotesBoardProps {
@@ -26,7 +24,6 @@ const PADDING = 24;
 
 export default function StickyNotesBoard({ board, data, onDataChange, onSwitchView }: StickyNotesBoardProps) {
   const constraintsRef = useRef<HTMLDivElement>(null);
-  const titleGenerationTimeout = useRef<NodeJS.Timeout | null>(null);
   const isMobile = useIsMobile();
 
   const boardDimensions = useMemo(() => {
@@ -77,57 +74,14 @@ export default function StickyNotesBoard({ board, data, onDataChange, onSwitchVi
     onDataChange({ ...data, noteBoards: newNoteBoards });
   };
   
-  const generateTitleForNote = useCallback(async (noteId: string, content: string) => {
-    try {
-        const result = await generateNoteTitle({ content });
-        if (result.title) {
-           const newNoteBoards = data.noteBoards.map(b =>
-            b.id === board.id
-              ? {
-                  ...b,
-                  notes: b.notes.map(note =>
-                    note.id === noteId ? { ...note, title: result.title } : note
-                  ),
-                }
-              : b
-          );
-          onDataChange({ ...data, noteBoards: newNoteBoards });
-        }
-    } catch (error) {
-        console.error("Failed to generate title:", error);
-    }
-  }, [data, board.id, onDataChange]);
-
   const handleChange = (noteId: string, newValues: Partial<StickyNoteType>) => {
-    const isContentChange = 'content' in newValues;
-    const noteToUpdate = board.notes.find(n => n.id === noteId);
-
-    if (!noteToUpdate) return;
-    
     const newNoteBoards = data.noteBoards.map(b => 
         b.id === board.id 
         ? { ...b, notes: b.notes.map(note => note.id === noteId ? {...note, ...newValues} : note) } 
         : b
     );
     onDataChange({ ...data, noteBoards: newNoteBoards });
-    
-    if (isContentChange && newValues.content && !noteToUpdate.title) {
-      if (titleGenerationTimeout.current) {
-        clearTimeout(titleGenerationTimeout.current);
-      }
-      titleGenerationTimeout.current = setTimeout(() => {
-        generateTitleForNote(noteId, newValues.content!);
-      }, 2000);
-    }
   };
-
-  useEffect(() => {
-    return () => {
-      if (titleGenerationTimeout.current) {
-        clearTimeout(titleGenerationTimeout.current);
-      }
-    };
-  }, []);
 
   const handleDelete = (noteId: string) => {
     const newNoteBoards = data.noteBoards.map(b => 

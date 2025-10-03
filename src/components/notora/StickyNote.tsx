@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, useMotionValue, useDragControls } from 'framer-motion';
 import { Textarea } from '@/components/ui/textarea';
 import type { StickyNote as StickyNoteType } from '@/lib/types';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { MoreVertical, Trash2, Wand2, BookText, List, BrainCircuit, Loader2, Paintbrush, TextCursorInput, RotateCcw, Newspaper, Save, X } from 'lucide-react';
+import { MoreVertical, Trash2, Wand2, BookText, List, BrainCircuit, Loader2, Paintbrush, TextCursorInput, RotateCcw, RotateCw, Newspaper, X } from 'lucide-react';
 import { polishStickyNote } from '@/ai/flows/polish-sticky-note';
 import { summarizeStickyNote } from '@/ai/flows/summarize-sticky-note';
 import { bulletifyStickyNote } from '@/ai/flows/bullet-ify-sticky-note';
@@ -45,20 +45,41 @@ const NOTE_SIZE = 256;
 export default function StickyNote({ note, onChange, onDelete, onStopDrag, constraintsRef, onSwitchView, isMobile = false }: StickyNoteProps) {
   const [aiLoading, setAiLoading] = useState<AIOperation | null>(null);
   const [isPromptDialogOpen, setIsPromptDialogOpen] = useState(false);
-  const [previousContent, setPreviousContent] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState(note.content);
   const [editedTitle, setEditedTitle] = useState(note.title || '');
-
 
   const x = useMotionValue(note.position.x);
   const y = useMotionValue(note.position.y);
   const dragControls = useDragControls();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const autoSaveTimer = useRef<NodeJS.Timeout | null>(null);
+
+  const handleSave = useCallback(() => {
+    if (note.title !== editedTitle || note.content !== editedContent) {
+        onChange(note.id, { title: editedTitle, content: editedContent });
+    }
+  }, [note.id, note.title, note.content, editedTitle, editedContent, onChange]);
+
+  useEffect(() => {
+    if (isEditing) {
+      if (autoSaveTimer.current) {
+        clearTimeout(autoSaveTimer.current);
+      }
+      autoSaveTimer.current = setTimeout(() => {
+        handleSave();
+      }, 1000); // Auto-save after 1 second of inactivity
+    }
+    return () => {
+      if (autoSaveTimer.current) {
+        clearTimeout(autoSaveTimer.current);
+      }
+    };
+  }, [editedTitle, editedContent, isEditing, handleSave]);
+
 
   useEffect(() => {
     if (isEditing && textareaRef.current) {
-        textareaRef.current.focus();
         textareaRef.current.style.height = 'auto';
         textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
@@ -66,14 +87,13 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
   
   const handleAIAction = async (operation: AIOperation) => {
     setAiLoading(operation);
-    
-    if (operation !== 'title') {
-      setPreviousContent(note.content);
-    }
 
     try {
         let result;
         const contentToProcess = isEditing ? editedContent : note.content;
+        
+        // Save current state before AI change for undo
+        handleSave();
 
         switch (operation) {
             case 'title':
@@ -105,22 +125,13 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
         }
     } catch (error) {
         console.error(`Failed to ${operation} note:`, error);
-        setPreviousContent(null);
     } finally {
         setAiLoading(null);
     }
   };
-
-  const handleUndo = () => {
-    if (previousContent !== null) {
-      onChange(note.id, { content: previousContent });
-      if (isEditing) setEditedContent(previousContent);
-      setPreviousContent(null);
-    }
-  };
   
   const handleCustomPrompt = () => {
-    setPreviousContent(note.content);
+    handleSave(); // Save current state before opening dialog
     setIsPromptDialogOpen(true);
   };
   
@@ -130,17 +141,21 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
     setEditedContent(note.content);
     setIsEditing(true);
   };
+  
+  const handleCancelEditing = () => {
+      // Revert to last saved state
+      setEditedTitle(note.title || '');
+      setEditedContent(note.content);
+      setIsEditing(false);
+  }
+  
+  const handleUndo = () => {
+    onChange(note.id, { undo: true });
+  }
 
-  const handleSave = () => {
-    onChange(note.id, { title: editedTitle, content: editedContent });
-    setIsEditing(false);
-  };
-
-  const handleCancel = () => {
-    setEditedTitle(note.title || '');
-    setEditedContent(note.content);
-    setIsEditing(false);
-  };
+  const handleRedo = () => {
+    onChange(note.id, { redo: true });
+  }
   
   const noteComponent = (
       <div
@@ -198,8 +213,7 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
         <div className="flex items-center justify-end px-2 py-1 flex-shrink-0 mt-auto" onClick={e => e.stopPropagation()}>
             {isEditing && (
                 <div className="flex-1 flex gap-1">
-                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={handleSave}><Save className="h-4 w-4 text-green-600" /></Button>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={handleCancel}><X className="h-4 w-4 text-red-600" /></Button>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={handleCancelEditing}><X className="h-4 w-4 text-red-600" /></Button>
                 </div>
             )}
           <DropdownMenu>
@@ -211,6 +225,13 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
               <DropdownMenuContent align="end">
                   <DropdownMenuItem onClick={() => onSwitchView(note.id)}>
                       <Newspaper className="mr-2 h-4 w-4" /> View in Formatted Mode
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleUndo} disabled={(note.history?.past?.length || 0) === 0}>
+                    <RotateCcw className="mr-2 h-4 w-4" /> Undo
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleRedo} disabled={(note.history?.future?.length || 0) === 0}>
+                    <RotateCw className="mr-2 h-4 w-4" /> Redo
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => handleAIAction('polish')} disabled={!!aiLoading}>
@@ -228,11 +249,6 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
                   <DropdownMenuItem onClick={() => handleAIAction('simplify')} disabled={!!aiLoading}>
                       {aiLoading === 'simplify' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <BrainCircuit className="mr-2 h-4 w-4" />} Simplify
                   </DropdownMenuItem>
-                  {previousContent !== null && (
-                    <DropdownMenuItem onClick={handleUndo}>
-                      <RotateCcw className="mr-2 h-4 w-4" /> Undo
-                    </DropdownMenuItem>
-                  )}
                   <DropdownMenuSeparator />
                    <DropdownMenuItem>
                       <Paintbrush className="mr-2 h-4 w-4" /> Change Color
@@ -273,12 +289,7 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
 
       <CustomPromptDialog
         open={isPromptDialogOpen}
-        onOpenChange={(isOpen) => {
-            setIsPromptDialogOpen(isOpen);
-            if (!isOpen) {
-              setPreviousContent(null);
-            }
-        }}
+        onOpenChange={setIsPromptDialogOpen}
         noteContent={isEditing ? editedContent : note.content}
         noteId={note.id}
         onContentChange={(id, newContent) => {

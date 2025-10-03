@@ -1,4 +1,3 @@
-
 'use client';
 
 import { createRef, useEffect } from 'react';
@@ -35,12 +34,51 @@ export default function FormattedNoteView({ board, data, onDataChange, noteToFoc
     }
   }, [noteToFocus, noteRefs, onFocusHandled]);
 
-  const handleNoteChange = (noteId: string, newContent: Partial<StickyNote>) => {
-    const newNoteBoards = data.noteBoards.map(b =>
-      b.id === board.id
-        ? { ...b, notes: b.notes.map(note => (note.id === noteId ? { ...note, ...newContent } : note)) }
-        : b
-    );
+  const handleNoteChange = (noteId: string, newValues: Partial<StickyNote> & { undo?: boolean, redo?: boolean }) => {
+    const newNoteBoards = data.noteBoards.map(b => {
+        if (b.id !== board.id) return b;
+        
+        const newNotes = b.notes.map(note => {
+            if (note.id !== noteId) return note;
+
+            let history = note.history || { past: [], present: { title: note.title || '', content: note.content }, future: [] };
+            
+            if (newValues.undo) {
+                if (history.past.length === 0) return note;
+                const previous = history.past[history.past.length - 1];
+                const newPast = history.past.slice(0, history.past.length - 1);
+                return { 
+                    ...note, 
+                    title: previous.title, 
+                    content: previous.content, 
+                    history: { past: newPast, present: previous, future: [history.present, ...history.future] } 
+                };
+            }
+
+            if (newValues.redo) {
+                if (history.future.length === 0) return note;
+                const next = history.future[0];
+                const newFuture = history.future.slice(1);
+                return { 
+                    ...note, 
+                    title: next.title, 
+                    content: next.content, 
+                    history: { past: [...history.past, history.present], present: next, future: newFuture } 
+                };
+            }
+            
+            const currentState = { title: note.title || '', content: note.content };
+            const nextState = { title: newValues.title ?? note.title, content: newValues.content ?? note.content };
+
+            if (currentState.title !== nextState.title || currentState.content !== nextState.content) {
+                const newPast = [...history.past, history.present].slice(-10); // Limit history
+                history = { past: newPast, present: nextState, future: [] };
+            }
+
+            return { ...note, ...newValues, history };
+        });
+        return { ...b, notes: newNotes };
+    });
     onDataChange({ ...data, noteBoards: newNoteBoards });
   };
   

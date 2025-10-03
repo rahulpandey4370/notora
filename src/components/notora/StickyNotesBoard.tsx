@@ -40,10 +40,10 @@ export default function StickyNotesBoard({ board, data, onDataChange, onSwitchVi
       height: Math.max(500, maxY + PADDING)
     };
   }, [board.notes, isMobile]);
-
-  const handleAddNote = () => {
+  
+  const createNewNote = (b: NoteBoard): NoteBoard => {
     let newPosition = { x: PADDING, y: PADDING };
-    const notesInBoard = board.notes || [];
+    const notesInBoard = b.notes || [];
 
     if (notesInBoard.length > 0 && !isMobile) {
       const maxY = Math.max(...notesInBoard.map(n => n.position.y));
@@ -66,20 +66,64 @@ export default function StickyNotesBoard({ board, data, onDataChange, onSwitchVi
       content: '',
       position: newPosition,
       theme: themes[notesInBoard.length % themes.length],
+      history: { past: [], present: { title: '', content: '' }, future: [] }
     };
-    
+
+    return { ...b, notes: [...notesInBoard, newNote] };
+  };
+
+  const handleAddNote = () => {
     const newNoteBoards = data.noteBoards.map(b => 
-      b.id === board.id ? { ...b, notes: [...notesInBoard, newNote] } : b
+      b.id === board.id ? createNewNote(b) : b
     );
     onDataChange({ ...data, noteBoards: newNoteBoards });
   };
   
-  const handleChange = (noteId: string, newValues: Partial<StickyNoteType>) => {
-    const newNoteBoards = data.noteBoards.map(b => 
-        b.id === board.id 
-        ? { ...b, notes: b.notes.map(note => note.id === noteId ? {...note, ...newValues} : note) } 
-        : b
-    );
+  const handleChange = (noteId: string, newValues: Partial<StickyNoteType> & { undo?: boolean, redo?: boolean }) => {
+    const newNoteBoards = data.noteBoards.map(b => {
+        if (b.id !== board.id) return b;
+        
+        const newNotes = b.notes.map(note => {
+            if (note.id !== noteId) return note;
+
+            let history = note.history || { past: [], present: { title: note.title || '', content: note.content }, future: [] };
+            
+            if (newValues.undo) {
+                if (history.past.length === 0) return note;
+                const previous = history.past[history.past.length - 1];
+                const newPast = history.past.slice(0, history.past.length - 1);
+                return { 
+                    ...note, 
+                    title: previous.title, 
+                    content: previous.content, 
+                    history: { past: newPast, present: previous, future: [history.present, ...history.future] } 
+                };
+            }
+
+            if (newValues.redo) {
+                if (history.future.length === 0) return note;
+                const next = history.future[0];
+                const newFuture = history.future.slice(1);
+                return { 
+                    ...note, 
+                    title: next.title, 
+                    content: next.content, 
+                    history: { past: [...history.past, history.present], present: next, future: newFuture } 
+                };
+            }
+            
+            const currentState = { title: note.title || '', content: note.content };
+            const nextState = { title: newValues.title ?? note.title, content: newValues.content ?? note.content };
+
+            if (currentState.title !== nextState.title || currentState.content !== nextState.content) {
+                const newPast = [...history.past, history.present].slice(-10); // Limit history
+                history = { past: newPast, present: nextState, future: [] };
+            }
+
+            return { ...note, ...newValues, history };
+        });
+        return { ...b, notes: newNotes };
+    });
     onDataChange({ ...data, noteBoards: newNoteBoards });
   };
 

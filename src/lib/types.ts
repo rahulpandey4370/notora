@@ -22,6 +22,16 @@ export const TaskSchema = z.object({
 });
 export type Task = z.infer<typeof TaskSchema>;
 
+export interface NoteHistoryState {
+    title: string;
+    content: string;
+}
+
+export interface NoteHistory {
+    past: NoteHistoryState[];
+    present: NoteHistoryState;
+    future: NoteHistoryState[];
+}
 
 export interface StickyNote {
   id: string;
@@ -29,6 +39,7 @@ export interface StickyNote {
   content: string;
   position: { x: number; y: number };
   theme: 'yellow' | 'blue' | 'green' | 'pink' | 'purple';
+  history?: NoteHistory;
 }
 
 export interface NoteBoard {

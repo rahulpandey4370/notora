@@ -19,7 +19,8 @@ const defaultAppData: AppData = {
           title: 'Welcome! ✨',
           content: 'This is a draggable sticky note. You can edit me or use the AI tools in the menu below.', 
           position: { x: 50, y: 50 }, 
-          theme: 'yellow' 
+          theme: 'yellow',
+          history: { past: [], present: { title: 'Welcome! ✨', content: 'This is a draggable sticky note. You can edit me or use the AI tools in the menu below.' }, future: [] },
         },
       ]
     }
@@ -70,7 +71,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
       appData.tasks = appData.tasks.map(t => ({ ...t, createdAt: t.createdAt || new Date().toISOString() }));
       appData.noteBoards = appData.noteBoards.map(b => ({
         ...b,
-        notes: b.notes.map(n => ({...n, title: n.title || ''}))
+        notes: b.notes.map(n => ({
+          ...n, 
+          title: n.title || '',
+          history: n.history || { past: [], present: { title: n.title || '', content: n.content }, future: [] }
+        }))
       }));
       if (!appData.logTrackers) {
         appData.logTrackers = [];

@@ -1,14 +1,13 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { motion } from 'framer-motion';
 import type { StickyNote } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
-import { MoreVertical, Save, Trash2, Wand2, BookText, List, BrainCircuit, TextCursorInput, RotateCcw, Paintbrush, Loader2 } from 'lucide-react';
+import { MoreVertical, Trash2, Wand2, BookText, List, BrainCircuit, TextCursorInput, RotateCcw, RotateCw, Paintbrush, Loader2, X } from 'lucide-react';
 import { polishStickyNote } from '@/ai/flows/polish-sticky-note';
 import { summarizeStickyNote } from '@/ai/flows/summarize-sticky-note';
 import { bulletifyStickyNote } from '@/ai/flows/bullet-ify-sticky-note';
@@ -43,8 +42,36 @@ export default function FormattedNoteCard({ note, noteNumber, onNoteChange, onNo
   const [editedContent, setEditedContent] = useState(note.content);
   const [aiLoading, setAiLoading] = useState<AIOperation | null>(null);
   const [isPromptDialogOpen, setIsPromptDialogOpen] = useState(false);
-  const [previousContent, setPreviousContent] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const autoSaveTimer = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    setEditedContent(note.content);
+    setEditedTitle(note.title || '');
+  }, [note.content, note.title]);
+
+  const handleSave = useCallback(() => {
+    if (note.title !== editedTitle || note.content !== editedContent) {
+      onNoteChange(note.id, { title: editedTitle, content: editedContent });
+    }
+  }, [note.id, note.title, note.content, editedTitle, editedContent, onNoteChange]);
+
+  useEffect(() => {
+    if (isEditing) {
+      if (autoSaveTimer.current) {
+        clearTimeout(autoSaveTimer.current);
+      }
+      autoSaveTimer.current = setTimeout(() => {
+        handleSave();
+      }, 1000);
+    }
+    return () => {
+      if (autoSaveTimer.current) {
+        clearTimeout(autoSaveTimer.current);
+      }
+    };
+  }, [editedTitle, editedContent, isEditing, handleSave]);
+
 
   useEffect(() => {
     if (isEditing && textareaRef.current) {
@@ -53,12 +80,7 @@ export default function FormattedNoteCard({ note, noteNumber, onNoteChange, onNo
     }
   }, [isEditing, editedContent]);
 
-  const handleSave = () => {
-    onNoteChange(note.id, { title: editedTitle, content: editedContent });
-    setIsEditing(false);
-  };
-
-  const handleCancel = () => {
+  const handleCancelEditing = () => {
     setEditedTitle(note.title || '');
     setEditedContent(note.content);
     setIsEditing(false);
@@ -66,7 +88,7 @@ export default function FormattedNoteCard({ note, noteNumber, onNoteChange, onNo
   
   const handleAIAction = async (operation: AIOperation) => {
     setAiLoading(operation);
-    setPreviousContent(note.content);
+    handleSave(); // Save current state for undo
     try {
         let result;
         const contentToProcess = isEditing ? editedContent : note.content;
@@ -94,22 +116,22 @@ export default function FormattedNoteCard({ note, noteNumber, onNoteChange, onNo
         }
     } catch (error) {
         console.error(`Failed to ${operation} note:`, error);
-        setPreviousContent(null);
     } finally {
         setAiLoading(null);
     }
   };
 
-  const handleUndo = () => {
-    if (previousContent !== null) {
-      onNoteChange(note.id, { content: previousContent });
-      setPreviousContent(null);
-    }
+  const handleCustomPrompt = () => {
+    handleSave(); // Save current state before opening dialog
+    setIsPromptDialogOpen(true);
   };
   
-  const handleCustomPrompt = () => {
-    setPreviousContent(note.content);
-    setIsPromptDialogOpen(true);
+  const handleUndo = () => {
+    onNoteChange(note.id, { undo: true });
+  }
+
+  const handleRedo = () => {
+    onNoteChange(note.id, { redo: true });
   }
 
   return (
@@ -135,6 +157,13 @@ export default function FormattedNoteCard({ note, noteNumber, onNoteChange, onNo
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={handleUndo} disabled={(note.history?.past?.length || 0) === 0}>
+                  <RotateCcw className="mr-2 h-4 w-4" /> Undo
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleRedo} disabled={(note.history?.future?.length || 0) === 0}>
+                  <RotateCw className="mr-2 h-4 w-4" /> Redo
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => handleAIAction('polish')} disabled={!!aiLoading}>
                 {aiLoading === 'polish' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />} Polish This
               </DropdownMenuItem>
@@ -150,11 +179,6 @@ export default function FormattedNoteCard({ note, noteNumber, onNoteChange, onNo
               <DropdownMenuItem onClick={() => handleAIAction('simplify')} disabled={!!aiLoading}>
                 {aiLoading === 'simplify' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <BrainCircuit className="mr-2 h-4 w-4" />} Simplify
               </DropdownMenuItem>
-              {previousContent !== null && (
-                <DropdownMenuItem onClick={handleUndo}>
-                  <RotateCcw className="mr-2 h-4 w-4" /> Undo AI Edit
-                </DropdownMenuItem>
-              )}
               <DropdownMenuSeparator />
               <DropdownMenuItem>
                 <Paintbrush className="mr-2 h-4 w-4" /> Change Color
@@ -185,8 +209,7 @@ export default function FormattedNoteCard({ note, noteNumber, onNoteChange, onNo
                 autoFocus
               />
               <div className="flex justify-end gap-2">
-                <Button variant="ghost" onClick={(e) => { e.stopPropagation(); handleCancel(); }}>Cancel</Button>
-                <Button onClick={(e) => { e.stopPropagation(); handleSave(); }}>Save</Button>
+                <Button variant="ghost" onClick={(e) => { e.stopPropagation(); handleCancelEditing(); }}>Done</Button>
               </div>
             </div>
           ) : (
@@ -199,12 +222,7 @@ export default function FormattedNoteCard({ note, noteNumber, onNoteChange, onNo
       
       <CustomPromptDialog
         open={isPromptDialogOpen}
-        onOpenChange={(isOpen) => {
-            setIsPromptDialogOpen(isOpen);
-            if (!isOpen) {
-              setPreviousContent(null);
-            }
-        }}
+        onOpenChange={setIsPromptDialogOpen}
         noteContent={note.content}
         noteId={note.id}
         onContentChange={onNoteChange}

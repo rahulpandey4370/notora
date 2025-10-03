@@ -39,9 +39,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     if (response.ok) {
-        const userData: User = await response.json();
-        setUser(userData);
-        localStorage.setItem('notora-user', JSON.stringify(userData));
+        const userData: Omit<User, 'email'> & { email: string } = await response.json();
+        const userToStore: User = { 
+            username: userData.username, 
+            avatarUrl: userData.avatarUrl,
+            email: userData.email,
+        };
+        setUser(userToStore);
+        localStorage.setItem('notora-user', JSON.stringify(userToStore));
         return true;
     }
 

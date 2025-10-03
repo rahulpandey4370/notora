@@ -4,6 +4,7 @@ export const linkCategories = ['Article', 'Video', 'Course', 'Image', 'Other'] a
 
 export interface User {
   username: string;
+  email: string;
   avatarUrl: string;
 }
 

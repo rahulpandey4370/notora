@@ -279,88 +279,12 @@ export default function AICalorieCoach({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Tabs defaultValue="log-meal">
+        <Tabs defaultValue="analyze-balance">
             <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="log-meal">Log a Meal</TabsTrigger>
                 <TabsTrigger value="analyze-balance">Analyze Balance</TabsTrigger>
+                <TabsTrigger value="log-meal">Log a Meal</TabsTrigger>
             </TabsList>
-
-            <TabsContent value="log-meal" className="mt-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="meal-description">Meal Description</Label>
-                            <Textarea id="meal-description" placeholder="e.g., 1 bowl of dal, 2 rotis, and a side of salad" value={mealDescription} onChange={e => setMealDescription(e.target.value)} />
-                        </div>
-                         <div className="space-y-2">
-                            <Label>Or Upload an Image</Label>
-                            <div className='flex gap-2 items-center'>
-                                <Button variant="outline" className="w-full" onClick={() => fileInputRef.current?.click()}>
-                                    <Camera className="mr-2 h-4 w-4" /> Choose Image
-                                </Button>
-                                <input type="file" ref={fileInputRef} accept="image/*" onChange={handleImageUpload} className="hidden" />
-                            </div>
-                        </div>
-                        <Button onClick={handleAnalyzeMeal} disabled={mealLoading} className="w-full">
-                            {mealLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <UtensilsCrossed className="mr-2 h-4 w-4" />}
-                            Estimate Meal Calories
-                        </Button>
-                    </div>
-                     <div className="space-y-4">
-                        {mealLoading && (
-                            <Card className="bg-muted/50 flex items-center justify-center h-full">
-                                <div className="text-center text-muted-foreground p-8">
-                                    <Loader2 className="mx-auto h-8 w-8 animate-spin mb-2"/>
-                                    <p>Analyzing your meal...</p>
-                                </div>
-                            </Card>
-                        )}
-                        {!mealLoading && mealAnalysis && (
-                             <Card className="bg-muted/50">
-                                <CardHeader className="pb-2 relative">
-                                    <CardTitle className="text-lg">Meal Analysis</CardTitle>
-                                    <CardDescription>{mealAnalysis.output.reasoning}</CardDescription>
-                                </CardHeader>
-                                <CardContent className="space-y-4">
-                                    {mealAnalysis.image && <img src={mealAnalysis.image} alt="Analyzed meal" data-ai-hint="food meal" className="rounded-lg object-cover w-full aspect-video" />}
-                                    <div className="flex justify-between items-center text-center">
-                                        <div>
-                                            <p className="text-xs text-muted-foreground">Total Calories</p>
-                                            <p className="text-2xl font-bold">{mealAnalysis.output.totalCalories}</p>
-                                        </div>
-                                         <div>
-                                            <p className="text-xs text-muted-foreground">Items Found</p>
-                                            <p className="text-2xl font-bold">{mealAnalysis.output.items.length}</p>
-                                        </div>
-                                    </div>
-                                    <ul className="text-sm space-y-1">
-                                        {mealAnalysis.output.items.map(item => (
-                                            <li key={item.name} className="flex justify-between">
-                                                <span>{item.name}</span>
-                                                <span className="font-semibold">{item.calories} kcal</span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </CardContent>
-                                <CardFooter>
-                                    <Button variant="outline" className="w-full" onClick={handleLogMealCalories}>
-                                        <LogIn className="mr-2 h-4 w-4" /> Log Meal Calories
-                                    </Button>
-                                </CardFooter>
-                             </Card>
-                        )}
-                         {!mealLoading && !mealAnalysis && (
-                            <Card className="bg-muted/50 flex items-center justify-center h-full">
-                                <div className="text-center text-muted-foreground p-8">
-                                    <UtensilsCrossed className="mx-auto h-8 w-8 mb-2" />
-                                    <p>Your meal analysis will appear here.</p>
-                                </div>
-                            </Card>
-                        )}
-                    </div>
-                </div>
-            </TabsContent>
-
+            
             <TabsContent value="analyze-balance" className="mt-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="space-y-4">
@@ -518,6 +442,82 @@ export default function AICalorieCoach({
                                     {weeklyNet > 0 ? '+' : ''}{weeklyNet.toFixed(0)} kcal
                                 </span>
                             </div>
+                        )}
+                    </div>
+                </div>
+            </TabsContent>
+
+            <TabsContent value="log-meal" className="mt-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="meal-description">Meal Description</Label>
+                            <Textarea id="meal-description" placeholder="e.g., 1 bowl of dal, 2 rotis, and a side of salad" value={mealDescription} onChange={e => setMealDescription(e.target.value)} />
+                        </div>
+                         <div className="space-y-2">
+                            <Label>Or Upload an Image</Label>
+                            <div className='flex gap-2 items-center'>
+                                <Button variant="outline" className="w-full" onClick={() => fileInputRef.current?.click()}>
+                                    <Camera className="mr-2 h-4 w-4" /> Choose Image
+                                </Button>
+                                <input type="file" ref={fileInputRef} accept="image/*" onChange={handleImageUpload} className="hidden" />
+                            </div>
+                        </div>
+                        <Button onClick={handleAnalyzeMeal} disabled={mealLoading} className="w-full">
+                            {mealLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <UtensilsCrossed className="mr-2 h-4 w-4" />}
+                            Estimate Meal Calories
+                        </Button>
+                    </div>
+                     <div className="space-y-4">
+                        {mealLoading && (
+                            <Card className="bg-muted/50 flex items-center justify-center h-full">
+                                <div className="text-center text-muted-foreground p-8">
+                                    <Loader2 className="mx-auto h-8 w-8 animate-spin mb-2"/>
+                                    <p>Analyzing your meal...</p>
+                                </div>
+                            </Card>
+                        )}
+                        {!mealLoading && mealAnalysis && (
+                             <Card className="bg-muted/50">
+                                <CardHeader className="pb-2 relative">
+                                    <CardTitle className="text-lg">Meal Analysis</CardTitle>
+                                    <CardDescription>{mealAnalysis.output.reasoning}</CardDescription>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                    {mealAnalysis.image && <img src={mealAnalysis.image} alt="Analyzed meal" data-ai-hint="food meal" className="rounded-lg object-cover w-full aspect-video" />}
+                                    <div className="flex justify-between items-center text-center">
+                                        <div>
+                                            <p className="text-xs text-muted-foreground">Total Calories</p>
+                                            <p className="text-2xl font-bold">{mealAnalysis.output.totalCalories}</p>
+                                        </div>
+                                         <div>
+                                            <p className="text-xs text-muted-foreground">Items Found</p>
+                                            <p className="text-2xl font-bold">{mealAnalysis.output.items.length}</p>
+                                        </div>
+                                    </div>
+                                    <ul className="text-sm space-y-1">
+                                        {mealAnalysis.output.items.map(item => (
+                                            <li key={item.name} className="flex justify-between">
+                                                <span>{item.name}</span>
+                                                <span className="font-semibold">{item.calories} kcal</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </CardContent>
+                                <CardFooter>
+                                    <Button variant="outline" className="w-full" onClick={handleLogMealCalories}>
+                                        <LogIn className="mr-2 h-4 w-4" /> Log Meal Calories
+                                    </Button>
+                                </CardFooter>
+                             </Card>
+                        )}
+                         {!mealLoading && !mealAnalysis && (
+                            <Card className="bg-muted/50 flex items-center justify-center h-full">
+                                <div className="text-center text-muted-foreground p-8">
+                                    <UtensilsCrossed className="mx-auto h-8 w-8 mb-2" />
+                                    <p>Your meal analysis will appear here.</p>
+                                </div>
+                            </Card>
                         )}
                     </div>
                 </div>

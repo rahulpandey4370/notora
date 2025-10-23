@@ -8,11 +8,13 @@ import { Calendar } from '@/components/ui/calendar';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { format, isSameDay, startOfDay, isWithinInterval, addDays, startOfWeek as dfStartOfWeek, endOfWeek as dfEndOfWeek, startOfYear as dfStartOfYear, startOfMonth as dfStartOfMonth, isSameMonth, isAfter } from 'date-fns';
+import { format, isSameDay, startOfDay, isWithinInterval, addDays, startOfWeek as dfStartOfWeek, endOfWeek as dfEndOfWeek, startOfYear as dfStartOfYear, startOfMonth as dfStartOfMonth, isSameMonth, isAfter, isToday } from 'date-fns';
 import type { DateRange } from 'react-day-picker';
 import { cn } from '@/lib/utils';
 import { Badge } from '../ui/badge';
 import { motion } from 'framer-motion';
+import { Button } from '../ui/button';
+import { X } from 'lucide-react';
 
 interface CalendarAnalysisProps {
   data: AppData;
@@ -20,11 +22,10 @@ interface CalendarAnalysisProps {
 
 const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
-function CustomDay({ date, completionPercentage, hasLogs, isSelected, isRangeStart, isRangeEnd }: { date: Date, completionPercentage: number | null, hasLogs: boolean, isSelected: boolean, isRangeStart: boolean, isRangeEnd: boolean }) {
+function CustomDay({ date, completionPercentage, hasLogs }: { date: Date, completionPercentage: number | null, hasLogs: boolean }) {
   const dayNumber = format(date, 'd');
   
   let bgColor = 'bg-transparent';
-  let textColor = 'text-current';
 
   if (completionPercentage !== null) {
     if (completionPercentage > 75) {
@@ -35,19 +36,12 @@ function CustomDay({ date, completionPercentage, hasLogs, isSelected, isRangeSta
         bgColor = 'bg-red-500/20 dark:bg-red-800/30';
     }
   }
-  
-  if (isSelected) {
-    bgColor = 'bg-primary';
-    textColor = 'text-primary-foreground';
-  }
 
   return (
     <div 
         className={cn("relative w-full h-full flex items-center justify-center rounded-md transition-colors", 
             bgColor,
             hasLogs && "border-2 border-primary",
-            isRangeStart && "rounded-r-none",
-            isRangeEnd && "rounded-l-none"
         )}
     >
         {completionPercentage !== null && (
@@ -63,7 +57,8 @@ function CustomDay({ date, completionPercentage, hasLogs, isSelected, isRangeSta
                 transition={{ duration: 0.5, ease: 'easeOut' }}
             />
         )}
-      <span className={cn("relative z-10", textColor)}>{dayNumber}</span>
+      <span className={cn("relative z-10")}>{dayNumber}</span>
+      {isToday(date) && <div className="absolute inset-0 rounded-md ring-2 ring-purple-500" />}
     </div>
   );
 }
@@ -174,18 +169,12 @@ export default function CalendarAnalysis({ data }: CalendarAnalysisProps) {
                     const dayStr = format(date, 'yyyy-MM-dd');
                     const completionPercentage = showTaskStatus ? taskCompletionMap.get(dayStr) ?? null : null;
                     const hasLogs = showLogActivity && logActivityMap.has(dayStr);
-                    const isSelected = selectedRange?.from ? (selectedRange.to ? isWithinInterval(date, {start: startOfDay(selectedRange.from), end: startOfDay(selectedRange.to)}) : isSameDay(date, selectedRange.from)) : false;
-                    const isRangeStart = selectedRange?.from && isSameDay(date, selectedRange.from);
-                    const isRangeEnd = selectedRange?.to && isSameDay(date, selectedRange.to);
                     
                     return (
                         <CustomDay 
                             date={date} 
                             completionPercentage={completionPercentage}
                             hasLogs={hasLogs}
-                            isSelected={isSelected}
-                            isRangeStart={isRangeStart}
-                            isRangeEnd={isRangeEnd}
                         />
                     );
                   },
@@ -218,13 +207,24 @@ export default function CalendarAnalysis({ data }: CalendarAnalysisProps) {
                     <span className="w-3 h-3 rounded-full border-2 border-primary"></span>
                     <span>Log Entry</span>
                 </div>
+                 <div className="flex items-center gap-1.5">
+                    <span className="w-3 h-3 rounded-full ring-2 ring-purple-500"></span>
+                    <span>Today</span>
+                </div>
             </div>
         </div>
         <div className="space-y-4">
             <h4 className="font-semibold text-center md:text-left">Range Analysis</h4>
-            <p className="text-sm text-muted-foreground text-center md:text-left">
-                {selectedRange?.from ? `Selected: ${format(selectedRange.from, 'PPP')} ${selectedRange.to ? ` - ${format(selectedRange.to, 'PPP')}` : ''}` : 'Select a date or range on the calendar to start.'}
-            </p>
+            <div className="flex items-center gap-2">
+              <p className="text-sm text-muted-foreground text-center md:text-left flex-1">
+                  {selectedRange?.from ? `Selected: ${format(selectedRange.from, 'PPP')} ${selectedRange.to ? ` - ${format(selectedRange.to, 'PPP')}` : ''}` : 'Select a date or range on the calendar to start.'}
+              </p>
+              {selectedRange && (
+                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setSelectedRange(undefined)}>
+                  <X className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
             {selectedRange?.from && (
                 <div className="space-y-4">
                     <Select value={selectedTrackerId} onValueChange={setSelectedTrackerId}>

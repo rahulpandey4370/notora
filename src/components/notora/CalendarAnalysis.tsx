@@ -136,7 +136,7 @@ export default function CalendarAnalysis({ data }: CalendarAnalysisProps) {
                 month={currentMonth}
                 onMonthChange={setCurrentMonth}
                 className="p-0"
-                numberOfMonths={isMobile ? 1 : 2}
+                numberOfMonths={1}
                 modifiers={modifiers}
                 modifiersClassNames={{
                     today: 'rdp-day_today',

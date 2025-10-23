@@ -1,4 +1,3 @@
-
 'use client';
 
 import type { User, AppData, Task } from '@/lib/types';
@@ -17,6 +16,7 @@ import TaskList from './TaskList';
 import TaskItem from './TaskItem';
 import { motion } from 'framer-motion';
 import { Progress } from '../ui/progress';
+import CalendarAnalysis from './CalendarAnalysis';
 
 const weeklyChartConfig = {
   xp: {
@@ -181,7 +181,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
         const taskXpValue = getTaskXp(task);
         
         if (task.type === 'weekly' && task.week) {
-            const taskWeekDate = startOfWeek(new Date(task.week.replace(/(\d{4})-(\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
+            const taskWeekDate = startOfWeek(new Date(task.week.replace(/(\d{4}-)(\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
             if (isSameDay(taskWeekDate, weekStart)) {
                 total += taskXpValue;
                  if ((task.completions || []).some(c => isWithinInterval(new Date(c), { start: weekStart, end: weekEnd }))) {
@@ -533,6 +533,9 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
             </motion.div>
           </div>
         </div>
+        <motion.div variants={animationVariants} initial="hidden" animate="visible" custom={4}>
+            <CalendarAnalysis data={data} />
+        </motion.div>
     </div>
   );
 }

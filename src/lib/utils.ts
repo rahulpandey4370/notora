@@ -29,3 +29,15 @@ export const getTaskXp = (task: Task): number => {
     
     return dailyXp[task.priority];
 };
+
+export const startOfYear = (date: Date) => new Date(date.getFullYear(), 0, 1);
+export const startOfMonth = (date: Date) => new Date(date.getFullYear(), date.getMonth(), 1);
+export const endOfWeek = (date: Date) => {
+    const weekStart = startOfWeek(date);
+    return new Date(weekStart.setDate(weekStart.getDate() + 6));
+}
+export const startOfWeek = (date: Date) => {
+    const day = date.getDay();
+    const diff = date.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
+    return new Date(new Date(date).setDate(diff));
+}

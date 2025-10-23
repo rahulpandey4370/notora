@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import type { AppData, Task } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar } from '@/components/ui/calendar';
@@ -20,7 +20,24 @@ interface CalendarAnalysisProps {
   data: AppData;
 }
 
-const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+const useResponsiveCalendar = () => {
+    const [numberOfMonths, setNumberOfMonths] = useState(1);
+    
+    useEffect(() => {
+        const checkSize = () => {
+            if (window.innerWidth >= 1024) {
+                setNumberOfMonths(2);
+            } else {
+                setNumberOfMonths(1);
+            }
+        };
+        checkSize();
+        window.addEventListener('resize', checkSize);
+        return () => window.removeEventListener('resize', checkSize);
+    }, []);
+    
+    return numberOfMonths;
+};
 
 
 export default function CalendarAnalysis({ data }: CalendarAnalysisProps) {
@@ -29,6 +46,8 @@ export default function CalendarAnalysis({ data }: CalendarAnalysisProps) {
   const [showLogActivity, setShowLogActivity] = useState(true);
   const [selectedRange, setSelectedRange] = useState<DateRange | undefined>();
   const [selectedTrackerId, setSelectedTrackerId] = useState<string | undefined>(data.logTrackers?.[0]?.id);
+  const numberOfMonths = useResponsiveCalendar();
+
 
   const getTasksForDay = (day: Date): Task[] => {
     return data.tasks.filter(task => {
@@ -136,7 +155,7 @@ export default function CalendarAnalysis({ data }: CalendarAnalysisProps) {
                 month={currentMonth}
                 onMonthChange={setCurrentMonth}
                 className="p-0"
-                numberOfMonths={1}
+                numberOfMonths={numberOfMonths}
                 modifiers={modifiers}
                 modifiersClassNames={{
                     today: 'rdp-day_today',

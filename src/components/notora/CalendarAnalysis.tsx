@@ -8,7 +8,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { format, isSameDay, startOfDay, isWithinInterval, addDays, startOfWeek as dfStartOfWeek, endOfWeek as dfEndOfWeek, startOfYear as dfStartOfYear, startOfMonth as dfStartOfMonth, isSameMonth, isAfter, isToday } from 'date-fns';
+import { format, isSameDay, startOfDay, isWithinInterval, addDays, startOfWeek as dfStartOfWeek, endOfWeek as dfEndOfWeek, startOfYear as dfStartOfYear, startOfMonth as dfStartOfMonth, isSameMonth, isAfter } from 'date-fns';
 import type { DateRange } from 'react-day-picker';
 import { cn } from '@/lib/utils';
 import { Badge } from '../ui/badge';
@@ -22,46 +22,6 @@ interface CalendarAnalysisProps {
 
 const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
-function CustomDay({ date, completionPercentage, hasLogs }: { date: Date, completionPercentage: number | null, hasLogs: boolean }) {
-  const dayNumber = format(date, 'd');
-  
-  let bgColor = 'bg-transparent';
-
-  if (completionPercentage !== null) {
-    if (completionPercentage > 75) {
-      bgColor = 'bg-green-500/20 dark:bg-green-800/30';
-    } else if (completionPercentage >= 40) {
-      bgColor = 'bg-yellow-500/20 dark:bg-yellow-800/30';
-    } else if (completionPercentage > 0) {
-        bgColor = 'bg-red-500/20 dark:bg-red-800/30';
-    }
-  }
-
-  return (
-    <div 
-        className={cn("relative w-full h-full flex items-center justify-center rounded-md transition-colors", 
-            bgColor,
-            hasLogs && "border-2 border-primary",
-        )}
-    >
-        {completionPercentage !== null && (
-            <motion.div 
-                className={cn(
-                    "absolute bottom-0 left-0 h-1 rounded-b-md",
-                    completionPercentage > 75 ? "bg-green-500" :
-                    completionPercentage >= 40 ? "bg-yellow-500" :
-                    "bg-red-500"
-                )}
-                initial={{ width: 0 }}
-                animate={{ width: `${completionPercentage}%` }}
-                transition={{ duration: 0.5, ease: 'easeOut' }}
-            />
-        )}
-      <span className={cn("relative z-10")}>{dayNumber}</span>
-      {isToday(date) && <div className="absolute inset-0 rounded-md ring-2 ring-purple-500" />}
-    </div>
-  );
-}
 
 export default function CalendarAnalysis({ data }: CalendarAnalysisProps) {
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
@@ -91,41 +51,47 @@ export default function CalendarAnalysis({ data }: CalendarAnalysisProps) {
     });
   };
 
-  const taskCompletionMap = useMemo(() => {
-    if (!showTaskStatus) return new Map();
-    const map = new Map<string, number>();
-    
-    const year = currentMonth.getFullYear();
-    const startDate = dfStartOfYear(new Date(year, 0, 1));
-    const daysInYear = Array.from({length: 366}, (_, i) => addDays(startDate, i));
+ const modifiers = useMemo(() => {
+    const taskModifiers: Record<string, Date[]> = {
+      'task-complete': [],
+      'task-partial': [],
+      'task-low': [],
+    };
+    const logModifier: Record<string, Date[]> = { 'has-log': [] };
 
-    daysInYear.forEach(day => {
-        if (day.getFullYear() === year) {
-            const dayStr = format(day, 'yyyy-MM-dd');
-            const tasksForDay = getTasksForDay(day);
-            if (tasksForDay.length === 0) {
-                map.set(dayStr, 0);
-                return;
-            }
-            const completedTasks = tasksForDay.filter(t => (t.completions || []).includes(dayStr));
-            const percentage = (completedTasks.length / tasksForDay.length) * 100;
-            map.set(dayStr, percentage);
-        }
-    });
-    return map;
-  }, [data.tasks, showTaskStatus, currentMonth]);
+    if (showTaskStatus) {
+      const year = currentMonth.getFullYear();
+      const startDate = dfStartOfYear(new Date(year, 0, 1));
+      const daysInYear = Array.from({length: 366}, (_, i) => addDays(startDate, i));
 
-  const logActivityMap = useMemo(() => {
-    if (!showLogActivity) return new Map();
-    const map = new Map<string, boolean>();
-    data.logTrackers.forEach(tracker => {
+      daysInYear.forEach(day => {
+          if (day.getFullYear() === year) {
+              const dayStr = format(day, 'yyyy-MM-dd');
+              const tasksForDay = getTasksForDay(day);
+              if (tasksForDay.length === 0) return;
+              
+              const completedTasks = tasksForDay.filter(t => (t.completions || []).includes(dayStr));
+              const percentage = (completedTasks.length / tasksForDay.length) * 100;
+              
+              if (percentage > 75) taskModifiers['task-complete'].push(day);
+              else if (percentage >= 40) taskModifiers['task-partial'].push(day);
+              else if (percentage > 0) taskModifiers['task-low'].push(day);
+          }
+      });
+    }
+
+    if (showLogActivity) {
+      data.logTrackers.forEach(tracker => {
         tracker.logs.forEach(log => {
-            map.set(log.date, true);
+            logModifier['has-log'].push(startOfDay(new Date(log.date)));
         });
-    });
-    return map;
-  }, [data.logTrackers, showLogActivity]);
-  
+      });
+    }
+
+    return { ...taskModifiers, ...logModifier };
+  }, [data, showTaskStatus, showLogActivity, currentMonth]);
+
+
   const analysisResult = useMemo(() => {
     if (!selectedRange?.from || !selectedTrackerId) return null;
     const to = selectedRange.to || selectedRange.from;
@@ -156,6 +122,13 @@ export default function CalendarAnalysis({ data }: CalendarAnalysisProps) {
       </CardHeader>
       <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="md:col-span-2 flex flex-col items-center">
+            <style>{`
+              .task-complete { background-color: var(--task-complete-bg); }
+              .task-partial { background-color: var(--task-partial-bg); }
+              .task-low { background-color: var(--task-low-bg); }
+              .has-log { border: 2px solid hsl(var(--primary)); }
+              .rdp-day_today { ring: 2px; ring-color: hsl(var(--chart-4)); border-radius: var(--radius); }
+            `}</style>
             <Calendar
                 mode="range"
                 selected={selectedRange}
@@ -164,20 +137,13 @@ export default function CalendarAnalysis({ data }: CalendarAnalysisProps) {
                 onMonthChange={setCurrentMonth}
                 className="p-0"
                 numberOfMonths={isMobile ? 1 : 2}
-                components={{
-                  Day: ({ date }) => {
-                    const dayStr = format(date, 'yyyy-MM-dd');
-                    const completionPercentage = showTaskStatus ? taskCompletionMap.get(dayStr) ?? null : null;
-                    const hasLogs = showLogActivity && logActivityMap.has(dayStr);
-                    
-                    return (
-                        <CustomDay 
-                            date={date} 
-                            completionPercentage={completionPercentage}
-                            hasLogs={hasLogs}
-                        />
-                    );
-                  },
+                modifiers={modifiers}
+                modifiersClassNames={{
+                    today: 'rdp-day_today',
+                    'task-complete': 'task-complete',
+                    'task-partial': 'task-partial',
+                    'task-low': 'task-low',
+                    'has-log': 'has-log',
                 }}
             />
             <div className="flex flex-wrap items-center gap-4 mt-4">
@@ -192,23 +158,23 @@ export default function CalendarAnalysis({ data }: CalendarAnalysisProps) {
             </div>
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 text-xs text-muted-foreground">
                 <div className="flex items-center gap-1.5">
-                    <span className="w-3 h-1 rounded-full bg-green-500"></span>
+                    <span className="w-3 h-3 rounded-sm bg-green-500/20 dark:bg-green-800/30"></span>
                     <span>&gt;75% Done</span>
                 </div>
                  <div className="flex items-center gap-1.5">
-                    <span className="w-3 h-1 rounded-full bg-yellow-500"></span>
+                    <span className="w-3 h-3 rounded-sm bg-yellow-500/20 dark:bg-yellow-800/30"></span>
                     <span>40-75% Done</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                    <span className="w-3 h-1 rounded-full bg-red-500"></span>
+                    <span className="w-3 h-3 rounded-sm bg-red-500/20 dark:bg-red-800/30"></span>
                     <span>&lt;40% Done</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                    <span className="w-3 h-3 rounded-full border-2 border-primary"></span>
+                    <span className="w-3 h-3 rounded-sm border-2 border-primary"></span>
                     <span>Log Entry</span>
                 </div>
                  <div className="flex items-center gap-1.5">
-                    <span className="w-3 h-3 rounded-full ring-2 ring-purple-500"></span>
+                    <span className="w-3 h-3 rounded-sm ring-2 ring-purple-500"></span>
                     <span>Today</span>
                 </div>
             </div>
@@ -265,5 +231,3 @@ export default function CalendarAnalysis({ data }: CalendarAnalysisProps) {
     </Card>
   );
 }
-
-    

@@ -7,12 +7,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Calendar } from '@/components/ui/calendar';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { format, isSameDay, startOfDay, isWithinInterval, addDays, startOfWeek as dfStartOfWeek, endOfWeek as dfEndOfWeek, startOfYear as dfStartOfYear, startOfMonth as dfStartOfMonth, isSameMonth, isAfter } from 'date-fns';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { format, isSameDay, startOfDay, isWithinInterval, addDays, startOfWeek as dfStartOfWeek, endOfWeek as dfEndOfWeek, startOfMonth as dfStartOfMonth, isSameMonth, isAfter } from 'date-fns';
 import type { DateRange } from 'react-day-picker';
 import { cn } from '@/lib/utils';
 import { Badge } from '../ui/badge';
-import { motion } from 'framer-motion';
 import { Button } from '../ui/button';
 import { X } from 'lucide-react';
 
@@ -45,7 +44,7 @@ export default function CalendarAnalysis({ data }: CalendarAnalysisProps) {
   const [showTaskStatus, setShowTaskStatus] = useState(true);
   const [showLogActivity, setShowLogActivity] = useState(true);
   const [selectedRange, setSelectedRange] = useState<DateRange | undefined>();
-  const [selectedTrackerId, setSelectedTrackerId] = useState<string | undefined>(data.logTrackers?.[0]?.id);
+  const [analysisMetric, setAnalysisMetric] = useState<'total' | 'average'>('total');
   const numberOfMonths = useResponsiveCalendar();
 
 
@@ -78,26 +77,24 @@ export default function CalendarAnalysis({ data }: CalendarAnalysisProps) {
     };
     const logModifier: Record<string, Date[]> = { 'has-log': [] };
 
-    if (showTaskStatus) {
-      const year = currentMonth.getFullYear();
-      const startDate = dfStartOfYear(new Date(year, 0, 1));
-      const daysInYear = Array.from({length: 366}, (_, i) => addDays(startDate, i));
+    const year = currentMonth.getFullYear();
+    const startDate = new Date(year, 0, 1);
+    const daysInYear = Array.from({length: 366}, (_, i) => addDays(startDate, i)).filter(d => d.getFullYear() === year);
 
-      daysInYear.forEach(day => {
-          if (day.getFullYear() === year) {
-              const dayStr = format(day, 'yyyy-MM-dd');
-              const tasksForDay = getTasksForDay(day);
-              if (tasksForDay.length === 0) return;
-              
+    daysInYear.forEach(day => {
+        if (showTaskStatus) {
+            const dayStr = format(day, 'yyyy-MM-dd');
+            const tasksForDay = getTasksForDay(day);
+            if (tasksForDay.length > 0) {
               const completedTasks = tasksForDay.filter(t => (t.completions || []).includes(dayStr));
               const percentage = (completedTasks.length / tasksForDay.length) * 100;
               
               if (percentage > 75) taskModifiers['task-complete'].push(day);
               else if (percentage >= 40) taskModifiers['task-partial'].push(day);
               else if (percentage > 0) taskModifiers['task-low'].push(day);
-          }
-      });
-    }
+            }
+        }
+    });
 
     if (showLogActivity) {
       data.logTrackers.forEach(tracker => {
@@ -112,25 +109,25 @@ export default function CalendarAnalysis({ data }: CalendarAnalysisProps) {
 
 
   const analysisResult = useMemo(() => {
-    if (!selectedRange?.from || !selectedTrackerId) return null;
+    if (!selectedRange?.from) return null;
     const to = selectedRange.to || selectedRange.from;
-    const tracker = data.logTrackers.find(t => t.id === selectedTrackerId);
-    if (!tracker) return null;
 
-    const logsInRange = tracker.logs.filter(log => {
-        const logDate = startOfDay(new Date(log.date));
-        return isWithinInterval(logDate, { start: startOfDay(selectedRange.from!), end: startOfDay(to) });
-    });
+    return data.logTrackers.map(tracker => {
+        const logsInRange = tracker.logs.filter(log => {
+            const logDate = startOfDay(new Date(log.date));
+            return isWithinInterval(logDate, { start: startOfDay(selectedRange.from!), end: startOfDay(to) });
+        });
 
-    if (logsInRange.length === 0) {
-        return { total: 0, average: 0, count: 0, unit: tracker.unit };
-    }
+        if (logsInRange.length === 0) {
+            return { name: tracker.name, unit: tracker.unit, total: 0, average: 0, count: 0 };
+        }
 
-    const total = logsInRange.reduce((acc, log) => acc + log.value, 0);
-    const average = total / logsInRange.length;
-
-    return { total, average, count: logsInRange.length, unit: tracker.unit };
-  }, [selectedRange, selectedTrackerId, data.logTrackers]);
+        const total = logsInRange.reduce((acc, log) => acc + log.value, 0);
+        const average = total / logsInRange.length;
+        return { name: tracker.name, unit: tracker.unit, total, average, count: logsInRange.length };
+    }).filter(r => r.count > 0);
+    
+  }, [selectedRange, data.logTrackers]);
 
 
   return (
@@ -146,7 +143,7 @@ export default function CalendarAnalysis({ data }: CalendarAnalysisProps) {
               .task-partial { background-color: var(--task-partial-bg); }
               .task-low { background-color: var(--task-low-bg); }
               .has-log { border: 2px solid hsl(var(--primary)); }
-              .rdp-day_today { color: hsl(var(--chart-2)); font-weight: bold; }
+              .rdp-day_today { color: hsl(var(--chart-2)) !important; font-weight: bold; }
             `}</style>
             <Calendar
                 mode="range"
@@ -208,36 +205,38 @@ export default function CalendarAnalysis({ data }: CalendarAnalysisProps) {
             </div>
             {selectedRange?.from && (
                 <div className="space-y-4">
-                    <Select value={selectedTrackerId} onValueChange={setSelectedTrackerId}>
-                        <SelectTrigger>
-                            <SelectValue placeholder="Select a tracker to analyze..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {data.logTrackers.map(tracker => (
-                                <SelectItem key={tracker.id} value={tracker.id}>{tracker.name}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                    {analysisResult && (
+                    <RadioGroup defaultValue="total" value={analysisMetric} onValueChange={(v) => setAnalysisMetric(v as 'total' | 'average')} className="flex items-center space-x-4">
+                        <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="total" id="total" />
+                            <Label htmlFor="total">Total</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="average" id="average" />
+                            <Label htmlFor="average">Average</Label>
+                        </div>
+                    </RadioGroup>
+
+                    {analysisResult && analysisResult.length > 0 ? (
                         <Card className="bg-muted/50">
                             <CardContent className="p-4 space-y-2">
-                                <div className="flex justify-between items-center">
-                                    <span className="text-muted-foreground">Log Entries</span>
-                                    <Badge variant="secondary">{analysisResult.count}</Badge>
-                                </div>
-                                <div className="flex justify-between items-center">
-                                    <span className="text-muted-foreground">Total</span>
-                                    <span className="font-bold">{analysisResult.total.toLocaleString(undefined, { maximumFractionDigits: 2 })} {analysisResult.unit}</span>
-                                </div>
-                                <div className="flex justify-between items-center">
-                                    <span className="text-muted-foreground">Average</span>
-                                    <span className="font-bold">{analysisResult.average.toLocaleString(undefined, { maximumFractionDigits: 2 })} {analysisResult.unit}</span>
-                                </div>
+                                {analysisResult.map(result => (
+                                    <div key={result.name} className="flex justify-between items-center text-sm">
+                                        <div className="flex flex-col">
+                                            <span className="font-semibold">{result.name}</span>
+                                            <span className="text-xs text-muted-foreground">{result.count} {result.count === 1 ? 'entry' : 'entries'}</span>
+                                        </div>
+                                        <span className="font-bold">
+                                            {analysisMetric === 'total' 
+                                                ? result.total.toLocaleString(undefined, { maximumFractionDigits: 2 })
+                                                : result.average.toLocaleString(undefined, { maximumFractionDigits: 2 })
+                                            } {result.unit}
+                                        </span>
+                                    </div>
+                                ))}
                             </CardContent>
                         </Card>
-                    )}
-                    {!analysisResult && selectedTrackerId && (
-                        <p className="text-sm text-muted-foreground text-center">No data for this tracker in the selected range.</p>
+                    ) : (
+                        <p className="text-sm text-muted-foreground text-center">No data for any tracker in the selected range.</p>
                     )}
                 </div>
             )}

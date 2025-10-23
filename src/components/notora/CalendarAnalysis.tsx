@@ -127,7 +127,7 @@ export default function CalendarAnalysis({ data }: CalendarAnalysisProps) {
               .task-partial { background-color: var(--task-partial-bg); }
               .task-low { background-color: var(--task-low-bg); }
               .has-log { border: 2px solid hsl(var(--primary)); }
-              .rdp-day_today { ring: 2px; ring-color: hsl(var(--chart-4)); border-radius: var(--radius); }
+              .rdp-day_today { color: hsl(var(--chart-2)); font-weight: bold; }
             `}</style>
             <Calendar
                 mode="range"
@@ -172,10 +172,6 @@ export default function CalendarAnalysis({ data }: CalendarAnalysisProps) {
                 <div className="flex items-center gap-1.5">
                     <span className="w-3 h-3 rounded-sm border-2 border-primary"></span>
                     <span>Log Entry</span>
-                </div>
-                 <div className="flex items-center gap-1.5">
-                    <span className="w-3 h-3 rounded-sm ring-2 ring-purple-500"></span>
-                    <span>Today</span>
                 </div>
             </div>
         </div>

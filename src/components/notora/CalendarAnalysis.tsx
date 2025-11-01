@@ -62,7 +62,7 @@ export default function CalendarAnalysis({ data }: CalendarAnalysisProps) {
                 const weekStartDate = dfStartOfWeek(new Date(task.week.replace(/(\d{4})-(\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
                 return isWithinInterval(taskDay, { start: weekStartDate, end: dfEndOfWeek(weekStartDate, { weekStartsOn: 1 }) });
             case 'monthly':
-                return task.month ? isSameMonth(taskDay, new Date(task.month)) : false;
+                return false; // Monthly tasks should not be counted in daily progress.
             default:
                 return false;
         }

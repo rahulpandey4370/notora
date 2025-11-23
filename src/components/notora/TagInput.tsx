@@ -59,8 +59,8 @@ export default function TagInput({ tags, setTags, allTags }: TagInputProps) {
                 </button>
             </Badge>
             ))}
-            <Popover open={isPopoverOpen && filteredSuggestions.length > 0} onOpenChange={setIsPopoverOpen}>
-                <PopoverAnchor asChild>
+            <Popover open={isPopoverOpen && filteredSuggestions.length > 0 && !!inputValue} onOpenChange={setIsPopoverOpen}>
+                <PopoverAnchor>
                     <Input
                         type="text"
                         value={inputValue}
@@ -74,7 +74,7 @@ export default function TagInput({ tags, setTags, allTags }: TagInputProps) {
                         className="flex-grow bg-transparent border-0 focus-visible:ring-0 p-0 h-auto"
                     />
                 </PopoverAnchor>
-                <PopoverContent className="w-full p-2">
+                <PopoverContent className="w-[--radix-popover-trigger-width] p-2">
                     <p className="text-xs text-muted-foreground px-2 mb-1">Suggestions</p>
                     <div className="flex flex-wrap gap-1">
                     {filteredSuggestions.map(suggestion => (

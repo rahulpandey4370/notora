@@ -20,7 +20,7 @@ export default function TagInput({ tags, setTags, allTags }: TagInputProps) {
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputValue.trim() !== '') {
       e.preventDefault();
-      const newTag = inputValue.trim();
+      const newTag = inputValue.trim().toLowerCase();
       if (!tags.includes(newTag)) {
         setTags([...tags, newTag]);
       }
@@ -46,6 +46,10 @@ export default function TagInput({ tags, setTags, allTags }: TagInputProps) {
       tag.toLowerCase().includes(inputValue.toLowerCase()) &&
       !tags.includes(tag)
   );
+  
+  const handleFocus = () => {
+    setIsPopoverOpen(true);
+  }
 
   return (
     <div>
@@ -59,23 +63,22 @@ export default function TagInput({ tags, setTags, allTags }: TagInputProps) {
                 </button>
             </Badge>
             ))}
-            <Popover open={isPopoverOpen && filteredSuggestions.length > 0 && !!inputValue} onOpenChange={setIsPopoverOpen}>
-                <PopoverAnchor>
+            <Popover open={isPopoverOpen && filteredSuggestions.length > 0} onOpenChange={setIsPopoverOpen}>
+                <PopoverAnchor asChild>
                     <Input
                         type="text"
                         value={inputValue}
-                        onChange={(e) => {
-                            setInputValue(e.target.value);
-                            if (e.target.value) setIsPopoverOpen(true);
-                            else setIsPopoverOpen(false);
-                        }}
+                        onChange={(e) => setInputValue(e.target.value)}
                         onKeyDown={handleKeyDown}
+                        onFocus={handleFocus}
                         placeholder="Add a tag..."
                         className="flex-grow bg-transparent border-0 focus-visible:ring-0 p-0 h-auto"
                     />
                 </PopoverAnchor>
                 <PopoverContent className="w-[--radix-popover-trigger-width] p-2">
-                    <p className="text-xs text-muted-foreground px-2 mb-1">Suggestions</p>
+                    <p className="text-xs text-muted-foreground px-2 mb-1">
+                        {inputValue ? 'Suggestions' : 'Your Tags'}
+                    </p>
                     <div className="flex flex-wrap gap-1">
                     {filteredSuggestions.map(suggestion => (
                         <Badge

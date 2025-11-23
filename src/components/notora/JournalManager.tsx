@@ -27,6 +27,9 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { useWritingSettings } from '@/hooks/use-writing-settings';
 import WritingSettingsPanel from './WritingSettingsPanel';
 import JournalDiscovery from './JournalDiscovery';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useIsMobile } from '@/hooks/use-mobile';
+
 
 interface JournalManagerProps {
   journalEntries: JournalEntry[];
@@ -58,6 +61,7 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
   const { toast } = useToast();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { font, size, spacing, settingsStyle } = useWritingSettings();
+  const isMobile = useIsMobile();
 
   const filteredEntries = useMemo(() => {
     let entries = journalEntries;
@@ -215,11 +219,9 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
     });
     return modifiers;
   }, [filteredEntries]);
-
-  return (
-    <div className="p-4 md:p-8 space-y-8">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-        
+  
+  const DesktopLayout = () => (
+     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         <motion.div 
             className="lg:col-span-1 space-y-8"
             initial={{ opacity: 0, x: -20 }}
@@ -238,26 +240,12 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
                   selected={selectedDate}
                   onSelect={(date) => date && setSelectedDate(date)}
                   className="p-0"
-                  modifiers={{
-                    hasEntry: entryDates,
-                    ...moodModifiers
-                  }}
-                  modifiersClassNames={{
-                    hasEntry: 'has-entry',
-                    'mood-Ecstatic': 'mood-ecstatic', 'mood-Happy': 'mood-happy', 'mood-Neutral': 'mood-neutral', 'mood-Sad': 'mood-sad', 'mood-Angry': 'mood-angry',
-                  }}
+                  modifiers={{ hasEntry: entryDates, ...moodModifiers }}
+                  modifiersClassNames={{ hasEntry: 'has-entry', 'mood-Ecstatic': 'mood-ecstatic', 'mood-Happy': 'mood-happy', 'mood-Neutral': 'mood-neutral', 'mood-Sad': 'mood-sad', 'mood-Angry': 'mood-angry' }}
                 />
-                <style>{`
-                  .has-entry:not([class*="mood-"]) { border: 2px solid hsl(var(--primary)); border-radius: var(--radius); }
-                  .mood-ecstatic { --mood-color: hsl(var(--chart-4)); } .mood-happy { --mood-color: hsl(var(--chart-2)); } .mood-neutral { --mood-color: hsl(var(--muted-foreground)); } .mood-sad { --mood-color: hsl(var(--chart-1)); } .mood-angry { --mood-color: hsl(var(--destructive)); }
-                  [class*="mood-"] { position: relative; overflow: visible; }
-                  [class*="mood-"]::after { content: ''; position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); width: 6px; height: 6px; border-radius: 50%; background-color: var(--mood-color); }
-                  .rdp-day_today { font-weight: bold; color: hsl(var(--chart-2)); }
-                `}</style>
               </CardContent>
             </Card>
-
-            <JournalDiscovery 
+             <JournalDiscovery 
               entries={journalEntries}
               onDateSelect={setSelectedDate}
               searchQuery={searchQuery}
@@ -271,35 +259,16 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
                 <CardDescription>Filter your entries by tag.</CardDescription>
             </CardHeader>
             <CardContent className="flex flex-wrap gap-2">
-                <Badge
-                    onClick={() => setActiveTagFilter(null)}
-                    className={cn(
-                        "cursor-pointer transition-all",
-                        activeTagFilter === null ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
-                    )}
-                >
-                    All
-                </Badge>
+                <Badge onClick={() => setActiveTagFilter(null)} className={cn("cursor-pointer transition-all", activeTagFilter === null ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground")}>All</Badge>
                 {allTags.map(tag => (
-                    <Badge
-                        key={tag}
-                        onClick={() => setActiveTagFilter(tag)}
-                        className={cn(
-                            "cursor-pointer transition-all",
-                            activeTagFilter === tag ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
-                        )}
-                    >
-                        {tag}
-                    </Badge>
+                    <Badge key={tag} onClick={() => setActiveTagFilter(tag)} className={cn("cursor-pointer transition-all", activeTagFilter === tag ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground")}>{tag}</Badge>
                 ))}
             </CardContent>
           </Card>
 
           <Accordion type="single" collapsible defaultValue="item-1">
             <AccordionItem value="item-1">
-                <AccordionTrigger>
-                    <h3 className="flex items-center gap-2 font-semibold"><Info className="h-4 w-4" /> New to Journaling?</h3>
-                </AccordionTrigger>
+                <AccordionTrigger><h3 className="flex items-center gap-2 font-semibold"><Info className="h-4 w-4" /> New to Journaling?</h3></AccordionTrigger>
                 <AccordionContent>
                     <div className="text-sm text-muted-foreground space-y-4 p-1">
                         <p>Journaling is a powerful tool for self-reflection. Here are some ideas to get you started:</p>
@@ -313,18 +282,69 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
                 </AccordionContent>
             </AccordionItem>
           </Accordion>
-
         </motion.div>
+        
+        {JournalEditorContent}
+    </div>
+  );
 
-        <motion.div 
-            className="lg:col-span-2 space-y-8"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-        >
-          <StreakDisplay journalEntries={journalEntries} />
+  const MobileLayout = () => (
+     <Tabs defaultValue="journal" className="w-full">
+      <TabsList className="grid w-full grid-cols-2">
+        <TabsTrigger value="journal">Journal</TabsTrigger>
+        <TabsTrigger value="explore">Explore</TabsTrigger>
+      </TabsList>
+      <TabsContent value="journal" className="mt-6">
+        {JournalEditorContent}
+      </TabsContent>
+      <TabsContent value="explore" className="mt-6 space-y-8">
+        <Card className="dark:neon-border-blue">
+          <CardHeader>
+            <CardTitle>Journal Calendar</CardTitle>
+            <CardDescription>Select a day to write or reflect.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Calendar
+              mode="single"
+              selected={selectedDate}
+              onSelect={(date) => date && setSelectedDate(date)}
+              className="p-0"
+              modifiers={{ hasEntry: entryDates, ...moodModifiers }}
+              modifiersClassNames={{ hasEntry: 'has-entry', 'mood-Ecstatic': 'mood-ecstatic', 'mood-Happy': 'mood-happy', 'mood-Neutral': 'mood-neutral', 'mood-Sad': 'mood-sad', 'mood-Angry': 'mood-angry' }}
+            />
+          </CardContent>
+        </Card>
+        <JournalDiscovery 
+            entries={journalEntries}
+            onDateSelect={setSelectedDate}
+            searchQuery={searchQuery}
+            onSearchQueryChange={setSearchQuery}
+        />
+        <Card className='dark:neon-border-blue'>
+          <CardHeader>
+            <CardTitle>Tags</CardTitle>
+            <CardDescription>Filter your entries by tag.</CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-wrap gap-2">
+            <Badge onClick={() => setActiveTagFilter(null)} className={cn("cursor-pointer transition-all", activeTagFilter === null ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground")}>All</Badge>
+            {allTags.map(tag => (
+              <Badge key={tag} onClick={() => setActiveTagFilter(tag)} className={cn("cursor-pointer transition-all", activeTagFilter === tag ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground")}>{tag}</Badge>
+            ))}
+          </CardContent>
+        </Card>
+      </TabsContent>
+    </Tabs>
+  );
 
-          <Card className="min-h-[400px] flex flex-col dark:neon-border">
+  const JournalEditorContent = (
+      <motion.div 
+        className="lg:col-span-2 space-y-8"
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+      >
+        <StreakDisplay journalEntries={journalEntries} />
+        <Card className="min-h-[400px] flex flex-col dark:neon-border">
             <CardHeader>
               <div className="flex justify-between items-start gap-4">
                 <div className='flex-1'>
@@ -339,112 +359,47 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
                 </div>
                 <div className="flex items-center gap-2">
                   <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="outline" size="sm">
-                        <Download className="mr-2 h-4 w-4" /> Export
-                      </Button>
-                    </DropdownMenuTrigger>
+                    <DropdownMenuTrigger asChild><Button variant="outline" size="sm"><Download className="mr-2 h-4 w-4" /> Export</Button></DropdownMenuTrigger>
                     <DropdownMenuContent>
                       <DropdownMenuItem onClick={() => handleExport('md')}>Export as Markdown (.md)</DropdownMenuItem>
                       <DropdownMenuItem onClick={() => handleExport('json')}>Export as JSON (.json)</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
-                  {!isEditing && (
-                      <Button variant="outline" onClick={() => setIsEditing(true)}>Edit</Button>
-                  )}
+                  {!isEditing && <Button variant="outline" onClick={() => setIsEditing(true)}>Edit</Button>}
                 </div>
               </div>
             </CardHeader>
             <CardContent className="flex-1 flex flex-col">
               <AnimatePresence mode="wait">
                 {isEditing ? (
-                  <motion.div
-                    key="editor"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="flex-1 flex flex-col"
-                  >
-                    <div className="mb-4">
-                      <MoodSelector selectedMood={currentMood} onMoodSelect={setCurrentMood} />
-                    </div>
-                     <div className="mb-4">
-                        <TagInput tags={currentTags} setTags={setCurrentTags} allTags={allTags} />
-                    </div>
-                    {currentContent.length === 0 && (
-                      <div className="mb-4">
-                        <Button variant="ghost" className="text-primary" onClick={() => setTemplateChooserOpen(true)}>
-                          <BookCheck className="mr-2 h-4 w-4" /> Use a Template
-                        </Button>
-                      </div>
-                    )}
-                    <Textarea
-                      ref={textareaRef}
-                      value={currentContent}
-                      onChange={(e) => setCurrentContent(e.target.value)}
-                      placeholder="Start writing your journal entry here..."
-                      className={cn("w-full flex-1 text-base bg-muted/50 border-dashed", font)}
-                      style={settingsStyle}
-                      rows={15}
-                    />
-                     <div className="flex items-center justify-end mt-4 gap-4">
+                  <motion.div key="editor" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex-1 flex flex-col">
+                    <div className="mb-4"><MoodSelector selectedMood={currentMood} onMoodSelect={setCurrentMood} /></div>
+                    <div className="mb-4"><TagInput tags={currentTags} setTags={setCurrentTags} allTags={allTags} /></div>
+                    {currentContent.length === 0 && <div className="mb-4"><Button variant="ghost" className="text-primary" onClick={() => setTemplateChooserOpen(true)}><BookCheck className="mr-2 h-4 w-4" /> Use a Template</Button></div>}
+                    <Textarea ref={textareaRef} value={currentContent} onChange={(e) => setCurrentContent(e.target.value)} placeholder="Start writing your journal entry here..." className={cn("w-full flex-1 text-base bg-muted/50 border-dashed", font)} style={settingsStyle} rows={15}/>
+                    <div className="flex items-center justify-end mt-4 gap-4">
                         <span className="text-sm text-muted-foreground">{wordCount} word{wordCount !== 1 && 's'}</span>
-                        <Button variant="ghost" size="icon" onClick={() => setIsSettingsPanelOpen(true)}>
-                            <Settings className="h-5 w-5" />
-                        </Button>
-                        <Button onClick={handleSave}>
-                            <Save className="mr-2 h-4 w-4" /> Save Entry
-                        </Button>
+                        <Button variant="ghost" size="icon" onClick={() => setIsSettingsPanelOpen(true)}><Settings className="h-5 w-5" /></Button>
+                        <Button onClick={handleSave}><Save className="mr-2 h-4 w-4" /> Save Entry</Button>
                     </div>
                   </motion.div>
                 ) : (
-                  <motion.div
-                    key="viewer"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className={cn("prose dark:prose-invert max-w-none cursor-pointer flex-1", font)}
-                    style={settingsStyle}
-                    onClick={() => setIsEditing(true)}
-                  >
-                    {todaysEntry?.tags && todaysEntry.tags.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mb-4">
-                            {todaysEntry.tags.map(tag => (
-                                <Badge key={tag} variant="secondary" className="cursor-pointer" onClick={(e) => { e.stopPropagation(); setActiveTagFilter(tag); }}>
-                                    {tag}
-                                </Badge>
-                            ))}
-                        </div>
-                    )}
-                    {currentContent ? (
-                        <ReactMarkdown>{currentContent}</ReactMarkdown>
-                    ) : (
-                        <div className="text-center text-muted-foreground pt-10">
-                            No entry for this day. Click here to start writing.
-                        </div>
-                    )}
+                  <motion.div key="viewer" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className={cn("prose dark:prose-invert max-w-none cursor-pointer flex-1", font)} style={settingsStyle} onClick={() => setIsEditing(true)}>
+                    {todaysEntry?.tags && todaysEntry.tags.length > 0 && <div className="flex flex-wrap gap-2 mb-4">{todaysEntry.tags.map(tag => <Badge key={tag} variant="secondary" className="cursor-pointer" onClick={(e) => { e.stopPropagation(); setActiveTagFilter(tag); }}>{tag}</Badge>)}</div>}
+                    {currentContent ? <ReactMarkdown>{currentContent}</ReactMarkdown> : <div className="text-center text-muted-foreground pt-10">No entry for this day. Click here to start writing.</div>}
                   </motion.div>
                 )}
               </AnimatePresence>
             </CardContent>
           </Card>
-          
            {todaysEntry && !isEditing && (
             <div className="space-y-4">
-                <Button onClick={handleGetReflection} disabled={aiReflection.isLoading} className="w-full md:w-auto">
-                    {aiReflection.isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
-                    AI Writing Coach
-                </Button>
-
+                <Button onClick={handleGetReflection} disabled={aiReflection.isLoading} className="w-full md:w-auto"><Wand2 className="mr-2 h-4 w-4" /> AI Writing Coach</Button>
                 <AnimatePresence>
                 {aiReflection.isLoading ? (
                     <Card className="dark:neon-border-green"><CardContent className="p-4"><Skeleton className="h-40 w-full" /></CardContent></Card>
                 ) : aiReflection.reflection && (
-                    <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                    >
+                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
                         <Card className="bg-muted/50 dark:neon-border-green">
                             <CardHeader className="pb-4">
                                 <CardTitle className="text-lg flex items-center gap-2"><Wand2 className="text-primary"/> AI Writing Coach</CardTitle>
@@ -452,36 +407,11 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
                             </CardHeader>
                             <CardContent className='space-y-6'>
                                 <div className="space-y-4">
-                                    <div className='flex items-start gap-3'>
-                                        <Type className='h-5 w-5 mt-1 text-primary' />
-                                        <div>
-                                            <h4 className='font-semibold'>Writing Style</h4>
-                                            <p className='text-sm text-muted-foreground'>{aiReflection.writingStyle}</p>
-                                        </div>
-                                    </div>
-                                    <div className='flex items-start gap-3'>
-                                        <FileText className='h-5 w-5 mt-1 text-primary' />
-                                        <div>
-                                            <h4 className='font-semibold'>Main Themes</h4>
-                                            <div className='flex flex-wrap gap-2 mt-1'>
-                                                {aiReflection.mainThemes.map(theme => <Badge key={theme} variant='secondary'>{theme}</Badge>)}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className='flex items-start gap-3'>
-                                        <BrainCircuit className='h-5 w-5 mt-1 text-primary' />
-                                        <div>
-                                            <h4 className='font-semibold'>Reflection</h4>
-                                            <p className="text-sm text-muted-foreground italic">"{aiReflection.reflection}"</p>
-                                        </div>
-                                    </div>
+                                    <div className='flex items-start gap-3'><Type className='h-5 w-5 mt-1 text-primary' /><div><h4 className='font-semibold'>Writing Style</h4><p className='text-sm text-muted-foreground'>{aiReflection.writingStyle}</p></div></div>
+                                    <div className='flex items-start gap-3'><FileText className='h-5 w-5 mt-1 text-primary' /><div><h4 className='font-semibold'>Main Themes</h4><div className='flex flex-wrap gap-2 mt-1'>{aiReflection.mainThemes.map(theme => <Badge key={theme} variant='secondary'>{theme}</Badge>)}</div></div></div>
+                                    <div className='flex items-start gap-3'><BrainCircuit className='h-5 w-5 mt-1 text-primary' /><div><h4 className='font-semibold'>Reflection</h4><p className="text-sm text-muted-foreground italic">"{aiReflection.reflection}"</p></div></div>
                                 </div>
-                                {aiReflection.followUpQuestion && (
-                                  <div className='p-3 bg-background/50 rounded-lg'>
-                                    <p className="font-semibold text-sm">A question for you:</p>
-                                    <p className="text-sm text-muted-foreground">{aiReflection.followUpQuestion}</p>
-                                  </div>
-                                )}
+                                {aiReflection.followUpQuestion && <div className='p-3 bg-background/50 rounded-lg'><p className="font-semibold text-sm">A question for you:</p><p className="text-sm text-muted-foreground">{aiReflection.followUpQuestion}</p></div>}
                             </CardContent>
                         </Card>
                     </motion.div>
@@ -490,19 +420,22 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
             </div>
            )}
         </motion.div>
-      </div>
+  );
 
-      <TemplateChooser 
-        open={isTemplateChooserOpen}
-        onOpenChange={setTemplateChooserOpen}
-        onSelectTemplate={handleSelectTemplate}
-      />
-      <WritingSettingsPanel
-        open={isSettingsPanelOpen}
-        onOpenChange={setIsSettingsPanelOpen}
-      />
+  return (
+    <div className="p-4 md:p-8 space-y-8">
+      <style>{`
+        .has-entry:not([class*="mood-"]) { border: 2px solid hsl(var(--primary)); border-radius: var(--radius); }
+        .mood-ecstatic { --mood-color: hsl(var(--chart-4)); } .mood-happy { --mood-color: hsl(var(--chart-2)); } .mood-neutral { --mood-color: hsl(var(--muted-foreground)); } .mood-sad { --mood-color: hsl(var(--chart-1)); } .mood-angry { --mood-color: hsl(var(--destructive)); }
+        [class*="mood-"] { position: relative; overflow: visible; }
+        [class*="mood-"]::after { content: ''; position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); width: 6px; height: 6px; border-radius: 50%; background-color: var(--mood-color); }
+        .rdp-day_today { font-weight: bold; color: hsl(var(--chart-2)); }
+      `}</style>
+
+      {isMobile ? <MobileLayout /> : <DesktopLayout />}
+
+      <TemplateChooser open={isTemplateChooserOpen} onOpenChange={setTemplateChooserOpen} onSelectTemplate={handleSelectTemplate} />
+      <WritingSettingsPanel open={isSettingsPanelOpen} onOpenChange={setIsSettingsPanelOpen} />
     </div>
   );
 }
-
-    

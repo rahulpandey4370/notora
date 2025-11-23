@@ -4,7 +4,7 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { format, isSameDay, subDays, differenceInDays } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar as CalendarIcon, BookHeart, Save, Wand2, Loader2, Info, BookCheck } from 'lucide-react';
+import { Calendar as CalendarIcon, BookHeart, Save, Wand2, Loader2, Info, BookCheck, BrainCircuit, Type, FileText } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import type { AppData, JournalEntry, Mood } from '@/lib/types';
 import { Button } from '@/components/ui/button';
@@ -21,6 +21,7 @@ import MoodSelector from './MoodSelector';
 import { moodEmojiMap } from '@/lib/types';
 import TemplateChooser from './TemplateChooser';
 import StreakDisplay from './StreakDisplay';
+import { Badge } from '../ui/badge';
 
 interface JournalManagerProps {
   journalEntries: JournalEntry[];
@@ -32,6 +33,8 @@ interface AIReflection {
     reflection: string;
     followUpQuestion: string;
     emotion: string;
+    writingStyle: string;
+    mainThemes: string[];
     isLoading: boolean;
 }
 
@@ -40,7 +43,7 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
   const [currentContent, setCurrentContent] = useState('');
   const [currentMood, setCurrentMood] = useState<Mood | undefined>(undefined);
   const [isEditing, setIsEditing] = useState(false);
-  const [aiReflection, setAiReflection] = useState<AIReflection>({ reflection: '', followUpQuestion: '', emotion: '', isLoading: false });
+  const [aiReflection, setAiReflection] = useState<AIReflection>({ reflection: '', followUpQuestion: '', emotion: '', writingStyle: '', mainThemes: [], isLoading: false });
   const [isTemplateChooserOpen, setTemplateChooserOpen] = useState(false);
   const { toast } = useToast();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -53,7 +56,7 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
   useEffect(() => {
     setCurrentContent(todaysEntry?.content || '');
     setCurrentMood(todaysEntry?.mood);
-    setAiReflection({ reflection: '', followUpQuestion: '', emotion: '', isLoading: false }); // Reset reflection when date changes
+    setAiReflection({ reflection: '', followUpQuestion: '', emotion: '', writingStyle: '', mainThemes: [], isLoading: false }); // Reset reflection when date changes
     setIsEditing(!todaysEntry);
   }, [todaysEntry, selectedDate]);
 
@@ -107,7 +110,7 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
   
   const handleGetReflection = async () => {
     if (!todaysEntry?.content) return;
-    setAiReflection({ reflection: '', followUpQuestion: '', emotion: '', isLoading: true });
+    setAiReflection({ reflection: '', followUpQuestion: '', emotion: '', writingStyle: '', mainThemes: [], isLoading: true });
     try {
         const result = await reflectOnJournalEntry({ content: todaysEntry.content });
         setAiReflection({ ...result, isLoading: false });
@@ -118,7 +121,7 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
             title: 'Reflection Failed',
             description: 'Could not generate an AI reflection for this entry.'
         })
-        setAiReflection({ reflection: '', followUpQuestion: '', emotion: '', isLoading: false });
+        setAiReflection({ reflection: '', followUpQuestion: '', emotion: '', writingStyle: '', mainThemes: [], isLoading: false });
     }
   }
 
@@ -324,12 +327,12 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
             <div className="space-y-4">
                 <Button onClick={handleGetReflection} disabled={aiReflection.isLoading} className="w-full md:w-auto">
                     {aiReflection.isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
-                    Reflect with AI
+                    AI Writing Coach
                 </Button>
 
                 <AnimatePresence>
                 {aiReflection.isLoading ? (
-                    <Card className="dark:neon-border-green"><CardContent className="p-4"><Skeleton className="h-20 w-full" /></CardContent></Card>
+                    <Card className="dark:neon-border-green"><CardContent className="p-4"><Skeleton className="h-40 w-full" /></CardContent></Card>
                 ) : aiReflection.reflection && (
                     <motion.div
                         initial={{ opacity: 0, y: 10 }}
@@ -337,14 +340,38 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
                         exit={{ opacity: 0, y: -10 }}
                     >
                         <Card className="bg-muted/50 dark:neon-border-green">
-                            <CardHeader className="pb-2">
-                                <CardTitle className="text-base flex items-center gap-2"><Wand2 className="text-primary"/> AI Reflection</CardTitle>
+                            <CardHeader className="pb-4">
+                                <CardTitle className="text-lg flex items-center gap-2"><Wand2 className="text-primary"/> AI Writing Coach</CardTitle>
                                 {aiReflection.emotion && <CardDescription>Detected Emotion: {aiReflection.emotion}</CardDescription>}
                             </CardHeader>
-                            <CardContent className='space-y-4'>
-                                <p className="text-sm italic text-muted-foreground">"{aiReflection.reflection}"</p>
+                            <CardContent className='space-y-6'>
+                                <div className="space-y-4">
+                                    <div className='flex items-start gap-3'>
+                                        <Type className='h-5 w-5 mt-1 text-primary' />
+                                        <div>
+                                            <h4 className='font-semibold'>Writing Style</h4>
+                                            <p className='text-sm text-muted-foreground'>{aiReflection.writingStyle}</p>
+                                        </div>
+                                    </div>
+                                    <div className='flex items-start gap-3'>
+                                        <FileText className='h-5 w-5 mt-1 text-primary' />
+                                        <div>
+                                            <h4 className='font-semibold'>Main Themes</h4>
+                                            <div className='flex flex-wrap gap-2 mt-1'>
+                                                {aiReflection.mainThemes.map(theme => <Badge key={theme} variant='secondary'>{theme}</Badge>)}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className='flex items-start gap-3'>
+                                        <BrainCircuit className='h-5 w-5 mt-1 text-primary' />
+                                        <div>
+                                            <h4 className='font-semibold'>Reflection</h4>
+                                            <p className="text-sm text-muted-foreground italic">"{aiReflection.reflection}"</p>
+                                        </div>
+                                    </div>
+                                </div>
                                 {aiReflection.followUpQuestion && (
-                                  <div>
+                                  <div className='p-3 bg-background/50 rounded-lg'>
                                     <p className="font-semibold text-sm">A question for you:</p>
                                     <p className="text-sm text-muted-foreground">{aiReflection.followUpQuestion}</p>
                                   </div>

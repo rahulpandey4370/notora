@@ -47,20 +47,79 @@ interface AIReflection {
     isLoading: boolean;
 }
 
+interface JournalEditorProps {
+    entry: JournalEntry | undefined;
+    selectedDate: Date;
+    onSave: (content: string, mood?: Mood, tags?: string[]) => void;
+    onCancel: () => void;
+    allTags: string[];
+}
+
+const JournalEditor = ({ entry, selectedDate, onSave, onCancel, allTags }: JournalEditorProps) => {
+    const [content, setContent] = useState(entry?.content || '');
+    const [mood, setMood] = useState(entry?.mood);
+    const [tags, setTags] = useState(entry?.tags || []);
+    const [isTemplateChooserOpen, setTemplateChooserOpen] = useState(false);
+    const [isSettingsPanelOpen, setIsSettingsPanelOpen] = useState(false);
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const { font, settingsStyle } = useWritingSettings();
+
+    useEffect(() => {
+        textareaRef.current?.focus();
+    }, []);
+
+    const wordCount = useMemo(() => {
+        return content.trim().split(/\s+/).filter(Boolean).length;
+    }, [content]);
+
+    const handleSelectTemplate = (templateContent: string) => {
+        setContent(prev => prev + templateContent);
+        setTemplateChooserOpen(false);
+        textareaRef.current?.focus();
+    }
+    
+    const handleSaveClick = () => {
+        if (!content.trim() && !mood && tags.length === 0 && !entry) {
+            onCancel();
+            return;
+        };
+        onSave(content, mood, tags);
+    }
+
+    return (
+        <motion.div key="editor" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex-1 flex flex-col">
+            <div className="mb-4"><MoodSelector selectedMood={mood} onMoodSelect={setMood} /></div>
+            <div className="mb-4"><TagInput tags={tags} setTags={setTags} allTags={allTags} /></div>
+            {content.length === 0 && <div className="mb-4"><Button variant="ghost" className="text-primary" onClick={() => setTemplateChooserOpen(true)}><BookCheck className="mr-2 h-4 w-4" /> Use a Template</Button></div>}
+            <Textarea
+              ref={textareaRef}
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              placeholder="Start writing your journal entry here..."
+              className={cn("w-full flex-1 text-base bg-muted/50 border-dashed", font)}
+              style={settingsStyle}
+              rows={15}
+            />
+            <div className="flex items-center justify-end mt-4 gap-4">
+                <span className="text-sm text-muted-foreground">{wordCount} word{wordCount !== 1 && 's'}</span>
+                <Button variant="ghost" size="icon" onClick={() => setIsSettingsPanelOpen(true)}><Settings className="h-5 w-5" /></Button>
+                <Button onClick={handleSaveClick}><Save className="mr-2 h-4 w-4" /> Save Entry</Button>
+            </div>
+            <TemplateChooser open={isTemplateChooserOpen} onOpenChange={setTemplateChooserOpen} onSelectTemplate={handleSelectTemplate} />
+            <WritingSettingsPanel open={isSettingsPanelOpen} onOpenChange={setIsSettingsPanelOpen} />
+        </motion.div>
+    );
+};
+
+
 export default function JournalManager({ journalEntries: initialJournalEntries, data, onDataChange }: JournalManagerProps) {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [currentContent, setCurrentContent] = useState('');
-  const [currentMood, setCurrentMood] = useState<Mood | undefined>(undefined);
-  const [currentTags, setCurrentTags] = useState<string[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const [aiReflection, setAiReflection] = useState<AIReflection>({ reflection: '', followUpQuestion: '', emotion: '', writingStyle: '', mainThemes: [], isLoading: false });
-  const [isTemplateChooserOpen, setTemplateChooserOpen] = useState(false);
-  const [isSettingsPanelOpen, setIsSettingsPanelOpen] = useState(false);
   const [activeTagFilter, setActiveTagFilter] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
   const { toast } = useToast();
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { font, settingsStyle } = useWritingSettings();
   const isMobile = useIsMobile();
   
@@ -83,16 +142,10 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
   }, [filteredEntries, selectedDate]);
 
   useEffect(() => {
-    if (todaysEntry) {
-        setCurrentContent(todaysEntry.content);
-        setCurrentMood(todaysEntry.mood);
-        setCurrentTags(todaysEntry.tags || []);
-        setIsEditing(false);
-    } else {
-        setCurrentContent('');
-        setCurrentMood(undefined);
-        setCurrentTags([]);
+    if (!todaysEntry) {
         setIsEditing(true);
+    } else {
+        setIsEditing(false);
     }
     setAiReflection({ reflection: '', followUpQuestion: '', emotion: '', writingStyle: '', mainThemes: [], isLoading: false });
   }, [todaysEntry, selectedDate]);
@@ -105,24 +158,19 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
     return Array.from(tags).sort();
   }, [initialJournalEntries]);
 
-  const handleSave = () => {
-    if (!currentContent.trim() && !currentMood && currentTags.length === 0 && !todaysEntry) {
-        setIsEditing(false);
-        return;
-    };
-    
+  const handleSave = (content: string, mood?: Mood, tags?: string[]) => {
     let updatedEntries;
     if (todaysEntry) {
       updatedEntries = initialJournalEntries.map(entry =>
-        entry.id === todaysEntry.id ? { ...entry, content: currentContent, mood: currentMood, tags: currentTags } : entry
+        entry.id === todaysEntry.id ? { ...entry, content, mood, tags } : entry
       );
     } else {
       const newEntry: JournalEntry = {
         id: uuidv4(),
         date: selectedDate.toISOString(),
-        content: currentContent,
-        mood: currentMood,
-        tags: currentTags
+        content: content,
+        mood: mood,
+        tags: tags
       };
       updatedEntries = [...initialJournalEntries, newEntry];
     }
@@ -146,19 +194,9 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
       description: `Your journal entry for ${format(selectedDate, 'PPP')} has been deleted.`,
     });
     
-    // After deleting, there is no entry for today, so clear the state
-    setCurrentContent('');
-    setCurrentMood(undefined);
-    setCurrentTags([]);
     setAiReflection({ reflection: '', followUpQuestion: '', emotion: '', writingStyle: '', mainThemes: [], isLoading: false });
-    setIsEditing(true); // Go into editing mode for a new entry
+    setIsEditing(true);
   };
-  
-  useEffect(() => {
-    if (isEditing && textareaRef.current) {
-        textareaRef.current.focus();
-    }
-  }, [isEditing]);
   
   const handleGetReflection = async () => {
     if (!todaysEntry?.content) return;
@@ -175,12 +213,6 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
         })
         setAiReflection({ reflection: '', followUpQuestion: '', emotion: '', writingStyle: '', mainThemes: [], isLoading: false });
     }
-  }
-
-  const handleSelectTemplate = (templateContent: string) => {
-    setCurrentContent(prev => prev + templateContent);
-    setTemplateChooserOpen(false);
-    textareaRef.current?.focus();
   }
 
   const handleExport = (formatType: 'json' | 'md') => {
@@ -219,7 +251,7 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
     a.href = url;
     a.download = fileName;
     document.body.appendChild(a);
-    a.click();
+a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
 
@@ -228,11 +260,6 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
       description: `Your journal has been downloaded as a ${formatType.toUpperCase()} file.`,
     });
   };
-
-  const wordCount = useMemo(() => {
-    if (!isEditing) return 0;
-    return currentContent.trim().split(/\s+/).filter(Boolean).length;
-  }, [isEditing, currentContent]);
 
   const entryDates = useMemo(() => filteredEntries.map(entry => new Date(entry.date)), [filteredEntries]);
 
@@ -248,7 +275,7 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
     return modifiers;
   }, [filteredEntries]);
 
-  const JournalEditorContent = useCallback(() => (
+  const JournalEditorContent = () => (
       <motion.div 
         className="lg:col-span-2 space-y-8"
         initial={{ opacity: 0, x: 20 }}
@@ -263,7 +290,7 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
                     <CardTitle className="flex items-center gap-2">
                       <BookHeart className="text-primary"/>
                       {format(selectedDate, 'EEEE, MMMM do, yyyy')}
-                      {currentMood && !isEditing && <span className="text-2xl">{moodEmojiMap[currentMood]}</span>}
+                      {todaysEntry?.mood && !isEditing && <span className="text-2xl">{moodEmojiMap[todaysEntry.mood]}</span>}
                     </CardTitle>
                     <CardDescription>
                     {todaysEntry ? `Your thoughts from this day.` : `What's on your mind today?`}
@@ -301,29 +328,17 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
             <CardContent className="flex-1 flex flex-col">
               <AnimatePresence mode="wait">
                 {isEditing ? (
-                  <motion.div key="editor" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex-1 flex flex-col">
-                    <div className="mb-4"><MoodSelector selectedMood={currentMood} onMoodSelect={setCurrentMood} /></div>
-                    <div className="mb-4"><TagInput tags={currentTags} setTags={setCurrentTags} allTags={allTags} /></div>
-                    {currentContent.length === 0 && <div className="mb-4"><Button variant="ghost" className="text-primary" onClick={() => setTemplateChooserOpen(true)}><BookCheck className="mr-2 h-4 w-4" /> Use a Template</Button></div>}
-                    <Textarea
-                      ref={textareaRef}
-                      value={currentContent}
-                      onChange={(e) => setCurrentContent(e.target.value)}
-                      placeholder="Start writing your journal entry here..."
-                      className={cn("w-full flex-1 text-base bg-muted/50 border-dashed", font)}
-                      style={settingsStyle}
-                      rows={15}
-                    />
-                    <div className="flex items-center justify-end mt-4 gap-4">
-                        <span className="text-sm text-muted-foreground">{wordCount} word{wordCount !== 1 && 's'}</span>
-                        <Button variant="ghost" size="icon" onClick={() => setIsSettingsPanelOpen(true)}><Settings className="h-5 w-5" /></Button>
-                        <Button onClick={handleSave}><Save className="mr-2 h-4 w-4" /> Save Entry</Button>
-                    </div>
-                  </motion.div>
+                  <JournalEditor 
+                    entry={todaysEntry}
+                    selectedDate={selectedDate}
+                    onSave={handleSave}
+                    onCancel={() => setIsEditing(false)}
+                    allTags={allTags}
+                  />
                 ) : (
                   <motion.div key="viewer" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className={cn("prose dark:prose-invert max-w-none cursor-pointer flex-1", font)} style={settingsStyle} onClick={() => setIsEditing(true)}>
                     {todaysEntry?.tags && todaysEntry.tags.length > 0 && <div className="flex flex-wrap gap-2 mb-4">{todaysEntry.tags.map(tag => <Badge key={tag} variant="secondary" className="cursor-pointer" onClick={(e) => { e.stopPropagation(); setActiveTagFilter(tag); }}>{tag}</Badge>)}</div>}
-                    {currentContent ? <ReactMarkdown>{currentContent}</ReactMarkdown> : <div className="text-center text-muted-foreground pt-10">No entry for this day. Click here to start writing.</div>}
+                    {todaysEntry?.content ? <ReactMarkdown>{todaysEntry.content}</ReactMarkdown> : <div className="text-center text-muted-foreground pt-10">No entry for this day. Click here to start writing.</div>}
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -357,7 +372,7 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
             </div>
            )}
         </motion.div>
-  ), [initialJournalEntries, data, onDataChange, selectedDate, currentContent, currentMood, currentTags, isEditing, aiReflection, todaysEntry, allTags, wordCount, font, settingsStyle]);
+  );
 
   const DesktopLayout = () => (
      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
@@ -487,8 +502,6 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
 
       {isMobile ? <MobileLayout /> : <DesktopLayout />}
 
-      <TemplateChooser open={isTemplateChooserOpen} onOpenChange={setTemplateChooserOpen} onSelectTemplate={handleSelectTemplate} />
-      <WritingSettingsPanel open={isSettingsPanelOpen} onOpenChange={setIsSettingsPanelOpen} />
     </div>
   );
 }

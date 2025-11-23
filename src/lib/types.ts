@@ -3,6 +3,17 @@ import { z } from "zod";
 
 export const linkCategories = ['Article', 'Video', 'Course', 'Image', 'Other'] as const;
 
+export const moods = ['Ecstatic', 'Happy', 'Neutral', 'Sad', 'Angry'] as const;
+export type Mood = typeof moods[number];
+
+export const moodEmojiMap: Record<Mood, string> = {
+  Ecstatic: '🤩',
+  Happy: '😊',
+  Neutral: '😐',
+  Sad: '😢',
+  Angry: '😠',
+};
+
 export interface User {
   username: string;
   email: string;
@@ -83,6 +94,7 @@ export interface JournalEntry {
     id: string;
     date: string; // ISO string
     content: string;
+    mood?: Mood;
 }
 
 export interface AppData {

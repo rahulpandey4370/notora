@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview An AI flow to analyze a journal entry and provide a thoughtful reflection.
@@ -16,7 +17,9 @@ const ReflectOnJournalEntryInputSchema = z.object({
 export type ReflectOnJournalEntryInput = z.infer<typeof ReflectOnJournalEntryInputSchema>;
 
 const ReflectOnJournalEntryOutputSchema = z.object({
-  reflection: z.string().describe("The AI's thoughtful and empathetic reflection on the journal entry. This could include identifying key emotions, asking insightful questions, or highlighting recurring themes."),
+  emotion: z.string().describe("The primary emotion detected in the entry (e.g., 'Joy', 'Frustration', 'Contentment')."),
+  reflection: z.string().describe("The AI's thoughtful and empathetic reflection on the journal entry. This should acknowledge the user's feelings, highlight themes, and be supportive."),
+  followUpQuestion: z.string().describe("An insightful, open-ended question to encourage deeper self-reflection from the user."),
 });
 export type ReflectOnJournalEntryOutput = z.infer<typeof ReflectOnJournalEntryOutputSchema>;
 
@@ -28,21 +31,19 @@ const prompt = ai.definePrompt({
   name: 'reflectOnJournalEntryPrompt',
   input: { schema: ReflectOnJournalEntryInputSchema },
   output: { schema: ReflectOnJournalEntryOutputSchema },
-  prompt: `You are an expert, empathetic life coach and therapist. Your task is to read the following journal entry and provide a short, insightful, and supportive reflection. Do not give advice unless it's framed as a gentle suggestion or question.
+  prompt: `You are an expert, empathetic life coach and therapist. Your task is to read the following journal entry and provide an insightful and supportive reflection. Do not give direct advice unless it's framed as a gentle suggestion.
 
-Your reflection should:
-1.  Acknowledge the user's feelings and experiences in a compassionate way.
-2.  Identify one or two key themes or emotions present in the entry (e.g., "It sounds like you're feeling a lot of pressure," or "I can sense a real feeling of accomplishment in your words.").
-3.  Pose one gentle, open-ended question to encourage deeper self-reflection. (e.g., "What might a smaller, first step look like?" or "I wonder what it would feel like to let go of that expectation.").
-4.  Keep the reflection to 2-4 sentences. It should be concise and easy to digest.
+Your response MUST follow this structure:
+1.  **Detect Emotion**: Identify the primary emotion conveyed in the text (e.g., Joy, Frustration, Anxiety, Contentment, etc.). Set this in the 'emotion' field.
+2.  **Write Reflection (2-3 sentences)**: Acknowledge the user's feelings and experiences in a compassionate way. Identify one or two key themes or tensions in the entry (e.g., "It sounds like you're navigating a conflict between your professional ambitions and your personal well-being," or "I can sense a real feeling of accomplishment and relief in your words today."). This goes in the 'reflection' field.
+3.  **Pose Follow-up Question (1 sentence)**: Ask one gentle, open-ended question to encourage deeper self-reflection. This question should directly relate to the themes you identified. (e.g., "What might a smaller, first step toward that goal look like?" or "I wonder what it would feel like to let go of that expectation for just one day?"). This goes in the 'followUpQuestion' field.
 
 **Journal Entry:**
 ---
 {{{content}}}
 ---
 
-Provide your reflection in a supportive and non-judgmental tone.
-`,
+Provide your response in a supportive, non-judgmental tone, adhering strictly to the JSON output format.`,
 });
 
 const reflectOnJournalEntryFlow = ai.defineFlow(

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect, useRef } from 'react';
@@ -5,7 +6,7 @@ import { format, isSameDay } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Calendar as CalendarIcon, BookHeart, Save, Wand2, Loader2, Info } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
-import type { AppData, JournalEntry } from '@/lib/types';
+import type { AppData, JournalEntry, Mood } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -16,6 +17,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { reflectOnJournalEntry } from '@/ai/flows/reflect-on-journal-entry';
 import { Skeleton } from '../ui/skeleton';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
+import MoodSelector from './MoodSelector';
+import { moodEmojiMap } from '@/lib/types';
 
 interface JournalManagerProps {
   journalEntries: JournalEntry[];
@@ -25,14 +28,17 @@ interface JournalManagerProps {
 
 interface AIReflection {
     reflection: string;
+    followUpQuestion: string;
+    emotion: string;
     isLoading: boolean;
 }
 
 export default function JournalManager({ journalEntries, data, onDataChange }: JournalManagerProps) {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [currentContent, setCurrentContent] = useState('');
+  const [currentMood, setCurrentMood] = useState<Mood | undefined>(undefined);
   const [isEditing, setIsEditing] = useState(false);
-  const [aiReflection, setAiReflection] = useState<AIReflection>({ reflection: '', isLoading: false });
+  const [aiReflection, setAiReflection] = useState<AIReflection>({ reflection: '', followUpQuestion: '', emotion: '', isLoading: false });
   const { toast } = useToast();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const autoSaveTimer = useRef<NodeJS.Timeout | null>(null);
@@ -43,18 +49,20 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
 
   useEffect(() => {
     setCurrentContent(todaysEntry?.content || '');
-    setAiReflection({ reflection: '', isLoading: false }); // Reset reflection when date changes
+    setCurrentMood(todaysEntry?.mood);
+    setAiReflection({ reflection: '', followUpQuestion: '', emotion: '', isLoading: false }); // Reset reflection when date changes
     setIsEditing(!todaysEntry);
   }, [todaysEntry, selectedDate]);
 
   const handleSave = () => {
-    if (!currentContent.trim()) return;
+    // Trim check for content is important, but allow saving mood even with empty content
+    if (!currentContent.trim() && !currentMood) return;
     
     let updatedEntries;
     if (todaysEntry) {
       // Update existing entry
       updatedEntries = journalEntries.map(entry =>
-        entry.id === todaysEntry.id ? { ...entry, content: currentContent } : entry
+        entry.id === todaysEntry.id ? { ...entry, content: currentContent, mood: currentMood } : entry
       );
     } else {
       // Create new entry
@@ -62,6 +70,7 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
         id: uuidv4(),
         date: selectedDate.toISOString(),
         content: currentContent,
+        mood: currentMood,
       };
       updatedEntries = [...journalEntries, newEntry];
     }
@@ -77,7 +86,7 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
     if (isEditing) {
       if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
       autoSaveTimer.current = setTimeout(() => {
-        if(currentContent.trim()) {
+        if(currentContent.trim() || currentMood !== todaysEntry?.mood) {
            handleSave();
         }
       }, 2000); // Auto-save after 2 seconds of inactivity
@@ -85,7 +94,7 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
     return () => {
       if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
     };
-  }, [currentContent, isEditing]);
+  }, [currentContent, currentMood, isEditing]);
   
   useEffect(() => {
     if (isEditing && textareaRef.current) {
@@ -95,10 +104,10 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
   
   const handleGetReflection = async () => {
     if (!todaysEntry?.content) return;
-    setAiReflection({ reflection: '', isLoading: true });
+    setAiReflection({ reflection: '', followUpQuestion: '', emotion: '', isLoading: true });
     try {
         const result = await reflectOnJournalEntry({ content: todaysEntry.content });
-        setAiReflection({ reflection: result.reflection, isLoading: false });
+        setAiReflection({ ...result, isLoading: false });
     } catch(e) {
         console.error(e);
         toast({
@@ -106,11 +115,27 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
             title: 'Reflection Failed',
             description: 'Could not generate an AI reflection for this entry.'
         })
-        setAiReflection({ reflection: '', isLoading: false });
+        setAiReflection({ reflection: '', followUpQuestion: '', emotion: '', isLoading: false });
     }
   }
 
   const entryDates = useMemo(() => journalEntries.map(entry => new Date(entry.date)), [journalEntries]);
+
+  const moodModifiers = useMemo(() => {
+    const modifiers: Record<string, Date[]> = {
+        'mood-Ecstatic': [],
+        'mood-Happy': [],
+        'mood-Neutral': [],
+        'mood-Sad': [],
+        'mood-Angry': [],
+    };
+    journalEntries.forEach(entry => {
+        if (entry.mood) {
+            modifiers[`mood-${entry.mood}`]?.push(new Date(entry.date));
+        }
+    });
+    return modifiers;
+  }, [journalEntries]);
 
   return (
     <div className="p-4 md:p-8 space-y-8">
@@ -135,15 +160,41 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
                 className="p-0"
                 modifiers={{
                   hasEntry: entryDates,
+                  ...moodModifiers
                 }}
                 modifiersClassNames={{
                   hasEntry: 'has-entry',
+                  'mood-Ecstatic': 'mood-ecstatic',
+                  'mood-Happy': 'mood-happy',
+                  'mood-Neutral': 'mood-neutral',
+                  'mood-Sad': 'mood-sad',
+                  'mood-Angry': 'mood-angry',
                 }}
               />
               <style>{`
-                .has-entry { 
+                .has-entry:not([class*="mood-"]) { 
                     border: 2px solid hsl(var(--primary));
                     border-radius: var(--radius);
+                }
+                .mood-ecstatic { --mood-color: hsl(var(--chart-4)); }
+                .mood-happy { --mood-color: hsl(var(--chart-2)); }
+                .mood-neutral { --mood-color: hsl(var(--muted-foreground)); }
+                .mood-sad { --mood-color: hsl(var(--chart-1)); }
+                .mood-angry { --mood-color: hsl(var(--destructive)); }
+                [class*="mood-"] { 
+                  position: relative; 
+                  overflow: visible;
+                }
+                [class*="mood-"]::after {
+                  content: '';
+                  position: absolute;
+                  bottom: 4px;
+                  left: 50%;
+                  transform: translateX(-50%);
+                  width: 6px;
+                  height: 6px;
+                  border-radius: 50%;
+                  background-color: var(--mood-color);
                 }
                 .rdp-day_today { 
                     font-weight: bold;
@@ -185,11 +236,12 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
         >
           <Card className="min-h-[400px] flex flex-col dark:neon-border">
             <CardHeader>
-              <div className="flex justify-between items-center">
-                <div>
+              <div className="flex justify-between items-start gap-4">
+                <div className='flex-1'>
                     <CardTitle className="flex items-center gap-2">
-                    <BookHeart className="text-primary"/>
-                    {format(selectedDate, 'EEEE, MMMM do, yyyy')}
+                      <BookHeart className="text-primary"/>
+                      {format(selectedDate, 'EEEE, MMMM do, yyyy')}
+                      {currentMood && !isEditing && <span className="text-2xl">{moodEmojiMap[currentMood]}</span>}
                     </CardTitle>
                     <CardDescription>
                     {todaysEntry ? `Your thoughts from this day.` : `What's on your mind today?`}
@@ -210,6 +262,9 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
                     exit={{ opacity: 0 }}
                     className="flex-1 flex flex-col"
                   >
+                    <div className="mb-4">
+                      <MoodSelector selectedMood={currentMood} onMoodSelect={setCurrentMood} />
+                    </div>
                     <Textarea
                       ref={textareaRef}
                       value={currentContent}
@@ -219,8 +274,8 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
                       rows={15}
                     />
                      <div className="flex justify-end mt-4">
-                        <Button onClick={handleSave} disabled={!currentContent.trim()}>
-                            <Save className="mr-2 h-4 w-4" /> Save Entry
+                        <Button onClick={handleSave}>
+                            <Save className="mr-2 h-4 w-4" /> Save & Finish Editing
                         </Button>
                     </div>
                   </motion.div>
@@ -265,9 +320,16 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
                         <Card className="bg-muted/50 dark:neon-border-green">
                             <CardHeader className="pb-2">
                                 <CardTitle className="text-base flex items-center gap-2"><Wand2 className="text-primary"/> AI Reflection</CardTitle>
+                                {aiReflection.emotion && <CardDescription>Detected Emotion: {aiReflection.emotion}</CardDescription>}
                             </CardHeader>
-                            <CardContent>
+                            <CardContent className='space-y-4'>
                                 <p className="text-sm italic text-muted-foreground">"{aiReflection.reflection}"</p>
+                                {aiReflection.followUpQuestion && (
+                                  <div>
+                                    <p className="font-semibold text-sm">A question for you:</p>
+                                    <p className="text-sm text-muted-foreground">{aiReflection.followUpQuestion}</p>
+                                  </div>
+                                )}
                             </CardContent>
                         </Card>
                     </motion.div>

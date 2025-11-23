@@ -3,6 +3,7 @@
 
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
+import { useMemo } from 'react';
 
 type WritingFont = 'font-body' | 'font-serif' | 'font-mono';
 
@@ -41,10 +42,10 @@ export const useWritingSettings = () => {
         'font-mono': 'font-mono',
     }
 
-    const settingsStyle = {
+    const settingsStyle = useMemo(() => ({
         fontSize: `${size}px`,
         lineHeight: spacing,
-    };
+    }), [size, spacing]);
 
     return {
         font: fontClassMapping[font],

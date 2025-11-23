@@ -13,6 +13,7 @@ import AICalorieCoach from '@/components/notora/AICalorieCoach';
 import type { Task, AppData, LogEntry } from '@/lib/types';
 import { format, startOfDay, subDays } from 'date-fns';
 import AddNewLogCard from '@/components/notora/AddNewLogCard';
+import LogStreakDisplay from '@/components/notora/LogStreakDisplay';
 
 interface LogsPageProps {
   showcase?: boolean;
@@ -113,6 +114,7 @@ export default function LogsPage({ showcase = false }: LogsPageProps) {
   return (
     <AppLayout data={data}>
       <div className="p-4 md:p-8 space-y-6">
+        <LogStreakDisplay logTrackers={data.logTrackers || []} />
         <AddNewLogCard data={data} onDataChange={handleDataChange} />
         <LogManager
           logTrackers={data.logTrackers || []}

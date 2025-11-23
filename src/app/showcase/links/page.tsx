@@ -1,8 +1,12 @@
-
 'use client';
 
 import LinksPage from '@/app/links/page';
+import { ShowcaseProvider } from '@/contexts/showcase-context';
 
 export default function ShowcaseLinksPage() {
-  return <LinksPage showcase />;
+  return (
+    <ShowcaseProvider>
+      <LinksPage showcase={true} />
+    </ShowcaseProvider>
+  );
 }

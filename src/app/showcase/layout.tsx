@@ -1,7 +1,5 @@
-
 import { AuthProvider } from '@/contexts/auth-context';
 import { AppProvider } from '@/contexts/app-context';
-import { ShowcaseProvider } from '@/contexts/showcase-context';
 
 export default function ShowcaseLayout({
   children,
@@ -11,9 +9,7 @@ export default function ShowcaseLayout({
   return (
     <AuthProvider>
       <AppProvider>
-        <ShowcaseProvider>
-          {children}
-        </ShowcaseProvider>
+        {children}
       </AppProvider>
     </AuthProvider>
   )

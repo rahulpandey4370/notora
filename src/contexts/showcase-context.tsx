@@ -1,4 +1,3 @@
-
 'use client';
 
 import { createContext, useState, useCallback, useContext, type ReactNode, useEffect } from 'react';
@@ -9,6 +8,7 @@ import { format, subDays } from 'date-fns';
 
 const demoUser: User = {
   username: 'Demo User',
+  email: 'demo@example.com',
   avatarUrl: 'https://placehold.co/100x100/A9A9A9/FFFFFF.png?text=D',
 };
 
@@ -54,6 +54,7 @@ const getDefaultDemoData = (): AppData => ({
           content: 'This is a fully interactive demo. Feel free to add tasks, edit notes, and try the AI features. Your changes are temporary and will reset when you leave.',
           position: { x: 50, y: 50 }, 
           theme: 'yellow',
+          history: { past: [], present: { title: 'Welcome to the Showcase! ✨', content: 'This is a fully interactive demo. Feel free to add tasks, edit notes, and try the AI features. Your changes are temporary and will reset when you leave.' }, future: [] }
         },
       ]
     }
@@ -76,7 +77,14 @@ const getDefaultDemoData = (): AppData => ({
     {
         id: uuidv4(),
         date: new Date().toISOString(),
-        content: `This is a sample journal entry for today. You can edit this or create new entries for any date. The editor supports Markdown for formatting!\n\n## Ideas\n- Build a cool new feature\n- Learn a new skill\n\n## Gratitude\nI'm grateful for the opportunity to learn and build things.`
+        content: `This is a sample journal entry for today. You can edit this or create new entries for any date. The editor supports Markdown for formatting!\n\n## Ideas\n- Build a cool new feature\n- Learn a new skill\n\n## Gratitude\nI'm grateful for the opportunity to learn and build things.`,
+        mood: 'Happy',
+    },
+    {
+        id: uuidv4(),
+        date: subDays(new Date(), 1).toISOString(),
+        content: `Yesterday was a bit challenging, but I pushed through.`,
+        mood: 'Sad',
     }
   ],
 });

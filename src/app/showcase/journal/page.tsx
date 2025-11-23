@@ -1,8 +1,12 @@
-
 'use client';
 
 import JournalPage from '@/app/journal/page';
+import { ShowcaseProvider } from '@/contexts/showcase-context';
 
 export default function ShowcaseJournalPage() {
-  return <JournalPage showcase />;
+  return (
+    <ShowcaseProvider>
+      <JournalPage showcase={true} />
+    </ShowcaseProvider>
+  );
 }

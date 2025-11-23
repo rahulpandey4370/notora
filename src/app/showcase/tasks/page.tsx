@@ -1,8 +1,12 @@
-
 'use client';
 
 import TasksPage from '@/app/tasks/page';
+import { ShowcaseProvider } from '@/contexts/showcase-context';
 
 export default function ShowcaseTasksPage() {
-  return <TasksPage showcase />;
+  return (
+    <ShowcaseProvider>
+      <TasksPage showcase={true} />
+    </ShowcaseProvider>
+  );
 }

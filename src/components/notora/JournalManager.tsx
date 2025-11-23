@@ -26,6 +26,7 @@ import TagInput from './TagInput';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu';
 import { useWritingSettings } from '@/hooks/use-writing-settings';
 import WritingSettingsPanel from './WritingSettingsPanel';
+import JournalDiscovery from './JournalDiscovery';
 
 interface JournalManagerProps {
   journalEntries: JournalEntry[];
@@ -52,14 +53,25 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
   const [isTemplateChooserOpen, setTemplateChooserOpen] = useState(false);
   const [isSettingsPanelOpen, setIsSettingsPanelOpen] = useState(false);
   const [activeTagFilter, setActiveTagFilter] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+
   const { toast } = useToast();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { font, size, spacing, settingsStyle } = useWritingSettings();
 
   const filteredEntries = useMemo(() => {
-    if (!activeTagFilter) return journalEntries;
-    return journalEntries.filter(entry => (entry.tags || []).includes(activeTagFilter));
-  }, [journalEntries, activeTagFilter]);
+    let entries = journalEntries;
+
+    if (activeTagFilter) {
+      entries = entries.filter(entry => (entry.tags || []).includes(activeTagFilter));
+    }
+    
+    if (searchQuery) {
+        entries = entries.filter(entry => entry.content.toLowerCase().includes(searchQuery.toLowerCase()));
+    }
+
+    return entries;
+  }, [journalEntries, activeTagFilter, searchQuery]);
 
   const todaysEntry = useMemo(() => {
     return filteredEntries.find(entry => isSameDay(new Date(entry.date), selectedDate));
@@ -273,6 +285,13 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
                 ))}
             </CardContent>
           </Card>
+
+          <JournalDiscovery 
+            entries={journalEntries}
+            onDateSelect={setSelectedDate}
+            searchQuery={searchQuery}
+            onSearchQueryChange={setSearchQuery}
+          />
 
           <Accordion type="single" collapsible defaultValue="item-1">
             <AccordionItem value="item-1">

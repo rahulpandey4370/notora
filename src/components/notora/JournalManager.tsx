@@ -4,7 +4,7 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { format, isSameDay } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BookHeart, Save, Wand2, Loader2, Info, BookCheck, BrainCircuit, Type, FileText } from 'lucide-react';
+import { BookHeart, Save, Wand2, Loader2, Info, BookCheck, BrainCircuit, Type, FileText, Download } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import type { AppData, JournalEntry, Mood } from '@/lib/types';
 import { Button } from '@/components/ui/button';
@@ -23,6 +23,7 @@ import TemplateChooser from './TemplateChooser';
 import StreakDisplay from './StreakDisplay';
 import { Badge } from '../ui/badge';
 import TagInput from './TagInput';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu';
 
 interface JournalManagerProps {
   journalEntries: JournalEntry[];
@@ -145,6 +146,52 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
     setTemplateChooserOpen(false);
     textareaRef.current?.focus();
   }
+
+  const handleExport = (formatType: 'json' | 'md') => {
+    let content = '';
+    let mimeType = '';
+    let fileName = `notora-journal-${format(new Date(), 'yyyy-MM-dd')}`;
+
+    if (formatType === 'json') {
+        content = JSON.stringify(journalEntries, null, 2);
+        mimeType = 'application/json';
+        fileName += '.json';
+    } else if (formatType === 'md') {
+        content = journalEntries
+            .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+            .map(entry => {
+                let md = `## ${format(new Date(entry.date), 'EEEE, MMMM do, yyyy')}\n\n`;
+                if (entry.mood) {
+                    md += `**Mood:** ${entry.mood} ${moodEmojiMap[entry.mood]}\n`;
+                }
+                if (entry.tags && entry.tags.length > 0) {
+                    md += `**Tags:** ${entry.tags.map(t => `#${t}`).join(' ')}\n`;
+                }
+                if (entry.mood || (entry.tags && entry.tags.length > 0)) {
+                    md += '\n';
+                }
+                md += `${entry.content}\n\n---\n\n`;
+                return md;
+            }).join('');
+        mimeType = 'text/markdown';
+        fileName += '.md';
+    }
+
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    toast({
+      title: 'Export Successful',
+      description: `Your journal has been downloaded as a ${formatType.toUpperCase()} file.`,
+    });
+  };
 
   const entryDates = useMemo(() => filteredEntries.map(entry => new Date(entry.date)), [filteredEntries]);
 
@@ -272,9 +319,22 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
                     {todaysEntry ? `Your thoughts from this day.` : `What's on your mind today?`}
                     </CardDescription>
                 </div>
-                {!isEditing && (
-                    <Button variant="outline" onClick={() => setIsEditing(true)}>Edit</Button>
-                )}
+                <div className="flex items-center gap-2">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" size="sm">
+                        <Download className="mr-2 h-4 w-4" /> Export
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <DropdownMenuItem onClick={() => handleExport('md')}>Export as Markdown (.md)</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleExport('json')}>Export as JSON (.json)</DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                  {!isEditing && (
+                      <Button variant="outline" onClick={() => setIsEditing(true)}>Edit</Button>
+                  )}
+                </div>
               </div>
             </CardHeader>
             <CardContent className="flex-1 flex flex-col">

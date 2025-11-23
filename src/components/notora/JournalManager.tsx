@@ -226,35 +226,44 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
         >
-          <Card className="dark:neon-border-blue">
-            <CardHeader>
-              <CardTitle>Journal Calendar</CardTitle>
-              <CardDescription>Select a day to write or reflect.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Calendar
-                mode="single"
-                selected={selectedDate}
-                onSelect={(date) => date && setSelectedDate(date)}
-                className="p-0"
-                modifiers={{
-                  hasEntry: entryDates,
-                  ...moodModifiers
-                }}
-                modifiersClassNames={{
-                  hasEntry: 'has-entry',
-                  'mood-Ecstatic': 'mood-ecstatic', 'mood-Happy': 'mood-happy', 'mood-Neutral': 'mood-neutral', 'mood-Sad': 'mood-sad', 'mood-Angry': 'mood-angry',
-                }}
-              />
-              <style>{`
-                .has-entry:not([class*="mood-"]) { border: 2px solid hsl(var(--primary)); border-radius: var(--radius); }
-                .mood-ecstatic { --mood-color: hsl(var(--chart-4)); } .mood-happy { --mood-color: hsl(var(--chart-2)); } .mood-neutral { --mood-color: hsl(var(--muted-foreground)); } .mood-sad { --mood-color: hsl(var(--chart-1)); } .mood-angry { --mood-color: hsl(var(--destructive)); }
-                [class*="mood-"] { position: relative; overflow: visible; }
-                [class*="mood-"]::after { content: ''; position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); width: 6px; height: 6px; border-radius: 50%; background-color: var(--mood-color); }
-                .rdp-day_today { font-weight: bold; color: hsl(var(--chart-2)); }
-              `}</style>
-            </CardContent>
-          </Card>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-8">
+            <Card className="dark:neon-border-blue">
+              <CardHeader>
+                <CardTitle>Journal Calendar</CardTitle>
+                <CardDescription>Select a day to write or reflect.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Calendar
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={(date) => date && setSelectedDate(date)}
+                  className="p-0"
+                  modifiers={{
+                    hasEntry: entryDates,
+                    ...moodModifiers
+                  }}
+                  modifiersClassNames={{
+                    hasEntry: 'has-entry',
+                    'mood-Ecstatic': 'mood-ecstatic', 'mood-Happy': 'mood-happy', 'mood-Neutral': 'mood-neutral', 'mood-Sad': 'mood-sad', 'mood-Angry': 'mood-angry',
+                  }}
+                />
+                <style>{`
+                  .has-entry:not([class*="mood-"]) { border: 2px solid hsl(var(--primary)); border-radius: var(--radius); }
+                  .mood-ecstatic { --mood-color: hsl(var(--chart-4)); } .mood-happy { --mood-color: hsl(var(--chart-2)); } .mood-neutral { --mood-color: hsl(var(--muted-foreground)); } .mood-sad { --mood-color: hsl(var(--chart-1)); } .mood-angry { --mood-color: hsl(var(--destructive)); }
+                  [class*="mood-"] { position: relative; overflow: visible; }
+                  [class*="mood-"]::after { content: ''; position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); width: 6px; height: 6px; border-radius: 50%; background-color: var(--mood-color); }
+                  .rdp-day_today { font-weight: bold; color: hsl(var(--chart-2)); }
+                `}</style>
+              </CardContent>
+            </Card>
+
+            <JournalDiscovery 
+              entries={journalEntries}
+              onDateSelect={setSelectedDate}
+              searchQuery={searchQuery}
+              onSearchQueryChange={setSearchQuery}
+            />
+          </div>
           
           <Card className='dark:neon-border-blue'>
             <CardHeader>
@@ -285,13 +294,6 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
                 ))}
             </CardContent>
           </Card>
-
-          <JournalDiscovery 
-            entries={journalEntries}
-            onDateSelect={setSelectedDate}
-            searchQuery={searchQuery}
-            onSearchQueryChange={setSearchQuery}
-          />
 
           <Accordion type="single" collapsible defaultValue="item-1">
             <AccordionItem value="item-1">
@@ -391,7 +393,7 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
                             <Settings className="h-5 w-5" />
                         </Button>
                         <Button onClick={handleSave}>
-                            <Save className="mr-2 h-4 w-4" /> Save & Finish
+                            <Save className="mr-2 h-4 w-4" /> Save Entry
                         </Button>
                     </div>
                   </motion.div>
@@ -502,3 +504,5 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
     </div>
   );
 }
+
+    

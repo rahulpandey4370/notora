@@ -53,6 +53,7 @@ export default function JournalPage({ showcase = false }: JournalPageProps) {
                 <Skeleton className="h-80 w-full" />
             </div>
             <div className="md:col-span-2">
+                <Skeleton className="h-16 w-full mb-8" />
                 <Skeleton className="h-80 w-full" />
             </div>
           </div>

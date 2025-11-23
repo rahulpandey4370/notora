@@ -14,6 +14,55 @@ export const moodEmojiMap: Record<Mood, string> = {
   Angry: '😠',
 };
 
+export interface JournalTemplate {
+    title: string;
+    description: string;
+    content: string;
+}
+  
+export const journalTemplates: JournalTemplate[] = [
+    {
+      title: 'Evening Reflection',
+      description: 'Reflect on your day, acknowledging highs and lows.',
+      content: '## Evening Reflection\n\n### What went well today?\n\n\n### What was challenging?\n\n\n### What can I improve tomorrow?\n\n',
+    },
+    {
+      title: 'Gratitude Journal',
+      description: 'Focus on the positive by listing things you are thankful for.',
+      content: '## Gratitude\n\nI am grateful for:\n\n1. \n2. \n3. \n',
+    },
+    {
+      title: 'Goal Progress Tracker',
+      description: 'Check in on your weekly goals and track your progress.',
+      content: '## Weekly Goal Check-in\n\n### My Top 3 Goals This Week:\n1. \n2. \n3. \n\n### Progress Made Today:\n\n\n### Blockers or Challenges:\n\n',
+    },
+    {
+      title: 'Problem Solving',
+      description: 'Structure your thoughts to find a solution to a challenge.',
+      content: '## Problem Solving\n\n### The Problem:\n\n\n### Brainstormed Solutions:\n- \n\n### Chosen Solution & Action Steps:\n\n',
+    },
+    {
+      title: 'Letter to Future Self',
+      description: 'Write a message to yourself to be read in the future.',
+      content: '## Letter to My Future Self\n\nDear Future Me,\n\nI hope when you are reading this...\n\n',
+    },
+    {
+      title: 'Creative Writing Prompt',
+      description: 'A starting point for a story or creative piece.',
+      content: '## Creative Writing\n\n**Prompt:** The old clock in the town square suddenly started ticking backward...\n\n',
+    },
+    {
+      title: 'Dream Journal',
+      description: 'Record your dreams and any thoughts or interpretations.',
+      content: '## Dream Journal\n\n### The Dream:\n\n\n### My Interpretation/Feelings:\n\n',
+    },
+    {
+      title: 'Wins & Lessons',
+      description: 'Celebrate your victories and reflect on what you learned.',
+      content: '## Today\'s Wins & Lessons\n\n### A Win (Big or Small):\n\n\n### A Lesson I Learned:\n\n',
+    },
+];
+
 export interface User {
   username: string;
   email: string;

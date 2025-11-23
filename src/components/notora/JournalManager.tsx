@@ -2,9 +2,9 @@
 'use client';
 
 import { useState, useMemo, useEffect, useRef } from 'react';
-import { format, isSameDay } from 'date-fns';
+import { format, isSameDay, subDays, differenceInDays } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar as CalendarIcon, BookHeart, Save, Wand2, Loader2, Info } from 'lucide-react';
+import { Calendar as CalendarIcon, BookHeart, Save, Wand2, Loader2, Info, BookCheck } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import type { AppData, JournalEntry, Mood } from '@/lib/types';
 import { Button } from '@/components/ui/button';
@@ -19,6 +19,8 @@ import { Skeleton } from '../ui/skeleton';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
 import MoodSelector from './MoodSelector';
 import { moodEmojiMap } from '@/lib/types';
+import TemplateChooser from './TemplateChooser';
+import StreakDisplay from './StreakDisplay';
 
 interface JournalManagerProps {
   journalEntries: JournalEntry[];
@@ -39,6 +41,7 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
   const [currentMood, setCurrentMood] = useState<Mood | undefined>(undefined);
   const [isEditing, setIsEditing] = useState(false);
   const [aiReflection, setAiReflection] = useState<AIReflection>({ reflection: '', followUpQuestion: '', emotion: '', isLoading: false });
+  const [isTemplateChooserOpen, setTemplateChooserOpen] = useState(false);
   const { toast } = useToast();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const autoSaveTimer = useRef<NodeJS.Timeout | null>(null);
@@ -117,6 +120,12 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
         })
         setAiReflection({ reflection: '', followUpQuestion: '', emotion: '', isLoading: false });
     }
+  }
+
+  const handleSelectTemplate = (templateContent: string) => {
+    setCurrentContent(templateContent);
+    setTemplateChooserOpen(false);
+    textareaRef.current?.focus();
   }
 
   const entryDates = useMemo(() => journalEntries.map(entry => new Date(entry.date)), [journalEntries]);
@@ -220,6 +229,7 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
                             <li><strong className="text-foreground">Problem-Solving:</strong> Describe a challenge you're facing. What are some possible solutions?</li>
                             <li><strong className="text-foreground">Future Self:</strong> What is one thing you can do today that your future self will thank you for?</li>
                             <li><strong className="text-foreground">Brain Dump:</strong> Write down everything on your mind for 5-10 minutes without judgment.</li>
+                            <li><strong className="text-foreground">Wins & Lessons:</strong> What was a small victory today? What did you learn?</li>
                         </ul>
                     </div>
                 </AccordionContent>
@@ -234,6 +244,8 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
         >
+          <StreakDisplay journalEntries={journalEntries} />
+
           <Card className="min-h-[400px] flex flex-col dark:neon-border">
             <CardHeader>
               <div className="flex justify-between items-start gap-4">
@@ -265,6 +277,13 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
                     <div className="mb-4">
                       <MoodSelector selectedMood={currentMood} onMoodSelect={setCurrentMood} />
                     </div>
+                    {currentContent.length === 0 && (
+                      <div className="mb-4">
+                        <Button variant="ghost" className="text-primary" onClick={() => setTemplateChooserOpen(true)}>
+                          <BookCheck className="mr-2 h-4 w-4" /> Use a Template
+                        </Button>
+                      </div>
+                    )}
                     <Textarea
                       ref={textareaRef}
                       value={currentContent}
@@ -337,9 +356,14 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
                 </AnimatePresence>
             </div>
            )}
-
         </motion.div>
       </div>
+
+      <TemplateChooser 
+        open={isTemplateChooserOpen}
+        onOpenChange={setTemplateChooserOpen}
+        onSelectTemplate={handleSelectTemplate}
+      />
     </div>
   );
 }

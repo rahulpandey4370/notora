@@ -4,7 +4,7 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { format, isSameDay } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BookHeart, Save, Wand2, Loader2, Info, BookCheck, BrainCircuit, Type, FileText, Download, Settings } from 'lucide-react';
+import { BookHeart, Save, Wand2, Loader2, Info, BookCheck, BrainCircuit, Type, FileText, Download, Settings, Trash2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import type { AppData, JournalEntry, Mood } from '@/lib/types';
 import { Button } from '@/components/ui/button';
@@ -29,6 +29,7 @@ import WritingSettingsPanel from './WritingSettingsPanel';
 import JournalDiscovery from './JournalDiscovery';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '../ui/alert-dialog';
 
 
 interface JournalManagerProps {
@@ -124,6 +125,25 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
         description: `Your entry for ${format(selectedDate, 'PPP')} has been saved.`,
     });
     setIsEditing(false);
+  };
+
+  const handleDelete = () => {
+    if (!todaysEntry) return;
+
+    const updatedEntries = journalEntries.filter(entry => entry.id !== todaysEntry.id);
+    onDataChange({ ...data, journalEntries: updatedEntries });
+    
+    toast({
+      title: 'Entry Deleted',
+      description: `Your journal entry for ${format(selectedDate, 'PPP')} has been deleted.`,
+    });
+    
+    // After deleting, there is no entry for today, so clear the state
+    setCurrentContent('');
+    setCurrentMood(undefined);
+    setCurrentTags([]);
+    setAiReflection({ reflection: '', followUpQuestion: '', emotion: '', writingStyle: '', mainThemes: [], isLoading: false });
+    setIsEditing(true); // Go into editing mode for a new entry
   };
   
   useEffect(() => {
@@ -365,6 +385,23 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
                       <DropdownMenuItem onClick={() => handleExport('json')}>Export as JSON (.json)</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
+                  {!isEditing && todaysEntry && (
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="destructive" size="sm"><Trash2 className="mr-2 h-4 w-4" /> Delete</Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                          <AlertDialogDescription>This will permanently delete your journal entry for {format(selectedDate, 'PPP')}. This action cannot be undone.</AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={handleDelete}>Delete</AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  )}
                   {!isEditing && <Button variant="outline" onClick={() => setIsEditing(true)}>Edit</Button>}
                 </div>
               </div>
@@ -439,3 +476,5 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
     </div>
   );
 }
+
+    

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { create } from 'zustand';
@@ -40,15 +39,22 @@ const fontClassMapping: Record<WritingFont, string> = {
 };
 
 export const useWritingSettings = () => {
-    const { font, size, spacing, setFont, setSize, setSpacing } = useWritingSettingsStore();
+    const font = useWritingSettingsStore((state) => state.font);
+    const size = useWritingSettingsStore((state) => state.size);
+    const spacing = useWritingSettingsStore((state) => state.spacing);
+    const setFont = useWritingSettingsStore((state) => state.setFont);
+    const setSize = useWritingSettingsStore((state) => state.setSize);
+    const setSpacing = useWritingSettingsStore((state) => state.setSpacing);
 
+    const mappedFont = useMemo(() => fontClassMapping[font], [font]);
+    
     const settingsStyle = useMemo(() => ({
         fontSize: `${size}px`,
         lineHeight: spacing,
     }), [size, spacing]);
 
-    return {
-        font: fontClassMapping[font],
+    return useMemo(() => ({
+        font: mappedFont,
         size,
         spacing,
         rawFont: font,
@@ -56,5 +62,5 @@ export const useWritingSettings = () => {
         setSize,
         setSpacing,
         settingsStyle,
-    };
+    }), [mappedFont, size, spacing, font, setFont, setSize, setSpacing, settingsStyle]);
 };

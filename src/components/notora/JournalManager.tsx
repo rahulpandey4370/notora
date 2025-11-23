@@ -4,7 +4,7 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { format, isSameDay } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BookHeart, Save, Wand2, Loader2, Info, BookCheck, BrainCircuit, Type, FileText, Download } from 'lucide-react';
+import { BookHeart, Save, Wand2, Loader2, Info, BookCheck, BrainCircuit, Type, FileText, Download, Settings } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import type { AppData, JournalEntry, Mood } from '@/lib/types';
 import { Button } from '@/components/ui/button';
@@ -24,6 +24,8 @@ import StreakDisplay from './StreakDisplay';
 import { Badge } from '../ui/badge';
 import TagInput from './TagInput';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu';
+import { useWritingSettings } from '@/hooks/use-writing-settings';
+import WritingSettingsPanel from './WritingSettingsPanel';
 
 interface JournalManagerProps {
   journalEntries: JournalEntry[];
@@ -48,9 +50,11 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
   const [isEditing, setIsEditing] = useState(false);
   const [aiReflection, setAiReflection] = useState<AIReflection>({ reflection: '', followUpQuestion: '', emotion: '', writingStyle: '', mainThemes: [], isLoading: false });
   const [isTemplateChooserOpen, setTemplateChooserOpen] = useState(false);
+  const [isSettingsPanelOpen, setIsSettingsPanelOpen] = useState(false);
   const [activeTagFilter, setActiveTagFilter] = useState<string | null>(null);
   const { toast } = useToast();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const { font, size, spacing, settingsStyle } = useWritingSettings();
 
   const filteredEntries = useMemo(() => {
     if (!activeTagFilter) return journalEntries;
@@ -180,6 +184,11 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
       description: `Your journal has been downloaded as a ${formatType.toUpperCase()} file.`,
     });
   };
+
+  const wordCount = useMemo(() => {
+    if (!isEditing) return 0;
+    return currentContent.trim().split(/\s+/).filter(Boolean).length;
+  }, [isEditing, currentContent]);
 
   const entryDates = useMemo(() => filteredEntries.map(entry => new Date(entry.date)), [filteredEntries]);
 
@@ -353,12 +362,17 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
                       value={currentContent}
                       onChange={(e) => setCurrentContent(e.target.value)}
                       placeholder="Start writing your journal entry here..."
-                      className="w-full flex-1 text-base bg-muted/50 border-dashed"
+                      className={cn("w-full flex-1 text-base bg-muted/50 border-dashed", font)}
+                      style={settingsStyle}
                       rows={15}
                     />
-                     <div className="flex justify-end mt-4">
+                     <div className="flex items-center justify-end mt-4 gap-4">
+                        <span className="text-sm text-muted-foreground">{wordCount} word{wordCount !== 1 && 's'}</span>
+                        <Button variant="ghost" size="icon" onClick={() => setIsSettingsPanelOpen(true)}>
+                            <Settings className="h-5 w-5" />
+                        </Button>
                         <Button onClick={handleSave}>
-                            <Save className="mr-2 h-4 w-4" /> Save & Finish Editing
+                            <Save className="mr-2 h-4 w-4" /> Save & Finish
                         </Button>
                     </div>
                   </motion.div>
@@ -368,7 +382,8 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="prose dark:prose-invert max-w-none text-base cursor-pointer flex-1"
+                    className={cn("prose dark:prose-invert max-w-none cursor-pointer flex-1", font)}
+                    style={settingsStyle}
                     onClick={() => setIsEditing(true)}
                   >
                     {todaysEntry?.tags && todaysEntry.tags.length > 0 && (
@@ -460,6 +475,10 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
         open={isTemplateChooserOpen}
         onOpenChange={setTemplateChooserOpen}
         onSelectTemplate={handleSelectTemplate}
+      />
+      <WritingSettingsPanel
+        open={isSettingsPanelOpen}
+        onOpenChange={setIsSettingsPanelOpen}
       />
     </div>
   );

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { createContext, useState, useCallback, useContext, type ReactNode, useEffect } from 'react';
@@ -71,6 +72,13 @@ const getDefaultDemoData = (): AppData => ({
     }
   ],
   logTrackers: [],
+  journalEntries: [
+    {
+        id: uuidv4(),
+        date: new Date().toISOString(),
+        content: `This is a sample journal entry for today. You can edit this or create new entries for any date. The editor supports Markdown for formatting!\n\n## Ideas\n- Build a cool new feature\n- Learn a new skill\n\n## Gratitude\nI'm grateful for the opportunity to learn and build things.`
+    }
+  ],
 });
 
 

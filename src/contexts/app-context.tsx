@@ -1,3 +1,4 @@
+
 'use client';
 
 import { createContext, useState, useEffect, useCallback, type ReactNode } from 'react';
@@ -30,6 +31,7 @@ const defaultAppData: AppData = {
   },
   savedLinks: [],
   logTrackers: [],
+  journalEntries: [],
 };
 
 interface AppContextType {
@@ -63,6 +65,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         }],
         savedLinks: [],
         logTrackers: [],
+        journalEntries: [],
       };
       await saveAppData(username, newDefaultData);
       appData = newDefaultData;
@@ -79,6 +82,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }));
       if (!appData.logTrackers) {
         appData.logTrackers = [];
+      }
+      if (!appData.journalEntries) {
+        appData.journalEntries = [];
       }
     }
     

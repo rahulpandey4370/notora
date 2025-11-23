@@ -1,3 +1,4 @@
+
 import { z } from "zod";
 
 export const linkCategories = ['Article', 'Video', 'Course', 'Image', 'Other'] as const;
@@ -78,10 +79,17 @@ export interface LogTracker {
     isFlippable?: boolean;
 }
 
+export interface JournalEntry {
+    id: string;
+    date: string; // ISO string
+    content: string;
+}
+
 export interface AppData {
   tasks: Task[];
   noteBoards: NoteBoard[];
   userStats: UserStats;
   savedLinks: SavedLink[];
   logTrackers: LogTracker[];
+  journalEntries: JournalEntry[];
 }

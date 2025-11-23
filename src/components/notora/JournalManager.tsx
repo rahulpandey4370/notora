@@ -48,7 +48,6 @@ interface AIReflection {
 }
 
 export default function JournalManager({ journalEntries: initialJournalEntries, data, onDataChange }: JournalManagerProps) {
-  const [journalEntries, setJournalEntries] = useState(initialJournalEntries);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [currentContent, setCurrentContent] = useState('');
   const [currentMood, setCurrentMood] = useState<Mood | undefined>(undefined);
@@ -65,13 +64,8 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
   const { font, size, spacing, settingsStyle } = useWritingSettings();
   const isMobile = useIsMobile();
   
-  // Update internal state if initial props change
-  useEffect(() => {
-    setJournalEntries(initialJournalEntries);
-  }, [initialJournalEntries]);
-
   const filteredEntries = useMemo(() => {
-    let entries = journalEntries;
+    let entries = initialJournalEntries;
 
     if (activeTagFilter) {
       entries = entries.filter(entry => (entry.tags || []).includes(activeTagFilter));
@@ -82,7 +76,7 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
     }
 
     return entries;
-  }, [journalEntries, activeTagFilter, searchQuery]);
+  }, [initialJournalEntries, activeTagFilter, searchQuery]);
 
   const todaysEntry = useMemo(() => {
     return filteredEntries.find(entry => isSameDay(new Date(entry.date), selectedDate));
@@ -98,11 +92,11 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
   
   const allTags = useMemo(() => {
     const tags = new Set<string>();
-    journalEntries.forEach(entry => {
+    initialJournalEntries.forEach(entry => {
         (entry.tags || []).forEach(tag => tags.add(tag));
     });
     return Array.from(tags).sort();
-  }, [journalEntries]);
+  }, [initialJournalEntries]);
 
   const handleSave = () => {
     if (!currentContent.trim() && !currentMood && currentTags.length === 0) {
@@ -112,7 +106,7 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
     
     let updatedEntries;
     if (todaysEntry) {
-      updatedEntries = journalEntries.map(entry =>
+      updatedEntries = initialJournalEntries.map(entry =>
         entry.id === todaysEntry.id ? { ...entry, content: currentContent, mood: currentMood, tags: currentTags } : entry
       );
     } else {
@@ -123,9 +117,9 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
         mood: currentMood,
         tags: currentTags
       };
-      updatedEntries = [...journalEntries, newEntry];
+      updatedEntries = [...initialJournalEntries, newEntry];
     }
-    setJournalEntries(updatedEntries);
+
     onDataChange({ ...data, journalEntries: updatedEntries });
     toast({
         title: 'Journal Saved',
@@ -137,8 +131,7 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
   const handleDelete = () => {
     if (!todaysEntry) return;
 
-    const updatedEntries = journalEntries.filter(entry => entry.id !== todaysEntry.id);
-    setJournalEntries(updatedEntries);
+    const updatedEntries = initialJournalEntries.filter(entry => entry.id !== todaysEntry.id);
     onDataChange({ ...data, journalEntries: updatedEntries });
     
     toast({
@@ -189,11 +182,11 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
     let fileName = `notora-journal-${format(new Date(), 'yyyy-MM-dd')}`;
 
     if (formatType === 'json') {
-        content = JSON.stringify(journalEntries, null, 2);
+        content = JSON.stringify(initialJournalEntries, null, 2);
         mimeType = 'application/json';
         fileName += '.json';
     } else if (formatType === 'md') {
-        content = journalEntries
+        content = initialJournalEntries
             .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
             .map(entry => {
                 let md = `## ${format(new Date(entry.date), 'EEEE, MMMM do, yyyy')}\n\n`;
@@ -274,7 +267,7 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
               </CardContent>
             </Card>
              <JournalDiscovery 
-              entries={journalEntries}
+              entries={initialJournalEntries}
               onDateSelect={setSelectedDate}
               searchQuery={searchQuery}
               onSearchQueryChange={setSearchQuery}
@@ -343,7 +336,7 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
           </CardContent>
         </Card>
         <JournalDiscovery 
-            entries={journalEntries}
+            entries={initialJournalEntries}
             onDateSelect={setSelectedDate}
             searchQuery={searchQuery}
             onSearchQueryChange={setSearchQuery}
@@ -371,7 +364,7 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5, delay: 0.1 }}
       >
-        <StreakDisplay journalEntries={journalEntries} />
+        <StreakDisplay journalEntries={initialJournalEntries} />
         <Card className="min-h-[400px] flex flex-col dark:neon-border">
             <CardHeader>
               <div className="flex justify-between items-start gap-4">

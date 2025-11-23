@@ -45,7 +45,7 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
     setCurrentContent(todaysEntry?.content || '');
     setAiReflection({ reflection: '', isLoading: false }); // Reset reflection when date changes
     setIsEditing(!todaysEntry);
-  }, [todaysEntry]);
+  }, [todaysEntry, selectedDate]);
 
   const handleSave = () => {
     if (!currentContent.trim()) return;
@@ -153,7 +153,7 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
             </CardContent>
           </Card>
 
-          <Accordion type="single" collapsible>
+          <Accordion type="single" collapsible defaultValue="item-1">
             <AccordionItem value="item-1">
                 <AccordionTrigger>
                     <h3 className="flex items-center gap-2 font-semibold"><Info className="h-4 w-4" /> New to Journaling?</h3>
@@ -165,8 +165,10 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
                             <li><strong className="text-foreground">Daily Reflection:</strong> What went well today? What was challenging?</li>
                             <li><strong className="text-foreground">Gratitude:</strong> List three things you're grateful for and why.</li>
                             <li><strong className="text-foreground">Goal Tracking:</strong> What's one step you took towards a goal today?</li>
-                            <li><strong className="text-foreground">Brain Dump:</strong> Write down everything on your mind without judgment.</li>
                             <li><strong className="text-foreground">Feelings Check-in:</strong> How are you feeling right now? What might be the reason?</li>
+                            <li><strong className="text-foreground">Problem-Solving:</strong> Describe a challenge you're facing. What are some possible solutions?</li>
+                            <li><strong className="text-foreground">Future Self:</strong> What is one thing you can do today that your future self will thank you for?</li>
+                            <li><strong className="text-foreground">Brain Dump:</strong> Write down everything on your mind for 5-10 minutes without judgment.</li>
                         </ul>
                     </div>
                 </AccordionContent>

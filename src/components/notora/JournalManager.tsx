@@ -51,7 +51,6 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
   const [activeTagFilter, setActiveTagFilter] = useState<string | null>(null);
   const { toast } = useToast();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const autoSaveTimer = useRef<NodeJS.Timeout | null>(null);
 
   const filteredEntries = useMemo(() => {
     if (!activeTagFilter) return journalEntries;
@@ -79,7 +78,10 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
   }, [journalEntries]);
 
   const handleSave = () => {
-    if (!currentContent.trim() && !currentMood && currentTags.length === 0) return;
+    if (!currentContent.trim() && !currentMood && currentTags.length === 0) {
+        setIsEditing(false);
+        return;
+    };
     
     let updatedEntries;
     if (todaysEntry) {
@@ -103,20 +105,6 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
     });
     setIsEditing(false);
   };
-  
-  useEffect(() => {
-    if (isEditing) {
-      if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
-      autoSaveTimer.current = setTimeout(() => {
-        if(currentContent.trim() || currentMood !== todaysEntry?.mood || JSON.stringify(currentTags) !== JSON.stringify(todaysEntry?.tags)) {
-           handleSave();
-        }
-      }, 2000);
-    }
-    return () => {
-      if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
-    };
-  }, [currentContent, currentMood, currentTags, isEditing]);
   
   useEffect(() => {
     if (isEditing && textareaRef.current) {

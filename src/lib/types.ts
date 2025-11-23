@@ -144,6 +144,7 @@ export interface JournalEntry {
     date: string; // ISO string
     content: string;
     mood?: Mood;
+    tags?: string[];
 }
 
 export interface AppData {

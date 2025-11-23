@@ -2,9 +2,9 @@
 'use client';
 
 import { useState, useMemo, useEffect, useRef } from 'react';
-import { format, isSameDay, subDays, differenceInDays } from 'date-fns';
+import { format, isSameDay } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar as CalendarIcon, BookHeart, Save, Wand2, Loader2, Info, BookCheck, BrainCircuit, Type, FileText } from 'lucide-react';
+import { BookHeart, Save, Wand2, Loader2, Info, BookCheck, BrainCircuit, Type, FileText } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import type { AppData, JournalEntry, Mood } from '@/lib/types';
 import { Button } from '@/components/ui/button';
@@ -22,6 +22,7 @@ import { moodEmojiMap } from '@/lib/types';
 import TemplateChooser from './TemplateChooser';
 import StreakDisplay from './StreakDisplay';
 import { Badge } from '../ui/badge';
+import TagInput from './TagInput';
 
 interface JournalManagerProps {
   journalEntries: JournalEntry[];
@@ -42,41 +43,55 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [currentContent, setCurrentContent] = useState('');
   const [currentMood, setCurrentMood] = useState<Mood | undefined>(undefined);
+  const [currentTags, setCurrentTags] = useState<string[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const [aiReflection, setAiReflection] = useState<AIReflection>({ reflection: '', followUpQuestion: '', emotion: '', writingStyle: '', mainThemes: [], isLoading: false });
   const [isTemplateChooserOpen, setTemplateChooserOpen] = useState(false);
+  const [activeTagFilter, setActiveTagFilter] = useState<string | null>(null);
   const { toast } = useToast();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const autoSaveTimer = useRef<NodeJS.Timeout | null>(null);
 
+  const filteredEntries = useMemo(() => {
+    if (!activeTagFilter) return journalEntries;
+    return journalEntries.filter(entry => (entry.tags || []).includes(activeTagFilter));
+  }, [journalEntries, activeTagFilter]);
+
   const todaysEntry = useMemo(() => {
-    return journalEntries.find(entry => isSameDay(new Date(entry.date), selectedDate));
-  }, [journalEntries, selectedDate]);
+    return filteredEntries.find(entry => isSameDay(new Date(entry.date), selectedDate));
+  }, [filteredEntries, selectedDate]);
 
   useEffect(() => {
     setCurrentContent(todaysEntry?.content || '');
     setCurrentMood(todaysEntry?.mood);
-    setAiReflection({ reflection: '', followUpQuestion: '', emotion: '', writingStyle: '', mainThemes: [], isLoading: false }); // Reset reflection when date changes
+    setCurrentTags(todaysEntry?.tags || []);
+    setAiReflection({ reflection: '', followUpQuestion: '', emotion: '', writingStyle: '', mainThemes: [], isLoading: false });
     setIsEditing(!todaysEntry);
   }, [todaysEntry, selectedDate]);
+  
+  const allTags = useMemo(() => {
+    const tags = new Set<string>();
+    journalEntries.forEach(entry => {
+        (entry.tags || []).forEach(tag => tags.add(tag));
+    });
+    return Array.from(tags).sort();
+  }, [journalEntries]);
 
   const handleSave = () => {
-    // Trim check for content is important, but allow saving mood even with empty content
-    if (!currentContent.trim() && !currentMood) return;
+    if (!currentContent.trim() && !currentMood && currentTags.length === 0) return;
     
     let updatedEntries;
     if (todaysEntry) {
-      // Update existing entry
       updatedEntries = journalEntries.map(entry =>
-        entry.id === todaysEntry.id ? { ...entry, content: currentContent, mood: currentMood } : entry
+        entry.id === todaysEntry.id ? { ...entry, content: currentContent, mood: currentMood, tags: currentTags } : entry
       );
     } else {
-      // Create new entry
       const newEntry: JournalEntry = {
         id: uuidv4(),
         date: selectedDate.toISOString(),
         content: currentContent,
         mood: currentMood,
+        tags: currentTags
       };
       updatedEntries = [...journalEntries, newEntry];
     }
@@ -92,15 +107,15 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
     if (isEditing) {
       if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
       autoSaveTimer.current = setTimeout(() => {
-        if(currentContent.trim() || currentMood !== todaysEntry?.mood) {
+        if(currentContent.trim() || currentMood !== todaysEntry?.mood || JSON.stringify(currentTags) !== JSON.stringify(todaysEntry?.tags)) {
            handleSave();
         }
-      }, 2000); // Auto-save after 2 seconds of inactivity
+      }, 2000);
     }
     return () => {
       if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
     };
-  }, [currentContent, currentMood, isEditing]);
+  }, [currentContent, currentMood, currentTags, isEditing]);
   
   useEffect(() => {
     if (isEditing && textareaRef.current) {
@@ -126,32 +141,28 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
   }
 
   const handleSelectTemplate = (templateContent: string) => {
-    setCurrentContent(templateContent);
+    setCurrentContent(prev => prev + templateContent);
     setTemplateChooserOpen(false);
     textareaRef.current?.focus();
   }
 
-  const entryDates = useMemo(() => journalEntries.map(entry => new Date(entry.date)), [journalEntries]);
+  const entryDates = useMemo(() => filteredEntries.map(entry => new Date(entry.date)), [filteredEntries]);
 
   const moodModifiers = useMemo(() => {
     const modifiers: Record<string, Date[]> = {
-        'mood-Ecstatic': [],
-        'mood-Happy': [],
-        'mood-Neutral': [],
-        'mood-Sad': [],
-        'mood-Angry': [],
+        'mood-Ecstatic': [], 'mood-Happy': [], 'mood-Neutral': [], 'mood-Sad': [], 'mood-Angry': [],
     };
-    journalEntries.forEach(entry => {
+    filteredEntries.forEach(entry => {
         if (entry.mood) {
             modifiers[`mood-${entry.mood}`]?.push(new Date(entry.date));
         }
     });
     return modifiers;
-  }, [journalEntries]);
+  }, [filteredEntries]);
 
   return (
     <div className="p-4 md:p-8 space-y-8">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         
         <motion.div 
             className="lg:col-span-1 space-y-8"
@@ -176,43 +187,46 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
                 }}
                 modifiersClassNames={{
                   hasEntry: 'has-entry',
-                  'mood-Ecstatic': 'mood-ecstatic',
-                  'mood-Happy': 'mood-happy',
-                  'mood-Neutral': 'mood-neutral',
-                  'mood-Sad': 'mood-sad',
-                  'mood-Angry': 'mood-angry',
+                  'mood-Ecstatic': 'mood-ecstatic', 'mood-Happy': 'mood-happy', 'mood-Neutral': 'mood-neutral', 'mood-Sad': 'mood-sad', 'mood-Angry': 'mood-angry',
                 }}
               />
               <style>{`
-                .has-entry:not([class*="mood-"]) { 
-                    border: 2px solid hsl(var(--primary));
-                    border-radius: var(--radius);
-                }
-                .mood-ecstatic { --mood-color: hsl(var(--chart-4)); }
-                .mood-happy { --mood-color: hsl(var(--chart-2)); }
-                .mood-neutral { --mood-color: hsl(var(--muted-foreground)); }
-                .mood-sad { --mood-color: hsl(var(--chart-1)); }
-                .mood-angry { --mood-color: hsl(var(--destructive)); }
-                [class*="mood-"] { 
-                  position: relative; 
-                  overflow: visible;
-                }
-                [class*="mood-"]::after {
-                  content: '';
-                  position: absolute;
-                  bottom: 4px;
-                  left: 50%;
-                  transform: translateX(-50%);
-                  width: 6px;
-                  height: 6px;
-                  border-radius: 50%;
-                  background-color: var(--mood-color);
-                }
-                .rdp-day_today { 
-                    font-weight: bold;
-                    color: hsl(var(--chart-2));
-                }
+                .has-entry:not([class*="mood-"]) { border: 2px solid hsl(var(--primary)); border-radius: var(--radius); }
+                .mood-ecstatic { --mood-color: hsl(var(--chart-4)); } .mood-happy { --mood-color: hsl(var(--chart-2)); } .mood-neutral { --mood-color: hsl(var(--muted-foreground)); } .mood-sad { --mood-color: hsl(var(--chart-1)); } .mood-angry { --mood-color: hsl(var(--destructive)); }
+                [class*="mood-"] { position: relative; overflow: visible; }
+                [class*="mood-"]::after { content: ''; position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); width: 6px; height: 6px; border-radius: 50%; background-color: var(--mood-color); }
+                .rdp-day_today { font-weight: bold; color: hsl(var(--chart-2)); }
               `}</style>
+            </CardContent>
+          </Card>
+          
+          <Card className='dark:neon-border-blue'>
+            <CardHeader>
+                <CardTitle>Tags</CardTitle>
+                <CardDescription>Filter your entries by tag.</CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-wrap gap-2">
+                <Badge
+                    onClick={() => setActiveTagFilter(null)}
+                    className={cn(
+                        "cursor-pointer transition-all",
+                        activeTagFilter === null ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                    )}
+                >
+                    All
+                </Badge>
+                {allTags.map(tag => (
+                    <Badge
+                        key={tag}
+                        onClick={() => setActiveTagFilter(tag)}
+                        className={cn(
+                            "cursor-pointer transition-all",
+                            activeTagFilter === tag ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                        )}
+                    >
+                        {tag}
+                    </Badge>
+                ))}
             </CardContent>
           </Card>
 
@@ -229,10 +243,6 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
                             <li><strong className="text-foreground">Gratitude:</strong> List three things you're grateful for and why.</li>
                             <li><strong className="text-foreground">Goal Tracking:</strong> What's one step you took towards a goal today?</li>
                             <li><strong className="text-foreground">Feelings Check-in:</strong> How are you feeling right now? What might be the reason?</li>
-                            <li><strong className="text-foreground">Problem-Solving:</strong> Describe a challenge you're facing. What are some possible solutions?</li>
-                            <li><strong className="text-foreground">Future Self:</strong> What is one thing you can do today that your future self will thank you for?</li>
-                            <li><strong className="text-foreground">Brain Dump:</strong> Write down everything on your mind for 5-10 minutes without judgment.</li>
-                            <li><strong className="text-foreground">Wins & Lessons:</strong> What was a small victory today? What did you learn?</li>
                         </ul>
                     </div>
                 </AccordionContent>
@@ -280,6 +290,9 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
                     <div className="mb-4">
                       <MoodSelector selectedMood={currentMood} onMoodSelect={setCurrentMood} />
                     </div>
+                     <div className="mb-4">
+                        <TagInput tags={currentTags} setTags={setCurrentTags} allTags={allTags} />
+                    </div>
                     {currentContent.length === 0 && (
                       <div className="mb-4">
                         <Button variant="ghost" className="text-primary" onClick={() => setTemplateChooserOpen(true)}>
@@ -310,6 +323,15 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
                     className="prose dark:prose-invert max-w-none text-base cursor-pointer flex-1"
                     onClick={() => setIsEditing(true)}
                   >
+                    {todaysEntry?.tags && todaysEntry.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mb-4">
+                            {todaysEntry.tags.map(tag => (
+                                <Badge key={tag} variant="secondary" className="cursor-pointer" onClick={(e) => { e.stopPropagation(); setActiveTagFilter(tag); }}>
+                                    {tag}
+                                </Badge>
+                            ))}
+                        </div>
+                    )}
                     {currentContent ? (
                         <ReactMarkdown>{currentContent}</ReactMarkdown>
                     ) : (

@@ -61,7 +61,7 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
 
   const { toast } = useToast();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const { font, size, spacing, settingsStyle } = useWritingSettings();
+  const { font, settingsStyle } = useWritingSettings();
   const isMobile = useIsMobile();
   
   const filteredEntries = useMemo(() => {
@@ -83,11 +83,18 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
   }, [filteredEntries, selectedDate]);
 
   useEffect(() => {
-    setCurrentContent(todaysEntry?.content || '');
-    setCurrentMood(todaysEntry?.mood);
-    setCurrentTags(todaysEntry?.tags || []);
+    if (todaysEntry) {
+        setCurrentContent(todaysEntry.content);
+        setCurrentMood(todaysEntry.mood);
+        setCurrentTags(todaysEntry.tags || []);
+        setIsEditing(false);
+    } else {
+        setCurrentContent('');
+        setCurrentMood(undefined);
+        setCurrentTags([]);
+        setIsEditing(true);
+    }
     setAiReflection({ reflection: '', followUpQuestion: '', emotion: '', writingStyle: '', mainThemes: [], isLoading: false });
-    setIsEditing(!todaysEntry);
   }, [todaysEntry, selectedDate]);
   
   const allTags = useMemo(() => {
@@ -99,7 +106,7 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
   }, [initialJournalEntries]);
 
   const handleSave = () => {
-    if (!currentContent.trim() && !currentMood && currentTags.length === 0) {
+    if (!currentContent.trim() && !currentMood && currentTags.length === 0 && !todaysEntry) {
         setIsEditing(false);
         return;
     };
@@ -414,7 +421,14 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
                     <div className="mb-4"><MoodSelector selectedMood={currentMood} onMoodSelect={setCurrentMood} /></div>
                     <div className="mb-4"><TagInput tags={currentTags} setTags={setCurrentTags} allTags={allTags} /></div>
                     {currentContent.length === 0 && <div className="mb-4"><Button variant="ghost" className="text-primary" onClick={() => setTemplateChooserOpen(true)}><BookCheck className="mr-2 h-4 w-4" /> Use a Template</Button></div>}
-                    <Textarea ref={textareaRef} value={currentContent} onChange={(e) => setCurrentContent(e.target.value)} placeholder="Start writing your journal entry here..." className={cn("w-full flex-1 text-base bg-muted/50 border-dashed", font)} style={settingsStyle} rows={15}/>
+                    <Textarea
+                      ref={textareaRef}
+                      value={currentContent}
+                      onChange={(e) => setCurrentContent(e.target.value)}
+                      placeholder="Start writing your journal entry here..."
+                      className="w-full flex-1 text-base bg-muted/50 border-dashed"
+                      rows={15}
+                    />
                     <div className="flex items-center justify-end mt-4 gap-4">
                         <span className="text-sm text-muted-foreground">{wordCount} word{wordCount !== 1 && 's'}</span>
                         <Button variant="ghost" size="icon" onClick={() => setIsSettingsPanelOpen(true)}><Settings className="h-5 w-5" /></Button>

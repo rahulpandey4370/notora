@@ -47,7 +47,8 @@ interface AIReflection {
     isLoading: boolean;
 }
 
-export default function JournalManager({ journalEntries, data, onDataChange }: JournalManagerProps) {
+export default function JournalManager({ journalEntries: initialJournalEntries, data, onDataChange }: JournalManagerProps) {
+  const [journalEntries, setJournalEntries] = useState(initialJournalEntries);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [currentContent, setCurrentContent] = useState('');
   const [currentMood, setCurrentMood] = useState<Mood | undefined>(undefined);
@@ -63,6 +64,11 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { font, size, spacing, settingsStyle } = useWritingSettings();
   const isMobile = useIsMobile();
+  
+  // Update internal state if initial props change
+  useEffect(() => {
+    setJournalEntries(initialJournalEntries);
+  }, [initialJournalEntries]);
 
   const filteredEntries = useMemo(() => {
     let entries = journalEntries;
@@ -119,6 +125,7 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
       };
       updatedEntries = [...journalEntries, newEntry];
     }
+    setJournalEntries(updatedEntries);
     onDataChange({ ...data, journalEntries: updatedEntries });
     toast({
         title: 'Journal Saved',
@@ -131,6 +138,7 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
     if (!todaysEntry) return;
 
     const updatedEntries = journalEntries.filter(entry => entry.id !== todaysEntry.id);
+    setJournalEntries(updatedEntries);
     onDataChange({ ...data, journalEntries: updatedEntries });
     
     toast({
@@ -476,5 +484,3 @@ export default function JournalManager({ journalEntries, data, onDataChange }: J
     </div>
   );
 }
-
-    

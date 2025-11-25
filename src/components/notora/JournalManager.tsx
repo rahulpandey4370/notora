@@ -74,7 +74,7 @@ const JournalEditor = ({ entry, selectedDate, onSave, onCancel, allTags }: Journ
         }
         autoSaveTimer.current = setTimeout(() => {
             onSave(content, mood, tags);
-        }, 1500); // Auto-save after 1.5 seconds of inactivity
+        }, 30000); // Auto-save after 30 seconds of inactivity
     }, [content, mood, tags, onSave]);
 
     useEffect(() => {

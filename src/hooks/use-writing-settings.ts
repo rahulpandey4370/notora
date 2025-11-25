@@ -32,35 +32,6 @@ const useWritingSettingsStore = create<WritingSettingsState>()(
   )
 );
 
-const fontClassMapping: Record<WritingFont, string> = {
-    'font-body': 'font-sans',
-    'font-serif': 'font-serif',
-    'font-mono': 'font-mono',
-};
-
 export const useWritingSettings = () => {
-    const font = useWritingSettingsStore((state) => state.font);
-    const size = useWritingSettingsStore((state) => state.size);
-    const spacing = useWritingSettingsStore((state) => state.spacing);
-    const setFont = useWritingSettingsStore((state) => state.setFont);
-    const setSize = useWritingSettingsStore((state) => state.setSize);
-    const setSpacing = useWritingSettingsStore((state) => state.setSpacing);
-
-    const mappedFont = useMemo(() => fontClassMapping[font], [font]);
-    
-    const settingsStyle = useMemo(() => ({
-        fontSize: `${size}px`,
-        lineHeight: spacing,
-    }), [size, spacing]);
-
-    return useMemo(() => ({
-        font: mappedFont,
-        size,
-        spacing,
-        rawFont: font,
-        setFont,
-        setSize,
-        setSpacing,
-        settingsStyle,
-    }), [mappedFont, size, spacing, font, setFont, setSize, setSpacing, settingsStyle]);
+    return useWritingSettingsStore();
 };

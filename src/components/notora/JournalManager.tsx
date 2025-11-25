@@ -62,11 +62,29 @@ const JournalEditor = ({ entry, selectedDate, onSave, onCancel, allTags }: Journ
     const [isTemplateChooserOpen, setTemplateChooserOpen] = useState(false);
     const [isSettingsPanelOpen, setIsSettingsPanelOpen] = useState(false);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
-    const { font, settingsStyle } = useWritingSettings();
+    const autoSaveTimer = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
         textareaRef.current?.focus();
     }, []);
+
+    const handleDataChange = useCallback(() => {
+        if (autoSaveTimer.current) {
+            clearTimeout(autoSaveTimer.current);
+        }
+        autoSaveTimer.current = setTimeout(() => {
+            onSave(content, mood, tags);
+        }, 1500); // Auto-save after 1.5 seconds of inactivity
+    }, [content, mood, tags, onSave]);
+
+    useEffect(() => {
+        handleDataChange();
+        return () => {
+            if (autoSaveTimer.current) {
+                clearTimeout(autoSaveTimer.current);
+            }
+        };
+    }, [content, mood, tags, handleDataChange]);
 
     const wordCount = useMemo(() => {
         return content.trim().split(/\s+/).filter(Boolean).length;
@@ -79,11 +97,13 @@ const JournalEditor = ({ entry, selectedDate, onSave, onCancel, allTags }: Journ
     }
     
     const handleSaveClick = () => {
+        if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
         if (!content.trim() && !mood && tags.length === 0 && !entry) {
             onCancel();
             return;
         };
         onSave(content, mood, tags);
+        onCancel(); // Switch back to view mode on explicit save
     }
 
     return (
@@ -96,17 +116,14 @@ const JournalEditor = ({ entry, selectedDate, onSave, onCancel, allTags }: Journ
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="Start writing your journal entry here..."
-              className={cn("w-full flex-1 text-base bg-muted/50 border-dashed", font)}
-              style={settingsStyle}
+              className="w-full flex-1 text-base bg-muted/50 border-dashed font-sans"
               rows={15}
             />
             <div className="flex items-center justify-end mt-4 gap-4">
                 <span className="text-sm text-muted-foreground">{wordCount} word{wordCount !== 1 && 's'}</span>
-                <Button variant="ghost" size="icon" onClick={() => setIsSettingsPanelOpen(true)}><Settings className="h-5 w-5" /></Button>
                 <Button onClick={handleSaveClick}><Save className="mr-2 h-4 w-4" /> Save Entry</Button>
             </div>
             <TemplateChooser open={isTemplateChooserOpen} onOpenChange={setTemplateChooserOpen} onSelectTemplate={handleSelectTemplate} />
-            <WritingSettingsPanel open={isSettingsPanelOpen} onOpenChange={setIsSettingsPanelOpen} />
         </motion.div>
     );
 };
@@ -120,7 +137,6 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
   const [searchQuery, setSearchQuery] = useState('');
 
   const { toast } = useToast();
-  const { font, settingsStyle } = useWritingSettings();
   const isMobile = useIsMobile();
   
   const filteredEntries = useMemo(() => {
@@ -160,11 +176,16 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
 
   const handleSave = (content: string, mood?: Mood, tags?: string[]) => {
     let updatedEntries;
-    if (todaysEntry) {
+    const existingEntry = initialJournalEntries.find(entry => isSameDay(new Date(entry.date), selectedDate));
+
+    if (existingEntry) {
       updatedEntries = initialJournalEntries.map(entry =>
-        entry.id === todaysEntry.id ? { ...entry, content, mood, tags } : entry
+        entry.id === existingEntry.id ? { ...entry, content, mood, tags } : entry
       );
     } else {
+      if (!content.trim() && !mood && (!tags || tags.length === 0)) {
+        return; // Don't create an empty entry
+      }
       const newEntry: JournalEntry = {
         id: uuidv4(),
         date: selectedDate.toISOString(),
@@ -174,13 +195,10 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
       };
       updatedEntries = [...initialJournalEntries, newEntry];
     }
-
-    onDataChange({ ...data, journalEntries: updatedEntries });
-    toast({
-        title: 'Journal Saved',
-        description: `Your entry for ${format(selectedDate, 'PPP')} has been saved.`,
-    });
-    setIsEditing(false);
+    
+    if(updatedEntries) {
+        onDataChange({ ...data, journalEntries: updatedEntries });
+    }
   };
 
   const handleDelete = () => {
@@ -275,7 +293,7 @@ a.click();
     return modifiers;
   }, [filteredEntries]);
 
-  const JournalEditorContent = () => (
+  const JournalEditorContent = useCallback(() => (
       <motion.div 
         className="lg:col-span-2 space-y-8"
         initial={{ opacity: 0, x: 20 }}
@@ -336,7 +354,7 @@ a.click();
                     allTags={allTags}
                   />
                 ) : (
-                  <motion.div key="viewer" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className={cn("prose dark:prose-invert max-w-none cursor-pointer flex-1", font)} style={settingsStyle} onClick={() => setIsEditing(true)}>
+                  <motion.div key="viewer" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="prose dark:prose-invert max-w-none cursor-pointer flex-1 font-sans" onClick={() => setIsEditing(true)}>
                     {todaysEntry?.tags && todaysEntry.tags.length > 0 && <div className="flex flex-wrap gap-2 mb-4">{todaysEntry.tags.map(tag => <Badge key={tag} variant="secondary" className="cursor-pointer" onClick={(e) => { e.stopPropagation(); setActiveTagFilter(tag); }}>{tag}</Badge>)}</div>}
                     {todaysEntry?.content ? <ReactMarkdown>{todaysEntry.content}</ReactMarkdown> : <div className="text-center text-muted-foreground pt-10">No entry for this day. Click here to start writing.</div>}
                   </motion.div>
@@ -372,7 +390,7 @@ a.click();
             </div>
            )}
         </motion.div>
-  );
+  ), [selectedDate, todaysEntry, isEditing, aiReflection, allTags, initialJournalEntries, activeTagFilter, searchQuery]);
 
   const DesktopLayout = () => (
      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">

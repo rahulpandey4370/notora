@@ -19,7 +19,7 @@ interface WritingSettingsPanelProps {
 }
 
 export default function WritingSettingsPanel({ open, onOpenChange }: WritingSettingsPanelProps) {
-  const { font, size, spacing, setFont, setSize, setSpacing, rawFont } = useWritingSettings();
+  const { font, size, spacing, setFont, setSize, setSpacing } = useWritingSettings();
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -33,7 +33,7 @@ export default function WritingSettingsPanel({ open, onOpenChange }: WritingSett
         <div className="space-y-8 py-8">
           <div className="space-y-4">
             <Label>Font Family</Label>
-            <RadioGroup value={rawFont} onValueChange={(v) => setFont(v as any)}>
+            <RadioGroup value={font} onValueChange={(v) => setFont(v as any)}>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="font-body" id="sans" />
                 <Label htmlFor="sans">Sans Serif</Label>

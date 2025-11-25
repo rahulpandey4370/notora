@@ -17,3 +17,5 @@ import '@/ai/flows/contextual-chat.ts';
 import '@/ai/flows/analyze-daily-calories.ts';
 import '@/ai/flows/analyze-food-calories.ts';
 import '@/ai/flows/reflect-on-journal-entry.ts';
+import '@/ai/flows/format-journal-entry.ts';
+import '@/ai/flows/summarize-journal-entry.ts';

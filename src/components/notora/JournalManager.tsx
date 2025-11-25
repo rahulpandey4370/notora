@@ -1,10 +1,9 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { format, isSameDay } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BookHeart, Save, Wand2, Loader2, Info, BookCheck, BrainCircuit, Type, FileText, Download, Settings, Trash2 } from 'lucide-react';
+import { BookHeart, Save, Wand2, Loader2, Info, BookCheck, BrainCircuit, Type, FileText, Download, Settings, Trash2, DraftingCompass, FileSignature } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import type { AppData, JournalEntry, Mood } from '@/lib/types';
 import { Button } from '@/components/ui/button';
@@ -15,6 +14,8 @@ import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { v4 as uuidv4 } from 'uuid';
 import { reflectOnJournalEntry } from '@/ai/flows/reflect-on-journal-entry';
+import { formatJournalEntry } from '@/ai/flows/format-journal-entry';
+import { summarizeJournalEntry } from '@/ai/flows/summarize-journal-entry';
 import { Skeleton } from '../ui/skeleton';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
 import MoodSelector from './MoodSelector';
@@ -23,9 +24,7 @@ import TemplateChooser from './TemplateChooser';
 import StreakDisplay from './StreakDisplay';
 import { Badge } from '../ui/badge';
 import TagInput from './TagInput';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu';
-import { useWritingSettings } from '@/hooks/use-writing-settings';
-import WritingSettingsPanel from './WritingSettingsPanel';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '../ui/dropdown-menu';
 import JournalDiscovery from './JournalDiscovery';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -50,7 +49,7 @@ interface AIReflection {
 interface JournalEditorProps {
     entry: JournalEntry | undefined;
     selectedDate: Date;
-    onSave: (content: string, mood?: Mood, tags?: string[]) => void;
+    onSave: (changes: Partial<JournalEntry>) => void;
     onCancel: () => void;
     allTags: string[];
 }
@@ -60,7 +59,6 @@ const JournalEditor = ({ entry, selectedDate, onSave, onCancel, allTags }: Journ
     const [mood, setMood] = useState(entry?.mood);
     const [tags, setTags] = useState(entry?.tags || []);
     const [isTemplateChooserOpen, setTemplateChooserOpen] = useState(false);
-    const [isSettingsPanelOpen, setIsSettingsPanelOpen] = useState(false);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const autoSaveTimer = useRef<NodeJS.Timeout | null>(null);
 
@@ -73,7 +71,7 @@ const JournalEditor = ({ entry, selectedDate, onSave, onCancel, allTags }: Journ
             clearTimeout(autoSaveTimer.current);
         }
         autoSaveTimer.current = setTimeout(() => {
-            onSave(content, mood, tags);
+            onSave({ content, mood, tags });
         }, 30000); // Auto-save after 30 seconds of inactivity
     }, [content, mood, tags, onSave]);
 
@@ -102,7 +100,7 @@ const JournalEditor = ({ entry, selectedDate, onSave, onCancel, allTags }: Journ
             onCancel();
             return;
         };
-        onSave(content, mood, tags);
+        onSave({ content, mood, tags });
         onCancel(); // Switch back to view mode on explicit save
     }
 
@@ -135,6 +133,7 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
   const [aiReflection, setAiReflection] = useState<AIReflection>({ reflection: '', followUpQuestion: '', emotion: '', writingStyle: '', mainThemes: [], isLoading: false });
   const [activeTagFilter, setActiveTagFilter] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [aiLoading, setAiLoading] = useState<'format' | 'summarize' | null>(null);
 
   const { toast } = useToast();
   const isMobile = useIsMobile();
@@ -174,24 +173,24 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
     return Array.from(tags).sort();
   }, [initialJournalEntries]);
 
-  const handleSave = (content: string, mood?: Mood, tags?: string[]) => {
+  const handleSave = (changes: Partial<JournalEntry>) => {
     let updatedEntries;
     const existingEntry = initialJournalEntries.find(entry => isSameDay(new Date(entry.date), selectedDate));
 
     if (existingEntry) {
       updatedEntries = initialJournalEntries.map(entry =>
-        entry.id === existingEntry.id ? { ...entry, content, mood, tags } : entry
+        entry.id === existingEntry.id ? { ...entry, ...changes } : entry
       );
     } else {
-      if (!content.trim() && !mood && (!tags || tags.length === 0)) {
+      if (!changes.content?.trim() && !changes.mood && (!changes.tags || changes.tags.length === 0)) {
         return; // Don't create an empty entry
       }
       const newEntry: JournalEntry = {
         id: uuidv4(),
         date: selectedDate.toISOString(),
-        content: content,
-        mood: mood,
-        tags: tags
+        content: changes.content || '',
+        mood: changes.mood,
+        tags: changes.tags
       };
       updatedEntries = [...initialJournalEntries, newEntry];
     }
@@ -230,6 +229,36 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
             description: 'Could not generate an AI reflection for this entry.'
         })
         setAiReflection({ reflection: '', followUpQuestion: '', emotion: '', writingStyle: '', mainThemes: [], isLoading: false });
+    }
+  }
+
+  const handleFormatEntry = async () => {
+    if (!todaysEntry?.content) return;
+    setAiLoading('format');
+    try {
+        const result = await formatJournalEntry({ content: todaysEntry.content });
+        handleSave({ content: result.formattedContent });
+        toast({ title: 'Journal Formatted', description: 'AI has beautifully formatted your entry.' });
+    } catch(e) {
+        console.error(e);
+        toast({ variant: 'destructive', title: 'Formatting Failed' });
+    } finally {
+        setAiLoading(null);
+    }
+  }
+
+  const handleSummarizeEntry = async () => {
+    if (!todaysEntry?.content) return;
+    setAiLoading('summarize');
+    try {
+        const result = await summarizeJournalEntry({ content: todaysEntry.content });
+        handleSave({ aiSummary: result.summary });
+        toast({ title: 'Summary Generated', description: 'An AI-powered summary has been saved with your entry.' });
+    } catch(e) {
+        console.error(e);
+        toast({ variant: 'destructive', title: 'Summarization Failed' });
+    } finally {
+        setAiLoading(null);
     }
   }
 
@@ -356,6 +385,12 @@ a.click();
                 ) : (
                   <motion.div key="viewer" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="prose dark:prose-invert max-w-none cursor-pointer flex-1 font-sans" onClick={() => setIsEditing(true)}>
                     {todaysEntry?.tags && todaysEntry.tags.length > 0 && <div className="flex flex-wrap gap-2 mb-4">{todaysEntry.tags.map(tag => <Badge key={tag} variant="secondary" className="cursor-pointer" onClick={(e) => { e.stopPropagation(); setActiveTagFilter(tag); }}>{tag}</Badge>)}</div>}
+                    {todaysEntry?.aiSummary && (
+                         <div className="mb-6 p-4 rounded-lg bg-muted/50 border">
+                            <h4 className="font-semibold text-sm mb-2 flex items-center gap-2"><FileSignature className="h-4 w-4 text-primary" /> AI Summary</h4>
+                            <div className="prose-sm dark:prose-invert text-muted-foreground"><ReactMarkdown>{todaysEntry.aiSummary}</ReactMarkdown></div>
+                        </div>
+                    )}
                     {todaysEntry?.content ? <ReactMarkdown>{todaysEntry.content}</ReactMarkdown> : <div className="text-center text-muted-foreground pt-10">No entry for this day. Click here to start writing.</div>}
                   </motion.div>
                 )}
@@ -364,7 +399,15 @@ a.click();
           </Card>
            {todaysEntry && !isEditing && (
             <div className="space-y-4">
-                <Button onClick={handleGetReflection} disabled={aiReflection.isLoading} className="w-full md:w-auto"><Wand2 className="mr-2 h-4 w-4" /> AI Writing Coach</Button>
+                <div className="flex flex-wrap gap-2">
+                    <Button onClick={handleGetReflection} disabled={aiReflection.isLoading} className="w-full sm:w-auto flex-1"><Wand2 className="mr-2 h-4 w-4" /> AI Writing Coach</Button>
+                    <Button onClick={handleFormatEntry} disabled={!!aiLoading} variant="outline" className="w-full sm:w-auto flex-1">
+                        {aiLoading === 'format' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <DraftingCompass className="mr-2 h-4 w-4" />} Format Entry
+                    </Button>
+                    <Button onClick={handleSummarizeEntry} disabled={!!aiLoading} variant="outline" className="w-full sm:w-auto flex-1">
+                        {aiLoading === 'summarize' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <FileSignature className="mr-2 h-4 w-4" />} AI Summary
+                    </Button>
+                </div>
                 <AnimatePresence>
                 {aiReflection.isLoading ? (
                     <Card className="dark:neon-border-green"><CardContent className="p-4"><Skeleton className="h-40 w-full" /></CardContent></Card>
@@ -381,7 +424,18 @@ a.click();
                                     <div className='flex items-start gap-3'><FileText className='h-5 w-5 mt-1 text-primary' /><div><h4 className='font-semibold'>Main Themes</h4><div className='flex flex-wrap gap-2 mt-1'>{aiReflection.mainThemes.map(theme => <Badge key={theme} variant='secondary'>{theme}</Badge>)}</div></div></div>
                                     <div className='flex items-start gap-3'><BrainCircuit className='h-5 w-5 mt-1 text-primary' /><div><h4 className='font-semibold'>Reflection</h4><p className="text-sm text-muted-foreground italic">"{aiReflection.reflection}"</p></div></div>
                                 </div>
-                                {aiReflection.followUpQuestion && <div className='p-3 bg-background/50 rounded-lg'><p className="font-semibold text-sm">A question for you:</p><p className="text-sm text-muted-foreground">{aiReflection.followUpQuestion}</p></div>}
+                                {aiReflection.followUpQuestion && (
+                                    <div className='p-3 bg-background/50 rounded-lg space-y-2'>
+                                        <p className="font-semibold text-sm">A question for you:</p>
+                                        <p className="text-sm text-muted-foreground">{aiReflection.followUpQuestion}</p>
+                                        <Textarea 
+                                            placeholder='Your thoughts...'
+                                            defaultValue={todaysEntry.coachResponse || ''}
+                                            onBlur={(e) => handleSave({ coachResponse: e.target.value })}
+                                            className='mt-2'
+                                        />
+                                    </div>
+                                )}
                             </CardContent>
                         </Card>
                     </motion.div>
@@ -390,7 +444,7 @@ a.click();
             </div>
            )}
         </motion.div>
-  ), [selectedDate, todaysEntry, isEditing, aiReflection, allTags, initialJournalEntries, activeTagFilter, searchQuery]);
+  ), [selectedDate, todaysEntry, isEditing, aiReflection, allTags, initialJournalEntries, activeTagFilter, searchQuery, aiLoading, handleSave]);
 
   const DesktopLayout = () => (
      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">

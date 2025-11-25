@@ -195,6 +195,8 @@ export interface JournalEntry {
     content: string;
     mood?: Mood;
     tags?: string[];
+    coachResponse?: string;
+    aiSummary?: string;
 }
 
 export interface AppData {
@@ -205,5 +207,3 @@ export interface AppData {
   logTrackers: LogTracker[];
   journalEntries: JournalEntry[];
 }
-
-    

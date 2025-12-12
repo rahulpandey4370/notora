@@ -8,12 +8,12 @@ import { Calendar } from '@/components/ui/calendar';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { format, isSameDay, startOfDay, isWithinInterval, addDays, startOfWeek as dfStartOfWeek, endOfWeek as dfEndOfWeek, startOfMonth as dfStartOfMonth, isSameMonth, isAfter } from 'date-fns';
+import { format, isSameDay, startOfDay, isWithinInterval, addDays, startOfWeek as dfStartOfWeek, endOfWeek as dfEndOfWeek, startOfMonth as dfStartOfMonth, isSameMonth, isAfter, differenceInDays } from 'date-fns';
 import type { DateRange } from 'react-day-picker';
 import { cn } from '@/lib/utils';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
-import { X } from 'lucide-react';
+import { X, TrendingDown, TrendingUp, Minus } from 'lucide-react';
 
 interface CalendarAnalysisProps {
   data: AppData;
@@ -128,6 +128,23 @@ export default function CalendarAnalysis({ data }: CalendarAnalysisProps) {
     }).filter(r => r.count > 0);
     
   }, [selectedRange, data.logTrackers]);
+  
+  const calorieAnalysis = useMemo(() => {
+    if (!analysisResult) return null;
+
+    const intake = analysisResult.find(r => r.name === 'Daily Calorie Intake');
+    const burned = analysisResult.find(r => r.name === 'Calories Burned');
+
+    if (!intake || !burned || intake.total === 0 || burned.total === 0) return null;
+
+    const netCalories = intake.total - burned.total;
+    const fatChangeKg = netCalories / 7700;
+
+    return {
+      netCalories,
+      fatChangeKg,
+    };
+  }, [analysisResult]);
 
 
   return (
@@ -216,6 +233,29 @@ export default function CalendarAnalysis({ data }: CalendarAnalysisProps) {
                         </div>
                     </RadioGroup>
 
+                    {calorieAnalysis && (
+                        <Card className={cn("bg-muted/50 border-l-4", calorieAnalysis.netCalories > 0 ? "border-red-500" : "border-green-500")}>
+                            <CardHeader className="pb-2">
+                                <CardTitle className="text-base">Calorie Summary</CardTitle>
+                            </CardHeader>
+                            <CardContent className="p-4 pt-0 space-y-2 text-sm">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-muted-foreground">Net Balance</span>
+                                    <span className={cn("font-bold flex items-center gap-1", calorieAnalysis.netCalories > 0 ? "text-red-500" : "text-green-500")}>
+                                        {calorieAnalysis.netCalories > 0 ? <TrendingUp size={16}/> : (calorieAnalysis.netCalories < 0 ? <TrendingDown size={16} /> : <Minus size={16}/>)}
+                                        {calorieAnalysis.netCalories.toLocaleString(undefined, { maximumFractionDigits: 0 })} kcal
+                                    </span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-muted-foreground">Est. Fat Change</span>
+                                    <span className="font-bold">
+                                        {calorieAnalysis.fatChangeKg.toFixed(2)} kg
+                                    </span>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    )}
+
                     {analysisResult && analysisResult.length > 0 ? (
                         <Card className="bg-muted/50">
                             <CardContent className="p-4 space-y-2">
@@ -236,7 +276,7 @@ export default function CalendarAnalysis({ data }: CalendarAnalysisProps) {
                             </CardContent>
                         </Card>
                     ) : (
-                        <p className="text-sm text-muted-foreground text-center">No data for any tracker in the selected range.</p>
+                        <p className="text-sm text-muted-foreground text-center pt-4">No data for any tracker in the selected range.</p>
                     )}
                 </div>
             )}

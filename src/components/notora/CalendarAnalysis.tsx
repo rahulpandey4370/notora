@@ -240,16 +240,16 @@ export default function CalendarAnalysis({ data }: CalendarAnalysisProps) {
                             </CardHeader>
                             <CardContent className="p-4 pt-0 space-y-2 text-sm">
                                 <div className="flex justify-between items-center">
-                                    <span className="text-muted-foreground">Net Balance</span>
+                                    <span className="text-muted-foreground">{calorieAnalysis.netCalories > 0 ? 'Calorie Surplus' : 'Calorie Deficit'}</span>
                                     <span className={cn("font-bold flex items-center gap-1", calorieAnalysis.netCalories > 0 ? "text-red-500" : "text-green-500")}>
                                         {calorieAnalysis.netCalories > 0 ? <TrendingUp size={16}/> : (calorieAnalysis.netCalories < 0 ? <TrendingDown size={16} /> : <Minus size={16}/>)}
-                                        {calorieAnalysis.netCalories.toLocaleString(undefined, { maximumFractionDigits: 0 })} kcal
+                                        {Math.abs(calorieAnalysis.netCalories).toLocaleString(undefined, { maximumFractionDigits: 0 })} kcal
                                     </span>
                                 </div>
                                 <div className="flex justify-between items-center">
-                                    <span className="text-muted-foreground">Est. Fat Change</span>
+                                    <span className="text-muted-foreground">{calorieAnalysis.fatChangeKg > 0 ? 'Est. Fat Gained' : 'Est. Fat Lost'}</span>
                                     <span className="font-bold">
-                                        {calorieAnalysis.fatChangeKg.toFixed(2)} kg
+                                        {Math.abs(calorieAnalysis.fatChangeKg).toFixed(2)} kg
                                     </span>
                                 </div>
                             </CardContent>

@@ -1,6 +1,9 @@
 
 import { z } from "zod";
 
+export const modelNames = ['gemini-2.5-flash', 'gemini-3-flash', 'gemini-2.5-flash-lite', 'gemma-3-27b', 'gpt-5.2-chat'] as const;
+export type ModelId = typeof modelNames[number];
+
 export const linkCategories = ['Article', 'Video', 'Course', 'Image', 'Other'] as const;
 
 export const moods = ['Ecstatic', 'Happy', 'Neutral', 'Sad', 'Angry'] as const;
@@ -171,6 +174,7 @@ export interface SavedLink {
     summary: string;
     category: typeof linkCategories[number];
     dateAdded: string; // ISO 8601 date string
+    model?: ModelId;
 }
 
 export interface LogEntry {
@@ -197,6 +201,7 @@ export interface JournalEntry {
     tags?: string[];
     coachResponse?: string;
     aiSummary?: string;
+    model?: ModelId;
 }
 
 export interface AppData {

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -12,6 +13,7 @@ import { useModelStore } from '@/hooks/use-model-store';
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuRadioGroup,
@@ -30,6 +32,10 @@ interface HeaderProps {
 export default function Header({ user, tasks, userStats }: HeaderProps) {
   const [summaryOpen, setSummaryOpen] = useState(false);
   const { availableModels, selectedModel, setModel } = useModelStore();
+
+  const googleModels = availableModels.filter(m => m.startsWith('gemini'));
+  const openAIModels = availableModels.filter(m => m.startsWith('gpt'));
+
 
   return (
     <header className="flex items-center justify-between p-4 border-b sticky top-0 bg-background/80 backdrop-blur-sm z-20">
@@ -51,9 +57,19 @@ export default function Header({ user, tasks, userStats }: HeaderProps) {
             <DropdownMenuLabel>Select AI Model</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuRadioGroup value={selectedModel} onValueChange={(v) => setModel(v as any)}>
-              {availableModels.map(modelId => (
-                <DropdownMenuRadioItem key={modelId} value={modelId}>{modelId}</DropdownMenuRadioItem>
-              ))}
+              <DropdownMenuGroup>
+                <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">Google</DropdownMenuLabel>
+                {googleModels.map(modelId => (
+                  <DropdownMenuRadioItem key={modelId} value={modelId}>{modelId}</DropdownMenuRadioItem>
+                ))}
+              </DropdownMenuGroup>
+              <DropdownMenuSeparator />
+              <DropdownMenuGroup>
+                <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">OpenAI</DropdownMenuLabel>
+                {openAIModels.map(modelId => (
+                  <DropdownMenuRadioItem key={modelId} value={modelId}>{modelId}</DropdownMenuRadioItem>
+                ))}
+              </DropdownMenuGroup>
             </DropdownMenuRadioGroup>
           </DropdownMenuContent>
         </DropdownMenu>

@@ -1,7 +1,7 @@
 
 import { z } from "zod";
 
-export const modelNames = ['gemini-1.5-flash-latest', 'gemini-1.5-pro-latest', 'gemini-pro', 'gpt-5.2-chat'] as const;
+export const modelNames = ['gemini-2.5-flash', 'gemini-3-flash-preview', 'gemini-2.5-flash-lite', 'gpt-5.2-chat'] as const;
 export type ModelId = typeof modelNames[number];
 
 export const linkCategories = ['Article', 'Video', 'Course', 'Image', 'Other'] as const;
@@ -212,5 +212,3 @@ export interface AppData {
   logTrackers: LogTracker[];
   journalEntries: JournalEntry[];
 }
-
-    

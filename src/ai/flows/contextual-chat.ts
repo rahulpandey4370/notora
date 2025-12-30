@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview An AI flow for a contextual chatbot that understands the user's current page content.
@@ -9,6 +10,8 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import { ModelId } from '@/lib/types';
+import { callAzureOpenAI } from '@/lib/azure-openai';
 
 const ChatMessageSchema = z.object({
   role: z.enum(['user', 'model']),
@@ -25,17 +28,14 @@ export type ContextualChatInput = z.infer<typeof ContextualChatInputSchema>;
 const ContextualChatOutputSchema = z.object({
   response: z.string().describe('The AI\'s response to the user\'s query, based on the provided context and history.'),
 });
-export type ContextualChatOutput = z.infer<typeof ContextualChatOutputSchema>;
+export type ContextualChatOutput = z.infer<typeof ContextualChatOutputSchema> & { modelId?: ModelId };
 
-export async function contextualChat(input: ContextualChatInput): Promise<ContextualChatOutput> {
-  return contextualChatFlow(input);
+export async function contextualChat(input: ContextualChatInput, modelId: ModelId): Promise<ContextualChatOutput> {
+  const result = await contextualChatFlow(input, { context: { modelId } });
+  return { ...result, modelId };
 }
 
-const prompt = ai.definePrompt({
-  name: 'contextualChatPrompt',
-  input: {schema: ContextualChatInputSchema},
-  output: {schema: ContextualChatOutputSchema},
-  prompt: `You are an intelligent assistant for the Notora productivity app. Your role is to help the user by answering questions based on the content of the page they are currently viewing.
+const promptTemplate = `You are an intelligent assistant for the Notora productivity app. Your role is to help the user by answering questions based on the content of the page they are currently viewing.
 
 You will be given the conversation history, the user's current query, and a JSON object representing the data on the current page. Use this page context to answer the user's questions accurately.
 
@@ -54,8 +54,7 @@ If the user asks a general question, answer it helpfully. If the question is abo
 **User's New Query:**
 "{{{query}}}"
 
-Based on all this information, provide a helpful and concise response.`,
-});
+Based on all this information, provide a helpful and concise response.`;
 
 const contextualChatFlow = ai.defineFlow(
   {
@@ -63,8 +62,29 @@ const contextualChatFlow = ai.defineFlow(
     inputSchema: ContextualChatInputSchema,
     outputSchema: ContextualChatOutputSchema,
   },
-  async input => {
-    const {output} = await prompt(input);
-    return output!;
+  async (input, { context }) => {
+    const modelId = context?.modelId || 'gemini-2.5-flash';
+    let output;
+
+    if (modelId === 'gpt-5.2-chat') {
+      output = await callAzureOpenAI(promptTemplate, input, ContextualChatOutputSchema);
+    } else {
+      const model = `googleai/${modelId}`;
+      const prompt = ai.definePrompt({
+        name: 'contextualChatPrompt',
+        input: {schema: ContextualChatInputSchema},
+        output: {schema: ContextualChatOutputSchema},
+        prompt: promptTemplate,
+      });
+      const genkitResponse = await prompt(input, { model });
+      output = genkitResponse.output;
+    }
+
+    if (!output) {
+      throw new Error("Flow failed to produce a valid output.");
+    }
+    return output;
   }
 );
+
+    

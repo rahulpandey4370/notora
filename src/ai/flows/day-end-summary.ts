@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -10,6 +11,8 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import { ModelId } from '@/lib/types';
+import { callAzureOpenAI } from '@/lib/azure-openai';
 
 const DayEndSummaryInputSchema = z.object({
   completedTasks: z.array(z.string()).describe('A list of completed tasks for the day.'),
@@ -22,17 +25,14 @@ const DayEndSummaryOutputSchema = z.object({
   motivationalQuote: z.string().describe('A motivational quote to inspire the user.'),
 });
 
-export type DayEndSummaryOutput = z.infer<typeof DayEndSummaryOutputSchema>;
+export type DayEndSummaryOutput = z.infer<typeof DayEndSummaryOutputSchema> & { modelId?: ModelId };
 
-export async function generateDayEndSummary(input: DayEndSummaryInput): Promise<DayEndSummaryOutput> {
-  return dayEndSummaryFlow(input);
+export async function generateDayEndSummary(input: DayEndSummaryInput, modelId: ModelId): Promise<DayEndSummaryOutput> {
+  const result = await dayEndSummaryFlow(input, { context: { modelId } });
+  return { ...result, modelId };
 }
 
-const prompt = ai.definePrompt({
-  name: 'dayEndSummaryPrompt',
-  input: {schema: DayEndSummaryInputSchema},
-  output: {schema: DayEndSummaryOutputSchema},
-  prompt: `You are a cheerful and encouraging productivity assistant. Your goal is to make the user feel proud of what they've accomplished.
+const promptTemplate = `You are a cheerful and encouraging productivity assistant. Your goal is to make the user feel proud of what they've accomplished.
 
 Generate a day-end summary based on the following completed tasks. Be positive, celebratory, and highlight their hard work.
 
@@ -43,8 +43,7 @@ Completed Tasks:
 
 Based on these tasks, provide:
 1. A short, uplifting summary of their accomplishments for the day.
-2. A relevant and inspiring motivational quote.`,
-});
+2. A relevant and inspiring motivational quote.`;
 
 const dayEndSummaryFlow = ai.defineFlow(
   {
@@ -52,8 +51,29 @@ const dayEndSummaryFlow = ai.defineFlow(
     inputSchema: DayEndSummaryInputSchema,
     outputSchema: DayEndSummaryOutputSchema,
   },
-  async (input) => {
-    const {output} = await prompt(input);
-    return output!;
+  async (input, { context }) => {
+    const modelId = context?.modelId || 'gemini-2.5-flash';
+    let output;
+
+    if (modelId === 'gpt-5.2-chat') {
+      output = await callAzureOpenAI(promptTemplate, input, DayEndSummaryOutputSchema);
+    } else {
+      const model = `googleai/${modelId}`;
+      const prompt = ai.definePrompt({
+        name: 'dayEndSummaryPrompt',
+        input: {schema: DayEndSummaryInputSchema},
+        output: {schema: DayEndSummaryOutputSchema},
+        prompt: promptTemplate,
+      });
+      const genkitResponse = await prompt(input, { model });
+      output = genkitResponse.output;
+    }
+
+    if (!output) {
+      throw new Error("Flow failed to produce a valid output.");
+    }
+    return output;
   }
 );
+
+    

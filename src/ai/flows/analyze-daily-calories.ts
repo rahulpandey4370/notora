@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview An AI flow to analyze a user's daily calorie balance.
@@ -9,6 +10,8 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
+import { callAzureOpenAI } from '@/lib/azure-openai';
+import { ModelId } from '@/lib/types';
 
 // Note: The TaskSchema is passed in but should NOT be used for calorie calculations.
 const TaskSchema = z.object({
@@ -47,17 +50,14 @@ const AnalyzeDailyCaloriesOutputSchema = z.object({
   summary: z.string().describe("A brief, one-sentence summary of the user's day (e.g., 'You were in a slight calorie deficit today.')."),
   reasoning: z.string().describe("A detailed step-by-step breakdown of the calculation process, explaining how BMR, step burn, and other activity burn were calculated."),
 });
-export type AnalyzeDailyCaloriesOutput = z.infer<typeof AnalyzeDailyCaloriesOutputSchema>;
+export type AnalyzeDailyCaloriesOutput = z.infer<typeof AnalyzeDailyCaloriesOutputSchema> & { modelId?: ModelId };
 
-export async function analyzeDailyCalories(input: AnalyzeDailyCaloriesInput): Promise<AnalyzeDailyCaloriesOutput> {
-  return analyzeDailyCaloriesFlow(input);
+export async function analyzeDailyCalories(input: AnalyzeDailyCaloriesInput, modelId: ModelId): Promise<AnalyzeDailyCaloriesOutput> {
+  const result = await analyzeDailyCaloriesFlow(input, { context: { modelId } });
+  return { ...result, modelId };
 }
 
-const prompt = ai.definePrompt({
-  name: 'analyzeDailyCaloriesPrompt',
-  input: { schema: AnalyzeDailyCaloriesInputSchema },
-  output: { schema: AnalyzeDailyCaloriesOutputSchema },
-  prompt: `You are an expert fitness and nutrition AI. Your task is to calculate a user's daily calorie balance based on their stats, activities, and food intake.
+const promptTemplate = `You are an expert fitness and nutrition AI. Your task is to calculate a user's daily calorie balance based on their stats, activities, and food intake.
 
 **CRITICAL INSTRUCTION:** Do NOT estimate calorie burn from the 'tasks' list. These are general life tasks and are not workouts. Only use the 'Steps' and 'Other Activities' fields for activity burn calculations.
 
@@ -109,8 +109,7 @@ const prompt = ai.definePrompt({
     -   Show the final TDEE calculation (BMR + Total Activity Burn).
     -   This should be a clear, human-readable explanation. Example: "1. BMR calculated as 1800 kcal. 2. Activity Burn: 200 kcal from 5000 steps + 350 kcal from 30 min run = 550 kcal. 3. Total Burn = 1800 + 550 = 2350 kcal."
 
-Provide the final output in the requested JSON format. Ensure all numerical fields in the output are consistent with the final calculation in the 'reasoning' field.`,
-});
+Provide the final output in the requested JSON format. Ensure all numerical fields in the output are consistent with the final calculation in the 'reasoning' field.`;
 
 const analyzeDailyCaloriesFlow = ai.defineFlow(
   {
@@ -118,8 +117,29 @@ const analyzeDailyCaloriesFlow = ai.defineFlow(
     inputSchema: AnalyzeDailyCaloriesInputSchema,
     outputSchema: AnalyzeDailyCaloriesOutputSchema,
   },
-  async (input) => {
-    const { output } = await prompt(input);
-    return output!;
+  async (input, { context }) => {
+    const modelId = context?.modelId || 'gemini-2.5-flash';
+    let output;
+
+    if (modelId === 'gpt-5.2-chat') {
+      output = await callAzureOpenAI(promptTemplate, input, AnalyzeDailyCaloriesOutputSchema);
+    } else {
+      const model = `googleai/${modelId}`;
+      const prompt = ai.definePrompt({
+        name: 'analyzeDailyCaloriesPrompt',
+        input: { schema: AnalyzeDailyCaloriesInputSchema },
+        output: { schema: AnalyzeDailyCaloriesOutputSchema },
+        prompt: promptTemplate,
+      });
+      const genkitResponse = await prompt(input, { model });
+      output = genkitResponse.output;
+    }
+
+    if (!output) {
+      throw new Error("Flow failed to produce a valid output.");
+    }
+    return output;
   }
 );
+
+    

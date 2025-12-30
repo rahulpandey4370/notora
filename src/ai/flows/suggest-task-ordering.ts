@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -10,6 +11,8 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import { ModelId } from '@/lib/types';
+import { callAzureOpenAI } from '@/lib/azure-openai';
 
 const SuggestTaskOrderingInputSchema = z.object({
   tasks: z
@@ -26,22 +29,18 @@ const SuggestTaskOrderingOutputSchema = z.object({
     .string()
     .describe('The AI reasoning behind the suggested task order.'),
 });
-export type SuggestTaskOrderingOutput = z.infer<typeof SuggestTaskOrderingOutputSchema>;
+export type SuggestTaskOrderingOutput = z.infer<typeof SuggestTaskOrderingOutputSchema> & { modelId?: ModelId };
 
-export async function suggestTaskOrdering(input: SuggestTaskOrderingInput): Promise<SuggestTaskOrderingOutput> {
-  return suggestTaskOrderingFlow(input);
+export async function suggestTaskOrdering(input: SuggestTaskOrderingInput, modelId: ModelId): Promise<SuggestTaskOrderingOutput> {
+  const result = await suggestTaskOrderingFlow(input, { context: { modelId } });
+  return { ...result, modelId };
 }
 
-const prompt = ai.definePrompt({
-  name: 'suggestTaskOrderingPrompt',
-  input: {schema: SuggestTaskOrderingInputSchema},
-  output: {schema: SuggestTaskOrderingOutputSchema},
-  prompt: `You are an AI productivity assistant. Given the following list of tasks, suggest an optimal order for completing them to maximize productivity. Provide a brief reasoning for your suggested order.
+const promptTemplate = `You are an AI productivity assistant. Given the following list of tasks, suggest an optimal order for completing them to maximize productivity. Provide a brief reasoning for your suggested order.
 
 Tasks:
 {{#each tasks}}- {{{this}}}
-{{/each}}`,
-});
+{{/each}}`;
 
 const suggestTaskOrderingFlow = ai.defineFlow(
   {
@@ -49,8 +48,29 @@ const suggestTaskOrderingFlow = ai.defineFlow(
     inputSchema: SuggestTaskOrderingInputSchema,
     outputSchema: SuggestTaskOrderingOutputSchema,
   },
-  async input => {
-    const {output} = await prompt(input);
-    return output!;
+  async (input, { context }) => {
+    const modelId = context?.modelId || 'gemini-2.5-flash';
+    let output;
+
+    if (modelId === 'gpt-5.2-chat') {
+      output = await callAzureOpenAI(promptTemplate, input, SuggestTaskOrderingOutputSchema);
+    } else {
+      const model = `googleai/${modelId}`;
+      const prompt = ai.definePrompt({
+        name: 'suggestTaskOrderingPrompt',
+        input: {schema: SuggestTaskOrderingInputSchema},
+        output: {schema: SuggestTaskOrderingOutputSchema},
+        prompt: promptTemplate,
+      });
+      const genkitResponse = await prompt(input, { model });
+      output = genkitResponse.output;
+    }
+
+    if (!output) {
+      throw new Error("Flow failed to produce a valid output.");
+    }
+    return output;
   }
 );
+
+    

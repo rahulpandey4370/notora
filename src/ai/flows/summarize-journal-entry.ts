@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview An AI flow to summarize a journal entry into key points.
@@ -9,6 +10,8 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
+import { ModelId } from '@/lib/types';
+import { callAzureOpenAI } from '@/lib/azure-openai';
 
 const SummarizeJournalEntryInputSchema = z.object({
   content: z.string().describe('The full text content of the journal entry.'),
@@ -18,17 +21,14 @@ export type SummarizeJournalEntryInput = z.infer<typeof SummarizeJournalEntryInp
 const SummarizeJournalEntryOutputSchema = z.object({
   summary: z.string().describe('A short, point-wise summary of the journal entry, formatted as a Markdown bulleted list.'),
 });
-export type SummarizeJournalEntryOutput = z.infer<typeof SummarizeJournalEntryOutputSchema>;
+export type SummarizeJournalEntryOutput = z.infer<typeof SummarizeJournalEntryOutputSchema> & { modelId?: ModelId };
 
-export async function summarizeJournalEntry(input: SummarizeJournalEntryInput): Promise<SummarizeJournalEntryOutput> {
-  return summarizeJournalEntryFlow(input);
+export async function summarizeJournalEntry(input: SummarizeJournalEntryInput, modelId: ModelId): Promise<SummarizeJournalEntryOutput> {
+  const result = await summarizeJournalEntryFlow(input, { context: { modelId } });
+  return { ...result, modelId };
 }
 
-const prompt = ai.definePrompt({
-  name: 'summarizeJournalEntryPrompt',
-  input: { schema: SummarizeJournalEntryInputSchema },
-  output: { schema: SummarizeJournalEntryOutputSchema },
-  prompt: `Analyze the following journal entry and create a short, point-wise summary of its key topics and feelings.
+const promptTemplate = `Analyze the following journal entry and create a short, point-wise summary of its key topics and feelings.
 
 **CRITICAL INSTRUCTIONS:**
 1.  Read the entire entry to understand the main ideas.
@@ -41,8 +41,7 @@ const prompt = ai.definePrompt({
 {{{content}}}
 ---
 
-Provide the summary in the 'summary' field.`,
-});
+Provide the summary in the 'summary' field.`;
 
 const summarizeJournalEntryFlow = ai.defineFlow(
   {
@@ -50,8 +49,29 @@ const summarizeJournalEntryFlow = ai.defineFlow(
     inputSchema: SummarizeJournalEntryInputSchema,
     outputSchema: SummarizeJournalEntryOutputSchema,
   },
-  async (input) => {
-    const { output } = await prompt(input);
-    return output!;
+  async (input, { context }) => {
+    const modelId = context?.modelId || 'gemini-2.5-flash';
+    let output;
+
+    if (modelId === 'gpt-5.2-chat') {
+      output = await callAzureOpenAI(promptTemplate, input, SummarizeJournalEntryOutputSchema);
+    } else {
+      const model = `googleai/${modelId}`;
+      const prompt = ai.definePrompt({
+        name: 'summarizeJournalEntryPrompt',
+        input: { schema: SummarizeJournalEntryInputSchema },
+        output: { schema: SummarizeJournalEntryOutputSchema },
+        prompt: promptTemplate,
+      });
+      const genkitResponse = await prompt(input, { model });
+      output = genkitResponse.output;
+    }
+
+    if (!output) {
+      throw new Error("Flow failed to produce a valid output.");
+    }
+    return output;
   }
 );
+
+    

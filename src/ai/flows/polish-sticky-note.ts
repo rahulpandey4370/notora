@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -10,6 +11,8 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import { ModelId } from '@/lib/types';
+import { callAzureOpenAI } from '@/lib/azure-openai';
 
 const PolishStickyNoteInputSchema = z.object({
   content: z.string().describe('The content of the sticky note to be polished.'),
@@ -19,17 +22,14 @@ export type PolishStickyNoteInput = z.infer<typeof PolishStickyNoteInputSchema>;
 const PolishStickyNoteOutputSchema = z.object({
   polishedContent: z.string().describe('The polished content of the sticky note, with a heading and improved formatting.'),
 });
-export type PolishStickyNoteOutput = z.infer<typeof PolishStickyNoteOutputSchema>;
+export type PolishStickyNoteOutput = z.infer<typeof PolishStickyNoteOutputSchema> & { modelId?: ModelId };
 
-export async function polishStickyNote(input: PolishStickyNoteInput): Promise<PolishStickyNoteOutput> {
-  return polishStickyNoteFlow(input);
+export async function polishStickyNote(input: PolishStickyNoteInput, modelId: ModelId): Promise<PolishStickyNoteOutput> {
+  const result = await polishStickyNoteFlow(input, { context: { modelId } });
+  return { ...result, modelId };
 }
 
-const polishStickyNotePrompt = ai.definePrompt({
-  name: 'polishStickyNotePrompt',
-  input: {schema: PolishStickyNoteInputSchema},
-  output: {schema: PolishStickyNoteOutputSchema},
-  prompt: `You are an expert editor and formatter. Your task is to polish the following text from a sticky note to make it professional, clear, and well-organized.
+const promptTemplate = `You are an expert editor and formatter. Your task is to polish the following text from a sticky note to make it professional, clear, and well-organized.
 
 Follow these steps:
 1.  Read the content to understand its core message.
@@ -40,8 +40,7 @@ Follow these steps:
 
 Original Content:
 {{{content}}}
-`,
-});
+`;
 
 const polishStickyNoteFlow = ai.defineFlow(
   {
@@ -49,8 +48,29 @@ const polishStickyNoteFlow = ai.defineFlow(
     inputSchema: PolishStickyNoteInputSchema,
     outputSchema: PolishStickyNoteOutputSchema,
   },
-  async input => {
-    const {output} = await polishStickyNotePrompt(input);
-    return output!;
+  async (input, { context }) => {
+    const modelId = context?.modelId || 'gemini-2.5-flash';
+    let output;
+
+    if (modelId === 'gpt-5.2-chat') {
+      output = await callAzureOpenAI(promptTemplate, input, PolishStickyNoteOutputSchema);
+    } else {
+      const model = `googleai/${modelId}`;
+      const prompt = ai.definePrompt({
+        name: 'polishStickyNotePrompt',
+        input: {schema: PolishStickyNoteInputSchema},
+        output: {schema: PolishStickyNoteOutputSchema},
+        prompt: promptTemplate,
+      });
+      const genkitResponse = await prompt(input, { model });
+      output = genkitResponse.output;
+    }
+
+    if (!output) {
+      throw new Error("Flow failed to produce a valid output.");
+    }
+    return output;
   }
 );
+
+    

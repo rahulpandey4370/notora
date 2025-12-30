@@ -10,6 +10,8 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
+import { ModelId } from '@/lib/types';
+import { callAzureOpenAI } from '@/lib/azure-openai';
 
 const ReflectOnJournalEntryInputSchema = z.object({
   content: z.string().describe('The full text content of the journal entry.'),
@@ -23,17 +25,14 @@ const ReflectOnJournalEntryOutputSchema = z.object({
   reflection: z.string().describe("The AI's thoughtful and empathetic reflection on the journal entry. This should acknowledge the user's feelings, highlight the identified themes, and be supportive."),
   followUpQuestion: z.string().describe("An insightful, open-ended question to encourage deeper self-reflection from the user, related to the main themes."),
 });
-export type ReflectOnJournalEntryOutput = z.infer<typeof ReflectOnJournalEntryOutputSchema>;
+export type ReflectOnJournalEntryOutput = z.infer<typeof ReflectOnJournalEntryOutputSchema> & { modelId?: ModelId };
 
-export async function reflectOnJournalEntry(input: ReflectOnJournalEntryInput): Promise<ReflectOnJournalEntryOutput> {
-  return reflectOnJournalEntryFlow(input);
+export async function reflectOnJournalEntry(input: ReflectOnJournalEntryInput, modelId: ModelId): Promise<ReflectOnJournalEntryOutput> {
+  const result = await reflectOnJournalEntryFlow(input, { context: { modelId } });
+  return { ...result, modelId };
 }
 
-const prompt = ai.definePrompt({
-  name: 'reflectOnJournalEntryPrompt',
-  input: { schema: ReflectOnJournalEntryInputSchema },
-  output: { schema: ReflectOnJournalEntryOutputSchema },
-  prompt: `You are an expert, empathetic AI Writing Coach and Life Coach. Your task is to read the following journal entry and provide a multi-faceted, insightful, and supportive reflection.
+const promptTemplate = `You are an expert, empathetic AI Writing Coach and Life Coach. Your task is to read the following journal entry and provide a multi-faceted, insightful, and supportive reflection.
 
 Your response MUST follow this structure:
 1.  **Detect Emotion**: Identify the primary emotion conveyed in the text (e.g., Joy, Frustration, Anxiety, Contentment, etc.). Set this in the 'emotion' field.
@@ -47,8 +46,7 @@ Your response MUST follow this structure:
 {{{content}}}
 ---
 
-Provide your response in a supportive, non-judgmental tone, adhering strictly to the JSON output format.`,
-});
+Provide your response in a supportive, non-judgmental tone, adhering strictly to the JSON output format.`;
 
 const reflectOnJournalEntryFlow = ai.defineFlow(
   {
@@ -56,8 +54,29 @@ const reflectOnJournalEntryFlow = ai.defineFlow(
     inputSchema: ReflectOnJournalEntryInputSchema,
     outputSchema: ReflectOnJournalEntryOutputSchema,
   },
-  async (input) => {
-    const { output } = await prompt(input);
-    return output!;
+  async (input, { context }) => {
+    const modelId = context?.modelId || 'gemini-2.5-flash';
+    let output;
+
+    if (modelId === 'gpt-5.2-chat') {
+      output = await callAzureOpenAI(promptTemplate, input, ReflectOnJournalEntryOutputSchema);
+    } else {
+      const model = `googleai/${modelId}`;
+      const prompt = ai.definePrompt({
+        name: 'reflectOnJournalEntryPrompt',
+        input: { schema: ReflectOnJournalEntryInputSchema },
+        output: { schema: ReflectOnJournalEntryOutputSchema },
+        prompt: promptTemplate,
+      });
+      const genkitResponse = await prompt(input, { model });
+      output = genkitResponse.output;
+    }
+
+    if (!output) {
+      throw new Error("Flow failed to produce a valid output.");
+    }
+    return output;
   }
 );
+
+    

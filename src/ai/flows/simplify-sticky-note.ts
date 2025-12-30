@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -10,6 +11,8 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import { ModelId } from '@/lib/types';
+import { callAzureOpenAI } from '@/lib/azure-openai';
 
 const SimplifyStickyNoteInputSchema = z.object({
   text: z.string().describe('The text content of the sticky note to simplify.'),
@@ -19,23 +22,19 @@ export type SimplifyStickyNoteInput = z.infer<typeof SimplifyStickyNoteInputSche
 const SimplifyStickyNoteOutputSchema = z.object({
   simplifiedText: z.string().describe('The simplified text content of the sticky note.'),
 });
-export type SimplifyStickyNoteOutput = z.infer<typeof SimplifyStickyNoteOutputSchema>;
+export type SimplifyStickyNoteOutput = z.infer<typeof SimplifyStickyNoteOutputSchema> & { modelId?: ModelId };
 
-export async function simplifyStickyNote(input: SimplifyStickyNoteInput): Promise<SimplifyStickyNoteOutput> {
-  return simplifyStickyNoteFlow(input);
+export async function simplifyStickyNote(input: SimplifyStickyNoteInput, modelId: ModelId): Promise<SimplifyStickyNoteOutput> {
+  const result = await simplifyStickyNoteFlow(input, { context: { modelId } });
+  return { ...result, modelId };
 }
 
-const prompt = ai.definePrompt({
-  name: 'simplifyStickyNotePrompt',
-  input: {schema: SimplifyStickyNoteInputSchema},
-  output: {schema: SimplifyStickyNoteOutputSchema},
-  prompt: `You are an AI assistant that simplifies text to make it easier to understand. Rephrase the following text using simpler language.
+const promptTemplate = `You are an AI assistant that simplifies text to make it easier to understand. Rephrase the following text using simpler language.
 
 Provide the output as plain text only, without any Markdown formatting.
 
 Input Text:
-{{{text}}}`,
-});
+{{{text}}}`;
 
 const simplifyStickyNoteFlow = ai.defineFlow(
   {
@@ -43,8 +42,29 @@ const simplifyStickyNoteFlow = ai.defineFlow(
     inputSchema: SimplifyStickyNoteInputSchema,
     outputSchema: SimplifyStickyNoteOutputSchema,
   },
-  async input => {
-    const {output} = await prompt(input);
-    return output!;
+  async (input, { context }) => {
+    const modelId = context?.modelId || 'gemini-2.5-flash';
+    let output;
+
+    if (modelId === 'gpt-5.2-chat') {
+      output = await callAzureOpenAI(promptTemplate, input, SimplifyStickyNoteOutputSchema);
+    } else {
+      const model = `googleai/${modelId}`;
+      const prompt = ai.definePrompt({
+        name: 'simplifyStickyNotePrompt',
+        input: {schema: SimplifyStickyNoteInputSchema},
+        output: {schema: SimplifyStickyNoteOutputSchema},
+        prompt: promptTemplate,
+      });
+      const genkitResponse = await prompt(input, { model });
+      output = genkitResponse.output;
+    }
+
+    if (!output) {
+      throw new Error("Flow failed to produce a valid output.");
+    }
+    return output;
   }
 );
+
+    

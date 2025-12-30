@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview An AI agent that summarizes sticky note content.
@@ -9,6 +10,8 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import { ModelId } from '@/lib/types';
+import { callAzureOpenAI } from '@/lib/azure-openai';
 
 const SummarizeStickyNoteInputSchema = z.object({
   content: z.string().describe('The content of the sticky note to summarize.'),
@@ -18,23 +21,19 @@ export type SummarizeStickyNoteInput = z.infer<typeof SummarizeStickyNoteInputSc
 const SummarizeStickyNoteOutputSchema = z.object({
   summary: z.string().describe('The summarized content of the sticky note.'),
 });
-export type SummarizeStickyNoteOutput = z.infer<typeof SummarizeStickyNoteOutputSchema>;
+export type SummarizeStickyNoteOutput = z.infer<typeof SummarizeStickyNoteOutputSchema> & { modelId?: ModelId };
 
-export async function summarizeStickyNote(input: SummarizeStickyNoteInput): Promise<SummarizeStickyNoteOutput> {
-  return summarizeStickyNoteFlow(input);
+export async function summarizeStickyNote(input: SummarizeStickyNoteInput, modelId: ModelId): Promise<SummarizeStickyNoteOutput> {
+  const result = await summarizeStickyNoteFlow(input, { context: { modelId } });
+  return { ...result, modelId };
 }
 
-const prompt = ai.definePrompt({
-  name: 'summarizeStickyNotePrompt',
-  input: {schema: SummarizeStickyNoteInputSchema},
-  output: {schema: SummarizeStickyNoteOutputSchema},
-  prompt: `Summarize the following sticky note content. 
+const promptTemplate = `Summarize the following sticky note content. 
   
 Provide the output as plain text only, without any Markdown formatting.
 
 {{{content}}}
-`,
-});
+`;
 
 const summarizeStickyNoteFlow = ai.defineFlow(
   {
@@ -42,8 +41,29 @@ const summarizeStickyNoteFlow = ai.defineFlow(
     inputSchema: SummarizeStickyNoteInputSchema,
     outputSchema: SummarizeStickyNoteOutputSchema,
   },
-  async input => {
-    const {output} = await prompt(input);
-    return output!;
+  async (input, { context }) => {
+    const modelId = context?.modelId || 'gemini-2.5-flash';
+    let output;
+
+    if (modelId === 'gpt-5.2-chat') {
+      output = await callAzureOpenAI(promptTemplate, input, SummarizeStickyNoteOutputSchema);
+    } else {
+      const model = `googleai/${modelId}`;
+      const prompt = ai.definePrompt({
+        name: 'summarizeStickyNotePrompt',
+        input: {schema: SummarizeStickyNoteInputSchema},
+        output: {schema: SummarizeStickyNoteOutputSchema},
+        prompt: promptTemplate,
+      });
+      const genkitResponse = await prompt(input, { model });
+      output = genkitResponse.output;
+    }
+
+    if (!output) {
+      throw new Error("Flow failed to produce a valid output.");
+    }
+    return output;
   }
 );
+
+    

@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview An AI flow to transform sticky note content based on a custom user prompt.
@@ -9,6 +10,8 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import { ModelId } from '@/lib/types';
+import { callAzureOpenAI } from '@/lib/azure-openai';
 
 const CustomTransformStickyNoteInputSchema = z.object({
   content: z.string().describe('The original content of the sticky note.'),
@@ -19,17 +22,14 @@ export type CustomTransformStickyNoteInput = z.infer<typeof CustomTransformStick
 const CustomTransformStickyNoteOutputSchema = z.object({
   transformedContent: z.string().describe('The content of the sticky note after applying the custom transformation.'),
 });
-export type CustomTransformStickyNoteOutput = z.infer<typeof CustomTransformStickyNoteOutputSchema>;
+export type CustomTransformStickyNoteOutput = z.infer<typeof CustomTransformStickyNoteOutputSchema> & { modelId?: ModelId };
 
-export async function customTransformStickyNote(input: CustomTransformStickyNoteInput): Promise<CustomTransformStickyNoteOutput> {
-  return customTransformStickyNoteFlow(input);
+export async function customTransformStickyNote(input: CustomTransformStickyNoteInput, modelId: ModelId): Promise<CustomTransformStickyNoteOutput> {
+  const result = await customTransformStickyNoteFlow(input, { context: { modelId } });
+  return { ...result, modelId };
 }
 
-const prompt = ai.definePrompt({
-  name: 'customTransformStickyNotePrompt',
-  input: {schema: CustomTransformStickyNoteInputSchema},
-  output: {schema: CustomTransformStickyNoteOutputSchema},
-  prompt: `You are an AI assistant that modifies text based on user instructions.
+const promptTemplate = `You are an AI assistant that modifies text based on user instructions.
   
   User's instruction: "{{{prompt}}}"
   
@@ -39,8 +39,7 @@ const prompt = ai.definePrompt({
   {{{content}}}
   ---
   
-  Provide only the transformed, plain text in your response, without any Markdown formatting.`,
-});
+  Provide only the transformed, plain text in your response, without any Markdown formatting.`;
 
 const customTransformStickyNoteFlow = ai.defineFlow(
   {
@@ -48,8 +47,29 @@ const customTransformStickyNoteFlow = ai.defineFlow(
     inputSchema: CustomTransformStickyNoteInputSchema,
     outputSchema: CustomTransformStickyNoteOutputSchema,
   },
-  async input => {
-    const {output} = await prompt(input);
-    return output!;
+  async (input, { context }) => {
+    const modelId = context?.modelId || 'gemini-2.5-flash';
+    let output;
+
+    if (modelId === 'gpt-5.2-chat') {
+      output = await callAzureOpenAI(promptTemplate, input, CustomTransformStickyNoteOutputSchema);
+    } else {
+      const model = `googleai/${modelId}`;
+      const prompt = ai.definePrompt({
+        name: 'customTransformStickyNotePrompt',
+        input: {schema: CustomTransformStickyNoteInputSchema},
+        output: {schema: CustomTransformStickyNoteOutputSchema},
+        prompt: promptTemplate,
+      });
+      const genkitResponse = await prompt(input, { model });
+      output = genkitResponse.output;
+    }
+
+    if (!output) {
+      throw new Error("Flow failed to produce a valid output.");
+    }
+    return output;
   }
 );
+
+    

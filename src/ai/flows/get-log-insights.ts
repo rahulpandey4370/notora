@@ -54,7 +54,7 @@ The user is tracking their '{{{trackerName}}}' in '{{{unit}}}'.
 {{{json logHistory}}}
 
 **Your Task (Provide a longer, more detailed response):**
-1.  **Trend Analysis**: First, determine if the overall data trend is 'upward', 'downward', 'stable', or 'fluctuating'. Set the 'trend' field in your output.
+1.  **Trend Analysis**: First, determine if the overall data trend is 'upward', 'downward', 'stable', 'or 'fluctuating'. Set the 'trend' field in your output.
 
 2.  **Brutally Honest Feedback (4-6 sentences)**:
     -   **Embody Your Persona**: Your entire feedback must be written from the expert persona's point of view. Use language and concepts appropriate to that expert.
@@ -72,7 +72,7 @@ const getLogInsightsFlow = ai.defineFlow(
     outputSchema: GetLogInsightsOutputSchema,
   },
   async (input, { context }) => {
-    const modelId = context?.modelId || 'gemini-2.5-flash';
+    const modelId = context?.modelId || 'gemini-1.5-flash-latest';
     let output;
 
     if (modelId === 'gpt-5.2-chat') {

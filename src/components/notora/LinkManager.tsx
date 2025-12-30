@@ -5,7 +5,7 @@ import { useState, useMemo } from 'react';
 import type { AppData, SavedLink } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Loader2, Plus, Search, X } from 'lucide-react';
+import { Loader2, Plus, Search, X, Cpu } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import { analyzeLink } from '@/ai/flows/analyze-link';
 import { searchLinks } from '@/ai/flows/search-links';
@@ -13,6 +13,7 @@ import { linkCategories } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import LinkCard from './LinkCard';
 import { motion } from 'framer-motion';
+import { useModelStore } from '@/hooks/use-model-store';
 
 interface LinkManagerProps {
   savedLinks: SavedLink[];
@@ -27,7 +28,9 @@ export default function LinkManager({ savedLinks, data, onDataChange }: LinkMana
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchedLinkIds, setSearchedLinkIds] = useState<string[] | null>(null);
+  const [searchModel, setSearchModel] = useState<string | undefined>();
   const { toast } = useToast();
+  const { selectedModel } = useModelStore();
 
   const handleAddLink = async () => {
     if (!newUrl.trim()) return;
@@ -45,7 +48,7 @@ export default function LinkManager({ savedLinks, data, onDataChange }: LinkMana
 
     setLoading(true);
     try {
-      const result = await analyzeLink({ url: newUrl });
+      const result = await analyzeLink({ url: newUrl }, selectedModel);
       const newLink: SavedLink = {
         id: uuidv4(),
         url: newUrl,
@@ -53,6 +56,7 @@ export default function LinkManager({ savedLinks, data, onDataChange }: LinkMana
         summary: result.summary,
         category: result.category,
         dateAdded: new Date().toISOString(),
+        model: result.modelId,
       };
 
       const updatedLinks = [newLink, ...(data.savedLinks || [])];
@@ -99,8 +103,9 @@ export default function LinkManager({ savedLinks, data, onDataChange }: LinkMana
 
     setSearchLoading(true);
     try {
-      const result = await searchLinks({ query: searchQuery, links: savedLinks });
+      const result = await searchLinks({ query: searchQuery, links: savedLinks }, selectedModel);
       setSearchedLinkIds(result.relevantLinkIds);
+      setSearchModel(result.modelId);
     } catch (error) {
       console.error('Failed to search links:', error);
       toast({
@@ -116,6 +121,7 @@ export default function LinkManager({ savedLinks, data, onDataChange }: LinkMana
   const handleClearSearch = () => {
     setSearchQuery('');
     setSearchedLinkIds(null);
+    setSearchModel(undefined);
   };
   
   const filteredLinks = useMemo(() => {
@@ -206,6 +212,12 @@ export default function LinkManager({ savedLinks, data, onDataChange }: LinkMana
         ))}
       </div>
 
+      {isSearchActive && searchModel && (
+        <div className="text-sm text-muted-foreground flex items-center gap-1 justify-center">
+            <Cpu className="h-3 w-3" /> Search results by {searchModel}
+        </div>
+      )}
+
       <motion.div 
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
         initial={{ opacity: 0 }}
@@ -231,3 +243,5 @@ export default function LinkManager({ savedLinks, data, onDataChange }: LinkMana
     </div>
   );
 }
+
+    

@@ -43,7 +43,7 @@ const simplifyStickyNoteFlow = ai.defineFlow(
     outputSchema: SimplifyStickyNoteOutputSchema,
   },
   async (input, { context }) => {
-    const modelId = context?.modelId || 'gemini-2.5-flash';
+    const modelId = context?.modelId || 'gemini-1.5-flash-latest';
     let output;
 
     if (modelId === 'gpt-5.2-chat') {

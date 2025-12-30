@@ -3,7 +3,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bot, User, Send, Loader2, X, MessageSquare } from 'lucide-react';
+import { Bot, User, Send, Loader2, X, MessageSquare, Cpu } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,10 +11,12 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { ScrollArea } from '../ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { contextualChat } from '@/ai/flows/contextual-chat';
+import { useModelStore } from '@/hooks/use-model-store';
 
 interface ChatMessage {
   role: 'user' | 'model';
   content: string;
+  modelId?: string;
 }
 
 interface ContextualChatbotProps {
@@ -27,6 +29,7 @@ export default function ContextualChatbot({ pageContext }: ContextualChatbotProp
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const { selectedModel } = useModelStore();
 
   useEffect(() => {
     if (isOpen) {
@@ -64,9 +67,9 @@ export default function ContextualChatbot({ pageContext }: ContextualChatbotProp
         history: messages,
         query: input,
         pageContext: JSON.stringify(pageContext, null, 2),
-      });
+      }, selectedModel);
       
-      const aiMessage: ChatMessage = { role: 'model', content: result.response };
+      const aiMessage: ChatMessage = { role: 'model', content: result.response, modelId: result.modelId };
       setMessages((prev) => [...prev, aiMessage]);
 
     } catch (error) {
@@ -135,6 +138,11 @@ export default function ContextualChatbot({ pageContext }: ContextualChatbotProp
                           )}
                         >
                           <p className="text-sm">{message.content}</p>
+                          {message.role === 'model' && message.modelId && (
+                            <div className="text-xs opacity-50 flex items-center gap-1 pt-2">
+                                <Cpu className="h-3 w-3" /> {message.modelId}
+                            </div>
+                          )}
                         </div>
                         {message.role === 'user' && (
                           <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
@@ -181,3 +189,5 @@ export default function ContextualChatbot({ pageContext }: ContextualChatbotProp
     </>
   );
 }
+
+    

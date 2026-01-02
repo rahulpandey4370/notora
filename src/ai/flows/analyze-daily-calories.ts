@@ -44,9 +44,9 @@ const AnalyzeDailyCaloriesInputSchema = z.object({
 export type AnalyzeDailyCaloriesInput = z.infer<typeof AnalyzeDailyCaloriesInputSchema>;
 
 const AnalyzeDailyCaloriesOutputSchema = z.object({
-  maintenanceCalories: z.number().int().describe('The estimated Basal Metabolic Rate (BMR) or maintenance calories for a sedentary day.'),
-  totalCalorieBurn: z.number().int().describe('The estimated Total Daily Energy Expenditure (TDEE) including calories burned from steps and other activities. This MUST be the sum of maintenanceCalories and the total activity burn calculated in the reasoning.'),
-  netCalories: z.number().int().describe('The net calorie balance for the day (Calorie Intake - Total Calorie Burn). Positive for surplus, negative for deficit.'),
+  maintenanceCalories: z.number().describe('The estimated Basal Metabolic Rate (BMR) or maintenance calories for a sedentary day.'),
+  totalCalorieBurn: z.number().describe('The estimated Total Daily Energy Expenditure (TDEE) including calories burned from steps and other activities. This MUST be the sum of maintenanceCalories and the total activity burn calculated in the reasoning.'),
+  netCalories: z.number().describe('The net calorie balance for the day (Calorie Intake - Total Calorie Burn). Positive for surplus, negative for deficit.'),
   summary: z.string().describe("A brief, one-sentence summary of the user's day (e.g., 'You were in a slight calorie deficit today.')."),
   reasoning: z.string().describe("A detailed step-by-step breakdown of the calculation process, explaining how BMR, step burn, and other activity burn were calculated."),
 });

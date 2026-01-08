@@ -10,9 +10,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { CalendarIcon, Plus } from 'lucide-react';
+import { CalendarIcon, Plus, Copy } from 'lucide-react';
 import type { AppData, LogEntry } from '@/lib/types';
-import { format } from 'date-fns';
+import { format, subDays, isAfter, parseISO, startOfDay } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 
@@ -67,13 +67,48 @@ export default function AddNewLogCard({ data, onDataChange }: AddNewLogCardProps
     setNotes('');
   };
   
+  const handleCopyLast7Days = () => {
+    const sevenDaysAgo = startOfDay(subDays(new Date(), 6));
+    let report = `Log Summary - Last 7 Days (${format(sevenDaysAgo, 'MMM d')} - ${format(new Date(), 'MMM d')})\n\n`;
+
+    data.logTrackers.forEach(tracker => {
+        report += `--- ${tracker.name} (${tracker.unit}) ---\n`;
+        const recentLogs = tracker.logs
+            .filter(log => isAfter(parseISO(log.date), sevenDaysAgo))
+            .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        
+        if (recentLogs.length > 0) {
+            recentLogs.forEach(log => {
+                report += `${format(parseISO(log.date), 'EEE, MMM d')}: ${log.value.toLocaleString()}${log.notes ? ` (${log.notes})` : ''}\n`;
+            });
+        } else {
+            report += 'No entries in the last 7 days.\n';
+        }
+        report += '\n';
+    });
+
+    navigator.clipboard.writeText(report);
+    toast({
+        title: 'Copied to Clipboard',
+        description: 'Your log summary for the last 7 days has been copied.'
+    });
+  };
+
   const selectedTracker = data.logTrackers.find(t => t.id === selectedTrackerId);
 
   return (
     <Card className="dark:neon-border-green">
       <CardHeader>
-        <CardTitle>Add New Log Entry</CardTitle>
-        <CardDescription>Quickly add a new log to any of your trackers.</CardDescription>
+        <div className="flex justify-between items-start">
+            <div>
+                <CardTitle>Add New Log Entry</CardTitle>
+                <CardDescription>Quickly add a new log to any of your trackers.</CardDescription>
+            </div>
+            <Button variant="outline" size="sm" onClick={handleCopyLast7Days} disabled={data.logTrackers.length === 0}>
+                <Copy className="mr-2 h-4 w-4"/>
+                Copy Last 7 Days
+            </Button>
+        </div>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2">

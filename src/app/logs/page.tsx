@@ -73,6 +73,15 @@ export default function LogsPage({ showcase = false }: LogsPageProps) {
     return log?.value;
   };
   
+  const getOtherActivityNotesForDate = (date: Date): string | undefined => {
+    if (!data) return undefined;
+    const burnedTracker = data.logTrackers.find(t => t.name === 'Calories Burned');
+    if (!burnedTracker) return undefined;
+    const dateStr = format(startOfDay(date), 'yyyy-MM-dd');
+    const log = burnedTracker.logs.find(l => l.date === dateStr);
+    return log?.activityNotes;
+  };
+
   const weeklyChartData = useMemo(() => {
     if (!data) return [];
     const intakeTracker = data.logTrackers.find(t => t.name === 'Daily Calorie Intake');
@@ -125,6 +134,7 @@ export default function LogsPage({ showcase = false }: LogsPageProps) {
             getCompletedTasksForDate={getCompletedTasksForDate}
             getCalorieIntakeForDate={getCalorieIntakeForDate}
             getStepsForDate={getStepsForDate}
+            getOtherActivityNotesForDate={getOtherActivityNotesForDate}
             weeklyChartData={weeklyChartData}
         />
       </div>

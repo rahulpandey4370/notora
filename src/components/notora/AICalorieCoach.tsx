@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Calendar } from '../ui/calendar';
 import { CalendarIcon, Loader2, Wand2, ArrowDown, ArrowUp, User as UserIcon, Info, LogIn, Camera, UtensilsCrossed, Sparkles, Cpu } from 'lucide-react';
-import { format, startOfToday } from 'date-fns';
+import { format, startOfDay } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { analyzeDailyCalories, type AnalyzeDailyCaloriesOutput } from '@/ai/flows/analyze-daily-calories';
 import { analyzeFoodCalories, type AnalyzeFoodCaloriesOutput } from '@/ai/flows/analyze-food-calories';
@@ -30,6 +30,7 @@ interface AICalorieCoachProps {
   getCompletedTasksForDate: (date: Date) => Task[];
   getCalorieIntakeForDate: (date: Date) => number | undefined;
   getStepsForDate: (date: Date) => number | undefined;
+  getOtherActivityNotesForDate: (date: Date) => string | undefined;
   weeklyChartData: { date: string; intake?: number, burned?: number }[];
 }
 
@@ -67,6 +68,7 @@ export default function AICalorieCoach({
     getCompletedTasksForDate, 
     getCalorieIntakeForDate,
     getStepsForDate,
+    getOtherActivityNotesForDate,
     weeklyChartData 
 }: AICalorieCoachProps) {
   const { data, handleDataChange } = useCalorieCoachData();
@@ -76,7 +78,8 @@ export default function AICalorieCoach({
     weight: '',
     height: '',
   });
-  const [date, setDate] = useState<Date>(startOfToday());
+  const [date, setDate] = useState<Date>(startOfDay(new Date()));
+  const activityNotesTimeout = useRef<NodeJS.Timeout | null>(null);
 
   // Balance Analysis state
   const [balanceOtherActivities, setBalanceOtherActivities] = useState('');
@@ -101,18 +104,21 @@ export default function AICalorieCoach({
     }
   }, []);
 
-  // Effect to update weight from logs when date changes
+  // Effect to update weight from logs and other activities when date changes
   useEffect(() => {
     if (!data) return;
     const weightTracker = data.logTrackers.find(t => t.name === 'Weight');
-    if (!weightTracker) return;
-
-    const logForDate = weightTracker.logs.find(l => l.date === format(date, 'yyyy-MM-dd'));
-    if (logForDate) {
-      handleStatChange('weight', String(logForDate.value));
+    if (weightTracker) {
+        const logForDate = weightTracker.logs.find(l => l.date === format(date, 'yyyy-MM-dd'));
+        if (logForDate) {
+            handleStatChange('weight', String(logForDate.value));
+        }
     }
 
-  }, [date, data]);
+    const otherActivities = getOtherActivityNotesForDate(date);
+    setBalanceOtherActivities(otherActivities || '');
+
+  }, [date, data, getOtherActivityNotesForDate]);
 
   const handleStatChange = (key: keyof UserStats, value: string) => {
     setStats(prevStats => {
@@ -121,6 +127,80 @@ export default function AICalorieCoach({
       localStorage.setItem('notora-user-stats', JSON.stringify(statsToSave));
       return newStats;
     });
+  };
+
+  const handleLogData = useCallback((trackerName: string, value: number, notes: string, activityNotes?: string) => {
+    if (!data) return;
+
+    let tracker = data.logTrackers.find(t => t.name === trackerName);
+    let updatedTrackers: LogTracker[];
+    const logDate = format(date, 'yyyy-MM-dd');
+    
+    const newLogEntry: LogEntry = {
+      id: uuidv4(),
+      date: logDate,
+      value: value,
+      notes: notes,
+      activityNotes: activityNotes,
+    };
+
+    if (tracker) {
+      updatedTrackers = data.logTrackers.map(t => {
+        if (t.id === tracker?.id) {
+          const existingLogIndex = t.logs.findIndex(l => l.date === logDate);
+          let newLogs: LogEntry[];
+          if (existingLogIndex > -1) {
+            newLogs = [...t.logs];
+            const existingLog = newLogs[existingLogIndex];
+            
+            // For calorie intake, we sum. For burned, we replace.
+            const newValue = trackerName === 'Daily Calorie Intake' ? existingLog.value + value : value;
+            
+            newLogs[existingLogIndex] = { 
+                ...existingLog, 
+                value: newValue,
+                notes: notes || existingLog.notes,
+                activityNotes: activityNotes ?? existingLog.activityNotes, // Persist new activity notes
+            };
+            if (value > 0) { // Don't toast for activity notes only
+                toast({ title: "Log Updated", description: `${trackerName === 'Daily Calorie Intake' ? `Added ${value} kcal to your intake` : `Updated '${trackerName}'`} for ${format(date, 'PPP')}.` });
+            }
+          } else {
+            newLogs = [...t.logs, newLogEntry];
+            if (value > 0) { // Don't toast for activity notes only
+                toast({ title: "Log Added", description: `${value} kcal logged as '${trackerName}' for ${format(date, 'PPP')}.` });
+            }
+          }
+          return { ...t, logs: newLogs };
+        }
+        return t;
+      });
+    } else {
+      const newTracker: LogTracker = {
+        id: uuidv4(),
+        name: trackerName,
+        unit: 'kcal',
+        logs: [newLogEntry],
+        isFlippable: true,
+      };
+      updatedTrackers = [...data.logTrackers, newTracker];
+      if (value > 0) {
+        toast({ title: "Tracker Created & Log Added", description: `${value} kcal logged for ${format(date, 'PPP')}.` });
+      }
+    }
+
+    handleDataChange({ ...data, logTrackers: updatedTrackers });
+  }, [data, date, handleDataChange, toast]);
+
+  const handleActivityNotesChange = (notes: string) => {
+    setBalanceOtherActivities(notes);
+    if (activityNotesTimeout.current) {
+        clearTimeout(activityNotesTimeout.current);
+    }
+    activityNotesTimeout.current = setTimeout(() => {
+        // We log to "Calories Burned" tracker with a value of 0, just to save the notes.
+        handleLogData("Calories Burned", 0, 'AI-estimated total burn', notes);
+    }, 1500); // Debounce saving
   };
 
   const handleAnalyzeBalance = async () => {
@@ -172,57 +252,10 @@ export default function AICalorieCoach({
       setBalanceLoading(false);
     }
   };
-  
-  const handleLogData = (trackerName: string, value: number, notes: string) => {
-    if (!data) return;
-
-    let tracker = data.logTrackers.find(t => t.name === trackerName);
-    let updatedTrackers: LogTracker[];
-    const logDate = format(date, 'yyyy-MM-dd');
-    
-    const newLogEntry: LogEntry = {
-      id: uuidv4(),
-      date: logDate,
-      value: value,
-      notes: notes
-    };
-
-    if (tracker) {
-      updatedTrackers = data.logTrackers.map(t => {
-        if (t.id === tracker?.id) {
-          const existingLogIndex = t.logs.findIndex(l => l.date === logDate);
-          let newLogs: LogEntry[];
-          if (existingLogIndex > -1) {
-            newLogs = [...t.logs];
-            const existingLog = newLogs[existingLogIndex];
-            newLogs[existingLogIndex] = { ...existingLog, value: existingLog.value + value };
-            toast({ title: "Log Updated", description: `Added ${value} kcal to your intake for ${format(date, 'PPP')}.` });
-          } else {
-            newLogs = [...t.logs, newLogEntry];
-            toast({ title: "Log Added", description: `${value} kcal logged as '${trackerName}' for ${format(date, 'PPP')}.` });
-          }
-          return { ...t, logs: newLogs };
-        }
-        return t;
-      });
-    } else {
-      const newTracker: LogTracker = {
-        id: uuidv4(),
-        name: trackerName,
-        unit: 'kcal',
-        logs: [newLogEntry],
-        isFlippable: true,
-      };
-      updatedTrackers = [...data.logTrackers, newTracker];
-      toast({ title: "Tracker Created & Log Added", description: `${value} kcal logged for ${format(date, 'PPP')}.` });
-    }
-
-    handleDataChange({ ...data, logTrackers: updatedTrackers });
-  };
 
   const handleLogTotalBurn = () => {
     if (!balanceAnalysis) return;
-    handleLogData("Calories Burned", balanceAnalysis.totalCalorieBurn, 'AI-estimated total burn');
+    handleLogData("Calories Burned", balanceAnalysis.totalCalorieBurn, 'AI-estimated total burn', balanceOtherActivities);
   };
   
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -327,10 +360,10 @@ export default function AICalorieCoach({
                             id="other-activities"
                             placeholder="e.g., 30 minute run, 1 hour of weightlifting..."
                             value={balanceOtherActivities}
-                            onChange={(e) => setBalanceOtherActivities(e.target.value)}
+                            onChange={(e) => handleActivityNotesChange(e.target.value)}
                         />
                         <p className="text-xs text-muted-foreground">
-                            The AI will use your logged steps and any activities you describe here.
+                            The AI will use your logged steps and any activities you describe here. Your notes are auto-saved.
                         </p>
                         </div>
 
@@ -343,7 +376,7 @@ export default function AICalorieCoach({
                             </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-auto p-0">
-                            <Calendar mode="single" selected={date} onSelect={(d) => d && setDate(d)} initialFocus />
+                            <Calendar mode="single" selected={date} onSelect={(d) => d && setDate(startOfDay(d))} initialFocus />
                             </PopoverContent>
                         </Popover>
                         <Button onClick={handleAnalyzeBalance} disabled={balanceLoading} className="w-full">
@@ -386,19 +419,19 @@ export default function AICalorieCoach({
                                 <CardContent className="flex justify-around text-center">
                                     <div className="p-2">
                                         <p className="text-xs text-muted-foreground">Maintenance</p>
-                                        <p className="text-2xl font-bold">{balanceAnalysis.maintenanceCalories}</p>
+                                        <p className="text-2xl font-bold">{balanceAnalysis.maintenanceCalories.toFixed(0)}</p>
                                         <p className="text-xs text-muted-foreground">kcal</p>
                                     </div>
                                     <div className="p-2">
                                         <p className="text-xs text-muted-foreground">Total Burn</p>
-                                        <p className="text-2xl font-bold">{balanceAnalysis.totalCalorieBurn}</p>
+                                        <p className="text-2xl font-bold">{balanceAnalysis.totalCalorieBurn.toFixed(0)}</p>
                                         <p className="text-xs text-muted-foreground">kcal</p>
                                     </div>
                                     <div className="p-2">
                                         <p className="text-xs text-muted-foreground">Net Balance</p>
                                         <p className={`text-2xl font-bold flex items-center justify-center gap-1 ${balanceAnalysis.netCalories > 0 ? 'text-red-500' : 'text-green-500'}`}>
                                             {balanceAnalysis.netCalories > 0 ? <ArrowUp /> : <ArrowDown /> }
-                                            {Math.abs(balanceAnalysis.netCalories)}
+                                            {Math.abs(balanceAnalysis.netCalories).toFixed(0)}
                                         </p>
                                         <p className="text-xs text-muted-foreground">{balanceAnalysis.netCalories > 0 ? 'Surplus' : 'Deficit'}</p>
                                     </div>
@@ -539,5 +572,3 @@ export default function AICalorieCoach({
     </Card>
   );
 }
-
-    

@@ -182,6 +182,7 @@ export interface LogEntry {
     date: string; // 'yyyy-MM-dd'
     value: number;
     notes?: string;
+    activityNotes?: string;
 }
 
 export interface LogTracker {

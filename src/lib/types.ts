@@ -205,6 +205,21 @@ export interface JournalEntry {
     model?: ModelId;
 }
 
+export interface TaskTemplate {
+  id: string;
+  title: string;
+  priority: Task['priority'];
+  type: Task['type'];
+  createdAt: string;
+}
+
+export interface TaskTemplateBundle {
+  id: string;
+  name: string;
+  templateIds: string[];
+  createdAt: string;
+}
+
 export interface AppData {
   tasks: Task[];
   noteBoards: NoteBoard[];
@@ -212,4 +227,6 @@ export interface AppData {
   savedLinks: SavedLink[];
   logTrackers: LogTracker[];
   journalEntries: JournalEntry[];
+  taskTemplates?: TaskTemplate[];
+  taskTemplateBundles?: TaskTemplateBundle[];
 }

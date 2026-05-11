@@ -32,6 +32,8 @@ const defaultAppData: AppData = {
   savedLinks: [],
   logTrackers: [],
   journalEntries: [],
+  taskTemplates: [],
+  taskTemplateBundles: [],
 };
 
 interface AppContextType {
@@ -66,6 +68,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         savedLinks: [],
         logTrackers: [],
         journalEntries: [],
+        taskTemplates: [],
+        taskTemplateBundles: [],
       };
       await saveAppData(username, newDefaultData);
       appData = newDefaultData;
@@ -85,6 +89,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }
       if (!appData.journalEntries) {
         appData.journalEntries = [];
+      }
+      if (!appData.taskTemplates) {
+        appData.taskTemplates = [];
+      }
+      if (!appData.taskTemplateBundles) {
+        appData.taskTemplateBundles = [];
       }
     }
     

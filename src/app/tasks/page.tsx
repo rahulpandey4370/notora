@@ -8,6 +8,7 @@ import { useApp } from '@/hooks/use-app';
 import { Skeleton } from '@/components/ui/skeleton';
 import AppLayout from '@/components/notora/AppLayout';
 import TaskList from '@/components/notora/TaskList';
+import TaskTemplates from '@/components/notora/TaskTemplates';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, ClipboardList, CalendarDays } from 'lucide-react';
@@ -302,6 +303,13 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
             </CardContent>
         </Card>
         
+        <TaskTemplates
+            data={data}
+            onDataChange={handleDataChange}
+            currentMonth={currentMonth}
+            toast={toast}
+        />
+
         <Tabs defaultValue="daily" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="daily"><CalendarDays className="w-4 h-4 mr-2"/>Daily</TabsTrigger>

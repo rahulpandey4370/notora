@@ -12,7 +12,7 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 import { ModelId } from '@/lib/types';
-import { callAzureOpenAI } from '@/lib/azure-openai';
+import { callAzureOpenAI, AZURE_DEPLOYMENT_NAME } from '@/lib/azure-openai';
 
 const DayEndSummaryInputSchema = z.object({
   completedTasks: z.array(z.string()).describe('A list of completed tasks for the day.'),
@@ -55,7 +55,7 @@ const dayEndSummaryFlow = ai.defineFlow(
     const modelId = context?.modelId || 'gemini-1.5-flash-latest';
     let output;
 
-    if (modelId === 'gpt-5.2-chat') {
+    if (modelId === AZURE_DEPLOYMENT_NAME) {
       output = await callAzureOpenAI(promptTemplate, input, DayEndSummaryOutputSchema);
     } else {
       const model = `googleai/${modelId}`;

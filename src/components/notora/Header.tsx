@@ -34,7 +34,7 @@ export default function Header({ user, tasks, userStats }: HeaderProps) {
   const { availableModels, selectedModel, setModel } = useModelStore();
 
   const googleModels = availableModels.filter(m => m.startsWith('gemini'));
-  const openAIModels = availableModels.filter(m => m.startsWith('gpt'));
+  const openAIModels = availableModels.filter(m => !m.startsWith('gemini'));
 
 
   return (

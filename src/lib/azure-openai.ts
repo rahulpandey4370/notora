@@ -1,13 +1,15 @@
-'use server';
 import { AzureOpenAI } from 'openai';
 import { z, ZodSchema } from 'zod';
 import { ChatCompletionMessageParam } from 'openai/resources/chat';
 
 // Configuration from Environment Variables
-const endpoint = process.env.AZURE_OPENAI_ENDPOINT!;
+const rawEndpoint = process.env.AZURE_OPENAI_ENDPOINT!;
+// Strip any path — the SDK expects only the base URL (origin)
+const endpoint = rawEndpoint ? new URL(rawEndpoint).origin : rawEndpoint;
 const apiKey = process.env.AZURE_OPENAI_API_KEY!;
-const apiVersion = "2024-02-01";
-const deployment = process.env.AZURE_OPENAI_DEPLOYMENT_NAME!;
+const apiVersion = "2025-01-01-preview";
+export const AZURE_DEPLOYMENT_NAME = process.env.AZURE_OPENAI_DEPLOYMENT_NAME!;
+const deployment = AZURE_DEPLOYMENT_NAME;
 
 // Initialize the Azure-specific client
 const client = new AzureOpenAI({

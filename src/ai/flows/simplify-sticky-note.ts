@@ -12,7 +12,7 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 import { ModelId } from '@/lib/types';
-import { callAzureOpenAI } from '@/lib/azure-openai';
+import { callAzureOpenAI, AZURE_DEPLOYMENT_NAME } from '@/lib/azure-openai';
 
 const SimplifyStickyNoteInputSchema = z.object({
   text: z.string().describe('The text content of the sticky note to simplify.'),
@@ -46,7 +46,7 @@ const simplifyStickyNoteFlow = ai.defineFlow(
     const modelId = context?.modelId || 'gemini-1.5-flash-latest';
     let output;
 
-    if (modelId === 'gpt-5.2-chat') {
+    if (modelId === AZURE_DEPLOYMENT_NAME) {
       output = await callAzureOpenAI(promptTemplate, input, SimplifyStickyNoteOutputSchema);
     } else {
       const model = `googleai/${modelId}`;

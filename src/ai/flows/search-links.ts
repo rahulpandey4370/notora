@@ -11,7 +11,7 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 import type { SavedLink, ModelId } from '@/lib/types';
-import { callAzureOpenAI } from '@/lib/azure-openai';
+import { callAzureOpenAI, AZURE_DEPLOYMENT_NAME } from '@/lib/azure-openai';
 
 const LinkSchema = z.object({
     id: z.string(),
@@ -65,7 +65,7 @@ const searchLinksFlow = ai.defineFlow(
     const modelId = context?.modelId || 'gemini-1.5-flash-latest';
     let output;
 
-    if (modelId === 'gpt-5.2-chat') {
+    if (modelId === AZURE_DEPLOYMENT_NAME) {
       output = await callAzureOpenAI(promptTemplate, input, SearchLinksOutputSchema);
     } else {
       const model = `googleai/${modelId}`;

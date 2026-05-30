@@ -11,7 +11,7 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 import { ModelId } from '@/lib/types';
-import { callAzureOpenAI } from '@/lib/azure-openai';
+import { callAzureOpenAI, AZURE_DEPLOYMENT_NAME } from '@/lib/azure-openai';
 
 const FormatJournalEntryInputSchema = z.object({
   content: z.string().describe('The raw text content of the journal entry.'),
@@ -52,7 +52,7 @@ const formatJournalEntryFlow = ai.defineFlow(
     const modelId = context?.modelId || 'gemini-1.5-flash-latest';
     let output;
 
-    if (modelId === 'gpt-5.2-chat') {
+    if (modelId === AZURE_DEPLOYMENT_NAME) {
       output = await callAzureOpenAI(promptTemplate, input, FormatJournalEntryOutputSchema);
     } else {
       const model = `googleai/${modelId}`;

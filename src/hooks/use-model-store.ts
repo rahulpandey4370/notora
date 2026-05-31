@@ -22,15 +22,6 @@ export const useModelStore = create<ModelStoreState>()(
     {
       name: 'notora-model-selection',
       storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({ selectedModel: state.selectedModel }),
-      onRehydrateStorage: () => (state) => {
-        if (state) {
-          state.availableModels = modelNames;
-          if (!modelNames.includes(state.selectedModel as any)) {
-            state.selectedModel = 'gemini-2.5-flash';
-          }
-        }
-      },
     }
   )
 );

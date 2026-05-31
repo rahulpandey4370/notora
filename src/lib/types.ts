@@ -3,6 +3,7 @@ import { z } from "zod";
 
 export const AZURE_MODEL_NAME = process.env.NEXT_PUBLIC_AZURE_OPENAI_DEPLOYMENT_NAME ?? 'gpt-5.4';
 export const modelNames = ['gemini-2.5-flash', 'gemini-3-flash-preview', 'gemini-2.5-flash-lite', AZURE_MODEL_NAME] as const;
+console.log('[DEBUG types.ts] AZURE_MODEL_NAME build-time:', AZURE_MODEL_NAME, 'modelNames:', modelNames);
 export type ModelId = typeof modelNames[number];
 
 export const linkCategories = ['Article', 'Video', 'Course', 'Image', 'Other'] as const;

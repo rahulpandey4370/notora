@@ -10,6 +10,7 @@ import type { Task, User, UserStats } from '@/lib/types';
 import { ModeToggle } from './ModeToggle';
 import Link from 'next/link';
 import { useModelStore } from '@/hooks/use-model-store';
+import { AZURE_MODEL_NAME } from '@/lib/types';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -46,6 +47,10 @@ export default function Header({ user, tasks, userStats }: HeaderProps) {
         </Link>
       </div>
       <div className="flex items-center gap-2 md:gap-4">
+        {/* DEBUG: remove after confirming env var */}
+        <span className="text-[10px] text-red-500 font-mono hidden md:inline">
+          BUILD:{AZURE_MODEL_NAME}
+        </span>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm">

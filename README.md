@@ -47,6 +47,8 @@ AZURE_STORAGE_CONNECTION_STRING=<your-azure-blob-connection-string>
 # plus any keys required by Genkit / Azure OpenAI flows under src/ai/
 ```
 
+> **Note:** After updating environment variables on Vercel, create a new commit and redeploy to ensure serverless functions pick up the latest values and the build cache is invalidated.
+
 Without `AZURE_STORAGE_CONNECTION_STRING`, the app falls back to the seed users in `src/lib/users.ts` and will not persist data.
 
 ## Data Model

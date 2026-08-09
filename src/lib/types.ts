@@ -2,8 +2,19 @@
 import { z } from "zod";
 
 export const AZURE_MODEL_NAME = process.env.NEXT_PUBLIC_AZURE_OPENAI_DEPLOYMENT_NAME ?? 'gpt-5.4';
-export const modelNames = ['gemini-2.5-flash', 'gemini-3-flash-preview', 'gemini-2.5-flash-lite', AZURE_MODEL_NAME] as const;
-export type ModelId = typeof modelNames[number];
+
+/**
+ * Model identifiers are now provider-qualified keys from the catalog
+ * (`"anthropic::claude-sonnet-5"`), so the same model id can be served by two
+ * providers without one shadowing the other. A bare id still resolves, which
+ * keeps previously-persisted selections working.
+ *
+ * See `@/lib/model-catalog` for the list and `@/lib/ai-client` for routing.
+ */
+export type ModelId = string;
+
+/** @deprecated Use `availableModels()` from `@/lib/model-catalog`. */
+export const modelNames: readonly string[] = [];
 
 export const linkCategories = ['Article', 'Video', 'Course', 'Image', 'Other'] as const;
 

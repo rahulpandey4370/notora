@@ -8,11 +8,13 @@ import { useApp } from '@/hooks/use-app';
 import { Skeleton } from '@/components/ui/skeleton';
 import AppLayout from '@/components/notora/AppLayout';
 import TaskList from '@/components/notora/TaskList';
+import SmartEmptyState from '@/components/notora/SmartEmptyState';
 import TaskTemplates from '@/components/notora/TaskTemplates';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, ClipboardList, CalendarDays } from 'lucide-react';
-import { format, startOfMonth, addMonths, subMonths, isSameDay, startOfDay, addDays, subDays, isAfter, isSameMonth, endOfMonth, startOfWeek, isWithinInterval, isBefore, isYesterday, setHours, setMinutes, setSeconds, endOfDay } from 'date-fns';
+import { format, startOfMonth, addMonths, subMonths, isSameDay, startOfDay, addDays, subDays, isAfter, isSameMonth, endOfMonth, startOfWeek, isWithinInterval, isBefore, isYesterday, setHours, setMinutes, setSeconds, endOfDay , parseISO} from 'date-fns';
+import { toYmd } from '@/lib/date-utils';
 import type { Task } from '@/lib/types';
 import TaskItem from '@/components/notora/TaskItem';
 import { Progress } from '@/components/ui/progress';
@@ -106,7 +108,7 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
                 }
             }
         } else if (task.type === 'single' && task.date) {
-            if (isSameMonth(new Date(task.date), currentMonth)) {
+            if (isSameMonth(parseISO(task.date), currentMonth)) {
                 total += taskXpValue;
                 if (completionsForMonth.length > 0) {
                     achieved += taskXpValue;
@@ -235,7 +237,7 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
 
         return {
           ...t,
-          date: addDays(new Date(t.date!), 1).toISOString(),
+          date: toYmd(addDays(parseISO(t.date!), 1)),
           carryForwardCount: (t.carryForwardCount || 0) + 1,
           originalXp: originalXp,
         };
@@ -256,7 +258,7 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
       return data.tasks.filter(task => {
           switch (task.type) {
               case 'single': 
-                return task.date ? isSameDay(new Date(task.date), date) : false;
+                return task.date ? isSameDay(parseISO(task.date), date) : false;
               case 'recurring':
                 const createdAt = startOfDay(new Date(task.createdAt));
                 // Show if the task is viewed for a day in the same month as its creation.
@@ -282,7 +284,7 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
   return (
     <AppLayout data={data}>
       <main className="p-4 md:p-8 space-y-6">
-        <Card className="dark:neon-border">
+        <Card className="dark:neon-tasks">
             <CardHeader className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <div>
                 <CardTitle>My Tasks</CardTitle>
@@ -317,7 +319,7 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
           </TabsList>
           
           <TabsContent value="daily" className="mt-6">
-              <Card className="dark:neon-border">
+              <Card className="dark:neon-tasks">
                   <CardHeader>
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                         <div>
@@ -370,7 +372,7 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
                             })}
                             </div>
                         ) : (
-                            <p className="text-center text-muted-foreground py-10">No tasks scheduled for {format(currentDay, 'MMMM do, yyyy')}.</p>
+                            <SmartEmptyState surface="tasks" data={data} message={`No tasks scheduled for ${format(currentDay, 'MMMM do, yyyy')}.`} />
                         )}
                     </div>
                   </CardContent>
@@ -378,7 +380,7 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
           </TabsContent>
 
           <TabsContent value="monthly" className="mt-6">
-              <Card className="dark:neon-border">
+              <Card className="dark:neon-tasks">
                   <CardHeader>
                       <CardTitle className="flex items-center gap-2"><ClipboardList className="w-5 h-5"/> Monthly Goals</CardTitle>
                       <CardDescription>High-level targets for {format(currentMonth, 'MMMM')}.</CardDescription>

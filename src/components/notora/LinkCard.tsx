@@ -67,7 +67,7 @@ export default function LinkCard({ link, onDelete, onUpdate }: LinkCardProps) {
 
     return (
         <motion.div whileHover={{ y: -2, transition: { duration: 0.2 } }}>
-            <Card className="flex flex-col h-full border-2 border-black rounded-lg shadow-none hover:shadow-[4px_4px_0px_#000] dark:hover:shadow-[4px_4px_0px_hsl(var(--primary))] transition-shadow duration-200">
+            <Card className="flex flex-col h-full nb-border rounded-lg shadow-none hover:nb-shadow dark:neon-links transition-shadow duration-200">
                 {videoId && !isEditing ? (
                     <div className='aspect-video w-full rounded-t-lg overflow-hidden'>
                         <iframe
@@ -82,7 +82,7 @@ export default function LinkCard({ link, onDelete, onUpdate }: LinkCardProps) {
                 ) : (
                     <CardHeader>
                         {isEditing ? (
-                            <Input value={editedTitle} onChange={(e) => setEditedTitle(e.target.value)} className="text-base font-semibold border-2 border-black rounded-md" />
+                            <Input value={editedTitle} onChange={(e) => setEditedTitle(e.target.value)} className="text-base font-semibold nb-border rounded-md" />
                         ) : (
                             <CardTitle className="flex items-start gap-3 text-base">
                                 <img src={getFaviconUrl(link.url)} alt="favicon" className="w-8 h-8 mt-1 rounded-md flex-shrink-0" />
@@ -96,7 +96,7 @@ export default function LinkCard({ link, onDelete, onUpdate }: LinkCardProps) {
             
                 <CardContent className={`flex-1 ${videoId && !isEditing ? 'pt-6' : ''}`}>
                     {isEditing ? (
-                        <Textarea value={editedSummary} onChange={(e) => setEditedSummary(e.target.value)} className="text-sm h-24 border-2 border-black rounded-md" />
+                        <Textarea value={editedSummary} onChange={(e) => setEditedSummary(e.target.value)} className="text-sm h-24 nb-border rounded-md" />
                     ) : (
                         <p className="text-sm text-muted-foreground">{link.summary}</p>
                     )}
@@ -105,7 +105,7 @@ export default function LinkCard({ link, onDelete, onUpdate }: LinkCardProps) {
                     <div className="flex flex-col gap-2">
                         {isEditing ? (
                             <Select value={editedCategory} onValueChange={(v: typeof linkCategories[number]) => setEditedCategory(v)}>
-                                <SelectTrigger className="w-[120px] border-2 border-black rounded-md shadow-[2px_2px_0px_#000]">
+                                <SelectTrigger className="w-[120px] nb-border rounded-md nb-shadow-sm">
                                     <SelectValue placeholder="Category" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -113,7 +113,7 @@ export default function LinkCard({ link, onDelete, onUpdate }: LinkCardProps) {
                                 </SelectContent>
                             </Select>
                         ) : (
-                            <Badge variant="outline" className={`border-black ${categoryStyles[link.category] || categoryStyles.Other}`}>
+                            <Badge variant="outline" className={`border-[hsl(var(--nb-ink)/var(--nb-ink-opacity))] ${categoryStyles[link.category] || categoryStyles.Other}`}>
                                 {link.category}
                             </Badge>
                         )}

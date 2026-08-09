@@ -11,7 +11,7 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 import { linkCategories, ModelId } from '@/lib/types';
-import { callAzureOpenAI, AZURE_DEPLOYMENT_NAME } from '@/lib/azure-openai';
+import { callStructuredLLM } from '@/lib/ai-client';
 
 const AnalyzeLinkInputSchema = z.object({
   url: z.string().url().describe('The URL of the link to analyze.'),
@@ -49,19 +49,16 @@ const analyzeLinkFlow = ai.defineFlow(
     const modelId = context?.modelId || 'gemini-1.5-flash-latest';
     let output;
 
-    if (modelId === AZURE_DEPLOYMENT_NAME) {
-      output = await callAzureOpenAI(promptTemplate, input, AnalyzeLinkOutputSchema);
-    } else {
-      const model = `googleai/${modelId}`;
-      const prompt = ai.definePrompt({
-        name: 'analyzeLinkPrompt',
-        input: {schema: AnalyzeLinkInputSchema},
-        output: {schema: AnalyzeLinkOutputSchema},
-        prompt: promptTemplate,
-      });
-      const genkitResponse = await prompt(input, { model });
-      output = genkitResponse.output;
-    }
+    // Provider routing lives in the unified client — this flow just
+    // says what it wants and which model to use.
+    output = await callStructuredLLM(
+      modelId,
+      promptTemplate,
+      input,
+      AnalyzeLinkOutputSchema,
+      'analyzeLinkPrompt',
+      AnalyzeLinkInputSchema,
+    );
 
     if (!output) {
       throw new Error("Flow failed to produce a valid output.");

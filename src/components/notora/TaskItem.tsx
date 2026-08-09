@@ -42,7 +42,7 @@ export default function TaskItem({ task, onToggle, onDelete, isCompleted, onCarr
       exit={{ scale: 0.9, opacity: 0 }}
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
       className={cn(
-        "flex items-center gap-4 p-3 border-2 border-black rounded-lg bg-card hover:shadow-[4px_4px_0px_#000] transition-shadow duration-200",
+        "flex items-center gap-4 p-3 nb-border rounded-lg bg-card hover:nb-shadow transition-shadow duration-200",
         isOverdue && "bg-muted/50 opacity-70",
         className
       )}
@@ -55,7 +55,7 @@ export default function TaskItem({ task, onToggle, onDelete, isCompleted, onCarr
           checked={isCompleted}
           onCheckedChange={onToggle}
           aria-labelledby={`${uniqueId}-label`}
-          className="w-5 h-5 border-2 border-black rounded-sm data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:border-slate-700"
+          className="w-5 h-5 nb-border rounded-sm data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:border-slate-700"
           disabled={isOverdue}
         />
         <label

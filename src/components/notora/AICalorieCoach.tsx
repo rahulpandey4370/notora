@@ -306,7 +306,7 @@ export default function AICalorieCoach({
   }, [weeklyChartData]);
 
   return (
-    <Card className="dark:neon-border-green">
+    <Card className="dark:neon-logs">
       <CardHeader>
         <CardTitle className="flex items-center gap-2"><Sparkles className="text-primary" /> AI Calorie Coach</CardTitle>
         <CardDescription>

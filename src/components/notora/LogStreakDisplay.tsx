@@ -53,7 +53,7 @@ export default function LogStreakDisplay({ logTrackers }: LogStreakDisplayProps)
   const totalEntries = useMemo(() => logTrackers.reduce((sum, tracker) => sum + tracker.logs.length, 0), [logTrackers]);
 
   return (
-    <Card className="dark:neon-border-yellow">
+    <Card className="dark:neon-logs">
       <CardContent className="p-4 flex items-center justify-around text-center">
         <div className="flex items-center gap-3">
           <Flame className="w-8 h-8 text-orange-400" />

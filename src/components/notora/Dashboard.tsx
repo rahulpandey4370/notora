@@ -1,10 +1,12 @@
 'use client';
+import SmartEmptyState from './SmartEmptyState';
 
 import type { User, AppData, Task } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { useMemo } from 'react';
 import { Calendar, Flame, TrendingUp } from 'lucide-react';
-import { format, isSameDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, addDays, isSameMonth, isAfter, startOfDay, isBefore, setHours, setMinutes, setSeconds, getDay, getDaysInMonth, endOfDay } from 'date-fns';
+import { format, isSameDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, addDays, isSameMonth, isAfter, startOfDay, isBefore, setHours, setMinutes, setSeconds, getDay, getDaysInMonth, endOfDay , parseISO} from 'date-fns';
+import { toYmd } from '@/lib/date-utils';
 import { getTaskXp } from '@/lib/utils';
 import { useApp } from '@/hooks/use-app';
 import { PolarGrid, PolarRadiusAxis, RadialBar, RadialBarChart, Label } from "recharts"
@@ -77,7 +79,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
 
         return {
           ...t,
-          date: addDays(new Date(t.date!), 1).toISOString(),
+          date: toYmd(addDays(parseISO(t.date!), 1)),
           carryForwardCount: (t.carryForwardCount || 0) + 1,
           originalXp: originalXp,
         };
@@ -148,7 +150,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
     return tasks.filter(task => {
         
         if (task.type === 'single' && task.date) {
-             const taskDate = startOfDay(new Date(task.date));
+             const taskDate = startOfDay(parseISO(task.date));
              return isSameDay(taskDate, todayStart);
         }
         
@@ -164,8 +166,8 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
         }
         return false;
     }).sort((a,b) => {
-        const aDate = a.date ? new Date(a.date) : new Date(a.createdAt);
-        const bDate = b.date ? new Date(b.date) : new Date(b.createdAt);
+        const aDate = a.date ? parseISO(a.date) : new Date(a.createdAt);
+        const bDate = b.date ? parseISO(b.date) : new Date(b.createdAt);
         return aDate.getTime() - bDate.getTime();
     });
   }, [tasks, today]);
@@ -202,7 +204,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
                 }
             }
         } else if (task.type === 'single' && task.date) {
-            const taskDate = startOfDay(new Date(task.date));
+            const taskDate = startOfDay(parseISO(task.date));
             if (isWithinInterval(taskDate, { start: weekStart, end: weekEnd })) {
                 total += taskXpValue;
                 if ((task.completions || []).includes(format(taskDate, 'yyyy-MM-dd'))) {
@@ -238,7 +240,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
                 }
             }
         } else if (task.type === 'single' && task.date) {
-            if (isSameMonth(new Date(task.date), today)) {
+            if (isSameMonth(parseISO(task.date), today)) {
                 total += taskXpValue;
                 if (completionsForMonth.length > 0) {
                     achieved += taskXpValue;
@@ -268,7 +270,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
   const { completedTodayCount, todaysTotalXp, todaysAchievedXp } = useMemo(() => {
     const todayStr = format(today, 'yyyy-MM-dd');
     const completedTasks = allTodaysTasks.filter(t => {
-      const completionDate = t.type === 'single' && t.date ? format(startOfDay(new Date(t.date)), 'yyyy-MM-dd') : todayStr;
+      const completionDate = t.type === 'single' && t.date ? format(startOfDay(parseISO(t.date)), 'yyyy-MM-dd') : todayStr;
       return (t.completions || []).includes(completionDate);
     });
     const completedCount = completedTasks.length;
@@ -305,7 +307,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
   return (
     <div className="p-4 md:p-8 space-y-6">
         <motion.div variants={animationVariants} initial="hidden" animate="visible" custom={0}>
-          <Card className="border-2 border-black rounded-lg shadow-none dark:bg-[#1a1122] dark:neon-border-purple">
+          <Card className="nb-border rounded-lg shadow-none dark:neon-dashboard">
             <CardHeader className='pb-2'>
               <CardTitle className='text-center'>Progress Tracker</CardTitle>
             </CardHeader>
@@ -314,7 +316,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
                     <span className='flex items-center gap-1.5'><Flame className='w-4 h-4 text-orange-500' /> Your XP</span>
                     <span>{todaysAchievedXp} / {todaysTotalXp} XP</span>
                 </div>
-                 <div className="w-full bg-muted rounded-full h-4 border-2 border-black p-0.5">
+                 <div className="w-full bg-muted rounded-full h-4 nb-border p-0.5">
                     <motion.div
                         className="bg-gradient-to-r from-green-400 to-teal-400 h-full rounded-full"
                         initial={{ width: '0%' }}
@@ -335,7 +337,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
             custom={1}
           >
             <motion.div whileHover={{ y: -5, transition: { duration: 0.2 } }}>
-              <Card className="border-2 border-black rounded-lg shadow-none dark:neon-border-yellow">
+              <Card className="nb-border rounded-lg shadow-none dark:neon-tasks">
                   <CardHeader>
                       <CardTitle className="flex items-center gap-2"><Calendar className="w-5 h-5"/> Today's Focus</CardTitle>
                       <CardDescription>Tasks for today. ({completedTodayCount}/{allTodaysTasks.length} completed)</CardDescription>
@@ -348,7 +350,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
                               let taskDate, isCompleted;
                               
                               if (task.type === 'single' && task.date) {
-                                taskDate = startOfDay(new Date(task.date));
+                                taskDate = startOfDay(parseISO(task.date));
                                 isCompleted = (task.completions || []).includes(format(taskDate, 'yyyy-MM-dd'));
                               } else { 
                                 taskDate = todayStart;
@@ -367,7 +369,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
                               );
                           })
                           ) : (
-                          <p className="text-center text-muted-foreground py-4">No tasks scheduled for today.</p>
+                          <SmartEmptyState surface="dashboard" data={data} message="No tasks scheduled for today." />
                           )}
                       </div>
                   </CardContent>
@@ -383,7 +385,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
                 custom={2}
             >
               <motion.div whileHover={{ y: -5, transition: { duration: 0.2 } }}>
-                <Card className="flex flex-col border-2 border-black rounded-lg shadow-none dark:neon-border-accent">
+                <Card className="flex flex-col nb-border rounded-lg shadow-none dark:neon-dashboard">
                     <CardHeader className="items-center pb-0">
                         <CardTitle>Weekly Progress</CardTitle>
                         <CardDescription>{format(startOfWeek(today, { weekStartsOn: 1 }), "MMM d")} - {format(endOfWeek(today, { weekStartsOn: 1 }), "MMM d")}</CardDescription>
@@ -461,7 +463,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
                 custom={3}
             >
               <motion.div whileHover={{ y: -5, transition: { duration: 0.2 } }}>
-                <Card className="flex flex-col border-2 border-black rounded-lg shadow-none dark:neon-border-chart-3">
+                <Card className="flex flex-col nb-border rounded-lg shadow-none dark:neon-dashboard">
                     <CardHeader className="items-center pb-0">
                         <CardTitle>Monthly Goal</CardTitle>
                         <CardDescription>{format(today, 'MMMM yyyy')}</CardDescription>

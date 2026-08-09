@@ -1,12 +1,7 @@
-
 import { NextResponse } from 'next/server';
-import { BlobServiceClient } from '@azure/storage-blob';
 import { createHash } from 'crypto';
+import { getSupabase } from '@/lib/supabase';
 import { users as defaultUsers } from '@/lib/users';
-
-const connectionString = process.env.AZURE_STORAGE_CONNECTION_STRING;
-const containerName = 'to-do-notes';
-const blobName = 'users.json';
 
 type StoredUser = {
   username: string;
@@ -15,50 +10,35 @@ type StoredUser = {
   avatarUrl: string;
 };
 
+function fromRow(row: any): StoredUser {
+  return { username: row.username, email: row.email, passwordHash: row.password_hash, avatarUrl: row.avatar_url };
+}
+
 async function getUsers(): Promise<StoredUser[]> {
-  if (!connectionString) {
-    throw new Error("AZURE_STORAGE_CONNECTION_STRING not set.");
-  }
+  const supabase = getSupabase();
+  const { data, error } = await supabase.from('users').select('*');
+  if (error) throw new Error(error.message);
 
-  const blobServiceClient = BlobServiceClient.fromConnectionString(connectionString);
-  const containerClient = blobServiceClient.getContainerClient(containerName);
-  const blockBlobClient = containerClient.getBlockBlobClient(blobName);
-
-  if (!(await blockBlobClient.exists())) {
-    await blockBlobClient.upload(JSON.stringify(defaultUsers, null, 2), Buffer.byteLength(JSON.stringify(defaultUsers, null, 2)));
+  if (!data || data.length === 0) {
+    const { error: seedError } = await supabase.from('users').upsert(
+      defaultUsers.map(u => ({ username: u.username, email: u.email, password_hash: u.passwordHash, avatar_url: u.avatarUrl }))
+    );
+    if (seedError) throw new Error(seedError.message);
     return defaultUsers;
   }
-
-  const downloadBlockBlobResponse = await blockBlobClient.download(0);
-  const downloaded = await streamToBuffer(downloadBlockBlobResponse.readableStreamBody!);
-  return JSON.parse(downloaded.toString());
+  return data.map(fromRow);
 }
 
-async function saveUsers(users: StoredUser[]): Promise<void> {
-    if (!connectionString) {
-        throw new Error("AZURE_STORAGE_CONNECTION_STRING not set.");
-    }
-    const blobServiceClient = BlobServiceClient.fromConnectionString(connectionString);
-    const containerClient = blobServiceClient.getContainerClient(containerName);
-    const blockBlobClient = containerClient.getBlockBlobClient(blobName);
-    const data = JSON.stringify(users, null, 2);
-    await blockBlobClient.upload(data, Buffer.byteLength(data));
-}
-
-
-async function streamToBuffer(readableStream: NodeJS.ReadableStream): Promise<Buffer> {
-  return new Promise((resolve, reject) => {
-    const chunks: Buffer[] = [];
-    readableStream.on('data', (data) => chunks.push(data instanceof Buffer ? data : Buffer.from(data)));
-    readableStream.on('end', () => resolve(Buffer.concat(chunks)));
-    readableStream.on('error', reject);
-  });
+async function updateUserPassword(username: string, newPasswordHash: string): Promise<void> {
+  const supabase = getSupabase();
+  const { error } = await supabase.from('users').update({ password_hash: newPasswordHash }).eq('username', username);
+  if (error) throw new Error(error.message);
 }
 
 function hashPassword(password: string): string {
-    const sha256 = createHash('sha256');
-    sha256.update(password);
-    return sha256.digest('hex');
+  const sha256 = createHash('sha256');
+  sha256.update(password);
+  return sha256.digest('hex');
 }
 
 export async function POST(request: Request) {
@@ -70,23 +50,19 @@ export async function POST(request: Request) {
     }
 
     const allUsers = await getUsers();
-    const userIndex = allUsers.findIndex(u => u.email.toLowerCase() === email.toLowerCase());
+    const user = allUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
 
-    if (userIndex === -1) {
+    if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
-    
-    const user = allUsers[userIndex];
+
     const currentPasswordHash = hashPassword(currentPassword);
 
     if (currentPasswordHash !== user.passwordHash) {
       return NextResponse.json({ error: 'Invalid current password' }, { status: 401 });
     }
 
-    // Update password
-    allUsers[userIndex].passwordHash = hashPassword(newPassword);
-    
-    await saveUsers(allUsers);
+    await updateUserPassword(user.username, hashPassword(newPassword));
 
     return NextResponse.json({ message: 'Password updated successfully' });
 

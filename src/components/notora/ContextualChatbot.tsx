@@ -107,7 +107,7 @@ export default function ContextualChatbot({ pageContext }: ContextualChatbotProp
             transition={{ type: 'spring', stiffness: 200, damping: 25 }}
             className="fixed bottom-[120px] md:bottom-24 right-6 z-50"
           >
-            <Card className="w-[350px] h-[500px] flex flex-col shadow-2xl dark:neon-border-accent">
+            <Card className="w-[350px] h-[500px] flex flex-col shadow-2xl dark:neon-dashboard">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
                   <Bot /> AI Assistant

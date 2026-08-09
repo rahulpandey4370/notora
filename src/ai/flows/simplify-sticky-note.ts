@@ -12,7 +12,7 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 import { ModelId } from '@/lib/types';
-import { callAzureOpenAI, AZURE_DEPLOYMENT_NAME } from '@/lib/azure-openai';
+import { callStructuredLLM } from '@/lib/ai-client';
 
 const SimplifyStickyNoteInputSchema = z.object({
   text: z.string().describe('The text content of the sticky note to simplify.'),
@@ -46,19 +46,16 @@ const simplifyStickyNoteFlow = ai.defineFlow(
     const modelId = context?.modelId || 'gemini-1.5-flash-latest';
     let output;
 
-    if (modelId === AZURE_DEPLOYMENT_NAME) {
-      output = await callAzureOpenAI(promptTemplate, input, SimplifyStickyNoteOutputSchema);
-    } else {
-      const model = `googleai/${modelId}`;
-      const prompt = ai.definePrompt({
-        name: 'simplifyStickyNotePrompt',
-        input: {schema: SimplifyStickyNoteInputSchema},
-        output: {schema: SimplifyStickyNoteOutputSchema},
-        prompt: promptTemplate,
-      });
-      const genkitResponse = await prompt(input, { model });
-      output = genkitResponse.output;
-    }
+    // Provider routing lives in the unified client — this flow just
+    // says what it wants and which model to use.
+    output = await callStructuredLLM(
+      modelId,
+      promptTemplate,
+      input,
+      SimplifyStickyNoteOutputSchema,
+      'simplifyStickyNotePrompt',
+      SimplifyStickyNoteInputSchema,
+    );
 
     if (!output) {
       throw new Error("Flow failed to produce a valid output.");

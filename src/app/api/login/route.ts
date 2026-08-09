@@ -1,11 +1,7 @@
 import { NextResponse } from 'next/server';
-import { BlobServiceClient } from '@azure/storage-blob';
 import { createHash } from 'crypto';
+import { getSupabase } from '@/lib/supabase';
 import { users as defaultUsers } from '@/lib/users';
-
-const connectionString = process.env.AZURE_STORAGE_CONNECTION_STRING;
-const containerName = 'to-do-notes';
-const blobName = 'users.json';
 
 type StoredUser = {
   username: string;
@@ -14,49 +10,30 @@ type StoredUser = {
   avatarUrl: string;
 };
 
-async function getUsers(): Promise<StoredUser[]> {
-  if (!connectionString) {
-    console.warn("AZURE_STORAGE_CONNECTION_STRING not set, using default users.");
-    return defaultUsers;
-  }
-
-  try {
-    const blobServiceClient = BlobServiceClient.fromConnectionString(connectionString);
-    const containerClient = blobServiceClient.getContainerClient(containerName);
-    const blockBlobClient = containerClient.getBlockBlobClient(blobName);
-
-    // Ensure container exists
-    await containerClient.createIfNotExists();
-
-    // Check if blob exists
-    const exists = await blockBlobClient.exists();
-    if (!exists) {
-      // If blob doesn't exist, create it with default users
-      await blockBlobClient.upload(JSON.stringify(defaultUsers, null, 2), Buffer.byteLength(JSON.stringify(defaultUsers, null, 2)));
-      return defaultUsers;
-    }
-
-    const downloadBlockBlobResponse = await blockBlobClient.download(0);
-    const downloaded = await streamToBuffer(downloadBlockBlobResponse.readableStreamBody!);
-    return JSON.parse(downloaded.toString());
-  } catch (error) {
-    console.error("Error fetching users from Azure Blob Storage:", error);
-    // Fallback to default users in case of error
-    return defaultUsers;
-  }
+function fromRow(row: any): StoredUser {
+  return { username: row.username, email: row.email, passwordHash: row.password_hash, avatarUrl: row.avatar_url };
 }
 
-async function streamToBuffer(readableStream: NodeJS.ReadableStream): Promise<Buffer> {
-  return new Promise((resolve, reject) => {
-    const chunks: Buffer[] = [];
-    readableStream.on('data', (data) => {
-      chunks.push(data instanceof Buffer ? data : Buffer.from(data));
-    });
-    readableStream.on('end', () => {
-      resolve(Buffer.concat(chunks));
-    });
-    readableStream.on('error', reject);
-  });
+async function getUsers(): Promise<StoredUser[]> {
+  try {
+    const supabase = getSupabase();
+    const { data, error } = await supabase.from('users').select('*');
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      // Table empty -> seed with defaults, mirroring the old "create blob with
+      // defaults if missing" behavior.
+      const { error: seedError } = await supabase.from('users').upsert(
+        defaultUsers.map(u => ({ username: u.username, email: u.email, password_hash: u.passwordHash, avatar_url: u.avatarUrl }))
+      );
+      if (seedError) console.error('Failed to seed default users:', seedError.message);
+      return defaultUsers;
+    }
+    return data.map(fromRow);
+  } catch (error) {
+    console.error('Error fetching users from Supabase:', error);
+    return defaultUsers;
+  }
 }
 
 export async function POST(request: Request) {
@@ -78,7 +55,7 @@ export async function POST(request: Request) {
     const sha256 = createHash('sha256');
     sha256.update(password);
     const inputPasswordHash = sha256.digest('hex');
-    
+
     if (inputPasswordHash === user.passwordHash) {
       // Password matches. Return user data without the password hash.
       const { passwordHash, ...userToReturn } = user;

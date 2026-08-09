@@ -36,7 +36,7 @@ export default function AboutPage() {
     <AppLayout>
       <main className="p-4 md:p-8">
         <div className="max-w-4xl mx-auto space-y-8">
-          <Card className="dark:neon-border">
+          <Card className="dark:neon-dashboard">
             <CardHeader className="text-center">
               <div className="flex justify-center mb-4">
                 <img src="https://placehold.co/80x80/FFDA63/000000.png?text=N" alt="Notora Logo" data-ai-hint="logo initial" className="rounded-lg" />
@@ -55,7 +55,7 @@ export default function AboutPage() {
             </CardContent>
           </Card>
 
-          <Card className="dark:neon-border">
+          <Card className="dark:neon-dashboard">
             <CardHeader>
               <CardTitle>Core Features</CardTitle>
               <CardDescription>A look at what makes Notora special.</CardDescription>
@@ -73,7 +73,7 @@ export default function AboutPage() {
             </CardContent>
           </Card>
 
-          <Card className="dark:neon-border">
+          <Card className="dark:neon-dashboard">
             <CardHeader>
               <CardTitle>Meet the Creator</CardTitle>
               <CardDescription>This application was built as a portfolio project.</CardDescription>

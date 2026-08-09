@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
-import { format, isSameDay } from 'date-fns';
+import { format, isSameDay , parseISO} from 'date-fns';
+import { toYmd } from '@/lib/date-utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BookHeart, Save, Wand2, Loader2, Info, BookCheck, BrainCircuit, Type, FileText, Download, Settings, Trash2, DraftingCompass, FileSignature } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
@@ -153,7 +154,7 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
   }, [initialJournalEntries, activeTagFilter, searchQuery]);
 
   const todaysEntry = useMemo(() => {
-    return filteredEntries.find(entry => isSameDay(new Date(entry.date), selectedDate));
+    return filteredEntries.find(entry => isSameDay(parseISO(entry.date), selectedDate));
   }, [filteredEntries, selectedDate]);
 
   useEffect(() => {
@@ -175,7 +176,7 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
 
   const handleSave = (changes: Partial<JournalEntry>) => {
     let updatedEntries;
-    const existingEntry = initialJournalEntries.find(entry => isSameDay(new Date(entry.date), selectedDate));
+    const existingEntry = initialJournalEntries.find(entry => isSameDay(parseISO(entry.date), selectedDate));
 
     if (existingEntry) {
       updatedEntries = initialJournalEntries.map(entry =>
@@ -187,7 +188,7 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
       }
       const newEntry: JournalEntry = {
         id: uuidv4(),
-        date: selectedDate.toISOString(),
+        date: toYmd(selectedDate),
         content: changes.content || '',
         mood: changes.mood,
         tags: changes.tags
@@ -273,9 +274,9 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
         fileName += '.json';
     } else if (formatType === 'md') {
         content = initialJournalEntries
-            .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+            .sort((a, b) => parseISO(a.date).getTime() - parseISO(b.date).getTime())
             .map(entry => {
-                let md = `## ${format(new Date(entry.date), 'EEEE, MMMM do, yyyy')}\n\n`;
+                let md = `## ${format(parseISO(entry.date), 'EEEE, MMMM do, yyyy')}\n\n`;
                 if (entry.mood) {
                     md += `**Mood:** ${entry.mood} ${moodEmojiMap[entry.mood]}\n`;
                 }
@@ -308,7 +309,7 @@ a.click();
     });
   };
 
-  const entryDates = useMemo(() => filteredEntries.map(entry => new Date(entry.date)), [filteredEntries]);
+  const entryDates = useMemo(() => filteredEntries.map(entry => parseISO(entry.date)), [filteredEntries]);
 
   const moodModifiers = useMemo(() => {
     const modifiers: Record<string, Date[]> = {
@@ -316,7 +317,7 @@ a.click();
     };
     filteredEntries.forEach(entry => {
         if (entry.mood) {
-            modifiers[`mood-${entry.mood}`]?.push(new Date(entry.date));
+            modifiers[`mood-${entry.mood}`]?.push(parseISO(entry.date));
         }
     });
     return modifiers;
@@ -330,7 +331,7 @@ a.click();
         transition={{ duration: 0.5, delay: 0.1 }}
       >
         <StreakDisplay journalEntries={initialJournalEntries} />
-        <Card className="min-h-[400px] flex flex-col dark:neon-border">
+        <Card className="min-h-[400px] flex flex-col dark:neon-journal">
             <CardHeader>
               <div className="flex justify-between items-start gap-4">
                 <div className='flex-1'>
@@ -410,10 +411,10 @@ a.click();
                 </div>
                 <AnimatePresence>
                 {aiReflection.isLoading ? (
-                    <Card className="dark:neon-border-green"><CardContent className="p-4"><Skeleton className="h-40 w-full" /></CardContent></Card>
+                    <Card className="dark:neon-journal"><CardContent className="p-4"><Skeleton className="h-40 w-full" /></CardContent></Card>
                 ) : aiReflection.reflection && (
                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-                        <Card className="bg-muted/50 dark:neon-border-green">
+                        <Card className="bg-muted/50 dark:neon-journal">
                             <CardHeader className="pb-4">
                                 <CardTitle className="text-lg flex items-center gap-2"><Wand2 className="text-primary"/> AI Writing Coach</CardTitle>
                                 {aiReflection.emotion && <CardDescription>Detected Emotion: {aiReflection.emotion}</CardDescription>}
@@ -455,7 +456,7 @@ a.click();
             transition={{ duration: 0.5 }}
         >
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-8">
-            <Card className="dark:neon-border-blue">
+            <Card className="dark:neon-journal">
               <CardHeader>
                 <CardTitle>Journal Calendar</CardTitle>
                 <CardDescription>Select a day to write or reflect.</CardDescription>
@@ -479,7 +480,7 @@ a.click();
             />
           </div>
           
-          <Card className='dark:neon-border-blue'>
+          <Card className='dark:neon-journal'>
             <CardHeader>
                 <CardTitle>Tags</CardTitle>
                 <CardDescription>Filter your entries by tag.</CardDescription>
@@ -524,7 +525,7 @@ a.click();
         <JournalEditorContent />
       </TabsContent>
       <TabsContent value="explore" className="mt-6 space-y-8">
-        <Card className="dark:neon-border-blue">
+        <Card className="dark:neon-journal">
           <CardHeader>
             <CardTitle>Journal Calendar</CardTitle>
             <CardDescription>Select a day to write or reflect.</CardDescription>
@@ -546,7 +547,7 @@ a.click();
             searchQuery={searchQuery}
             onSearchQueryChange={setSearchQuery}
         />
-        <Card className='dark:neon-border-blue'>
+        <Card className='dark:neon-journal'>
           <CardHeader>
             <CardTitle>Tags</CardTitle>
             <CardDescription>Filter your entries by tag.</CardDescription>

@@ -29,41 +29,84 @@
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
-    
+
     --task-complete-bg: rgb(34 197 94 / 0.2);
     --task-partial-bg: rgb(234 179 8 / 0.2);
     --task-low-bg: rgb(239 68 68 / 0.2);
+
+    /* Neo-brutalist ink: the hard border + offset shadow colour. Black on the
+       warm light canvas; re-pointed to a luminous tone in dark (see .dark)
+       so the same offset-shadow language survives instead of disappearing
+       into the background. */
+    --nb-ink: 0 0% 0%;
+    --nb-ink-opacity: 1;
+
+    /* ---- Semantic accent hues -------------------------------------------
+       One hue per SECTION, so colour carries meaning instead of decorating
+       cards at random. Light mode keeps these muted (they mostly drive
+       chart series and small indicators); dark mode turns them into the
+       neon accent for that section. */
+    --hue-dashboard: 35 91% 55%;
+    --hue-tasks: 217 91% 55%;
+    --hue-notes: 45 93% 45%;
+    --hue-links: 280 65% 55%;
+    --hue-logs: 152 60% 38%;
+    --hue-journal: 330 70% 55%;
+
+    /* State hues — meaning, not decoration. */
+    --hue-success: 152 60% 38%;
+    --hue-warning: 38 92% 50%;
+    --hue-danger: 0 75% 55%;
   }
 
   .dark {
-    --background: 224 71% 4%;
+    /* Tokenised: previously a hardcoded `#0A0A0A` on `body` fought this
+       variable. Slightly blue-shifted rather than pure black so the neon
+       accents read as emissive against it. */
+    --background: 222 47% 5%;
     --foreground: 210 40% 98%;
-    --card: 222 47% 11%;
+    --card: 222 45% 9%;
     --card-foreground: 210 40% 98%;
-    --popover: 222 47% 11%;
+    --popover: 222 45% 9%;
     --popover-foreground: 210 40% 98%;
     --primary: 217 91% 60%;
     --primary-foreground: 210 40% 98%;
     --secondary: 217 33% 17%;
     --secondary-foreground: 210 40% 98%;
     --muted: 217 33% 17%;
-    --muted-foreground: 215 20% 65%;
+    --muted-foreground: 215 20% 68%;
     --accent: 217 91% 60%;
     --accent-foreground: 210 40% 98%;
-    --destructive: 0 63% 31%;
+    --destructive: 0 63% 45%;
     --destructive-foreground: 210 40% 98%;
-    --border: 217 33% 25%;
+    --border: 217 33% 22%;
     --input: 217 33% 17%;
     --ring: 217 91% 60%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 54 90% 60%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    --chart-1: 217 91% 60%;
+    --chart-2: 152 65% 48%;
+    --chart-3: 45 93% 58%;
+    --chart-4: 280 75% 65%;
+    --chart-5: 330 75% 62%;
 
-    --task-complete-bg: rgb(34 197 94 / 0.3);
-    --task-partial-bg: rgb(234 179 8 / 0.3);
-    --task-low-bg: rgb(239 68 68 / 0.3);
+    --task-complete-bg: rgb(34 197 94 / 0.28);
+    --task-partial-bg: rgb(234 179 8 / 0.28);
+    --task-low-bg: rgb(239 68 68 / 0.28);
+
+    /* In dark the "ink" becomes a dim luminous edge, keeping the brutalist
+       offset-shadow silhouette readable instead of black-on-black. */
+    --nb-ink: 217 40% 70%;
+    --nb-ink-opacity: 0.22;
+
+    --hue-dashboard: 217 91% 60%;
+    --hue-tasks: 199 89% 58%;
+    --hue-notes: 45 93% 58%;
+    --hue-links: 280 75% 65%;
+    --hue-logs: 152 65% 48%;
+    --hue-journal: 330 75% 62%;
+
+    --hue-success: 152 65% 48%;
+    --hue-warning: 45 93% 58%;
+    --hue-danger: 0 75% 60%;
   }
 }
 
@@ -75,10 +118,6 @@
     @apply bg-background text-foreground;
   }
 
-  .dark body {
-    background-color: #0A0A0A;
-  }
-  
   body::before {
     content: '';
     position: fixed;
@@ -91,9 +130,13 @@
     pointer-events: none;
     animation: aurora-glow 10s infinite alternate;
   }
-  
+
+  /* Dark keeps a much fainter, static wash — enough to give the canvas
+     depth under the neon without the light-mode shimmer. */
   .dark body::before {
-     display: none;
+    background: radial-gradient(ellipse at 50% -10%, hsl(var(--primary) / 0.10), transparent 65%);
+    animation: none;
+    opacity: 1;
   }
 
   @keyframes aurora-glow {
@@ -107,69 +150,166 @@
     }
   }
 
-}
-
-@keyframes neon-glow {
-  0%, 100% {
-    box-shadow: 0 0 2px var(--glow-color-1), 0 0 5px var(--glow-color-2), 0 0 10px var(--glow-color-3);
-    border-color: var(--glow-color-1);
-  }
-  50% {
-    box-shadow: 0 0 5px var(--glow-color-1), 0 0 10px var(--glow-color-2), 0 0 20px var(--glow-color-3);
-    border-color: var(--glow-color-1);
+  /* Respect reduced-motion for every ambient animation in the app. */
+  @media (prefers-reduced-motion: reduce) {
+    body::before {
+      animation: none;
+    }
   }
 }
 
+/* =======================================================================
+   NEON SYSTEM
+   One glow recipe, one intensity. A class's only job is to point
+   `--neon` at a hue; the shared `.neon-surface` recipe renders it.
+   Previously each variant hand-rolled its own box-shadow (and three of
+   them were never defined at all), so intensity drifted per card.
+   ======================================================================= */
 
 @layer utilities {
-  .dark .neon-border {
-    --glow-color-1: hsl(var(--primary) / 0.8);
-    --glow-color-2: hsl(var(--primary) / 0.6);
-    --glow-color-3: hsl(var(--primary) / 0.4);
-    animation: neon-glow 2s ease-in-out infinite;
+  /* Every glow class below is written self-contained (hue + the identical
+     recipe in one rule). That is deliberate: Tailwind generates the `dark:`
+     variant per-rule, so splitting "which hue" from "what a glow looks like"
+     across two rules would break `dark:neon-border-*`. All usage in the app
+     is `dark:`-prefixed, so these stay inert in light mode. */
+
+  /* --- Section hues (preferred, meaningful names) --- */
+  .neon-dashboard {
+    --neon: var(--hue-dashboard);
+    border-color: hsl(var(--neon) / 0.6);
+    box-shadow: 0 0 0 1px hsl(var(--neon) / 0.28), 0 0 18px -6px hsl(var(--neon) / 0.55);
   }
-  .dark .neon-text {
-    text-shadow: 0 0 5px hsl(var(--primary) / 0.8), 0 0 10px hsl(var(--primary) / 0.6);
+  .neon-tasks {
+    --neon: var(--hue-tasks);
+    border-color: hsl(var(--neon) / 0.6);
+    box-shadow: 0 0 0 1px hsl(var(--neon) / 0.28), 0 0 18px -6px hsl(var(--neon) / 0.55);
   }
-  
-  .dark .neon-border-accent {
-    --glow-color-1: hsl(var(--accent) / 0.8);
-    --glow-color-2: hsl(var(--accent) / 0.6);
-    --glow-color-3: hsl(var(--accent) / 0.4);
-    animation: neon-glow 2s ease-in-out infinite;
+  .neon-notes {
+    --neon: var(--hue-notes);
+    border-color: hsl(var(--neon) / 0.6);
+    box-shadow: 0 0 0 1px hsl(var(--neon) / 0.28), 0 0 18px -6px hsl(var(--neon) / 0.55);
+  }
+  .neon-links {
+    --neon: var(--hue-links);
+    border-color: hsl(var(--neon) / 0.6);
+    box-shadow: 0 0 0 1px hsl(var(--neon) / 0.28), 0 0 18px -6px hsl(var(--neon) / 0.55);
+  }
+  .neon-logs {
+    --neon: var(--hue-logs);
+    border-color: hsl(var(--neon) / 0.6);
+    box-shadow: 0 0 0 1px hsl(var(--neon) / 0.28), 0 0 18px -6px hsl(var(--neon) / 0.55);
+  }
+  .neon-journal {
+    --neon: var(--hue-journal);
+    border-color: hsl(var(--neon) / 0.6);
+    box-shadow: 0 0 0 1px hsl(var(--neon) / 0.28), 0 0 18px -6px hsl(var(--neon) / 0.55);
   }
 
-  .dark .neon-border-purple {
-    --glow-color-1: hsl(var(--chart-4) / 0.8);
-    --glow-color-2: hsl(var(--chart-4) / 0.6);
-    --glow-color-3: hsl(var(--chart-4) / 0.4);
-    animation: neon-glow 2s ease-in-out infinite;
+  /* --- State hues — meaning, not decoration --- */
+  .neon-success {
+    --neon: var(--hue-success);
+    border-color: hsl(var(--neon) / 0.6);
+    box-shadow: 0 0 0 1px hsl(var(--neon) / 0.28), 0 0 18px -6px hsl(var(--neon) / 0.55);
   }
-  
-  .dark .neon-border-yellow {
-    --glow-color-1: hsl(var(--chart-3) / 0.8);
-    --glow-color-2: hsl(var(--chart-3) / 0.6);
-    --glow-color-3: hsl(var(--chart-3) / 0.4);
-    animation: neon-glow 2s ease-in-out infinite;
+  .neon-warning {
+    --neon: var(--hue-warning);
+    border-color: hsl(var(--neon) / 0.6);
+    box-shadow: 0 0 0 1px hsl(var(--neon) / 0.28), 0 0 18px -6px hsl(var(--neon) / 0.55);
   }
-
-  .dark .neon-border-green {
-    --glow-color-1: hsl(var(--chart-2) / 0.8);
-    --glow-color-2: hsl(var(--chart-2) / 0.6);
-    --glow-color-3: hsl(var(--chart-2) / 0.4);
-    animation: neon-glow 2s ease-in-out infinite;
+  .neon-danger {
+    --neon: var(--hue-danger);
+    border-color: hsl(var(--neon) / 0.6);
+    box-shadow: 0 0 0 1px hsl(var(--neon) / 0.28), 0 0 18px -6px hsl(var(--neon) / 0.55);
   }
 
-  .dark .neon-text-accent {
-    text-shadow: 0 0 5px hsl(var(--accent) / 0.8), 0 0 10px hsl(var(--accent) / 0.6);
+  /* --- Legacy colour-named aliases, re-pointed at section meaning -------
+     These names are still used across the JSX (31 call sites). Rather than a
+     rename sweep, each maps to the hue of the section it is actually used
+     in, so the palette becomes systematic without touching every component.
+     `-blue`, `-chart-1`, `-chart-2` and `-chart-5` had NO definition at all
+     before this — cards using them rendered completely flat. */
+  .neon-border,
+  .neon-border-accent,
+  .neon-border-chart-1 {
+    --neon: var(--hue-dashboard);
+    border-color: hsl(var(--neon) / 0.6);
+    box-shadow: 0 0 0 1px hsl(var(--neon) / 0.28), 0 0 18px -6px hsl(var(--neon) / 0.55);
   }
-  .dark .neon-border-chart-3 {
-    box-shadow: 0 0 5px hsl(var(--chart-3) / 0.8), 0 0 10px hsl(var(--chart-3) / 0.6), 0 0 20px hsl(var(--chart-3) / 0.4);
-    border-color: hsl(var(--chart-3) / 0.8);
+  .neon-border-blue {
+    --neon: var(--hue-tasks);
+    border-color: hsl(var(--neon) / 0.6);
+    box-shadow: 0 0 0 1px hsl(var(--neon) / 0.28), 0 0 18px -6px hsl(var(--neon) / 0.55);
   }
-  .dark .neon-border-chart-4 {
-    box-shadow: 0 0 5px hsl(var(--chart-4) / 0.8), 0 0 10px hsl(var(--chart-4) / 0.6), 0 0 20px hsl(var(--chart-4) / 0.4);
-    border-color: hsl(var(--chart-4) / 0.8);
+  .neon-border-yellow,
+  .neon-border-chart-3 {
+    --neon: var(--hue-notes);
+    border-color: hsl(var(--neon) / 0.6);
+    box-shadow: 0 0 0 1px hsl(var(--neon) / 0.28), 0 0 18px -6px hsl(var(--neon) / 0.55);
+  }
+  .neon-border-purple,
+  .neon-border-chart-4 {
+    --neon: var(--hue-links);
+    border-color: hsl(var(--neon) / 0.6);
+    box-shadow: 0 0 0 1px hsl(var(--neon) / 0.28), 0 0 18px -6px hsl(var(--neon) / 0.55);
+  }
+  .neon-border-green,
+  .neon-border-chart-2 {
+    --neon: var(--hue-logs);
+    border-color: hsl(var(--neon) / 0.6);
+    box-shadow: 0 0 0 1px hsl(var(--neon) / 0.28), 0 0 18px -6px hsl(var(--neon) / 0.55);
+  }
+  .neon-border-rose,
+  .neon-border-chart-5 {
+    --neon: var(--hue-journal);
+    border-color: hsl(var(--neon) / 0.6);
+    box-shadow: 0 0 0 1px hsl(var(--neon) / 0.28), 0 0 18px -6px hsl(var(--neon) / 0.55);
+  }
+
+  /* Opt-in attention pulse. Reserved for states that genuinely need the eye
+     (overdue, error). This used to run permanently on every card, which is
+     what made the dark theme feel restless. */
+  .neon-pulse {
+    animation: neon-pulse 2.4s ease-in-out infinite;
+  }
+
+  .neon-text {
+    text-shadow: 0 0 6px hsl(var(--hue-dashboard) / 0.55);
+  }
+  .neon-text-accent {
+    text-shadow: 0 0 6px hsl(var(--hue-tasks) / 0.55);
+  }
+
+  /* --- Neo-brutalist primitives -----------------------------------------
+     Replaces hardcoded `border-black` + `shadow-[Npx_Npx_0px_#000]`, which
+     rendered as invisible black-on-black in dark mode. */
+  .nb-border {
+    border-width: 2px;
+    border-color: hsl(var(--nb-ink) / var(--nb-ink-opacity));
+  }
+  .nb-shadow-sm {
+    box-shadow: 2px 2px 0px hsl(var(--nb-ink) / var(--nb-ink-opacity));
+  }
+  .nb-shadow {
+    box-shadow: 4px 4px 0px hsl(var(--nb-ink) / var(--nb-ink-opacity));
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .neon-pulse {
+      animation: none;
+    }
+  }
+}
+
+@keyframes neon-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 0 1px hsl(var(--neon) / 0.28),
+      0 0 18px -6px hsl(var(--neon) / 0.55);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px hsl(var(--neon) / 0.45),
+      0 0 26px -4px hsl(var(--neon) / 0.75);
   }
 }
 
@@ -185,5 +325,11 @@
 @keyframes sparkle {
   to {
     stroke-dashoffset: -32;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sparkle-line {
+    animation: none;
   }
 }

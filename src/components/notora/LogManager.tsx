@@ -83,7 +83,7 @@ export default function LogManager({ logTrackers, data, onDataChange }: LogManag
 
     return (
         <div className="space-y-6">
-            <Card className="dark:neon-border">
+            <Card className="dark:neon-logs">
                 <CardHeader>
                     <CardTitle>Manage Trackers</CardTitle>
                     <CardDescription>

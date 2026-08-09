@@ -151,10 +151,10 @@ export default function LinkManager({ savedLinks, data, onDataChange }: LinkMana
                 value={newUrl}
                 onChange={(e) => setNewUrl(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleAddLink()}
-                className="w-full border-2 border-black rounded-md h-9"
+                className="w-full nb-border rounded-md h-9"
                 disabled={loading}
                 />
-                <Button onClick={handleAddLink} className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground border-2 border-black rounded-md h-9 shadow-[2px_2px_0px_#000] dark:shadow-[2px_2px_0px_hsl(var(--primary))]" disabled={loading}>
+                <Button onClick={handleAddLink} className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground nb-border rounded-md h-9 nb-shadow-sm dark:shadow-[2px_2px_0px_hsl(var(--primary))]" disabled={loading}>
                 {loading ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
@@ -176,10 +176,10 @@ export default function LinkManager({ savedLinks, data, onDataChange }: LinkMana
                         handleClearSearch();
                       }
                     }}
-                    className="w-full border-2 border-black rounded-md h-9"
+                    className="w-full nb-border rounded-md h-9"
                     disabled={searchLoading}
                 />
-                 <Button onClick={isSearchActive ? handleClearSearch : handleSearch} variant="outline" className="w-full sm:w-auto border-2 border-black rounded-md h-9 shadow-[2px_2px_0px_#000] dark:shadow-[2px_2px_0px_hsl(var(--primary))]" disabled={searchLoading}>
+                 <Button onClick={isSearchActive ? handleClearSearch : handleSearch} variant="outline" className="w-full sm:w-auto nb-border rounded-md h-9 nb-shadow-sm dark:shadow-[2px_2px_0px_hsl(var(--primary))]" disabled={searchLoading}>
                     {searchLoading ? (
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     ) : isSearchActive ? (
@@ -196,7 +196,7 @@ export default function LinkManager({ savedLinks, data, onDataChange }: LinkMana
         <Button 
             variant={activeFilter === null ? 'default' : 'outline'}
             onClick={() => setActiveFilter(null)}
-            className="border-2 border-black rounded-md h-9 shadow-[2px_2px_0px_#000] dark:shadow-[2px_2px_0px_hsl(var(--primary))]"
+            className="nb-border rounded-md h-9 nb-shadow-sm dark:shadow-[2px_2px_0px_hsl(var(--primary))]"
         >
             All
         </Button>
@@ -205,7 +205,7 @@ export default function LinkManager({ savedLinks, data, onDataChange }: LinkMana
                 key={category} 
                 variant={activeFilter === category ? 'default' : 'outline'}
                 onClick={() => setActiveFilter(category)}
-                className="border-2 border-black rounded-md h-9 shadow-[2px_2px_0px_#000] dark:shadow-[2px_2px_0px_hsl(var(--primary))]"
+                className="nb-border rounded-md h-9 nb-shadow-sm dark:shadow-[2px_2px_0px_hsl(var(--primary))]"
             >
                 {category}
             </Button>

@@ -32,12 +32,19 @@ interface AiInsight {
     modelId?: string;
 }
 
+/**
+ * Every tracker card carries the Logs section hue. Cycling a different glow
+ * per card made the grid look arbitrary — and three of the five classes had
+ * no CSS defined at all, so those cards rendered completely flat. Per-tracker
+ * identity now lives in the chart line colour below, where telling one series
+ * from another is the actual job of colour.
+ */
 const cardColors = [
-    "dark:neon-border-chart-1",
-    "dark:neon-border-chart-2",
-    "dark:neon-border-chart-3",
-    "dark:neon-border-chart-4",
-    "dark:neon-border-chart-5",
+    "dark:neon-logs",
+    "dark:neon-logs",
+    "dark:neon-logs",
+    "dark:neon-logs",
+    "dark:neon-logs",
 ];
 
 const chartColors = [
@@ -425,7 +432,14 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
                 </CardContent>
             </Card>
         </motion.div>
-        <AllLogsDialog open={allLogsOpen} onOpenChange={setAllLogsOpen} tracker={tracker} />
+        <AllLogsDialog
+          open={allLogsOpen}
+          onOpenChange={setAllLogsOpen}
+          tracker={tracker}
+          onDeleteLog={(_trackerId, logId) =>
+            onTrackerChange({ logs: tracker.logs.filter(l => l.id !== logId) })
+          }
+        />
         </>
     );
 }

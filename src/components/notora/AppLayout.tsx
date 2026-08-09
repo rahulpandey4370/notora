@@ -54,7 +54,12 @@ export default function AppLayout({ children, data: dataFromProp }: AppLayoutPro
                 tasks={tasks} 
                 userStats={userStats}
             />
-            <div className="flex-1 flex pb-20">
+            {/* The dock is fixed at bottom-5 (20px) and is h-16 (64px) tall, so it
+                occupies the bottom 84px of the viewport. The previous pb-20 (80px)
+                was 4px short, which is why the dock clipped page content on every
+                screen. pb-32 leaves a comfortable gutter beneath the last element
+                instead of butting right up against the dock. */}
+            <div className="flex-1 flex pb-32">
                 <main className="flex-1 overflow-y-auto">
                     {children}
                 </main>

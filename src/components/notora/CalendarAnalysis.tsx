@@ -8,7 +8,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { format, isSameDay, startOfDay, isWithinInterval, addDays, startOfWeek as dfStartOfWeek, endOfWeek as dfEndOfWeek, startOfMonth as dfStartOfMonth, isSameMonth, isAfter, differenceInDays } from 'date-fns';
+import { format, isSameDay, startOfDay, isWithinInterval, addDays, startOfWeek as dfStartOfWeek, endOfWeek as dfEndOfWeek, startOfMonth as dfStartOfMonth, isSameMonth, isAfter, differenceInDays , parseISO} from 'date-fns';
 import type { DateRange } from 'react-day-picker';
 import { cn } from '@/lib/utils';
 import { Badge } from '../ui/badge';
@@ -53,7 +53,7 @@ export default function CalendarAnalysis({ data }: CalendarAnalysisProps) {
         const taskDay = startOfDay(day);
         switch (task.type) {
             case 'single':
-                return task.date ? isSameDay(new Date(task.date), taskDay) : false;
+                return task.date ? isSameDay(parseISO(task.date), taskDay) : false;
             case 'recurring':
                 const createdAt = startOfDay(new Date(task.createdAt));
                 return isSameMonth(taskDay, createdAt) && (isSameDay(taskDay, createdAt) || isAfter(taskDay, createdAt));
@@ -148,7 +148,7 @@ export default function CalendarAnalysis({ data }: CalendarAnalysisProps) {
 
 
   return (
-    <Card className="dark:neon-border-blue">
+    <Card className="dark:neon-tasks">
       <CardHeader>
         <CardTitle>Calendar Analysis</CardTitle>
         <CardDescription>Visualize your activity and analyze trends over time.</CardDescription>

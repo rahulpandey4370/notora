@@ -13,6 +13,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Plus, Bookmark, Package, Trash2, Layers, ChevronDown } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import { format, getWeek } from 'date-fns';
+import { toYmd } from '@/lib/date-utils';
 import { cn } from '@/lib/utils';
 
 interface TaskTemplatesProps {
@@ -50,7 +51,7 @@ export default function TaskTemplates({ data, onDataChange, currentMonth, toast 
       type: tpl.type,
       completions: [],
       createdAt: now.toISOString(),
-      date: tpl.type === 'single' ? now.toISOString() : undefined,
+      date: tpl.type === 'single' ? toYmd(now) : undefined,
       month: tpl.type === 'monthly' ? format(currentMonth, 'yyyy-MM') : undefined,
       week: tpl.type === 'weekly' ? `${format(now, 'yyyy')}-${getWeek(now)}` : undefined,
       carryForwardCount: 0,
@@ -124,7 +125,7 @@ export default function TaskTemplates({ data, onDataChange, currentMonth, toast 
   };
 
   return (
-    <Card className="dark:neon-border overflow-hidden">
+    <Card className="dark:neon-tasks overflow-hidden">
       <Collapsible open={open} onOpenChange={setOpen}>
         <CollapsibleTrigger asChild>
           <CardHeader className="cursor-pointer hover:bg-muted/30 transition-colors">
@@ -159,10 +160,10 @@ export default function TaskTemplates({ data, onDataChange, currentMonth, toast 
                 value={newTitle}
                 onChange={(e) => setNewTitle(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && addTemplate()}
-                className="w-full border-2 border-black rounded-md h-9 sm:col-span-2 lg:col-span-1"
+                className="w-full nb-border rounded-md h-9 sm:col-span-2 lg:col-span-1"
               />
               <Select value={newType} onValueChange={(v) => setNewType(v as Task['type'])}>
-                <SelectTrigger className="w-full lg:w-[120px] border-2 border-black rounded-md h-9 shadow-[2px_2px_0px_#000]">
+                <SelectTrigger className="w-full lg:w-[120px] nb-border rounded-md h-9 nb-shadow-sm">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -173,7 +174,7 @@ export default function TaskTemplates({ data, onDataChange, currentMonth, toast 
                 </SelectContent>
               </Select>
               <Select value={newPriority} onValueChange={(v) => setNewPriority(v as Task['priority'])}>
-                <SelectTrigger className="w-full lg:w-[120px] border-2 border-black rounded-md h-9 shadow-[2px_2px_0px_#000]">
+                <SelectTrigger className="w-full lg:w-[120px] nb-border rounded-md h-9 nb-shadow-sm">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -184,7 +185,7 @@ export default function TaskTemplates({ data, onDataChange, currentMonth, toast 
               </Select>
               <Button
                 onClick={addTemplate}
-                className="w-full lg:w-auto bg-primary hover:bg-primary/90 text-primary-foreground border-2 border-black rounded-md h-9 shadow-[2px_2px_0px_#000] sm:col-span-2 lg:col-span-1"
+                className="w-full lg:w-auto bg-primary hover:bg-primary/90 text-primary-foreground nb-border rounded-md h-9 nb-shadow-sm sm:col-span-2 lg:col-span-1"
               >
                 <Plus className="mr-2 h-4 w-4" /> Save Template
               </Button>
@@ -199,7 +200,7 @@ export default function TaskTemplates({ data, onDataChange, currentMonth, toast 
                   {templates.map(tpl => (
                     <div
                       key={tpl.id}
-                      className="flex items-center justify-between gap-2 p-2 border-2 border-black rounded-md shadow-[2px_2px_0px_#000] bg-card min-w-0"
+                      className="flex items-center justify-between gap-2 p-2 nb-border rounded-md nb-shadow-sm bg-card min-w-0"
                     >
                       <div className="flex-1 min-w-0">
                         <div className="font-medium truncate text-sm">{tpl.title}</div>
@@ -274,7 +275,7 @@ export default function TaskTemplates({ data, onDataChange, currentMonth, toast 
                     return (
                       <div
                         key={bundle.id}
-                        className="flex items-center justify-between gap-2 p-2 border-2 border-black rounded-md shadow-[2px_2px_0px_#000] bg-card min-w-0"
+                        className="flex items-center justify-between gap-2 p-2 nb-border rounded-md nb-shadow-sm bg-card min-w-0"
                       >
                         <div className="flex-1 min-w-0">
                           <div className="font-medium truncate text-sm">{bundle.name}</div>

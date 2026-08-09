@@ -25,14 +25,19 @@ import {
 } from '@/components/ui/table';
 import type { LogTracker, LogEntry } from '@/lib/types';
 import { ScrollArea } from '../ui/scroll-area';
+import { Button } from '@/components/ui/button';
+import { Trash2 } from 'lucide-react';
 
 interface AllLogsDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   tracker: LogTracker | null;
+  /** Remove a single entry. Until now this history view was read-only, so a
+   *  mistyped value could never actually be deleted from anywhere in the app. */
+  onDeleteLog?: (trackerId: string, logId: string) => void;
 }
 
-export default function AllLogsDialog({ open, onOpenChange, tracker }: AllLogsDialogProps) {
+export default function AllLogsDialog({ open, onOpenChange, tracker, onDeleteLog }: AllLogsDialogProps) {
   const logsByMonth = useMemo(() => {
     if (!tracker) return {};
 
@@ -74,6 +79,7 @@ export default function AllLogsDialog({ open, onOpenChange, tracker }: AllLogsDi
                             <TableHead className="w-[120px]">Date</TableHead>
                             <TableHead className="w-[100px] text-right">Value ({tracker.unit})</TableHead>
                             <TableHead>Notes</TableHead>
+                            {onDeleteLog && <TableHead className="w-[48px]"><span className="sr-only">Delete</span></TableHead>}
                         </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -82,6 +88,19 @@ export default function AllLogsDialog({ open, onOpenChange, tracker }: AllLogsDi
                             <TableCell>{format(parseISO(log.date), 'MMM d, yyyy')}</TableCell>
                             <TableCell className="text-right">{log.value.toLocaleString()}</TableCell>
                             <TableCell className="text-sm text-muted-foreground italic">{log.notes || '-'}</TableCell>
+                            {onDeleteLog && (
+                              <TableCell>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7 text-destructive"
+                                  aria-label={`Delete ${format(parseISO(log.date), 'MMM d, yyyy')} entry`}
+                                  onClick={() => onDeleteLog(tracker.id, log.id)}
+                                >
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                </Button>
+                              </TableCell>
+                            )}
                             </TableRow>
                         ))}
                         </TableBody>

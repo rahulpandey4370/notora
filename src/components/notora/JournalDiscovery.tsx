@@ -2,7 +2,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import { isSameDay, format, getYear } from 'date-fns';
+import { isSameDay, format, getYear , parseISO} from 'date-fns';
 import type { JournalEntry } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -25,7 +25,7 @@ export default function JournalDiscovery({ entries, onDateSelect, searchQuery, o
     const currentYear = today.getFullYear();
 
     return entries.filter(entry => {
-      const entryDate = new Date(entry.date);
+      const entryDate = parseISO(entry.date);
       return (
         entryDate.getMonth() === currentMonth &&
         entryDate.getDate() === currentDay &&
@@ -44,7 +44,7 @@ export default function JournalDiscovery({ entries, onDateSelect, searchQuery, o
   };
 
   return (
-    <Card className="dark:neon-border-blue">
+    <Card className="dark:neon-journal">
       <CardHeader>
         <CardTitle>Discovery</CardTitle>
         <CardDescription>Search and rediscover your past entries.</CardDescription>
@@ -70,9 +70,9 @@ export default function JournalDiscovery({ entries, onDateSelect, searchQuery, o
                         key={entry.id}
                         variant="link"
                         className="p-0 h-auto text-muted-foreground"
-                        onClick={() => onDateSelect(new Date(entry.date))}
+                        onClick={() => onDateSelect(parseISO(entry.date))}
                     >
-                        {getYear(new Date(entry.date))}
+                        {getYear(parseISO(entry.date))}
                     </Button>
                 ))}
                 </div>

@@ -1,7 +1,7 @@
 
 'use client';
 
-import { createContext, useState, useEffect, useCallback, type ReactNode } from 'react';
+import { createContext, useState, useEffect, useCallback, useRef, type ReactNode } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { getAppData, saveAppData } from '@/lib/storage';
 import type { AppData } from '@/lib/types';
@@ -36,9 +36,13 @@ const defaultAppData: AppData = {
   taskTemplateBundles: [],
 };
 
+type SaveState = 'idle' | 'saving' | 'saved' | 'error';
+
 interface AppContextType {
   data: AppData | null;
   loading: boolean;
+  /** Surfaced so the UI can show a saving/failed indicator instead of pretending every edit succeeded. */
+  saveState: SaveState;
   handleDataChange: (newData: AppData) => void;
   toast: ReturnType<typeof useToast>['toast'];
 }
@@ -49,6 +53,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const { user, loading: authLoading } = useAuth();
   const [data, setData] = useState<AppData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [saveState, setSaveState] = useState<SaveState>('idle');
   const { toast } = useToast();
 
   const loadData = useCallback(async (username: string) => {
@@ -114,15 +119,65 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }, [user, authLoading, loadData]);
 
-  const handleDataChange = (newData: AppData) => {
-    if (user) {
-      setData(newData);
-      saveAppData(user.username, newData);
+  /**
+   * Persist state.
+   *
+   * Two problems this solves:
+   *  1. The previous implementation called `saveAppData` without `await` and
+   *     without `.catch`. `saveAppData` re-throws on failure, so a failed write
+   *     produced an unhandled rejection while the UI had *already* rendered the
+   *     change as if it succeeded — silent data loss. Now failures surface as a
+   *     toast and flip `saveState` to 'error'.
+   *  2. Persistence writes the entire AppData document (hundreds of KB once you
+   *     have real history) on *every* commit — each checkbox toggle, each note
+   *     drag-stop. Coalescing on a short trailing debounce collapses a burst of
+   *     edits into one write while keeping the UI instant.
+   */
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pendingData = useRef<AppData | null>(null);
+
+  const flushSave = useCallback(async () => {
+    if (!user || !pendingData.current) return;
+    const payload = pendingData.current;
+    pendingData.current = null;
+    setSaveState('saving');
+    try {
+      await saveAppData(user.username, payload);
+      setSaveState('saved');
+    } catch (err: any) {
+      setSaveState('error');
+      toast({
+        variant: 'destructive',
+        title: "Changes couldn't be saved",
+        description: err?.message ?? 'Your last edit is still on screen but did not reach the server. Check your connection.',
+      });
     }
-  };
+  }, [user, toast]);
+
+  const handleDataChange = useCallback((newData: AppData) => {
+    if (!user) return;
+    setData(newData);
+    pendingData.current = newData;
+    setSaveState('saving');
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(() => { void flushSave(); }, 600);
+  }, [user, flushSave]);
+
+  // Don't let a debounced write get dropped by a tab close / navigation.
+  useEffect(() => {
+    const flushNow = () => {
+      if (saveTimer.current) clearTimeout(saveTimer.current);
+      void flushSave();
+    };
+    window.addEventListener('beforeunload', flushNow);
+    return () => {
+      window.removeEventListener('beforeunload', flushNow);
+      flushNow();
+    };
+  }, [flushSave]);
 
   return (
-    <AppContext.Provider value={{ data, loading, handleDataChange, toast }}>
+    <AppContext.Provider value={{ data, loading, saveState, handleDataChange, toast }}>
       {children}
     </AppContext.Provider>
   );

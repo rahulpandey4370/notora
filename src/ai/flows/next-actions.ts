@@ -28,7 +28,7 @@ const NextActionsOutputSchema = z.object({
   nudges: z.array(z.object({
     text: z.string().describe('One short sentence. Concrete and specific, citing the real name/number.'),
     action: z.enum(['log', 'task', 'journal', 'none']).describe('Which surface this nudge points at.'),
-  })).describe('2-3 nudges, most useful first. Fewer is fine; never pad.'),
+  })).default([]).describe('2-3 nudges, most useful first. Fewer is fine; never pad.'),
 });
 export type NextActionsOutput = z.infer<typeof NextActionsOutputSchema> & { modelId?: ModelId };
 
@@ -58,6 +58,10 @@ Rules:
 2. Prefer the most overdue / most stale item. Two or three nudges maximum.
 3. If the data shows nothing genuinely stale or overdue, return an empty array. Do NOT invent busywork or generic motivation.
 4. One short sentence each. No preamble, no encouragement filler.
+
+Respond with JSON in exactly this shape:
+{ "nudges": [ { "text": "...", "action": "log" | "task" | "journal" | "none" } ] }
+Use an empty array for "nudges" if there is genuinely nothing worth doing.
 `;
 
 const nextActionsFlow = ai.defineFlow(
@@ -72,6 +76,14 @@ const nextActionsFlow = ai.defineFlow(
       modelId, promptTemplate, input, NextActionsOutputSchema, 'nextActionsPrompt', NextActionsInputSchema,
     );
     if (!output) throw new Error('Flow failed to produce a valid output.');
-    return { nudges: (output.nudges ?? []).slice(0, 3) };
+    // Models occasionally answer with a differently-named array (or omit the
+    // key entirely when there is nothing to say). Treat that as "no nudges"
+    // rather than letting a schema mismatch blow up the whole render.
+    const raw: unknown = (output as any).nudges ?? (output as any).suggestions ?? (output as any).actions ?? [];
+    const nudges = (Array.isArray(raw) ? raw : [])
+      .map((n: any) => (typeof n === 'string' ? { text: n, action: 'none' as const } : n))
+      .filter((n: any) => n && typeof n.text === 'string' && n.text.trim())
+      .slice(0, 3);
+    return { nudges };
   }
 );

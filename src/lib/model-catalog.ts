@@ -155,9 +155,17 @@ export function enabledProviders(): AIProvider[] {
   return PROVIDER_ORDER.filter(p => wanted.includes(p));
 }
 
-/** Every model on offer, in picker order. */
-export function availableModels(): CatalogModel[] {
-  return enabledProviders().flatMap(p => ALL_MODELS[p]);
+/**
+ * Every model on offer, in picker order.
+ *
+ * `providers` should be supplied by the server (see
+ * `resolveEnabledProviders()` in ai-providers-server.ts). Without it we fall
+ * back to the client-visible env var, which only works if it was present at
+ * build time — that fallback is why newly-added API keys used to have no
+ * effect on the picker.
+ */
+export function availableModels(providers?: AIProvider[]): CatalogModel[] {
+  return (providers?.length ? providers : enabledProviders()).flatMap(p => ALL_MODELS[p]);
 }
 
 /**
@@ -169,9 +177,9 @@ export function availableModels(): CatalogModel[] {
  * Azure, since that deployment is explicitly configured for this app while the
  * direct catalogs are defaults.
  */
-export function resolveModel(idOrKey: string | undefined | null): CatalogModel | undefined {
+export function resolveModel(idOrKey: string | undefined | null, providers?: AIProvider[]): CatalogModel | undefined {
   if (!idOrKey) return undefined;
-  const models = availableModels();
+  const models = availableModels(providers);
   const exact = models.find(m => m.key === idOrKey);
   if (exact) return exact;
   const matches = models.filter(m => m.id === idOrKey);
@@ -180,8 +188,8 @@ export function resolveModel(idOrKey: string | undefined | null): CatalogModel |
 }
 
 /** The key the app should start on when nothing is stored. */
-export function defaultModelKey(): string {
-  const models = availableModels();
+export function defaultModelKey(providers?: AIProvider[]): string {
+  const models = availableModels(providers);
   // Prefer a balanced-tagged model, else the first on offer.
   return (models.find(m => m.tags.includes('balanced')) ?? models[0])?.key ?? 'google::gemini-2.5-flash';
 }

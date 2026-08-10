@@ -8,6 +8,7 @@ import {
   availableModels as catalogModels,
   defaultModelKey,
   resolveModel,
+  type AIProvider,
   type CatalogModel,
 } from '@/lib/model-catalog';
 
@@ -15,6 +16,12 @@ interface ModelStoreState {
   availableModels: CatalogModel[];
   selectedModel: ModelId;
   setModel: (modelId: ModelId) => void;
+  /**
+   * Replace the catalog with the list the SERVER resolved from real API keys.
+   * The client cannot see non-public env vars, so without this the picker is
+   * stuck with whatever `NEXT_PUBLIC_AI_PROVIDERS` happened to be at build time.
+   */
+  hydrateProviders: (providers: AIProvider[]) => void;
 }
 
 export const useModelStore = create<ModelStoreState>()(
@@ -23,6 +30,17 @@ export const useModelStore = create<ModelStoreState>()(
       availableModels: catalogModels(),
       selectedModel: defaultModelKey(),
       setModel: (modelId) => set({ selectedModel: modelId }),
+      hydrateProviders: (providers) =>
+        set((state) => {
+          const models = catalogModels(providers);
+          // Keep the current pick if its provider is still enabled, else fall
+          // back to the default for the new list.
+          const stillValid = models.some((m) => m.key === state.selectedModel);
+          return {
+            availableModels: models,
+            selectedModel: stillValid ? state.selectedModel : defaultModelKey(providers),
+          };
+        }),
     }),
     {
       name: 'notora-model-selection',

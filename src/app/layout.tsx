@@ -5,6 +5,8 @@ import { Toaster } from "@/components/ui/toaster"
 import { AuthProvider } from '@/contexts/auth-context';
 import { ThemeProvider } from '@/components/providers/theme-provider';
 import { AppProvider } from '@/contexts/app-context';
+import ModelCatalogSync from '@/components/providers/model-catalog-sync';
+import { resolveEnabledProviders } from '@/lib/ai-providers-server';
 
 export const metadata: Metadata = {
   title: 'Notora',
@@ -42,6 +44,9 @@ export default function RootLayout({
         >
           <AuthProvider>
             <AppProvider>
+              {/* Resolved server-side from the API keys that actually exist, so the
+                  picker reflects real config instead of a build-time NEXT_PUBLIC var. */}
+              <ModelCatalogSync providers={resolveEnabledProviders()} />
               {children}
               <Toaster />
             </AppProvider>

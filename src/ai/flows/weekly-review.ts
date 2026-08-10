@@ -51,11 +51,11 @@ const WeeklyReviewInputSchema = z.object({
 export type WeeklyReviewInput = z.infer<typeof WeeklyReviewInputSchema>;
 
 const WeeklyReviewOutputSchema = z.object({
-  headline: z.string().describe('One sentence capturing the week. Concrete and specific, never generic praise.'),
-  wins: z.array(z.string()).describe('2-4 things that genuinely went well, each citing a real number from the data.'),
-  frictions: z.array(z.string()).describe('1-3 honest problems. Say the real thing; do not soften it into a compliment.'),
-  correlations: z.array(z.string()).describe('0-3 observed relationships ACROSS domains (tasks vs trackers vs journal). Only include a correlation you can point at evidence for, and phrase it as an observation, not a proven cause.'),
-  focusNextWeek: z.array(z.string()).describe('1-3 specific, small, actionable suggestions for next week.'),
+  headline: z.string().default('').describe('One sentence capturing the week. Concrete and specific, never generic praise.'),
+  wins: z.array(z.string()).default([]).describe('2-4 things that genuinely went well, each citing a real number from the data.'),
+  frictions: z.array(z.string()).default([]).describe('1-3 honest problems. Say the real thing; do not soften it into a compliment.'),
+  correlations: z.array(z.string()).default([]).describe('0-3 observed relationships ACROSS domains (tasks vs trackers vs journal). Only include a correlation you can point at evidence for, and phrase it as an observation, not a proven cause.'),
+  focusNextWeek: z.array(z.string()).default([]).describe('1-3 specific, small, actionable suggestions for next week.'),
 });
 export type WeeklyReviewOutput = z.infer<typeof WeeklyReviewOutputSchema> & { modelId?: ModelId };
 
@@ -92,6 +92,15 @@ Rules:
 4. If a section is empty or has too little data to say anything, say so plainly in "frictions" (e.g. "only 2 days of weight logged, so there is no trend to read yet") instead of padding.
 5. Be brief. Each bullet is one sentence.
 6. Do not moralise about the person's habits or health. Report what the data shows and what would help next week.
+
+Respond with JSON in exactly this shape (use [] for any section you have nothing for):
+{
+  "headline": "...",
+  "wins": ["..."],
+  "frictions": ["..."],
+  "correlations": ["..."],
+  "focusNextWeek": ["..."]
+}
 `;
 
 const weeklyReviewFlow = ai.defineFlow(
@@ -114,6 +123,10 @@ const weeklyReviewFlow = ai.defineFlow(
 
     if (!output) {
       throw new Error('Flow failed to produce a valid output.');
+    }
+    // A model that returns only some sections shouldn't fail the whole review.
+    if (!output.headline?.trim() && !output.wins?.length && !output.frictions?.length) {
+      throw new Error('The model did not return a usable review. Try again, or switch model.');
     }
     return output;
   }

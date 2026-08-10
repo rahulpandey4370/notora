@@ -266,7 +266,26 @@ async function callOpenAICompatible<T extends ZodSchema>(
 
   const raw = (response as any).choices?.[0]?.message?.content;
   if (!raw) throw new Error(`${apiModel} returned an empty response.`);
-  return outputSchema.parse(JSON.parse(cleanJsonContent(raw)));
+  return parseModelOutput(outputSchema, JSON.parse(cleanJsonContent(raw)), apiModel);
+}
+
+/**
+ * Validate a model response without leaking a raw ZodError to the caller.
+ *
+ * `outputSchema.parse()` throws a JSON dump of Zod issues. In a Server Action
+ * that surfaces to the user as Next.js's opaque "An error occurred in the
+ * Server Components render" message, which is impossible to act on. Models
+ * legitimately drift on shape now and then, so translate the failure into a
+ * short, honest sentence naming the offending fields.
+ */
+function parseModelOutput<T extends ZodSchema>(outputSchema: T, value: unknown, apiModel: string): z.infer<T> {
+  const result = outputSchema.safeParse(value);
+  if (result.success) return result.data;
+  const fields = result.error.issues.map(i => i.path.join('.') || '(root)').filter(Boolean);
+  const unique = [...new Set(fields)].slice(0, 4).join(', ');
+  throw new Error(
+    `${apiModel} returned an unexpected response shape${unique ? ` (missing/invalid: ${unique})` : ''}. Try again, or pick a different model.`
+  );
 }
 
 async function callAnthropic<T extends ZodSchema>(
@@ -313,7 +332,7 @@ async function callAnthropic<T extends ZodSchema>(
     .trim();
 
   if (!raw) throw new Error(`Claude (${apiModel}) returned an empty response.`);
-  return outputSchema.parse(JSON.parse(cleanJsonContent(raw)));
+  return parseModelOutput(outputSchema, JSON.parse(cleanJsonContent(raw)), apiModel);
 }
 
 async function callGemini<T extends ZodSchema>(

@@ -80,7 +80,14 @@ export default function SmartEmptyState({ surface, data, message }: SmartEmptySt
       const res = await suggestNextActions(signals, selectedModel);
       setNudges(res.nudges.length ? res.nudges : []);
     } catch (err: any) {
-      setError(err?.message ?? 'Could not fetch suggestions.');
+      // Next.js replaces server-action errors with an opaque "Server Components
+      // render" blob in production. Don't paste that at the user.
+      const msg: string = err?.message ?? '';
+      setError(
+        /Server Components render|omitted in production/i.test(msg)
+          ? "Couldn't get suggestions right now — check the selected model has a valid API key."
+          : msg || 'Could not fetch suggestions.'
+      );
     } finally {
       setLoading(false);
     }

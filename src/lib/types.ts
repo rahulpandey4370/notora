@@ -253,10 +253,16 @@ export interface AppData {
   fitnessProfile?: FitnessProfile;
   /** Meals and workouts logged per day (yyyy-MM-dd); trackers hold the derived totals. */
   fitnessDays?: Record<string, FitnessDay>;
+  /** Workouts from the Fitbit sync per day (yyyy-MM-dd), refreshed on every load. */
+  fitbitWorkouts?: Record<string, FitbitWorkout[]>;
 }
 
 export interface FitnessProfile { sex: 'male' | 'female'; birthYear: number; heightCm: number }
-export interface Meal { id: string; name: string; kcal: number; proteinG: number }
+/** A workout the Fitbit recorded (Google Health exercise session); its calories are already in the Fitbit burn. */
+export interface FitbitWorkout { id: string; name: string; type: string; minutes: number; kcal: number; distanceKm?: number; avgHr?: number; start: string }
+export type MealSlot = 'breakfast' | 'morningSnack' | 'lunch' | 'eveningSnack' | 'dinner';
+/** slot: which section of the day it belongs to; older meals have none (shown under Other). */
+export interface Meal { id: string; name: string; kcal: number; proteinG: number; slot?: MealSlot }
 export interface Activity { id: string; name: string; minutes: number; kcal: number; stepBased: boolean }
 /** burnBase: a stored day total carried over when workouts are added to that day. */
 export interface FitnessDay { meals: Meal[]; activities: Activity[]; burnBase?: number }

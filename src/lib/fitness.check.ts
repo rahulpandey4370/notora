@@ -4,6 +4,7 @@ import type { AppData, LogTracker } from '@/lib/types';
 import {
   applyDraft, bmr, dayBurn, dayIntake, describeValueChange, editDayItem, goalEta, loggingStreak,
   clearBurnBase, sanitizeDraft, setTargets, suggestTargets, trendSeries, weeklyRate, stepsStreak, type TrendPoint,
+  MEAL_SLOTS, slotBudgets, slotForTime, mealsBySlot,
 } from './fitness';
 
 const TODAY = '2026-11-26';
@@ -256,5 +257,30 @@ const bmr80 = bmr(profile, 80, TODAY);
   assert.equal(stepsStreak(st([10200, 10500, 12000]), TODAY), 3, 'today counts once the goal is reached');
   assert.equal(stepsStreak(st([9000, 8000, 9500], 8000), TODAY), 3, "uses the tracker's own goal");
   assert.equal(stepsStreak(base([]), TODAY), 0);
+}
+// Meal slots: five sections, each with a share of the day's calorie target.
+{
+  assert.deepEqual(MEAL_SLOTS.map(x => x.id), ['breakfast', 'morningSnack', 'lunch', 'eveningSnack', 'dinner']);
+  close(MEAL_SLOTS.reduce((t, x) => t + x.share, 0), 1, 1e-9);
+  assert.deepEqual(slotBudgets(2200), { breakfast: 550, morningSnack: 220, lunch: 660, eveningSnack: 220, dinner: 550 });
+  assert.equal(slotBudgets(undefined), null, 'no target, no budgets');
+  assert.equal(slotForTime(8, 0), 'breakfast');
+  assert.equal(slotForTime(11, 15), 'morningSnack');
+  assert.equal(slotForTime(13, 30), 'lunch');
+  assert.equal(slotForTime(17, 0), 'eveningSnack');
+  assert.equal(slotForTime(21, 0), 'dinner');
+  assert.equal(slotForTime(2, 0), 'dinner', 'a late-night snack counts toward dinner');
+
+  const clean = sanitizeDraft({ date: TODAY, meals: [{ name: 'Poha', kcal: 300, proteinG: 8, slot: 'brunch' as any }, { name: 'Dal', kcal: 200, proteinG: 9, slot: 'lunch' }], activities: [], values: [] }, TODAY, TODAY);
+  assert.equal(clean.meals[0].slot, undefined, 'an unknown slot is dropped');
+  assert.equal(clean.meals[1].slot, 'lunch');
+
+  const d0 = applyDraft(base([]), { date: TODAY, meals: [{ name: 'Poha', kcal: 300, proteinG: 8, slot: 'breakfast' }, { name: 'Chai', kcal: 90, proteinG: 3 }], activities: [], values: [] }, id);
+  const groups = mealsBySlot(d0.fitnessDays![TODAY].meals);
+  assert.deepEqual(groups.breakfast.map(m => m.name), ['Poha']);
+  assert.deepEqual(groups.other.map(m => m.name), ['Chai'], 'meals without a slot go under Other');
+  const chai = d0.fitnessDays![TODAY].meals.find(m => m.name === 'Chai')!;
+  const d1 = editDayItem(d0, TODAY, 'meal', chai.id, { slot: 'eveningSnack' }, id);
+  assert.equal(d1.fitnessDays![TODAY].meals.find(m => m.id === chai.id)!.slot, 'eveningSnack', 'a meal can be moved to another section');
 }
 console.log('fitness checks passed');

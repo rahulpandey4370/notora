@@ -5,7 +5,7 @@
 // this module (OAuth refresh token stored in notora.health_connections) ->
 // notora.health_daily -> merged into log trackers on load.
 import { getSupabase } from '@/lib/supabase';
-import { combineDays, parseDailyList, parseRestingHr, parseRollup, parseSleep, parseStepsRollup, parseWeight, EXTRA_HEALTH_COLUMNS, type HealthDay } from '@/lib/health-merge';
+import { combineDays, parseDailyList, parseExercises, parseRestingHr, parseRollup, parseSleep, parseStepsRollup, parseWeight, EXTRA_HEALTH_COLUMNS, type HealthDay } from '@/lib/health-merge';
 
 const API = 'https://health.googleapis.com/v4/users/me';
 export const HEALTH_SCOPES = [
@@ -155,7 +155,21 @@ export async function syncHealth(username: string, days = 7): Promise<{ days: nu
   // Weigh-ins are sparse, so always look back a year.
   const weightSince = new Date(end.getTime() - Math.max(days, 365) * 86400_000).toISOString().slice(0, 10);
 
-  const [steps, sleep, rhr, weight, kcal, distance, azm, hrv, spo2, breaths] = await Promise.all([
+  // Exercise sessions come 25 to a page.
+  const exercises = async () => {
+    const all: unknown[] = [];
+    const filter = encodeURIComponent(`exercise.interval.civil_start_time >= "${startYmd}"`);
+    let pageToken = '';
+    for (let i = 0; i < 10; i++) {
+      const page = await api(token, `/dataTypes/exercise/dataPoints?pageSize=25&filter=${filter}${pageToken ? `&pageToken=${encodeURIComponent(pageToken)}` : ''}`);
+      all.push(...(page.dataPoints ?? []));
+      pageToken = page.nextPageToken;
+      if (!pageToken) break;
+    }
+    return parseExercises({ dataPoints: all });
+  };
+
+  const [steps, sleep, rhr, weight, kcal, distance, azm, hrv, spo2, breaths, workouts] = await Promise.all([
     attempt(async () => parseStepsRollup(await api(token, '/dataTypes/steps/dataPoints:dailyRollUp', {
       method: 'POST',
       body: JSON.stringify({
@@ -185,9 +199,10 @@ export async function syncHealth(username: string, days = 7): Promise<{ days: nu
     attempt(() => daily('daily-heart-rate-variability', 'daily_heart_rate_variability', 'hrv')),
     attempt(() => daily('daily-oxygen-saturation', 'daily_oxygen_saturation', 'spo2')),
     attempt(() => daily('daily-respiratory-rate', 'daily_respiratory_rate', 'breaths')),
+    attempt(exercises),
   ]);
 
-  const fresh = combineDays(steps, sleep, rhr, weight, kcal, distance, azm, hrv, spo2, breaths);
+  const fresh = combineDays(steps, sleep, rhr, weight, kcal, distance, azm, hrv, spo2, breaths, workouts);
   const supabase = getSupabase();
   if (fresh.length) {
     // A bulk upsert sets every column it isn't given to null, so start from what's stored:
@@ -196,13 +211,18 @@ export async function syncHealth(username: string, days = 7): Promise<{ days: nu
     const old = new Map((stored ?? []).map((r: any) => [String(r.date), r]));
     const now = new Date().toISOString();
     const rows = fresh.map(d => ({ ...old.get(d.date), ...d, username, updated_at: now }));
-    let { error } = await supabase.from('health_daily').upsert(rows, { onConflict: 'username,date' });
-    if (error && EXTRA_HEALTH_COLUMNS.some(c => error!.message.includes(c))) {
-      // The newer columns aren't there yet: keep syncing the original three.
-      const basic = rows.map(r => Object.fromEntries(Object.entries(r).filter(([k]) => !(EXTRA_HEALTH_COLUMNS as readonly string[]).includes(k))));
-      ({ error } = await supabase.from('health_daily').upsert(basic, { onConflict: 'username,date' }));
-      errors.push('Weight, calories and the other new metrics need supabase/notora-v3-health.sql to be run once.');
+    // A newer column that hasn't been added yet: drop just that one and save the rest.
+    let payload: Record<string, unknown>[] = rows;
+    let { error } = await supabase.from('health_daily').upsert(payload, { onConflict: 'username,date' });
+    const missing: string[] = [];
+    for (let i = 0; error && i < EXTRA_HEALTH_COLUMNS.length; i++) {
+      const col = EXTRA_HEALTH_COLUMNS.find(c => !missing.includes(c) && error!.message.includes(`'${c}'`)) ?? EXTRA_HEALTH_COLUMNS.find(c => !missing.includes(c) && error!.message.includes(c));
+      if (!col) break;
+      missing.push(col);
+      payload = payload.map(r => Object.fromEntries(Object.entries(r).filter(([k]) => !missing.includes(k))));
+      ({ error } = await supabase.from('health_daily').upsert(payload, { onConflict: 'username,date' }));
     }
+    if (missing.length) errors.push(`Not saved yet: ${missing.join(', ')}. Run the latest supabase/notora-v*-health.sql once.`);
     if (error) errors.push(`Saving: ${error.message}`);
   }
   await supabase.from('health_connections')
@@ -216,7 +236,9 @@ export async function recentHealthDays(username: string, days = 365): Promise<He
   const since = new Date(Date.now() - days * 86400_000).toISOString().slice(0, 10);
   const q = (cols: string) => getSupabase().from('health_daily').select(cols).eq('username', username).gte('date', since);
   let { data, error } = await q(['date, steps, sleep_minutes, resting_hr', ...EXTRA_HEALTH_COLUMNS].join(', '));
-  if (error) ({ data, error } = await q('date, steps, sleep_minutes, resting_hr')); // newer columns not added yet
+  // Newer columns not added yet: try without workouts, then with just the original three.
+  if (error) ({ data, error } = await q(['date, steps, sleep_minutes, resting_hr', ...EXTRA_HEALTH_COLUMNS.filter(c => c !== 'workouts')].join(', ')));
+  if (error) ({ data, error } = await q('date, steps, sleep_minutes, resting_hr'));
   if (error) return []; // e.g. migration not run yet: health is optional
   return (data ?? []) as unknown as HealthDay[];
 }

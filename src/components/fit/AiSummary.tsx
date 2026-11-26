@@ -20,7 +20,7 @@ function rowsFor(data: AppData, from: string, to: string): FitnessDayRow[] {
   const rows: FitnessDayRow[] = [];
   for (let d = from; d <= to; d = addDays(d, 1)) {
     const intake = dayIntake(data, d);
-    const acts = data.fitnessDays?.[d]?.activities ?? [];
+    const acts = [...(data.fitnessDays?.[d]?.activities ?? []), ...(data.fitbitWorkouts?.[d] ?? [])];
     rows.push({
       date: d, intakeKcal: intake.kcal, proteinG: intake.proteinG, burnKcal: dayBurn(data, d).total ?? undefined,
       steps: valueOn(t.steps, d), sleepH: valueOn(t.sleep, d), restingHr: valueOn(t.rhr, d), weightKg: valueOn(t.weight, d),

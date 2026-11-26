@@ -5,7 +5,7 @@
 // Entry ids: `auto-intake|protein|burn-<date>` are derived here and may be
 // rewritten; `fitbit-*` come from the Fitbit merge; anything else is a stored
 // total that only the explicit rules below touch. A stored 0 is "no entry".
-import type { Activity, AppData, FitnessDay, FitnessProfile, LogEntry, LogTracker, Meal } from '@/lib/types';
+import type { Activity, AppData, FitnessDay, FitnessProfile, LogEntry, LogTracker, Meal, MealSlot } from '@/lib/types';
 
 export const TRACKER = {
   weight: 'Weight', protein: 'Protein Intake', steps: 'Steps', intake: 'Daily Calorie Intake', burned: 'Calories Burned',
@@ -151,6 +151,40 @@ export function dayBurn(data: AppData, ymd: string): BurnInfo {
 
 export function dayIntake(data: AppData, ymd: string): { kcal?: number; proteinG?: number } {
   return { kcal: valueOn(findTracker(data, 'intake'), ymd), proteinG: valueOn(findTracker(data, 'protein'), ymd) };
+}
+
+// ---------------------------------------------------------------- meal slots
+
+/** The day's five sections and each one's share of the calorie target. */
+export const MEAL_SLOTS: { id: MealSlot; label: string; share: number }[] = [
+  { id: 'breakfast', label: 'Breakfast', share: 0.25 },
+  { id: 'morningSnack', label: 'Morning snack', share: 0.10 },
+  { id: 'lunch', label: 'Lunch', share: 0.30 },
+  { id: 'eveningSnack', label: 'Evening snack', share: 0.10 },
+  { id: 'dinner', label: 'Dinner', share: 0.25 },
+];
+const SLOT_IDS = new Set<string>(MEAL_SLOTS.map(x => x.id));
+
+/** kcal budget per section, rounded to 10; null without a calorie target. */
+export function slotBudgets(kcalGoal: number | undefined): Record<MealSlot, number> | null {
+  if (!kcalGoal) return null;
+  return Object.fromEntries(MEAL_SLOTS.map(x => [x.id, Math.round((kcalGoal * x.share) / 10) * 10])) as Record<MealSlot, number>;
+}
+
+/** The section for something eaten now: breakfast till 10:30, then snack, lunch from 12:30, snack from 15:30, dinner from 18:30. */
+export function slotForTime(hour: number, minute = 0): MealSlot {
+  const t = hour * 60 + minute;
+  if (t >= 4 * 60 && t < 10 * 60 + 30) return 'breakfast';
+  if (t >= 10 * 60 + 30 && t < 12 * 60 + 30) return 'morningSnack';
+  if (t >= 12 * 60 + 30 && t < 15 * 60 + 30) return 'lunch';
+  if (t >= 15 * 60 + 30 && t < 18 * 60 + 30) return 'eveningSnack';
+  return 'dinner';
+}
+
+export function mealsBySlot(meals: Meal[]): Record<MealSlot | 'other', Meal[]> {
+  const out = { breakfast: [], morningSnack: [], lunch: [], eveningSnack: [], dinner: [], other: [] } as Record<MealSlot | 'other', Meal[]>;
+  for (const m of meals) out[m.slot && SLOT_IDS.has(m.slot) ? m.slot : 'other'].push(m);
+  return out;
 }
 
 // ---------------------------------------------------------------- saving
@@ -300,7 +334,7 @@ export function editDayItem(
   const w = begin(data, ymd, newId);
   if (kind === 'meal') {
     w.day.meals = patch === null ? w.day.meals.filter(m => m.id !== id)
-      : w.day.meals.map(m => (m.id === id ? { ...m, ...pick(patch, ['name', 'kcal', 'proteinG']) } : m));
+      : w.day.meals.map(m => (m.id === id ? { ...m, ...pick(patch, ['name', 'kcal', 'proteinG', 'slot']) } : m));
     writeFood(w);
   } else {
     w.day.activities = patch === null ? w.day.activities.filter(a => a.id !== id)
@@ -329,7 +363,10 @@ export function sanitizeDraft(draft: FitnessDraft, todayYmd: string, dayYmd: str
   const pos = (n: unknown) => (typeof n === 'number' && Number.isFinite(n) && n > 0 ? n : 0);
   return {
     date: ok(draft.date) ? draft.date : dayYmd,
-    meals: draft.meals.map(m => ({ ...m, kcal: pos(m.kcal), proteinG: pos(m.proteinG) })),
+    meals: draft.meals.map(m => {
+      const { slot, ...rest } = m;
+      return { ...rest, kcal: pos(m.kcal), proteinG: pos(m.proteinG), ...(slot && SLOT_IDS.has(slot) ? { slot } : {}) };
+    }),
     activities: draft.activities.map(a => ({ ...a, minutes: pos(a.minutes), kcal: pos(a.kcal), stepBased: !!a.stepBased })),
     values: draft.values.filter(v => pos(v.value) > 0),
   };

@@ -1,16 +1,17 @@
 // Pure helpers for the Google Health (Fitbit) integration: parsing API
 // responses and folding daily rows into the user's log trackers. No server
 // imports, so `npx tsx src/lib/health-merge.check.ts` can exercise them.
-import type { AppData, LogTracker } from '@/lib/types';
+import type { AppData, FitbitWorkout, LogTracker } from '@/lib/types';
 
 export type HealthMetric = 'steps' | 'sleep' | 'restingHr' | 'weight' | 'burned' | 'distance' | 'azm' | 'hrv' | 'spo2' | 'breaths';
 export type HealthDay = {
   date: string; steps?: number | null; sleep_minutes?: number | null; resting_hr?: number | null;
   weight_kg?: number | null; kcal_total?: number | null; distance_km?: number | null; azm?: number | null;
   hrv_ms?: number | null; spo2?: number | null; breaths?: number | null;
+  workouts?: FitbitWorkout[] | null;
 };
 /** The newer health_daily columns (supabase/notora-v3-health.sql); syncing still works without them. */
-export const EXTRA_HEALTH_COLUMNS = ['weight_kg', 'kcal_total', 'distance_km', 'azm', 'hrv_ms', 'spo2', 'breaths'] as const;
+export const EXTRA_HEALTH_COLUMNS = ['weight_kg', 'kcal_total', 'distance_km', 'azm', 'hrv_ms', 'spo2', 'breaths', 'workouts'] as const;
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
@@ -128,6 +129,29 @@ export function parseDailyList(json: any, kind: 'hrv' | 'spo2' | 'breaths'): Hea
   });
 }
 
+/** GET .../exercise/dataPoints → each day's Fitbit workouts, by local start time. */
+export function parseExercises(json: any): HealthDay[] {
+  const byDay = new Map<string, FitbitWorkout[]>();
+  for (const p of json?.dataPoints ?? []) {
+    const e = p.exercise;
+    const startTime: string | undefined = e?.interval?.startTime;
+    const offset = e?.interval?.startUtcOffset;
+    const date = localDateFromPhysical(startTime, offset);
+    if (!e || !startTime || !date) continue;
+    const local = new Date(Date.parse(startTime) + (Number(String(offset ?? '0').replace(/s$/, '')) || 0) * 1000).toISOString();
+    const secs = num(String(e.activeDuration ?? '').replace(/s$/, '')) ?? 0;
+    const m = e.metricsSummary ?? {};
+    const km = num(m.distanceMillimeters), hr = num(m.averageHeartRateBeatsPerMinute);
+    const w: FitbitWorkout = {
+      id: startTime, name: String(e.displayName || e.exerciseType || 'Workout'), type: String(e.exerciseType ?? ''),
+      minutes: Math.round(secs / 60), kcal: Math.round(num(m.caloriesKcal) ?? 0), start: local.slice(11, 16),
+      ...(km ? { distanceKm: Math.round(km / 10_000) / 100 } : {}), ...(hr ? { avgHr: hr } : {}),
+    };
+    byDay.set(date, [...(byDay.get(date) ?? []), w]);
+  }
+  return [...byDay].map(([date, workouts]) => ({ date, workouts: workouts.sort((a, b) => a.start.localeCompare(b.start)) }));
+}
+
 /** "2026-03-04T23:10:00Z" + "19800s" → local civil date. */
 function localDateFromPhysical(time?: string, offset?: string): string | null {
   if (!time) return null;
@@ -196,5 +220,10 @@ export function mergeHealthIntoTrackers(data: AppData, days: HealthDay[]): AppDa
     if (idx === -1) trackers = [...trackers, tracker];
     else trackers[idx] = tracker;
   }
-  return { ...data, logTrackers: trackers };
+  // Fitbit workouts: each synced day's list replaces what was there (only days the sync covered).
+  const workouts = days.filter(d => Array.isArray(d.workouts));
+  const fitbitWorkouts = workouts.length
+    ? { ...data.fitbitWorkouts, ...Object.fromEntries(workouts.map(d => [d.date, d.workouts!])) }
+    : data.fitbitWorkouts;
+  return { ...data, logTrackers: trackers, ...(fitbitWorkouts ? { fitbitWorkouts } : {}) };
 }

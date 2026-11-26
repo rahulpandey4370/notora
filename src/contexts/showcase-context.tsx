@@ -13,7 +13,7 @@ const demoUser: User = {
 };
 
 /** 60 days of believable fitness data for the showcase Logs page (deterministic: no Math.random). */
-function demoFitness(): Pick<AppData, 'logTrackers' | 'fitnessProfile' | 'fitnessDays'> {
+function demoFitness(): Pick<AppData, 'logTrackers' | 'fitnessProfile' | 'fitnessDays' | 'fitbitWorkouts'> {
   const today = new Date();
   const days = Array.from({ length: 60 }, (_, i) => ({ i, date: format(subDays(today, 59 - i), 'yyyy-MM-dd') }));
   const wave = (i: number, a: number, b = 1) => Math.sin(i * 1.7 * b) * a + Math.cos(i * 0.9 * b) * a * 0.5;
@@ -32,12 +32,15 @@ function demoFitness(): Pick<AppData, 'logTrackers' | 'fitnessProfile' | 'fitnes
       { id: 'demo-rhr', name: 'Resting heart rate', unit: 'bpm', goal: 60, healthMetric: 'restingHr', logs: series('fitbit-restingHr', i => Math.round(61 - i * 0.03 + wave(i, 1.5))) },
     ].map(t => (t.id === 'demo-protein' ? { ...t, logs: [...t.logs, { id: `auto-protein-${todayYmd}`, date: todayYmd, value: 54 }] }
       : t.id === 'demo-intake' ? { ...t, logs: [...t.logs, { id: `auto-intake-${todayYmd}`, date: todayYmd, value: 1180 }] } : t)) as AppData['logTrackers'],
+    fitbitWorkouts: {
+      [todayYmd]: [{ id: 'fw1', name: 'Morning walk', type: 'WALKING', minutes: 32, kcal: 150, distanceKm: 2.6, avgHr: 108, start: '07:10' }],
+    },
     fitnessDays: {
       [todayYmd]: {
         meals: [
-          { id: 'dm1', name: 'Poha with peanuts, 1 plate', kcal: 380, proteinG: 10 },
-          { id: 'dm2', name: '2 rotis, dal, sabzi', kcal: 640, proteinG: 26 },
-          { id: 'dm3', name: 'Greek yogurt, 150 g', kcal: 160, proteinG: 18 },
+          { id: 'dm1', name: 'Poha with peanuts, 1 plate', kcal: 380, proteinG: 10, slot: 'breakfast' },
+          { id: 'dm2', name: '2 rotis, dal, sabzi', kcal: 640, proteinG: 26, slot: 'lunch' },
+          { id: 'dm3', name: 'Greek yogurt, 150 g', kcal: 160, proteinG: 18, slot: 'eveningSnack' },
         ],
         activities: [
           { id: 'da1', name: 'Evening walk', minutes: 40, kcal: 190, stepBased: true },

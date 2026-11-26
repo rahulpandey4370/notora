@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Check } from 'lucide-react';
-import type { AppData } from '@/lib/types';
-import { describeValueChange, type FitnessDraft } from '@/lib/fitness';
+import type { AppData, MealSlot } from '@/lib/types';
+import { MEAL_SLOTS, describeValueChange, type FitnessDraft } from '@/lib/fitness';
 
-type Kind = 'meal' | 'workout' | 'number';
+export type Kind = 'meal' | 'workout' | 'number';
 const LABEL: Record<Kind, string> = { meal: 'Meal', workout: 'Workout', number: 'Number' };
 const num = (s: string) => { const n = Number(s); return s.trim() !== '' && Number.isFinite(n) && n >= 0 ? n : undefined; };
 
@@ -12,8 +12,9 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 }
 
 /** No-AI logging: one meal, workout or tracker number at a time, saved straight away. */
-export function ManualLog({ data, day, onSave }: { data: AppData; day: string; onSave: (d: FitnessDraft) => void }) {
-  const [kind, setKind] = useState<Kind>('meal');
+export function ManualLog({ data, day, onSave, initialKind = 'meal', defaultSlot }: { data: AppData; day: string; onSave: (d: FitnessDraft) => void; initialKind?: Kind; defaultSlot: MealSlot }) {
+  const [kind, setKind] = useState<Kind>(initialKind);
+  const [slot, setSlot] = useState<MealSlot>(defaultSlot);
   const [f, setF] = useState({ name: '', a: '', b: '', tracker: data.logTrackers[0]?.id ?? '', stepBased: false });
   const [done, setDone] = useState('');
   const set = (p: Partial<typeof f>) => { setF(x => ({ ...x, ...p })); setDone(''); };
@@ -24,7 +25,7 @@ export function ManualLog({ data, day, onSave }: { data: AppData; day: string; o
 
   const draftOf = (): FitnessDraft => {
     const d: FitnessDraft = { date: day, meals: [], activities: [], values: [] };
-    if (kind === 'meal') d.meals.push({ name: f.name.trim(), kcal: a!, proteinG: b ?? 0 });
+    if (kind === 'meal') d.meals.push({ name: f.name.trim(), kcal: a!, proteinG: b ?? 0, slot });
     else if (kind === 'workout') d.activities.push({ name: f.name.trim(), minutes: a!, kcal: b!, stepBased: f.stepBased });
     else d.values.push({ trackerId: f.tracker, value: a! });
     return d;
@@ -51,6 +52,11 @@ export function ManualLog({ data, day, onSave }: { data: AppData; day: string; o
         ))}
       </div>
       {kind === 'meal' && <>
+        <Field label="Meal">
+          <select className="f-input" value={slot} onChange={e => { setSlot(e.target.value as MealSlot); setDone(''); }}>
+            {MEAL_SLOTS.map(x => <option key={x.id} value={x.id}>{x.label}</option>)}
+          </select>
+        </Field>
         <Field label="Food">{input('name', 'e.g. 2 rotis and dal', false)}</Field>
         <div className="flex gap-3"><Field label="Calories (kcal)">{input('a', '450')}</Field><Field label="Protein (g, optional)">{input('b', '15')}</Field></div>
       </>}

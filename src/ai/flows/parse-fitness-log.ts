@@ -22,6 +22,8 @@ export type ParseFitnessLogInput = {
   currentDraft?: FitnessDraft;
   /** The header's web search switch: when on, every message is looked up on the web first. */
   webSearch?: boolean;
+  /** The user's local time (HH:mm), to file meals under breakfast/lunch/… when the message doesn't say. */
+  localTime?: string;
 };
 export type ParseFitnessLogOutput = FitnessDraft & { reply: string; web?: 'tavily' | 'openai' };
 
@@ -31,6 +33,7 @@ const OutputSchema = z.object({
     name: z.string().describe('Food item or meal, with portion, e.g. "2 rotis"'),
     kcal: z.number().int().describe('Estimated calories'),
     proteinG: z.number().describe('Estimated protein in grams'),
+    slot: z.string().optional().describe('One of: breakfast, morningSnack, lunch, eveningSnack, dinner'),
   })).default([]),
   activities: z.array(z.object({
     name: z.string(),
@@ -73,7 +76,8 @@ Rules:
 6. Do not invent anything the user didn't mention or show. Empty lists are fine.
 7. "reply": one short friendly line, e.g. "2 rotis and dal (~450 kcal) plus a 30 min jog (~320 kcal)."
 8. If web search results are given and match an item, use their numbers for the stated quantity and mention it in "reply" (e.g. "per Yoga Bar's label"). Otherwise estimate as usual.
-9. No links, URLs or citation marks anywhere in the JSON.`;
+9. No links, URLs or citation marks anywhere in the JSON.
+10. Every meal gets a "slot": breakfast, morningSnack, lunch, eveningSnack or dinner. Use what the message says ("for breakfast", "evening chai", "after dinner"); otherwise, if the day being logged is today, use the time now ({{{localTime}}}: before 10:30 breakfast, 10:30–12:30 morningSnack, 12:30–15:30 lunch, 15:30–18:30 eveningSnack, later dinner); otherwise pick the most likely meal for that food.`;
 
 export async function parseFitnessLog(input: ParseFitnessLogInput, modelId: ModelId): Promise<ParseFitnessLogOutput> {
   const said = input.message?.trim();
@@ -91,12 +95,14 @@ export async function parseFitnessLog(input: ParseFitnessLogInput, modelId: Mode
       trackersText: input.trackers.map(t => `${t.id}: ${t.name} (${t.unit})`).join('\n') || '(none)',
       draftJson: input.currentDraft ? JSON.stringify(input.currentDraft) : '',
       webFacts: web?.text ?? '',
+      localTime: input.localTime ?? 'unknown',
     },
     OutputSchema,
     'parseFitnessLogPrompt',
   );
   const known = new Set(input.trackers.map(t => t.id));
   // Never trust the model's date or numbers as-is: a far-future or impossible date would be saved.
-  const safe = sanitizeDraft({ ...result, values: result.values.filter(v => known.has(v.trackerId)) }, input.todayYmd, input.dayYmd);
+  // The slot is a free string from the model; sanitizeDraft keeps it only if it's one of the five.
+  const safe = sanitizeDraft({ ...result, meals: result.meals as FitnessDraft['meals'], values: result.values.filter(v => known.has(v.trackerId)) }, input.todayYmd, input.dayYmd);
   return { ...safe, reply: result.reply, web: web?.via };
 }

@@ -12,7 +12,7 @@ import { Ring } from './Ring';
 import { FitbitChip } from './FitbitChip';
 import { WeightCard } from './WeightCard';
 import { WeekCards } from './WeekCards';
-import { DayLog } from './DayLog';
+import { DayLog, type AddTarget } from './DayLog';
 import { TrackerTiles } from './TrackerTiles';
 import { TrackerSheet } from './TrackerSheet';
 import { LogSheet } from './LogSheet';
@@ -52,7 +52,7 @@ export function FitnessPage({ data, onDataChange, showcase = false }: { data: Ap
     document.addEventListener('visibilitychange', tick);
     return () => { clearInterval(id); document.removeEventListener('visibilitychange', tick); };
   }, []);
-  const [log, setLog] = useState<{ open: boolean; mode: 'type' | 'voice' | 'photo' }>({ open: false, mode: 'type' });
+  const [log, setLog] = useState<{ open: boolean; mode: 'type' | 'voice' | 'photo' | 'form'; preset?: AddTarget }>({ open: false, mode: 'type' });
   const [targetsOpen, setTargetsOpen] = useState(false);
   const [manageOpen, setManageOpen] = useState(false);
   const [openTracker, setOpenTracker] = useState<string | null>(null);
@@ -104,7 +104,8 @@ export function FitnessPage({ data, onDataChange, showcase = false }: { data: Ap
                 </span>
               </button>
             )}
-            <DayLog data={data} day={day} onEdit={edit} onClearBurn={() => onDataChange(clearBurnBase(data, day, uuidv4))} />
+            <DayLog data={data} day={day} kcalGoal={s.kcalGoal} onEdit={edit} onClearBurn={() => onDataChange(clearBurnBase(data, day, uuidv4))}
+              onAdd={preset => setLog({ open: true, mode: 'form', preset })} />
           </div>
           <div className="space-y-4">
             <WeightCard data={data} today={today} onSetGoal={() => setTargetsOpen(true)} />
@@ -120,7 +121,7 @@ export function FitnessPage({ data, onDataChange, showcase = false }: { data: Ap
         </div>
       </div>
 
-      <LogSheet open={log.open} onOpenChange={o => setLog(l => ({ ...l, open: o }))} mode={log.mode} data={data} day={day} today={today} onSave={save} aiDisabled={showcase} />
+      <LogSheet open={log.open} onOpenChange={o => setLog(l => ({ ...l, open: o }))} mode={log.mode} preset={log.preset} data={data} day={day} today={today} onSave={save} aiDisabled={showcase} />
       <TargetsSheet open={targetsOpen} onOpenChange={setTargetsOpen} data={data} today={today} onSave={onDataChange} />
       <ManageSheet open={manageOpen} onOpenChange={setManageOpen} data={data} onDataChange={onDataChange} showcase={showcase} />
       <TrackerSheet tracker={tracker} onClose={() => setOpenTracker(null)}

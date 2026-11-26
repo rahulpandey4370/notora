@@ -1,11 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
+import { format } from 'date-fns';
 import { Camera, Check, Dumbbell, Footprints, Globe, Loader2, Mic, Send, Square, Utensils, X } from 'lucide-react';
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import type { AppData } from '@/lib/types';
 import { useModelStore } from '@/hooks/use-model-store';
 import { parseFitnessLog } from '@/ai/flows/parse-fitness-log';
-import { bmr, describeValueChange, weightOn, type FitnessDraft } from '@/lib/fitness';
+import { MEAL_SLOTS, bmr, describeValueChange, slotForTime, weightOn, type FitnessDraft } from '@/lib/fitness';
+import type { MealSlot } from '@/lib/types';
+import type { AddTarget } from './DayLog';
 import { ManualLog } from './ManualLog';
 
 const FORM_KEY = 'fit-log-form'; // remembers whether the user last chose the no-AI form
@@ -45,8 +48,8 @@ function NumField({ label, value, onChange, width = 'w-16' }: { label: string; v
 }
 
 /** "Log it": type, speak or snap → AI draft cards → Save. Nothing is written before Save. */
-export function LogSheet({ open, onOpenChange, mode, data, day, today, onSave, aiDisabled }: {
-  open: boolean; onOpenChange: (o: boolean) => void; mode: 'type' | 'voice' | 'photo';
+export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, onSave, aiDisabled }: {
+  open: boolean; onOpenChange: (o: boolean) => void; mode: 'type' | 'voice' | 'photo' | 'form'; preset?: AddTarget;
   data: AppData; day: string; today: string; onSave: (draft: FitnessDraft) => void; aiDisabled?: boolean;
 }) {
   const { selectedModel, webSearch, setWebSearch } = useModelStore();
@@ -66,13 +69,15 @@ export function LogSheet({ open, onOpenChange, mode, data, day, today, onSave, a
   const endRef = useRef<HTMLDivElement>(null);
   const reqRef = useRef(0); // newest request id: older replies, or ones from a closed sheet, are dropped
   const supported = typeof window !== 'undefined' && !!SR();
+  // Meals logged for today default to the section for this time of day; for another day, lunch.
+  const nowSlot: MealSlot = day === today ? slotForTime(new Date().getHours(), new Date().getMinutes()) : 'lunch';
 
   useEffect(() => {
     reqRef.current++;
     if (open) {
       setMsgs([]); setText(''); setInterim(''); setPhoto(null); setDraft(null); setSaved(false);
       let form = false;
-      try { form = mode === 'type' && localStorage.getItem(FORM_KEY) === '1'; } catch { /* default to AI */ }
+      try { form = mode === 'form' || (mode === 'type' && localStorage.getItem(FORM_KEY) === '1'); } catch { form = mode === 'form'; }
       setManual(form);
       if (form) { /* the form takes focus on tap */ }
       else if (mode === 'photo') setTimeout(() => fileRef.current?.click(), 80);
@@ -128,7 +133,7 @@ export function LogSheet({ open, onOpenChange, mode, data, day, today, onSave, a
     setText(''); setInterim(''); setPhoto(null); setSaved(false);
     if (aiDisabled) {
       // Showcase: a fixed sample so the draft cards and Save can be tried without AI.
-      setDraft({ date: day, meals: [{ name: '2 rotis', kcal: 220, proteinG: 6 }], activities: [{ name: 'Jog', minutes: 30, kcal: 320, stepBased: true }], values: [] });
+      setDraft({ date: day, meals: [{ name: '2 rotis', kcal: 220, proteinG: 6, slot: nowSlot }], activities: [{ name: 'Jog', minutes: 30, kcal: 320, stepBased: true }], values: [] });
       setVer(v => v + 1);
       setMsgs(m => [...m, { role: 'ai', text: 'Demo: a sample result. Sign in for real AI logging.' }]);
       return;
@@ -144,9 +149,11 @@ export function LogSheet({ open, onOpenChange, mode, data, day, today, onSave, a
         bmrKcal: data.fitnessProfile && kg ? bmr(data.fitnessProfile, kg, day) : undefined,
         currentDraft: draft && (draft.meals.length || draft.activities.length || draft.values.length) ? draft : undefined,
         webSearch,
+        localTime: format(new Date(), 'HH:mm'),
       }, selectedModel);
       if (req !== reqRef.current) return;
       const { reply, web, ...next } = r;
+      next.meals = next.meals.map(m => (m.slot ? m : { ...m, slot: nowSlot })); // the AI couldn't tell: file it under the meal for this time of day
       setDraft(next);
       setVer(v => v + 1);
       const text = reply || 'Here’s what I got. Check the numbers, then Save.';
@@ -190,7 +197,8 @@ export function LogSheet({ open, onOpenChange, mode, data, day, today, onSave, a
 
         {manual ? (
           <div className="flex-1 overflow-y-auto px-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] pt-3">
-            <ManualLog data={data} day={day} onSave={onSave} />
+            <ManualLog key={`${preset?.kind ?? ''}-${preset?.kind === 'meal' ? preset.slot : ''}`} data={data} day={day} onSave={onSave}
+              initialKind={preset?.kind ?? 'meal'} defaultSlot={preset?.kind === 'meal' ? preset.slot : nowSlot} />
           </div>
         ) : (<>
 
@@ -220,7 +228,13 @@ export function LogSheet({ open, onOpenChange, mode, data, day, today, onSave, a
               {draft.meals.map((m, i) => (
                 <div key={`m${ver}-${i}`} className="flex items-end gap-2">
                   <Utensils className="mb-2 h-4 w-4 shrink-0 text-[var(--f-chart-a)]" aria-hidden />
-                  <span className="mb-1.5 min-w-0 flex-1 truncate text-sm font-medium">{m.name}</span>
+                  <span className="mb-1.5 min-w-0 flex-1">
+                    <span className="block truncate text-sm font-medium">{m.name}</span>
+                    <select className="f-muted mt-0.5 max-w-full bg-transparent text-xs underline decoration-dotted underline-offset-2" aria-label={`Meal for ${m.name}`}
+                      value={m.slot ?? nowSlot} onChange={e => update(d => ({ ...d, meals: d.meals.map((x, j) => (j === i ? { ...x, slot: e.target.value as MealSlot } : x)) }))}>
+                      {MEAL_SLOTS.map(x => <option key={x.id} value={x.id}>{x.label}</option>)}
+                    </select>
+                  </span>
                   <NumField label="kcal" value={m.kcal} onChange={n => update(d => ({ ...d, meals: d.meals.map((x, j) => (j === i ? { ...x, kcal: n } : x)) }))} />
                   <NumField label="protein g" value={m.proteinG} onChange={n => update(d => ({ ...d, meals: d.meals.map((x, j) => (j === i ? { ...x, proteinG: n } : x)) }))} />
                   <button type="button" className="f-muted -mr-2 mb-0 flex h-11 w-11 shrink-0 items-center justify-center" aria-label={`Remove ${m.name}`}

@@ -1,6 +1,6 @@
 // Run: npx tsx src/lib/health-merge.check.ts  — fails loudly if parsing/merging breaks.
 import assert from 'node:assert/strict';
-import { parseStepsRollup, parseSleep, parseRestingHr, combineDays, mergeHealthIntoTrackers, civilToYmd, parseWeight, parseRollup, parseDailyList } from './health-merge';
+import { parseStepsRollup, parseSleep, parseRestingHr, combineDays, mergeHealthIntoTrackers, civilToYmd, parseWeight, parseRollup, parseDailyList, parseExercises } from './health-merge';
 import type { AppData } from './types';
 
 // Shapes per developers.google.com/health docs examples (values are strings).
@@ -72,6 +72,27 @@ assert.deepEqual(parseDailyList({ dataPoints: [{ dailyRespiratoryRate: { date: {
   assert.equal(burnOn('2026-11-24').value, 2600, 'a typed day burn total is left alone');
   assert.equal(burnOn('2026-11-23').value, 2000, 'a hand-typed burn entry wins');
   for (const name of ['HRV', 'Blood oxygen', 'Breathing rate', 'Distance', 'Active Zone Minutes']) assert.ok(m.logTrackers.some(t => t.name === name), `${name} tracker created`);
+}
+// Fitbit exercise sessions (shape from a real account): grouped by local day, shown on the Workouts tab.
+{
+  const ex = (start: string, extra: any = {}) => ({ exercise: { interval: { startTime: start, startUtcOffset: '19800s', endTime: start }, exerciseType: 'WALKING', displayName: 'Walk', activeDuration: '721s',
+    metricsSummary: { caloriesKcal: 98, distanceMillimeters: 1008421, averageHeartRateBeatsPerMinute: '112' }, ...extra } });
+  const days = parseExercises({ dataPoints: [
+    ex('2026-11-26T16:20:38Z'),
+    ex('2026-11-26T03:00:00Z', { exerciseType: 'STRENGTH_TRAINING', displayName: 'Weights', activeDuration: '2700s', metricsSummary: { caloriesKcal: 310.4 } }),
+    ex('2026-11-25T19:00:00Z'), // 00:30 IST on the 26th
+  ] });
+  assert.equal(days.length, 1, 'all three are on the 26th in local time');
+  assert.deepEqual(days[0].workouts, [
+    { id: '2026-11-26T03:00:00Z', name: 'Weights', type: 'STRENGTH_TRAINING', minutes: 45, kcal: 310, start: '08:30' },
+    { id: '2026-11-26T16:20:38Z', name: 'Walk', type: 'WALKING', minutes: 12, kcal: 98, distanceKm: 1.01, avgHr: 112, start: '21:50' },
+    { id: '2026-11-25T19:00:00Z', name: 'Walk', type: 'WALKING', minutes: 12, kcal: 98, distanceKm: 1.01, avgHr: 112, start: '00:30' },
+  ].sort((a, b) => a.start.localeCompare(b.start)), 'sorted by start time, with minutes, kcal, km and heart rate');
+
+  const m1 = mergeHealthIntoTrackers({ ...base, fitbitWorkouts: { '2026-11-01': [] } } as AppData, days);
+  assert.equal(m1.fitbitWorkouts!['2026-11-26'].length, 3);
+  const m2 = mergeHealthIntoTrackers(m1, [{ date: '2026-11-26', workouts: days[0].workouts!.slice(0, 1) }]);
+  assert.equal(m2.fitbitWorkouts!['2026-11-26'].length, 1, "a later sync replaces that day's list");
 }
 console.log('health-merge: all checks passed');
 

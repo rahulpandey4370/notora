@@ -20,6 +20,7 @@ import { TargetsSheet } from './TargetsSheet';
 import { ManageSheet } from './ManageSheet';
 import { LookPicker, useFitLook } from './Looks';
 import { AiSummary } from './AiSummary';
+import { ItemSheet, type ItemRef } from './ItemSheet';
 
 const EXAMPLES = ['94.1 kg, 12k steps, 110g protein', 'Had 2 rotis and dal, walked 40 min', 'Snap your lunch, I’ll count it', 'Ran 5k in 32 min'];
 const k = (n: number) => Math.round(n).toLocaleString('en-US');
@@ -57,6 +58,7 @@ export function FitnessPage({ data, onDataChange, showcase = false }: { data: Ap
   const [manageOpen, setManageOpen] = useState(false);
   const [openTracker, setOpenTracker] = useState<string | null>(null);
   const [look, setLook] = useFitLook();
+  const [item, setItem] = useState<ItemRef | null>(null);
 
   const s = useMemo(() => {
     const intake = dayIntake(data, day);
@@ -105,7 +107,7 @@ export function FitnessPage({ data, onDataChange, showcase = false }: { data: Ap
               </button>
             )}
             <DayLog data={data} day={day} kcalGoal={s.kcalGoal} onEdit={edit} onClearBurn={() => onDataChange(clearBurnBase(data, day, uuidv4))}
-              onAdd={preset => setLog({ open: true, mode: 'form', preset })} />
+              onOpen={setItem} onAdd={preset => setLog({ open: true, mode: 'form', preset })} />
           </div>
           <div className="space-y-4">
             <WeightCard data={data} today={today} onSetGoal={() => setTargetsOpen(true)} />
@@ -122,6 +124,10 @@ export function FitnessPage({ data, onDataChange, showcase = false }: { data: Ap
       </div>
 
       <LogSheet open={log.open} onOpenChange={o => setLog(l => ({ ...l, open: o }))} mode={log.mode} preset={log.preset} data={data} day={day} today={today} onSave={save} aiDisabled={showcase} />
+      <ItemSheet item={item} data={data} day={day} today={today} aiDisabled={showcase} onClose={() => setItem(null)}
+        onSave={(it, patch) => onDataChange(editDayItem(data, day, it.kind, it.id, patch, uuidv4))}
+        onDelete={it => onDataChange(editDayItem(data, day, it.kind, it.id, null, uuidv4))}
+        onReplace={(it, draft) => onDataChange(applyDraft(editDayItem(data, day, it.kind, it.id, null, uuidv4), draft, uuidv4))} />
       <TargetsSheet open={targetsOpen} onOpenChange={setTargetsOpen} data={data} today={today} onSave={onDataChange} />
       <ManageSheet open={manageOpen} onOpenChange={setManageOpen} data={data} onDataChange={onDataChange} showcase={showcase} />
       <TrackerSheet tracker={tracker} onClose={() => setOpenTracker(null)}

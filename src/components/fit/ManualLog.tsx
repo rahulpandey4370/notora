@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Check } from 'lucide-react';
 import type { AppData, MealSlot } from '@/lib/types';
-import { MEAL_SLOTS, describeValueChange, type FitnessDraft } from '@/lib/fitness';
+import { MEAL_SLOTS, describeValueChange, flooredKcal, type FitnessDraft } from '@/lib/fitness';
+import { AutoTextarea } from './AutoTextarea';
 
 export type Kind = 'meal' | 'workout' | 'number';
 const LABEL: Record<Kind, string> = { meal: 'Meal', workout: 'Workout', number: 'Number' };
@@ -15,7 +16,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 export function ManualLog({ data, day, onSave, initialKind = 'meal', defaultSlot }: { data: AppData; day: string; onSave: (d: FitnessDraft) => void; initialKind?: Kind; defaultSlot: MealSlot }) {
   const [kind, setKind] = useState<Kind>(initialKind);
   const [slot, setSlot] = useState<MealSlot>(defaultSlot);
-  const [f, setF] = useState({ name: '', a: '', b: '', tracker: data.logTrackers[0]?.id ?? '', stepBased: false });
+  const [f, setF] = useState({ name: '', a: '', b: '', carbs: '', fat: '', fiber: '', tracker: data.logTrackers[0]?.id ?? '', stepBased: false });
   const [done, setDone] = useState('');
   const set = (p: Partial<typeof f>) => { setF(x => ({ ...x, ...p })); setDone(''); };
   const a = num(f.a), b = num(f.b);
@@ -25,7 +26,7 @@ export function ManualLog({ data, day, onSave, initialKind = 'meal', defaultSlot
 
   const draftOf = (): FitnessDraft => {
     const d: FitnessDraft = { date: day, meals: [], activities: [], values: [] };
-    if (kind === 'meal') d.meals.push({ name: f.name.trim(), kcal: a!, proteinG: b ?? 0, slot });
+    if (kind === 'meal') d.meals.push({ name: f.name.trim(), kcal: a!, proteinG: b ?? 0, carbsG: num(f.carbs) ?? 0, fatG: num(f.fat) ?? 0, fiberG: num(f.fiber) ?? 0, slot });
     else if (kind === 'workout') d.activities.push({ name: f.name.trim(), minutes: a!, kcal: b!, stepBased: f.stepBased });
     else d.values.push({ trackerId: f.tracker, value: a! });
     return d;
@@ -36,12 +37,15 @@ export function ManualLog({ data, day, onSave, initialKind = 'meal', defaultSlot
     if (!valid) return;
     onSave(draftOf());
     setDone(`${kind === 'number' ? tracker!.name : f.name.trim()} saved ✓`);
-    setF(x => ({ ...x, name: '', a: '', b: '', stepBased: false }));
+    setF(x => ({ ...x, name: '', a: '', b: '', carbs: '', fat: '', fiber: '', stepBased: false }));
   };
-  const input = (key: 'name' | 'a' | 'b', placeholder: string, numeric = true) => (
-    <input className="f-input" value={f[key]} placeholder={placeholder} onChange={e => set({ [key]: e.target.value })}
-      {...(numeric ? { type: 'number', inputMode: 'decimal' as const, min: 0, step: 'any' } : { type: 'text' })} />
+  const input = (key: 'name' | 'a' | 'b' | 'carbs' | 'fat' | 'fiber', placeholder: string, numeric = true) => numeric ? (
+    <input className="f-input" value={f[key]} placeholder={placeholder} onChange={e => set({ [key]: e.target.value })} type="number" inputMode="decimal" min={0} step="any" />
+  ) : (
+    <AutoTextarea value={f[key]} placeholder={placeholder} onChange={e => set({ [key]: e.target.value })} maxRows={5}
+      onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); e.currentTarget.form?.requestSubmit(); } }} />
   );
+  const macroKcal = kind === 'meal' ? flooredKcal({ kcal: 0, proteinG: b ?? 0, carbsG: num(f.carbs) ?? 0, fatG: num(f.fat) ?? 0 }) : 0;
 
   return (
     <form className="space-y-4" onSubmit={save}>
@@ -58,7 +62,14 @@ export function ManualLog({ data, day, onSave, initialKind = 'meal', defaultSlot
           </select>
         </Field>
         <Field label="Food">{input('name', 'e.g. 2 rotis and dal', false)}</Field>
-        <div className="flex gap-3"><Field label="Calories (kcal)">{input('a', '450')}</Field><Field label="Protein (g, optional)">{input('b', '15')}</Field></div>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+          <Field label="Calories (kcal)">{input('a', '450')}</Field>
+          <Field label="Protein (g)">{input('b', '15')}</Field>
+          <Field label="Carbs (g)">{input('carbs', '60')}</Field>
+          <Field label="Fat (g)">{input('fat', '12')}</Field>
+          <Field label="Fibre (g)">{input('fiber', '6')}</Field>
+        </div>
+        {a != null && macroKcal > a * 1.02 && <p className="f-bad text-xs">These macros add up to {macroKcal} kcal, so it will be saved as {macroKcal} to avoid under-counting.</p>}
       </>}
       {kind === 'workout' && <>
         <Field label="Activity">{input('name', 'e.g. Cycling', false)}</Field>

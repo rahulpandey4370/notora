@@ -38,9 +38,9 @@ function demoFitness(): Pick<AppData, 'logTrackers' | 'fitnessProfile' | 'fitnes
     fitnessDays: {
       [todayYmd]: {
         meals: [
-          { id: 'dm1', name: 'Poha with peanuts, 1 plate', kcal: 380, proteinG: 10, slot: 'breakfast' },
-          { id: 'dm2', name: '2 rotis, dal, sabzi', kcal: 640, proteinG: 26, slot: 'lunch' },
-          { id: 'dm3', name: 'Greek yogurt, 150 g', kcal: 160, proteinG: 18, slot: 'eveningSnack' },
+          { id: 'dm1', name: 'Poha with peanuts, 1 plate', kcal: 380, proteinG: 10, carbsG: 58, fatG: 12, fiberG: 4, slot: 'breakfast' },
+          { id: 'dm2', name: '2 rotis, dal, sabzi', kcal: 640, proteinG: 26, carbsG: 88, fatG: 20, fiberG: 14, slot: 'lunch' },
+          { id: 'dm3', name: 'Greek yogurt, 150 g', kcal: 160, proteinG: 18, carbsG: 8, fatG: 6, fiberG: 0, slot: 'eveningSnack' },
         ],
         activities: [
           { id: 'da1', name: 'Evening walk', minutes: 40, kcal: 190, stepBased: true },

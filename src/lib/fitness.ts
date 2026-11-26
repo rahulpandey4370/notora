@@ -149,6 +149,20 @@ export function dayBurn(data: AppData, ymd: string): BurnInfo {
   return { total: base == null ? null : base + extra, base, source, activities };
 }
 
+export type Macros = { kcal: number; proteinG: number; carbsG: number; fatG: number; fiberG: number };
+const r1 = (n: number) => Math.round(n * 10) / 10;
+
+/** The day's food totals from its meals (summed, then rounded once); an older stored total when there are no meals. */
+export function dayMacros(data: AppData, ymd: string): Macros {
+  const meals = data.fitnessDays?.[ymd]?.meals ?? [];
+  if (!meals.length) {
+    const i = dayIntake(data, ymd);
+    return { kcal: Math.round(i.kcal ?? 0), proteinG: r1(i.proteinG ?? 0), carbsG: 0, fatG: 0, fiberG: 0 };
+  }
+  const sum = (k: 'kcal' | 'proteinG' | 'carbsG' | 'fatG' | 'fiberG') => meals.reduce((t, m) => t + (m[k] ?? 0), 0);
+  return { kcal: Math.round(sum('kcal')), proteinG: r1(sum('proteinG')), carbsG: r1(sum('carbsG')), fatG: r1(sum('fatG')), fiberG: r1(sum('fiberG')) };
+}
+
 export function dayIntake(data: AppData, ymd: string): { kcal?: number; proteinG?: number } {
   return { kcal: valueOn(findTracker(data, 'intake'), ymd), proteinG: valueOn(findTracker(data, 'protein'), ymd) };
 }
@@ -186,6 +200,10 @@ export function mealsBySlot(meals: Meal[]): Record<MealSlot | 'other', Meal[]> {
   for (const m of meals) out[m.slot && SLOT_IDS.has(m.slot) ? m.slot : 'other'].push(m);
   return out;
 }
+
+/** A meal's calories, never below what its macros add up to (protein and carbs 4 kcal/g, fat 9). */
+export const flooredKcal = (m: Pick<Meal, 'kcal' | 'proteinG' | 'carbsG' | 'fatG'>) =>
+  Math.max(m.kcal || 0, Math.round((m.proteinG || 0) * 4 + (m.carbsG || 0) * 4 + (m.fatG || 0) * 9));
 
 // ---------------------------------------------------------------- saving
 
@@ -308,7 +326,7 @@ export function applyDraft(data: AppData, draft: FitnessDraft, newId: () => stri
       const kcal = valueOn(intakeT(), date), protein = valueOn(proteinT(), date);
       if (kcal != null || protein != null) day.meals.push({ id: newId(), name: 'Earlier total', kcal: kcal ?? 0, proteinG: protein ?? 0 });
     }
-    day.meals.push(...draft.meals.map(m => ({ ...m, id: newId() })));
+    day.meals.push(...draft.meals.map(m => ({ ...m, kcal: flooredKcal(m), id: newId() })));
     food = true;
   }
 
@@ -334,11 +352,15 @@ export function editDayItem(
   const w = begin(data, ymd, newId);
   if (kind === 'meal') {
     w.day.meals = patch === null ? w.day.meals.filter(m => m.id !== id)
-      : w.day.meals.map(m => (m.id === id ? { ...m, ...pick(patch, ['name', 'kcal', 'proteinG', 'slot']) } : m));
+      : w.day.meals.map(m => {
+        if (m.id !== id) return m;
+        const next = { ...m, ...pick(patch, ['name', 'kcal', 'proteinG', 'carbsG', 'fatG', 'fiberG', 'slot', 'notes']) };
+        return { ...next, kcal: flooredKcal(next) };
+      });
     writeFood(w);
   } else {
     w.day.activities = patch === null ? w.day.activities.filter(a => a.id !== id)
-      : w.day.activities.map(a => (a.id === id ? { ...a, ...pick(patch, ['name', 'minutes', 'kcal', 'stepBased']) } : a));
+      : w.day.activities.map(a => (a.id === id ? { ...a, ...pick(patch, ['name', 'minutes', 'kcal', 'stepBased', 'notes']) } : a));
     writeBurn(w);
   }
   return finish(w);
@@ -365,7 +387,10 @@ export function sanitizeDraft(draft: FitnessDraft, todayYmd: string, dayYmd: str
     date: ok(draft.date) ? draft.date : dayYmd,
     meals: draft.meals.map(m => {
       const { slot, ...rest } = m;
-      return { ...rest, kcal: pos(m.kcal), proteinG: pos(m.proteinG), ...(slot && SLOT_IDS.has(slot) ? { slot } : {}) };
+      const proteinG = pos(m.proteinG), carbsG = pos(m.carbsG), fatG = pos(m.fatG);
+      // Under-counting hurts a weight-loss log most: calories are never below what the macros add up to.
+      const kcal = Math.max(pos(m.kcal), Math.round(proteinG * 4 + carbsG * 4 + fatG * 9));
+      return { ...rest, kcal, proteinG, carbsG, fatG, fiberG: pos(m.fiberG), ...(slot && SLOT_IDS.has(slot) ? { slot } : {}) };
     }),
     activities: draft.activities.map(a => ({ ...a, minutes: pos(a.minutes), kcal: pos(a.kcal), stepBased: !!a.stepBased })),
     values: draft.values.filter(v => pos(v.value) > 0),

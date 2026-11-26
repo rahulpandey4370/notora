@@ -4,7 +4,7 @@ import type { AppData, LogTracker } from '@/lib/types';
 import {
   applyDraft, bmr, dayBurn, dayIntake, describeValueChange, editDayItem, goalEta, loggingStreak,
   clearBurnBase, sanitizeDraft, setTargets, suggestTargets, trendSeries, weeklyRate, stepsStreak, type TrendPoint,
-  MEAL_SLOTS, slotBudgets, slotForTime, mealsBySlot,
+  MEAL_SLOTS, slotBudgets, slotForTime, mealsBySlot, dayMacros,
 } from './fitness';
 
 const TODAY = '2026-11-26';
@@ -282,5 +282,38 @@ const bmr80 = bmr(profile, 80, TODAY);
   const chai = d0.fitnessDays![TODAY].meals.find(m => m.name === 'Chai')!;
   const d1 = editDayItem(d0, TODAY, 'meal', chai.id, { slot: 'eveningSnack' }, id);
   assert.equal(d1.fitnessDays![TODAY].meals.find(m => m.id === chai.id)!.slot, 'eveningSnack', 'a meal can be moved to another section');
+}
+// Macros and fiber: logged per meal, totalled for the day; the day total matches the calorie ring.
+{
+  const d0 = applyDraft(base([]), { date: TODAY, meals: [
+    { name: 'Poha', kcal: 300.4, proteinG: 8, carbsG: 50, fatG: 7, fiberG: 3, slot: 'breakfast' },
+    { name: 'Dal rice', kcal: 450.4, proteinG: 15, carbsG: 70, fatG: 10, fiberG: 8.5, slot: 'lunch' },
+  ], activities: [], values: [] }, id);
+  const m = dayMacros(d0, TODAY);
+  assert.deepEqual(m, { kcal: 751, proteinG: 23, carbsG: 120, fatG: 17, fiberG: 11.5 }, 'summed once, then rounded');
+  assert.equal(dayIntake(d0, TODAY).kcal, m.kcal, 'the bar and the calorie ring show the same total');
+  const poha = d0.fitnessDays![TODAY].meals[0];
+  const d1 = editDayItem(d0, TODAY, 'meal', poha.id, { carbsG: 60, fiberG: 4, notes: 'with peanuts' }, id);
+  const p1 = d1.fitnessDays![TODAY].meals.find(x => x.id === poha.id)!;
+  assert.equal(p1.carbsG, 60); assert.equal(p1.fiberG, 4); assert.equal(p1.notes, 'with peanuts');
+  const clean = sanitizeDraft({ date: TODAY, meals: [{ name: 'x', kcal: 100, proteinG: 2, carbsG: -5, fatG: Number.NaN, fiberG: 3 }], activities: [], values: [] }, TODAY, TODAY);
+  assert.equal(clean.meals[0].carbsG, 0); assert.equal(clean.meals[0].fatG, 0); assert.equal(clean.meals[0].fiberG, 3);
+  // A day with only an older stored total (no meals) still has a calorie total.
+  const old = base([tracker('Daily Calorie Intake', 'kcal', [[TODAY, 1800]]), tracker('Protein Intake', 'g', [[TODAY, 90]])]);
+  assert.deepEqual(dayMacros(old, TODAY), { kcal: 1800, proteinG: 90, carbsG: 0, fatG: 0, fiberG: 0 });
+}
+// Never log fewer calories than the macros add up to (protein and carbs 4 kcal/g, fat 9).
+{
+  const c = sanitizeDraft({ date: TODAY, meals: [
+    { name: 'Paneer butter masala', kcal: 250, proteinG: 18, carbsG: 15, fatG: 30 },   // macros say 402
+    { name: 'Roti', kcal: 120, proteinG: 3, carbsG: 20, fatG: 3 },                       // macros say 119: kept
+  ], activities: [], values: [] }, TODAY, TODAY);
+  assert.equal(c.meals[0].kcal, 402, 'raised to what the macros add up to');
+  assert.equal(c.meals[1].kcal, 120, 'already consistent: left alone');
+  const d0 = applyDraft(base([]), { date: TODAY, meals: [{ name: 'Typed', kcal: 100, proteinG: 10, carbsG: 30, fatG: 10 }], activities: [], values: [] }, id);
+  assert.equal(d0.fitnessDays![TODAY].meals[0].kcal, 250, 'a typed meal is floored too');
+  const d1 = editDayItem(d0, TODAY, 'meal', d0.fitnessDays![TODAY].meals[0].id, { kcal: 50 }, id);
+  assert.equal(d1.fitnessDays![TODAY].meals[0].kcal, 250, 'and so is an edit');
+  assert.equal(dayIntake(d1, TODAY).kcal, 250, 'the day total uses the floored value');
 }
 console.log('fitness checks passed');

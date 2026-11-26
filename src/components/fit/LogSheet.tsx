@@ -10,6 +10,7 @@ import { MEAL_SLOTS, bmr, describeValueChange, slotForTime, weightOn, type Fitne
 import type { MealSlot } from '@/lib/types';
 import type { AddTarget } from './DayLog';
 import { ManualLog } from './ManualLog';
+import { AutoTextarea } from './AutoTextarea';
 
 const FORM_KEY = 'fit-log-form'; // remembers whether the user last chose the no-AI form
 
@@ -229,7 +230,8 @@ export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, o
                 <div key={`m${ver}-${i}`} className="flex items-end gap-2">
                   <Utensils className="mb-2 h-4 w-4 shrink-0 text-[var(--f-chart-a)]" aria-hidden />
                   <span className="mb-1.5 min-w-0 flex-1">
-                    <span className="block truncate text-sm font-medium">{m.name}</span>
+                    <span className="block text-sm font-medium">{m.name}</span>
+                    <span className="f-muted block text-[11px] tabular-nums">C {Math.round(m.carbsG ?? 0)} · F {Math.round(m.fatG ?? 0)} · Fibre {Math.round(m.fiberG ?? 0)} g</span>
                     <select className="f-muted mt-0.5 max-w-full bg-transparent text-xs underline decoration-dotted underline-offset-2" aria-label={`Meal for ${m.name}`}
                       value={m.slot ?? nowSlot} onChange={e => update(d => ({ ...d, meals: d.meals.map((x, j) => (j === i ? { ...x, slot: e.target.value as MealSlot } : x)) }))}>
                       {MEAL_SLOTS.map(x => <option key={x.id} value={x.id}>{x.label}</option>)}
@@ -286,7 +288,7 @@ export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, o
               aria-label={`Web search ${webSearch ? 'on' : 'off'}`} aria-pressed={webSearch} title={webSearch ? 'Web search on' : 'Web search off'} onClick={() => setWebSearch(!webSearch)}>
               <Globe className="h-5 w-5" />
             </button>
-            <textarea ref={inputRef} rows={1} className="f-input max-h-28 min-h-[2.75rem] flex-1 resize-none"
+            <AutoTextarea ref={inputRef} maxRows={6} className="min-h-[2.75rem] flex-1"
               placeholder={listening ? 'Listening…' : draft && hasItems ? 'Correct it, e.g. “make it 3 rotis”' : 'What did you eat or do?'}
               value={interim ? `${text} ${interim}`.trim() : text} onChange={e => setText(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); void send(); } }} aria-label="Message" />

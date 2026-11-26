@@ -1,58 +1,21 @@
-import { useEffect, useState } from 'react';
-import { Check, Dumbbell, Flame, Footprints, Plus, Utensils, Watch, X } from 'lucide-react';
+import { useState } from 'react';
+import { Dumbbell, Flame, Footprints, Plus, Utensils, Watch, X } from 'lucide-react';
 import type { Activity, AppData, Meal, MealSlot } from '@/lib/types';
-import { MEAL_SLOTS, dayBurn, mealsBySlot, slotBudgets } from '@/lib/fitness';
+import { MEAL_SLOTS, dayBurn, dayMacros, mealsBySlot, slotBudgets } from '@/lib/fitness';
+import type { ItemRef } from './ItemSheet';
 
 type Patch = Partial<Meal & Activity> | null;
 
-function Row({ icon, title, detail, amount, tone, editing, onEdit, onCancel, onSave, onDelete, fields }: {
-  icon: React.ReactNode; title: string; detail?: string; amount: string; tone: 'in' | 'out' | 'muted';
-  editing: boolean; onEdit: () => void; onCancel: () => void; onSave: (p: Record<string, number | string>) => void; onDelete: () => void;
-  fields: { key: string; label: string; value: number | string; type: 'number' | 'text' | 'select'; options?: { value: string; label: string }[] }[];
+function Row({ icon, title, detail, amount, tone, onOpen, onDelete }: {
+  icon: React.ReactNode; title: string; detail?: string; amount: string; tone: 'in' | 'out' | 'muted'; onOpen: () => void; onDelete: () => void;
 }) {
-  const [draft, setDraft] = useState<Record<string, string>>({});
-  useEffect(() => { if (!editing) setDraft({}); }, [editing]); // an abandoned edit must not be saved later
-  if (editing) {
-    return (
-      <li className="f-row flex-wrap">
-        {fields.map(f => f.type === 'select' ? (
-          <label key={f.key} className="flex w-36 flex-col text-xs">
-            <span className="f-muted">{f.label}</span>
-            <select className="f-input mt-0.5 !py-1.5" defaultValue={String(f.value)} onChange={e => setDraft(d => ({ ...d, [f.key]: e.target.value }))}>
-              {!f.value && <option value="">Choose…</option>}
-              {f.options?.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-            </select>
-          </label>
-        ) : (
-          <label key={f.key} className={`flex flex-col text-xs ${f.type === 'text' ? 'min-w-[9rem] flex-1' : 'w-20'}`}>
-            <span className="f-muted">{f.label}</span>
-            <input className="f-input mt-0.5 !py-1.5" type={f.type} inputMode={f.type === 'number' ? 'decimal' : undefined} step={f.type === 'number' ? 'any' : undefined}
-              defaultValue={String(f.value)} onChange={e => setDraft(d => ({ ...d, [f.key]: e.target.value }))} />
-          </label>
-        ))}
-        <button type="button" className="f-icon-btn h-11 w-11" aria-label="Save changes"
-          onClick={() => {
-            const patch: Record<string, number | string> = {};
-            for (const [k, v] of Object.entries(draft)) {
-              const isNum = fields.find(f => f.key === k)?.type === 'number';
-              if (isNum ? v.trim() !== '' && Number.isFinite(Number(v)) && Number(v) >= 0 : v.trim()) patch[k] = isNum ? Number(v) : v.trim();
-            }
-            setDraft({});
-            onSave(patch);
-          }}>
-          <Check className="h-4 w-4" />
-        </button>
-        <button type="button" className="f-icon-btn h-11 w-11" aria-label="Cancel editing" onClick={onCancel}><X className="h-4 w-4" /></button>
-      </li>
-    );
-  }
   return (
     <li className="f-row">
-      <button type="button" onClick={onEdit} className="flex min-w-0 flex-1 items-center gap-3 text-left" aria-label={`Edit ${title}`}>
+      <button type="button" onClick={onOpen} className="flex min-w-0 flex-1 items-center gap-3 text-left" aria-label={`Open ${title}`}>
         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--f-tint)]">{icon}</span>
         <span className="min-w-0">
           <span className="block truncate font-medium">{title}</span>
-          {detail && <span className="f-muted block text-xs">{detail}</span>}
+          {detail && <span className="f-muted block truncate text-xs">{detail}</span>}
         </span>
       </button>
       <span className={`shrink-0 text-sm font-semibold tabular-nums ${tone === 'in' ? '' : tone === 'out' ? 'f-good' : 'f-muted'}`}>{amount}</span>
@@ -66,16 +29,16 @@ function Row({ icon, title, detail, amount, tone, editing, onEdit, onCancel, onS
 export type AddTarget = { kind: 'meal'; slot: MealSlot } | { kind: 'workout' };
 
 /** The picked day's log in two tabs: Food (five sections with calorie budgets) and Workouts. Tap a row to edit, × to delete. */
-export function DayLog({ data, day, kcalGoal, onEdit, onClearBurn, onAdd }: {
+export function DayLog({ data, day, kcalGoal, onEdit, onOpen, onClearBurn, onAdd }: {
   data: AppData; day: string; kcalGoal?: number;
-  onEdit: (kind: 'meal' | 'activity', id: string, patch: Patch) => void; onClearBurn: () => void; onAdd: (target: AddTarget) => void;
+  onEdit: (kind: 'meal' | 'activity', id: string, patch: Patch) => void; onOpen: (item: ItemRef) => void; onClearBurn: () => void; onAdd: (target: AddTarget) => void;
 }) {
   const [tab, setTab] = useState<'food' | 'workouts'>('food');
-  const [editing, setEditing] = useState<string | null>(null);
   const fd = data.fitnessDays?.[day];
   const burn = dayBurn(data, day);
   const meals = fd?.meals ?? [];
-  const kcalIn = meals.reduce((s, m) => s + m.kcal, 0);
+  const totals = dayMacros(data, day); // same total as the calorie ring
+  const kcalIn = totals.kcal;
   const groups = mealsBySlot(meals);
   const budgets = slotBudgets(kcalGoal);
   const fitbit = data.fitbitWorkouts?.[day] ?? [];
@@ -83,14 +46,15 @@ export function DayLog({ data, day, kcalGoal, onEdit, onClearBurn, onAdd }: {
   const sum = (ms: Meal[]) => ms.reduce((s, m) => s + m.kcal, 0);
   const k = (n: number) => Math.round(n).toLocaleString('en-US');
 
+  const g = (n?: number) => Math.round((n ?? 0) * 10) / 10;
+  const macroLine = (m: Meal) => [`P ${g(m.proteinG)}`, m.carbsG ? `C ${g(m.carbsG)}` : '', m.fatG ? `F ${g(m.fatG)}` : '', m.fiberG ? `Fibre ${g(m.fiberG)}` : ''].filter(Boolean).join(' · ') + ' g';
   const mealRow = (m: Meal) => (
     <Row key={m.id} icon={<Utensils className="h-4 w-4 text-[var(--f-chart-a)]" />} title={m.name}
-      detail={m.proteinG ? `${Math.round(m.proteinG)} g protein` : undefined} amount={`+${Math.round(m.kcal)}`} tone="in"
-      editing={editing === m.id} onEdit={() => setEditing(m.id)} onCancel={() => setEditing(null)} onDelete={() => onEdit('meal', m.id, null)}
-      onSave={p => { onEdit('meal', m.id, p as Patch); setEditing(null); }}
-      fields={[{ key: 'name', label: 'Item', value: m.name, type: 'text' }, { key: 'kcal', label: 'kcal', value: m.kcal, type: 'number' }, { key: 'proteinG', label: 'Protein g', value: m.proteinG, type: 'number' },
-        { key: 'slot', label: 'Meal', value: m.slot ?? '', type: 'select', options: MEAL_SLOTS.map(x => ({ value: x.id, label: x.label })) }]} />
+      detail={macroLine(m)} amount={`+${Math.round(m.kcal)}`} tone="in"
+      onOpen={() => onOpen({ kind: 'meal', id: m.id })} onDelete={() => onEdit('meal', m.id, null)} />
   );
+  const goal = kcalGoal ?? 0;
+  const left = goal - kcalIn;
 
   return (
     <section className="f-card overflow-hidden" aria-label="Food and workout log">
@@ -108,7 +72,30 @@ export function DayLog({ data, day, kcalGoal, onEdit, onClearBurn, onAdd }: {
 
       {tab === 'food' ? (
         <div className="mt-2 pb-2" role="tabpanel" aria-label="Food">
-          {!budgets && <p className="f-muted px-4 pb-1 text-xs">Set a calorie target in Targets &amp; profile to see a budget for each meal.</p>}
+          <div className="px-4 pb-3">
+            <div className="flex items-baseline justify-between gap-2">
+              <span className="text-sm font-semibold">Today&apos;s calories</span>
+              <span className="text-sm tabular-nums"><strong>{k(kcalIn)}</strong>{goal ? <span className="f-muted"> / {k(goal)} kcal</span> : <span className="f-muted"> kcal</span>}</span>
+            </div>
+            {goal > 0 && (
+              <>
+                <div className="mt-1.5 h-2.5 overflow-hidden rounded-full bg-[var(--f-tint)]" role="progressbar" aria-label="Calories eaten against today's target"
+                  aria-valuemin={0} aria-valuemax={goal} aria-valuenow={kcalIn}>
+                  <div className="h-full rounded-full" style={{ width: `${Math.min(100, (kcalIn / goal) * 100)}%`, background: left < 0 ? 'var(--f-coral)' : 'var(--f-chart-a)' }} />
+                </div>
+                <p className={`mt-1 text-xs ${left < 0 ? 'f-bad font-semibold' : 'f-muted'}`}>{left >= 0 ? `${k(left)} kcal left` : `${k(-left)} kcal over`}</p>
+              </>
+            )}
+            <div className="mt-2 grid grid-cols-4 gap-2 text-center">
+              {([['Protein', totals.proteinG], ['Carbs', totals.carbsG], ['Fat', totals.fatG], ['Fibre', totals.fiberG]] as const).map(([label, v]) => (
+                <div key={label} className="rounded-xl bg-[var(--f-tint)] px-1 py-1.5">
+                  <div className="text-sm font-semibold tabular-nums">{g(v)} g</div>
+                  <div className="f-muted text-[11px]">{label}</div>
+                </div>
+              ))}
+            </div>
+            {!budgets && <p className="f-muted mt-2 text-xs">Set a calorie target in Targets &amp; profile to see a budget for each meal.</p>}
+          </div>
           {MEAL_SLOTS.map(({ id, label }) => {
             const eaten = sum(groups[id]);
             const budget = budgets?.[id];
@@ -135,6 +122,9 @@ export function DayLog({ data, day, kcalGoal, onEdit, onClearBurn, onAdd }: {
               </div>
             );
           })}
+          {!meals.length && kcalIn > 0 && (
+            <p className="f-muted border-t border-[var(--f-line)] px-4 py-3 text-xs">{k(kcalIn)} kcal was logged as a day total, without individual meals.</p>
+          )}
           {groups.other.length > 0 && (
             <div className="border-t border-[var(--f-line)]">
               <div className="flex items-baseline justify-between px-4 pb-1 pt-3">
@@ -167,9 +157,7 @@ export function DayLog({ data, day, kcalGoal, onEdit, onClearBurn, onAdd }: {
                 <Row key={a.id} icon={a.stepBased ? <Footprints className="h-4 w-4 text-[var(--f-chart-b)]" /> : <Dumbbell className="h-4 w-4 text-[var(--f-chart-b)]" />}
                   title={a.name} detail={`${Math.round(a.minutes)} min${counted ? '' : burn.source === 'fitbit' ? ' · in your Fitbit burn' : ' · counted in your steps'}`}
                   amount={counted ? `−${Math.round(a.kcal)}` : `${Math.round(a.kcal)}`} tone={counted ? 'out' : 'muted'}
-                  editing={editing === a.id} onEdit={() => setEditing(a.id)} onCancel={() => setEditing(null)} onDelete={() => onEdit('activity', a.id, null)}
-                  onSave={p => { onEdit('activity', a.id, p as Patch); setEditing(null); }}
-                  fields={[{ key: 'name', label: 'Activity', value: a.name, type: 'text' }, { key: 'minutes', label: 'Minutes', value: a.minutes, type: 'number' }, { key: 'kcal', label: 'kcal', value: a.kcal, type: 'number' }]} />
+                  onOpen={() => onOpen({ kind: 'activity', id: a.id })} onDelete={() => onEdit('activity', a.id, null)} />
               ))}
               {fd?.burnBase != null && (
                 <li className="f-row">

@@ -262,7 +262,7 @@ export interface FitnessProfile { sex: 'male' | 'female'; birthYear: number; hei
 export interface FitbitWorkout { id: string; name: string; type: string; minutes: number; kcal: number; distanceKm?: number; avgHr?: number; start: string }
 export type MealSlot = 'breakfast' | 'morningSnack' | 'lunch' | 'eveningSnack' | 'dinner';
 /** slot: which section of the day it belongs to; older meals have none (shown under Other). */
-export interface Meal { id: string; name: string; kcal: number; proteinG: number; slot?: MealSlot }
-export interface Activity { id: string; name: string; minutes: number; kcal: number; stepBased: boolean }
+export interface Meal { id: string; name: string; kcal: number; proteinG: number; carbsG?: number; fatG?: number; fiberG?: number; slot?: MealSlot; notes?: string }
+export interface Activity { id: string; name: string; minutes: number; kcal: number; stepBased: boolean; notes?: string }
 /** burnBase: a stored day total carried over when workouts are added to that day. */
 export interface FitnessDay { meals: Meal[]; activities: Activity[]; burnBase?: number }

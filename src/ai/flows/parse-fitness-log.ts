@@ -33,6 +33,9 @@ const OutputSchema = z.object({
     name: z.string().describe('Food item or meal, with portion, e.g. "2 rotis"'),
     kcal: z.number().int().describe('Estimated calories'),
     proteinG: z.number().describe('Estimated protein in grams'),
+    carbsG: z.number().optional().describe('Estimated carbohydrates in grams'),
+    fatG: z.number().optional().describe('Estimated fat in grams'),
+    fiberG: z.number().optional().describe('Estimated dietary fibre in grams'),
     slot: z.string().optional().describe('One of: breakfast, morningSnack, lunch, eveningSnack, dinner'),
   })).default([]),
   activities: z.array(z.object({
@@ -68,12 +71,13 @@ Web search results for this message (use them for branded, packaged or restauran
 {{/if}}
 
 Rules:
-1. Food and drinks go in "meals", one entry per item or dish, with realistic kcal and protein for the stated or visible portion. Be specific (plain roti vs butter naan).
+1. Food and drinks go in "meals", one entry per item or dish, with realistic kcal, protein, carbs, fat and fibre for the stated or visible portion. Be specific (plain roti vs butter naan). Keep them consistent: protein×4 + carbs×4 + fat×9 should be close to kcal.
 2. Exercise goes in "activities" with minutes and ACTIVE kcal estimated for the user's weight (exclude resting burn). Walking, running, jogging and hiking have "stepBased": true; everything else false.
 3. From a workout screenshot use the active calories. If only total calories are shown, active ≈ total − {{{bmrText}}} × minutes / 1440.
 4. A bare number for one of the trackers (e.g. "94.1 kg", "110g protein", "12k steps", "ate 2100 calories", "burned 2600") goes in "values" with that tracker's id. Descriptions of food are never "values".
 5. "date" is {{{dayYmd}}} unless the message names another day ("yesterday" is relative to {{{todayYmd}}}).
 6. Do not invent anything the user didn't mention or show. Empty lists are fine.
+6b. ACCURACY, NEVER UNDER-COUNT: this is a weight-loss log, so a low estimate does real harm. Count what is usually hidden: cooking oil or ghee in Indian dishes (sabzi, dal tadka, curries, parathas: about 1 tsp ≈ 40 kcal per serving, restaurant food about double), ghee or butter on rotis, sugar and milk in chai or coffee, chutneys, raita, papad, pickles and sides. If the portion isn't given, assume a full typical Indian serving (a katori is about 150 g, a restaurant plate is larger). Restaurant, takeaway and street food: add about 30% over the home-cooked version. When unsure between two estimates, use the higher one. Never give a meal fewer kcal than protein×4 + carbs×4 + fat×9.
 7. "reply": one short friendly line, e.g. "2 rotis and dal (~450 kcal) plus a 30 min jog (~320 kcal)."
 8. If web search results are given and match an item, use their numbers for the stated quantity and mention it in "reply" (e.g. "per Yoga Bar's label"). Otherwise estimate as usual.
 9. No links, URLs or citation marks anywhere in the JSON.

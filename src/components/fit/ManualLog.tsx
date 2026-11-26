@@ -39,7 +39,7 @@ export function ManualLog({ data, day, onSave }: { data: AppData; day: string; o
   };
   const input = (key: 'name' | 'a' | 'b', placeholder: string, numeric = true) => (
     <input className="f-input" value={f[key]} placeholder={placeholder} onChange={e => set({ [key]: e.target.value })}
-      {...(numeric ? { type: 'number', inputMode: 'decimal' as const, min: 0 } : { type: 'text' })} />
+      {...(numeric ? { type: 'number', inputMode: 'decimal' as const, min: 0, step: 'any' } : { type: 'text' })} />
   );
 
   return (

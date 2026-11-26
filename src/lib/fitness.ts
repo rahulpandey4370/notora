@@ -42,7 +42,12 @@ const isAuto = (id: string) => id.startsWith('auto-');
 /** A non-derived, non-zero value (an older AI or hand-typed total). */
 const storedOn = (t: LogTracker | undefined, ymd: string) => {
   const e = entryOn(t, ymd);
-  return e && !isAuto(e.id) && e.value > 0 ? e.value : undefined;
+  return e && !isAuto(e.id) && !e.id.startsWith('fitbit-') && e.value > 0 ? e.value : undefined;
+};
+/** Fitbit's measured burn for the day (fitbit-burned-<date>). */
+const fitbitOn = (t: LogTracker | undefined, ymd: string) => {
+  const e = entryOn(t, ymd);
+  return e?.id.startsWith('fitbit-') && e.value > 0 ? e.value : undefined;
 };
 
 // ---------------------------------------------------------------- weight
@@ -121,23 +126,25 @@ export function bmr(p: FitnessProfile, kg: number, ymd: string): number {
 }
 
 export type BurnInfo = {
-  total: number | null; base: number | null; source: 'stored' | 'computed' | 'none';
+  total: number | null; base: number | null; source: 'stored' | 'fitbit' | 'computed' | 'none';
   activities: { activity: Activity; counted: boolean }[];
 };
 
 export function dayBurn(data: AppData, ymd: string): BurnInfo {
   const day = data.fitnessDays?.[ymd];
   const steps = valueOn(findTracker(data, 'steps'), ymd);
-  // Walks and runs are already in the step count when there is one.
-  const activities = (day?.activities ?? []).map(activity => ({ activity, counted: !(activity.stepBased && steps != null) }));
   let base: number | null = null;
   let source: BurnInfo['source'] = 'none';
   const stored = day?.burnBase ?? storedOn(findTracker(data, 'burned'), ymd);
+  const fitbit = fitbitOn(findTracker(data, 'burned'), ymd);
   if (stored != null) { base = stored; source = 'stored'; }
+  else if (fitbit != null) { base = fitbit; source = 'fitbit'; }
   else if (data.fitnessProfile) {
     const kg = weightOn(data, ymd);
     if (kg) { base = bmr(data.fitnessProfile, kg, ymd) + (steps ?? 0) * STEP_KCAL_PER_KG * kg; source = 'computed'; }
   }
+  // Fitbit's burn already has every workout in it; otherwise walks and runs are in the step count when there is one.
+  const activities = (day?.activities ?? []).map(activity => ({ activity, counted: source !== 'fitbit' && !(activity.stepBased && steps != null) }));
   const extra = activities.reduce((s, a) => s + (a.counted ? a.activity.kcal : 0), 0);
   return { total: base == null ? null : base + extra, base, source, activities };
 }
@@ -166,7 +173,7 @@ export function describeValueChange(data: AppData, draft: FitnessDraft, v: Fitne
   if (t === findTracker(data, 'burned')) {
     const b = dayBurn(data, draft.date);
     if (day?.activities.length) parts.push("replaces the day's burn, including logged workouts");
-    else if (b.total != null) parts.push(b.source === 'computed' ? `replaces your estimated ${fmt(b.total)} kcal` : `replaces ${fmt(b.total)} ${t.unit}`);
+    else if (b.total != null) parts.push(b.source === 'computed' ? `replaces your estimated ${fmt(b.total)} kcal` : b.source === 'fitbit' ? `replaces Fitbit's ${fmt(b.total)} kcal for this day` : `replaces ${fmt(b.total)} ${t.unit}`);
   } else {
     const current = valueOn(t, draft.date);
     if (current != null) parts.push(`replaces ${fmt(current)} ${t.unit}`);
@@ -223,6 +230,7 @@ function writeBurn(w: Work) {
     if (entryOn(t, w.date)?.id.startsWith('auto-')) setEntry(t, w.date, null);
     return;
   }
+  if (w.day.burnBase == null && fitbitOn(t, w.date) != null) return; // Fitbit's burn stays the day's total
   const total = dayBurn(w.data, w.date).total;
   setEntry(t, w.date, total == null ? null : { id: `auto-burn-${w.date}`, date: w.date, value: Math.round(total) });
 }

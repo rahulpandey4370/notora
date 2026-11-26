@@ -18,7 +18,7 @@ function Row({ icon, title, detail, amount, tone, editing, onEdit, onCancel, onS
         {fields.map(f => (
           <label key={f.key} className={`flex flex-col text-xs ${f.type === 'text' ? 'min-w-[9rem] flex-1' : 'w-20'}`}>
             <span className="f-muted">{f.label}</span>
-            <input className="f-input mt-0.5 !py-1.5" type={f.type} inputMode={f.type === 'number' ? 'decimal' : undefined}
+            <input className="f-input mt-0.5 !py-1.5" type={f.type} inputMode={f.type === 'number' ? 'decimal' : undefined} step={f.type === 'number' ? 'any' : undefined}
               defaultValue={String(f.value)} onChange={e => setDraft(d => ({ ...d, [f.key]: e.target.value }))} />
           </label>
         ))}
@@ -84,7 +84,7 @@ export function DayLog({ data, day, onEdit, onClearBurn }: {
           ))}
           {burn.activities.map(({ activity: a, counted }) => (
             <Row key={a.id} icon={a.stepBased ? <Footprints className="h-4 w-4 text-[var(--f-chart-b)]" /> : <Dumbbell className="h-4 w-4 text-[var(--f-chart-b)]" />}
-              title={a.name} detail={`${Math.round(a.minutes)} min${counted ? '' : ' · counted in your steps'}`}
+              title={a.name} detail={`${Math.round(a.minutes)} min${counted ? '' : burn.source === 'fitbit' ? ' · in your Fitbit burn' : ' · counted in your steps'}`}
               amount={counted ? `−${Math.round(a.kcal)}` : `${Math.round(a.kcal)}`} tone={counted ? 'out' : 'muted'}
               editing={editing === a.id} onEdit={() => setEditing(a.id)} onCancel={() => setEditing(null)} onDelete={() => onEdit('activity', a.id, null)}
               onSave={p => { onEdit('activity', a.id, p as Patch); setEditing(null); }}

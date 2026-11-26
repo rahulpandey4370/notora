@@ -232,4 +232,20 @@ const bmr80 = bmr(profile, 80, TODAY);
   assert.equal(undone.fitnessDays?.[TODAY], undefined);
 }
 
+// Fitbit's measured burn is the day's burn; logged workouts are already in it.
+{
+  const fit = tracker('Calories Burned', 'kcal', [[TODAY, 3100, `fitbit-burned-${TODAY}`]], { healthMetric: 'burned' });
+  const d0 = base([tracker('Weight', 'kg', [[TODAY, 95]]), tracker('Steps', 'steps', [[TODAY, 8000]]), fit], { fitnessProfile: profile });
+  const b0 = dayBurn(d0, TODAY);
+  assert.equal(b0.total, 3100);
+  assert.equal(b0.source, 'fitbit');
+  const d1 = applyDraft(d0, { date: TODAY, meals: [], activities: [{ name: 'Gym', minutes: 45, kcal: 300, stepBased: false }], values: [] }, id);
+  const b1 = dayBurn(d1, TODAY);
+  assert.equal(b1.total, 3100, 'a workout is not added on top of the Fitbit burn');
+  assert.equal(b1.activities[0].counted, false);
+  assert.equal(entry(d1, 'Calories Burned', TODAY)!.id, `fitbit-burned-${TODAY}`, 'the Fitbit entry is kept');
+  assert.equal(d1.fitnessDays![TODAY].burnBase, undefined, 'the Fitbit value is not turned into a typed base');
+  const d2 = applyDraft(d0, { date: TODAY, meals: [], activities: [], values: [{ trackerId: 'Calories Burned', value: 2500 }] }, id);
+  assert.equal(dayBurn(d2, TODAY).total, 2500, 'a typed burn total still wins');
+}
 console.log('fitness checks passed');

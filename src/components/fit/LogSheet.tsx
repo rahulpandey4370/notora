@@ -38,7 +38,7 @@ function NumField({ label, value, onChange, width = 'w-16' }: { label: string; v
   return (
     <label className={cn('flex flex-col text-[11px]', width)}>
       <span className="f-muted">{label}</span>
-      <input className="f-input mt-0.5 !px-2 !py-1 text-sm tabular-nums" type="number" inputMode="decimal" min={0}
+      <input className="f-input mt-0.5 !px-2 !py-1 text-sm tabular-nums" type="number" inputMode="decimal" min={0} step="any"
         defaultValue={value} onChange={e => { const v = e.target.value.trim(); const n = Number(v); if (v !== "" && Number.isFinite(n) && n >= 0) onChange(n); }} />
     </label>
   );

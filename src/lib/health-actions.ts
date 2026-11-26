@@ -24,7 +24,7 @@ export async function getHealthStatus(): Promise<HealthStatus> {
 export async function syncHealthNow(): Promise<{ ok: boolean; message: string }> {
   const username = await requireUser();
   try {
-    const { days, errors } = await syncHealth(username, 7);
+    const { days, errors } = await syncHealth(username, 30);
     if (errors.length) return { ok: false, message: `Synced ${days} days with problems: ${errors.join(' | ').slice(0, 300)}` };
     return { ok: true, message: `Synced ${days} day${days === 1 ? '' : 's'} from Fitbit.` };
   } catch (e: any) {

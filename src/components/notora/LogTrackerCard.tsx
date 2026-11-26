@@ -68,7 +68,7 @@ const trackersWhereDecreaseIsGood = ['Weight', 'Daily Calorie Intake'];
 export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTrackerChange }: LogTrackerCardProps) {
     const [aiInsight, setAiInsight] = useState<AiInsight | null>(null);
     const [loadingInsight, setLoadingInsight] = useState(false);
-    const [showTrendLine, setShowTrendLine] = useState(false);
+    const [showTrendLine, setShowTrendLine] = useState(true);
     const [show7dTotal, setShow7dTotal] = useState(false);
     const [show30dTotal, setShow30dTotal] = useState(false);
     const [showThisWeekTotal, setShowThisWeekTotal] = useState(false);

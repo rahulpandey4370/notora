@@ -5,7 +5,7 @@
 // this module (OAuth refresh token stored in notora.health_connections) ->
 // notora.health_daily -> merged into log trackers on load.
 import { getSupabase } from '@/lib/supabase';
-import { combineDays, parseRestingHr, parseSleep, parseStepsRollup, type HealthDay } from '@/lib/health-merge';
+import { combineDays, parseDailyList, parseRestingHr, parseRollup, parseSleep, parseStepsRollup, parseWeight, EXTRA_HEALTH_COLUMNS, type HealthDay } from '@/lib/health-merge';
 
 const API = 'https://health.googleapis.com/v4/users/me';
 export const HEALTH_SCOPES = [
@@ -136,7 +136,26 @@ export async function syncHealth(username: string, days = 7): Promise<{ days: nu
     try { return await f(); } catch (e: any) { errors.push(e.message); return []; }
   };
 
-  const [steps, sleep, rhr] = await Promise.all([
+  // dailyRollUp ranges: total-calories allows 14 days per call, the others 90.
+  const rollup = async (type: string, kind: 'calories' | 'distance' | 'azm', maxDays: number) => {
+    const out: HealthDay[] = [];
+    for (let from = start.getTime(); from < end.getTime() + 86400_000; from += maxDays * 86400_000) {
+      const a = new Date(from).toISOString().slice(0, 10);
+      const b = new Date(Math.min(from + maxDays * 86400_000, end.getTime() + 86400_000)).toISOString().slice(0, 10);
+      if (a >= b) break;
+      out.push(...parseRollup(await api(token, `/dataTypes/${type}/dataPoints:dailyRollUp`, {
+        method: 'POST',
+        body: JSON.stringify({ range: { start: { date: ymdParts(a), time: { hours: 0 } }, end: { date: ymdParts(b), time: { hours: 0 } } }, windowSizeDays: 1 }),
+      }), kind));
+    }
+    return out;
+  };
+  const daily = async (type: string, field: string, kind: 'hrv' | 'spo2' | 'breaths') =>
+    parseDailyList(await api(token, `/dataTypes/${type}/dataPoints?filter=${encodeURIComponent(`${field}.date >= "${startYmd}"`)}`), kind);
+  // Weigh-ins are sparse, so always look back a year.
+  const weightSince = new Date(end.getTime() - Math.max(days, 365) * 86400_000).toISOString().slice(0, 10);
+
+  const [steps, sleep, rhr, weight, kcal, distance, azm, hrv, spo2, breaths] = await Promise.all([
     attempt(async () => parseStepsRollup(await api(token, '/dataTypes/steps/dataPoints:dailyRollUp', {
       method: 'POST',
       body: JSON.stringify({
@@ -159,25 +178,45 @@ export async function syncHealth(username: string, days = 7): Promise<{ days: nu
     }),
     attempt(async () => parseRestingHr(await api(token,
       `/dataTypes/daily-resting-heart-rate/dataPoints?filter=${encodeURIComponent(`daily_resting_heart_rate.date >= "${startYmd}"`)}`))),
+    attempt(async () => parseWeight(await api(token, `/dataTypes/weight/dataPoints?filter=${encodeURIComponent(`weight.sample_time.civil_time >= "${weightSince}"`)}`))),
+    attempt(() => rollup('total-calories', 'calories', 14)),
+    attempt(() => rollup('distance', 'distance', 90)),
+    attempt(() => rollup('active-zone-minutes', 'azm', 90)),
+    attempt(() => daily('daily-heart-rate-variability', 'daily_heart_rate_variability', 'hrv')),
+    attempt(() => daily('daily-oxygen-saturation', 'daily_oxygen_saturation', 'spo2')),
+    attempt(() => daily('daily-respiratory-rate', 'daily_respiratory_rate', 'breaths')),
   ]);
 
-  const rows = combineDays(steps, sleep, rhr).map(d => ({ ...d, username, updated_at: new Date().toISOString() }));
+  const fresh = combineDays(steps, sleep, rhr, weight, kcal, distance, azm, hrv, spo2, breaths);
   const supabase = getSupabase();
-  if (rows.length) {
-    const { error } = await supabase.from('health_daily').upsert(rows, { onConflict: 'username,date' });
+  if (fresh.length) {
+    // A bulk upsert sets every column it isn't given to null, so start from what's stored:
+    // a weigh-in from months ago must not wipe that day's steps.
+    const { data: stored } = await supabase.from('health_daily').select('*').eq('username', username).in('date', fresh.map(d => d.date));
+    const old = new Map((stored ?? []).map((r: any) => [String(r.date), r]));
+    const now = new Date().toISOString();
+    const rows = fresh.map(d => ({ ...old.get(d.date), ...d, username, updated_at: now }));
+    let { error } = await supabase.from('health_daily').upsert(rows, { onConflict: 'username,date' });
+    if (error && EXTRA_HEALTH_COLUMNS.some(c => error!.message.includes(c))) {
+      // The newer columns aren't there yet: keep syncing the original three.
+      const basic = rows.map(r => Object.fromEntries(Object.entries(r).filter(([k]) => !(EXTRA_HEALTH_COLUMNS as readonly string[]).includes(k))));
+      ({ error } = await supabase.from('health_daily').upsert(basic, { onConflict: 'username,date' }));
+      errors.push('Weight, calories and the other new metrics need supabase/notora-v3-health.sql to be run once.');
+    }
     if (error) errors.push(`Saving: ${error.message}`);
   }
   await supabase.from('health_connections')
     .update({ last_sync_at: new Date().toISOString(), last_error: errors.length ? errors.join(' | ').slice(0, 500) : null })
     .eq('username', username);
-  return { days: rows.length, errors };
+  return { days: fresh.length, errors };
 }
 
 /** Recent synced days for merging into trackers. Empty if the table isn't set up yet. */
-export async function recentHealthDays(username: string, days = 60): Promise<HealthDay[]> {
+export async function recentHealthDays(username: string, days = 365): Promise<HealthDay[]> {
   const since = new Date(Date.now() - days * 86400_000).toISOString().slice(0, 10);
-  const { data, error } = await getSupabase()
-    .from('health_daily').select('date, steps, sleep_minutes, resting_hr').eq('username', username).gte('date', since);
+  const q = (cols: string) => getSupabase().from('health_daily').select(cols).eq('username', username).gte('date', since);
+  let { data, error } = await q(['date, steps, sleep_minutes, resting_hr', ...EXTRA_HEALTH_COLUMNS].join(', '));
+  if (error) ({ data, error } = await q('date, steps, sleep_minutes, resting_hr')); // newer columns not added yet
   if (error) return []; // e.g. migration not run yet: health is optional
-  return data ?? [];
+  return (data ?? []) as unknown as HealthDay[];
 }

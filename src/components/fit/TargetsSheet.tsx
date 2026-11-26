@@ -49,7 +49,7 @@ export function TargetsSheet({ open, onOpenChange, data, today, onSave }: {
     <label className="flex flex-col gap-1 text-sm">
       <span className="font-medium">{label}</span>
       <span className="flex items-center gap-2">
-        <input className="f-input" type="number" inputMode="decimal" min={0} value={f?.[key] ?? ''} onChange={e => setF(x => x && { ...x, [key]: e.target.value })} />
+        <input className="f-input" type="number" inputMode="decimal" min={0} step="any" value={f?.[key] ?? ''} onChange={e => setF(x => x && { ...x, [key]: e.target.value })} />
         <span className="f-muted w-12 text-xs">{unit}</span>
       </span>
       {hint && <span className="f-muted text-xs">{hint}</span>}

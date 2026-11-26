@@ -31,7 +31,10 @@ export function TrackerTiles({ data, today, onOpen, onManage }: { data: AppData;
     // The 7 full days before today vs the 7 before those: a half-logged today would skew it.
     const thisWeek = mean(vals.slice(7, 14)), lastWeek = mean(vals.slice(0, 7));
     const change = thisWeek != null && lastWeek ? (thisWeek - lastWeek) / lastWeek : null;
-    return { t, s, latest, change, stale };
+    // Too few points in 15 days for a line (e.g. weekly weigh-ins): draw the last 15 entries instead.
+    const spark = s.filter(p => p.v != null).length >= 2 ? s
+      : [...t.logs].filter(l => l.value).sort((a, b) => a.date.localeCompare(b.date)).slice(-15).map(l => ({ d: l.date, v: l.value }));
+    return { t, s: spark, latest, change, stale };
   }), [data, today]);
 
   return (

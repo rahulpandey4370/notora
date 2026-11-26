@@ -47,7 +47,7 @@ export function ManageSheet({ open, onOpenChange, data, onDataChange, showcase }
               </label>
               <label className="flex w-24 flex-col text-xs">
                 <span className="f-muted">Goal</span>
-                <input className="f-input mt-0.5 !py-1.5" type="number" inputMode="decimal" defaultValue={t.goal ?? ''}
+                <input className="f-input mt-0.5 !py-1.5" type="number" inputMode="decimal" step="any" defaultValue={t.goal ?? ''}
                   onBlur={e => { const v = e.target.value.trim(); const n = Number(v); const next = v === '' ? undefined : Number.isFinite(n) ? n : t.goal; if (next !== t.goal) patch(t.id, { goal: next }); }} />
               </label>
               <AlertDialog>
@@ -74,7 +74,7 @@ export function ManageSheet({ open, onOpenChange, data, onDataChange, showcase }
           <div className="flex flex-wrap gap-2">
             <input className="f-input min-w-[9rem] flex-1" placeholder="Name, e.g. Water" value={name} onChange={e => setName(e.target.value)} aria-label="Tracker name" />
             <input className="f-input w-24" placeholder="Unit, e.g. L" value={unit} onChange={e => setUnit(e.target.value)} aria-label="Unit" />
-            <input className="f-input w-24" placeholder="Goal" type="number" inputMode="decimal" value={goal} onChange={e => setGoal(e.target.value)} aria-label="Goal (optional)" />
+            <input className="f-input w-24" placeholder="Goal" type="number" inputMode="decimal" step="any" value={goal} onChange={e => setGoal(e.target.value)} aria-label="Goal (optional)" />
           </div>
           <button type="button" className="f-pill w-full" disabled={!name.trim() || !unit.trim()} onClick={add}><Plus className="h-4 w-4" aria-hidden />Add tracker</button>
         </div>

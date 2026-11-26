@@ -4,7 +4,7 @@ import type { AppData, LogTracker } from '@/lib/types';
 import {
   applyDraft, bmr, dayBurn, dayIntake, describeValueChange, editDayItem, goalEta, loggingStreak,
   clearBurnBase, sanitizeDraft, setTargets, suggestTargets, trendSeries, weeklyRate, stepsStreak, type TrendPoint,
-  MEAL_SLOTS, slotBudgets, slotForTime, mealsBySlot, dayMacros,
+  MEAL_SLOTS, slotBudgets, slotForTime, mealsBySlot, dayMacros, applyLogEdits,
 } from './fitness';
 
 const TODAY = '2026-11-26';
@@ -315,5 +315,29 @@ const bmr80 = bmr(profile, 80, TODAY);
   const d1 = editDayItem(d0, TODAY, 'meal', d0.fitnessDays![TODAY].meals[0].id, { kcal: 50 }, id);
   assert.equal(d1.fitnessDays![TODAY].meals[0].kcal, 250, 'and so is an edit');
   assert.equal(dayIntake(d1, TODAY).kcal, 250, 'the day total uses the floored value');
+}
+// Edits to already-logged meals from the chat ("lunch was 2 bowls", "everything had ghee", "delete the biscuits").
+{
+  const d0 = applyDraft(base([]), { date: TODAY, meals: [
+    { name: 'Poha', kcal: 300, proteinG: 8, carbsG: 50, fatG: 7, slot: 'breakfast' },
+    { name: 'Chai', kcal: 90, proteinG: 3, carbsG: 12, fatG: 3, slot: 'eveningSnack' },
+    { name: 'Biscuits', kcal: 120, proteinG: 2, carbsG: 18, fatG: 4, slot: 'eveningSnack' },
+    { name: 'Rajma chawal', kcal: 450, proteinG: 15, carbsG: 70, fatG: 10, slot: 'lunch' },
+  ], activities: [], values: [] }, id);
+  const meals = d0.fitnessDays![TODAY].meals;
+  const idOf = (n: string) => meals.find(m => m.name === n)!.id;
+  const d1 = applyLogEdits(d0, TODAY, [
+    { id: idOf('Rajma chawal'), patch: { name: 'Rajma chawal, 2 bowls', kcal: 900, proteinG: 30, carbsG: 140, fatG: 20 } },
+    { id: idOf('Chai'), patch: { kcal: 40, carbsG: 0 } },         // macros say 3*4+3*9 = 39: kept at 40
+    { id: idOf('Poha'), patch: { fatG: 17 } },                     // macros now 8*4+50*4+17*9 = 385: floored up
+    { id: idOf('Biscuits'), delete: true },
+  ], id);
+  const after = d1.fitnessDays![TODAY].meals;
+  assert.deepEqual(after.map(m => `${m.name}:${m.kcal}`), ['Poha:385', 'Chai:40', 'Rajma chawal, 2 bowls:900'], 'edited in place, order kept, biscuits gone');
+  assert.equal(after[0].id, idOf('Poha'), 'ids kept, so nothing else moves');
+  assert.equal(after[0].slot, 'breakfast', 'fields not mentioned are untouched');
+  assert.equal(dayIntake(d1, TODAY).kcal, 1325, 'day total updated in the same save');
+  assert.equal(dayMacros(d1, TODAY).kcal, 1325);
+  assert.equal(applyLogEdits(d0, TODAY, [{ id: 'nope', patch: { kcal: 1 } }], id).fitnessDays![TODAY].meals.length, 4, 'an unknown id changes nothing');
 }
 console.log('fitness checks passed');

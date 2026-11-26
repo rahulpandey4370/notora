@@ -6,6 +6,7 @@
 import type { ModelId } from '@/lib/types';
 import { requireUser } from '@/lib/session';
 import { runNotoraAgent } from '@/ai/adk/notora-agent';
+import type { ProposedAction } from '@/lib/agent-actions';
 
 export type ContextualChatInput = {
   history: { role: 'user' | 'model'; content: string }[];
@@ -13,7 +14,7 @@ export type ContextualChatInput = {
   pageContext: string;
   webSearch?: boolean;
 };
-export type ContextualChatOutput = { response: string; modelId?: ModelId; changed?: boolean };
+export type ContextualChatOutput = { response: string; modelId?: ModelId; pending: ProposedAction[] };
 
 export async function contextualChat(input: ContextualChatInput, modelId: ModelId): Promise<ContextualChatOutput> {
   await requireUser();

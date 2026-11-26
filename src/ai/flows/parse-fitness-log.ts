@@ -24,8 +24,13 @@ export type ParseFitnessLogInput = {
   webSearch?: boolean;
   /** The user's local time (HH:mm), to file meals under breakfast/lunch/… when the message doesn't say. */
   localTime?: string;
+  /** Meals already logged that day, numbered: the message may ask to change them ("lunch was 2 bowls", "all had ghee"). */
+  loggedMeals?: (Omit<FitnessDraft['meals'][number], never> & { index: number })[];
+  /** Pending edits from an earlier turn, when the user is correcting them. */
+  currentEdits?: LoggedMealEdit[];
 };
-export type ParseFitnessLogOutput = FitnessDraft & { reply: string; web?: 'tavily' | 'openai' };
+export type LoggedMealEdit = { index: number; delete?: boolean; name?: string; kcal?: number; proteinG?: number; carbsG?: number; fatG?: number; fiberG?: number; slot?: string };
+export type ParseFitnessLogOutput = FitnessDraft & { reply: string; web?: 'tavily' | 'openai'; edits: LoggedMealEdit[] };
 
 const OutputSchema = z.object({
   date: z.string().describe('YYYY-MM-DD the entries belong to'),
@@ -44,6 +49,12 @@ const OutputSchema = z.object({
     kcal: z.number().int().describe('Active calories burned (not including resting burn)'),
     stepBased: z.boolean().describe('true for walking, running, jogging, hiking'),
   })).default([]),
+  edits: z.array(z.object({
+    index: z.number().int().describe('index of the already-logged meal being changed'),
+    delete: z.boolean().optional().describe('true to remove that logged meal'),
+    name: z.string().optional(), kcal: z.number().optional(), proteinG: z.number().optional(), carbsG: z.number().optional(),
+    fatG: z.number().optional(), fiberG: z.number().optional(), slot: z.string().optional(),
+  })).default([]).describe('Changes to meals already logged that day; only the fields that change'),
   values: z.array(z.object({
     trackerId: z.string().describe('id from the tracker list'),
     value: z.number(),
@@ -61,6 +72,10 @@ The user's trackers (id: name, unit):
 
 The user's message: "{{{message}}}"
 {{#if image}}A photo is attached. It is either food (identify each item and estimate it) or a workout/fitness summary screenshot (read the activity, duration and calories).{{/if}}
+{{#if loggedText}}
+Meals ALREADY LOGGED for {{{dayYmd}}} (index: name | kcal | protein g | carbs g | fat g | fibre g | meal):
+{{{loggedText}}}
+{{/if}}
 {{#if draftJson}}
 The user is correcting this earlier draft. Return the FULL revised draft (keep everything they didn't change):
 {{{draftJson}}}
@@ -81,6 +96,7 @@ Rules:
 7. "reply": one short friendly line, e.g. "2 rotis and dal (~450 kcal) plus a 30 min jog (~320 kcal)."
 8. If web search results are given and match an item, use their numbers for the stated quantity and mention it in "reply" (e.g. "per Yoga Bar's label"). Otherwise estimate as usual.
 9. No links, URLs or citation marks anywhere in the JSON.
+11. EDITING LOGGED MEALS: if the message refers to meals already logged (by name, by meal like "lunch" or "breakfast", or "all"/"everything"/"today's food"), put the changes in "edits" with that meal's index and ONLY the fields that change (for a new portion, scale kcal and every macro; for "cooked in ghee/oil", raise kcal and fat; to remove one, set "delete": true). Never add a logged meal again under "meals". Leave meals the message doesn't mention out of "edits". The accuracy rules above apply to edits too.
 10. Every meal gets a "slot": breakfast, morningSnack, lunch, eveningSnack or dinner. Use what the message says ("for breakfast", "evening chai", "after dinner"); otherwise, if the day being logged is today, use the time now ({{{localTime}}}: before 10:30 breakfast, 10:30–12:30 morningSnack, 12:30–15:30 lunch, 15:30–18:30 eveningSnack, later dinner); otherwise pick the most likely meal for that food.`;
 
 export async function parseFitnessLog(input: ParseFitnessLogInput, modelId: ModelId): Promise<ParseFitnessLogOutput> {
@@ -97,7 +113,8 @@ export async function parseFitnessLog(input: ParseFitnessLogInput, modelId: Mode
       bmrText: String(Math.round(input.bmrKcal ?? 1700)),
       weightText: input.weightKg ? `${Math.round(input.weightKg)} kg` : '75 kg (assumed)',
       trackersText: input.trackers.map(t => `${t.id}: ${t.name} (${t.unit})`).join('\n') || '(none)',
-      draftJson: input.currentDraft ? JSON.stringify(input.currentDraft) : '',
+      draftJson: input.currentDraft || input.currentEdits?.length ? JSON.stringify({ ...input.currentDraft, edits: input.currentEdits ?? [] }) : '',
+      loggedText: (input.loggedMeals ?? []).map(m => `${m.index}: ${m.name} | ${Math.round(m.kcal)} | ${m.proteinG ?? 0} | ${m.carbsG ?? 0} | ${m.fatG ?? 0} | ${m.fiberG ?? 0} | ${m.slot ?? 'other'}`).join('\n'),
       webFacts: web?.text ?? '',
       localTime: input.localTime ?? 'unknown',
     },
@@ -108,5 +125,13 @@ export async function parseFitnessLog(input: ParseFitnessLogInput, modelId: Mode
   // Never trust the model's date or numbers as-is: a far-future or impossible date would be saved.
   // The slot is a free string from the model; sanitizeDraft keeps it only if it's one of the five.
   const safe = sanitizeDraft({ ...result, meals: result.meals as FitnessDraft['meals'], values: result.values.filter(v => known.has(v.trackerId)) }, input.todayYmd, input.dayYmd);
-  return { ...safe, reply: result.reply, web: web?.via };
+  // Edits must point at a real logged meal; numbers are clamped like new entries.
+  const n = (v?: number) => (typeof v === 'number' && Number.isFinite(v) && v >= 0 ? v : undefined);
+  const indexes = new Set((input.loggedMeals ?? []).map(m => m.index));
+  const edits: LoggedMealEdit[] = (result.edits ?? []).filter(e => indexes.has(e.index)).map(e => ({
+    index: e.index, ...(e.delete ? { delete: true } : {}), ...(e.name?.trim() ? { name: e.name.trim() } : {}),
+    ...Object.fromEntries((['kcal', 'proteinG', 'carbsG', 'fatG', 'fiberG'] as const).flatMap(k => (n(e[k]) == null ? [] : [[k, n(e[k])]]))),
+    ...(e.slot && ['breakfast', 'morningSnack', 'lunch', 'eveningSnack', 'dinner'].includes(e.slot) ? { slot: e.slot } : {}),
+  }));
+  return { ...safe, reply: result.reply, web: web?.via, edits };
 }

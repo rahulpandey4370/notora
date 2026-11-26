@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { UserRound } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Activity, AppData, Meal } from '@/lib/types';
-import { applyDraft, clearBurnBase, dayBurn, dayIntake, editDayItem, findTracker, loggingStreak, stepsStreak, valueOn, type FitnessDraft } from '@/lib/fitness';
+import { applyDraft, applyLogEdits, clearBurnBase, dayBurn, dayIntake, editDayItem, findTracker, loggingStreak, stepsStreak, valueOn, type FitnessDraft, type LogEdit } from '@/lib/fitness';
 import { fitSerif } from './font';
 import { Hero } from './Hero';
 import { Ring } from './Ring';
@@ -53,7 +53,7 @@ export function FitnessPage({ data, onDataChange, showcase = false }: { data: Ap
     document.addEventListener('visibilitychange', tick);
     return () => { clearInterval(id); document.removeEventListener('visibilitychange', tick); };
   }, []);
-  const [log, setLog] = useState<{ open: boolean; mode: 'type' | 'voice' | 'photo' | 'form'; preset?: AddTarget }>({ open: false, mode: 'type' });
+  const [log, setLog] = useState<{ open: boolean; mode: 'type' | 'voice' | 'photo' | 'form' | 'ai'; preset?: AddTarget }>({ open: false, mode: 'type' });
   const [targetsOpen, setTargetsOpen] = useState(false);
   const [manageOpen, setManageOpen] = useState(false);
   const [openTracker, setOpenTracker] = useState<string | null>(null);
@@ -79,7 +79,12 @@ export function FitnessPage({ data, onDataChange, showcase = false }: { data: Ap
   }, [data, day, today]);
 
   const openLog = (mode: 'type' | 'voice' | 'photo') => setLog({ open: true, mode });
-  const save = (draft: FitnessDraft) => onDataChange(applyDraft(data, draft, uuidv4));
+  const save = (draft: FitnessDraft, edits: LogEdit[] = []) => {
+    // Changes to meals already logged (for the picked day), then any new items, in one save.
+    let next = edits.length ? applyLogEdits(data, day, edits, uuidv4) : data;
+    if (draft.meals.length || draft.activities.length || draft.values.length) next = applyDraft(next, draft, uuidv4);
+    onDataChange(next);
+  };
   const edit = (kind: 'meal' | 'activity', id: string, patch: Partial<Meal & Activity> | null) => onDataChange(editDayItem(data, day, kind, id, patch, uuidv4));
   const tracker = data.logTrackers.find(t => t.id === openTracker) ?? null;
   const needsSetup = !data.fitnessProfile;
@@ -107,7 +112,7 @@ export function FitnessPage({ data, onDataChange, showcase = false }: { data: Ap
               </button>
             )}
             <DayLog data={data} day={day} kcalGoal={s.kcalGoal} onEdit={edit} onClearBurn={() => onDataChange(clearBurnBase(data, day, uuidv4))}
-              onOpen={setItem} onAdd={preset => setLog({ open: true, mode: 'form', preset })} />
+              onOpen={setItem} onAdd={preset => setLog({ open: true, mode: 'form', preset })} onAiEdit={() => setLog({ open: true, mode: 'ai' })} />
           </div>
           <div className="space-y-4">
             <WeightCard data={data} today={today} onSetGoal={() => setTargetsOpen(true)} />

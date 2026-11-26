@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Dumbbell, Flame, Footprints, Plus, Utensils, Watch, X } from 'lucide-react';
+import { Dumbbell, Flame, Footprints, Plus, Sparkles, Utensils, Watch, X } from 'lucide-react';
 import type { Activity, AppData, Meal, MealSlot } from '@/lib/types';
 import { MEAL_SLOTS, dayBurn, dayMacros, mealsBySlot, slotBudgets } from '@/lib/fitness';
 import type { ItemRef } from './ItemSheet';
@@ -29,9 +29,11 @@ function Row({ icon, title, detail, amount, tone, onOpen, onDelete }: {
 export type AddTarget = { kind: 'meal'; slot: MealSlot } | { kind: 'workout' };
 
 /** The picked day's log in two tabs: Food (five sections with calorie budgets) and Workouts. Tap a row to edit, × to delete. */
-export function DayLog({ data, day, kcalGoal, onEdit, onOpen, onClearBurn, onAdd }: {
+export function DayLog({ data, day, kcalGoal, onEdit, onOpen, onClearBurn, onAdd, onAiEdit }: {
   data: AppData; day: string; kcalGoal?: number;
   onEdit: (kind: 'meal' | 'activity', id: string, patch: Patch) => void; onOpen: (item: ItemRef) => void; onClearBurn: () => void; onAdd: (target: AddTarget) => void;
+  /** Opens the Log it chat to change logged meals in words ("lunch was 2 bowls", "all had ghee"). */
+  onAiEdit: () => void;
 }) {
   const [tab, setTab] = useState<'food' | 'workouts'>('food');
   const fd = data.fitnessDays?.[day];
@@ -94,6 +96,11 @@ export function DayLog({ data, day, kcalGoal, onEdit, onOpen, onClearBurn, onAdd
                 </div>
               ))}
             </div>
+            {meals.length > 0 && (
+              <button type="button" className="f-pill mt-3 w-full" onClick={onAiEdit}>
+                <Sparkles className="h-4 w-4" aria-hidden />Edit the food log with AI
+              </button>
+            )}
             {!budgets && <p className="f-muted mt-2 text-xs">Set a calorie target in Targets &amp; profile to see a budget for each meal.</p>}
           </div>
           {MEAL_SLOTS.map(({ id, label }) => {

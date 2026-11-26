@@ -5,8 +5,8 @@ import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/
 import { cn } from '@/lib/utils';
 import type { AppData } from '@/lib/types';
 import { useModelStore } from '@/hooks/use-model-store';
-import { parseFitnessLog } from '@/ai/flows/parse-fitness-log';
-import { MEAL_SLOTS, bmr, describeValueChange, slotForTime, weightOn, type FitnessDraft } from '@/lib/fitness';
+import { parseFitnessLog, type LoggedMealEdit } from '@/ai/flows/parse-fitness-log';
+import { MEAL_SLOTS, bmr, describeValueChange, flooredKcal, slotForTime, weightOn, type FitnessDraft, type LogEdit } from '@/lib/fitness';
 import type { MealSlot } from '@/lib/types';
 import type { AddTarget } from './DayLog';
 import { ManualLog } from './ManualLog';
@@ -50,8 +50,8 @@ function NumField({ label, value, onChange, width = 'w-16' }: { label: string; v
 
 /** "Log it": type, speak or snap → AI draft cards → Save. Nothing is written before Save. */
 export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, onSave, aiDisabled }: {
-  open: boolean; onOpenChange: (o: boolean) => void; mode: 'type' | 'voice' | 'photo' | 'form'; preset?: AddTarget;
-  data: AppData; day: string; today: string; onSave: (draft: FitnessDraft) => void; aiDisabled?: boolean;
+  open: boolean; onOpenChange: (o: boolean) => void; mode: 'type' | 'voice' | 'photo' | 'form' | 'ai'; preset?: AddTarget;
+  data: AppData; day: string; today: string; onSave: (draft: FitnessDraft, edits: LogEdit[]) => void; aiDisabled?: boolean;
 }) {
   const { selectedModel, webSearch, setWebSearch } = useModelStore();
   const [msgs, setMsgs] = useState<Msg[]>([]);
@@ -59,6 +59,8 @@ export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, o
   const [interim, setInterim] = useState('');
   const [photo, setPhoto] = useState<string | null>(null);
   const [draft, setDraft] = useState<FitnessDraft | null>(null);
+  const [edits, setEdits] = useState<LoggedMealEdit[]>([]); // changes to meals already logged that day
+  const logged = data.fitnessDays?.[day]?.meals ?? [];
   const [busy, setBusy] = useState(false);
   const [listening, setListening] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -76,9 +78,9 @@ export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, o
   useEffect(() => {
     reqRef.current++;
     if (open) {
-      setMsgs([]); setText(''); setInterim(''); setPhoto(null); setDraft(null); setSaved(false);
+      setMsgs([]); setText(''); setInterim(''); setPhoto(null); setDraft(null); setEdits([]); setSaved(false);
       let form = false;
-      try { form = mode === 'form' || (mode === 'type' && localStorage.getItem(FORM_KEY) === '1'); } catch { form = mode === 'form'; }
+      try { form = mode === 'form' || (mode === 'type' && localStorage.getItem(FORM_KEY) === '1'); } catch { form = mode === 'form'; } // 'ai' always opens the chat
       setManual(form);
       if (form) { /* the form takes focus on tap */ }
       else if (mode === 'photo') setTimeout(() => fileRef.current?.click(), 80);
@@ -151,9 +153,12 @@ export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, o
         currentDraft: draft && (draft.meals.length || draft.activities.length || draft.values.length) ? draft : undefined,
         webSearch,
         localTime: format(new Date(), 'HH:mm'),
+        loggedMeals: logged.map((m, index) => ({ index, name: m.name, kcal: m.kcal, proteinG: m.proteinG, carbsG: m.carbsG, fatG: m.fatG, fiberG: m.fiberG, slot: m.slot })),
+        currentEdits: edits.length ? edits : undefined,
       }, selectedModel);
       if (req !== reqRef.current) return;
-      const { reply, web, ...next } = r;
+      const { reply, web, edits: changed, ...next } = r;
+      setEdits(changed);
       next.meals = next.meals.map(m => (m.slot ? m : { ...m, slot: nowSlot })); // the AI couldn't tell: file it under the meal for this time of day
       setDraft(next);
       setVer(v => v + 1);
@@ -166,13 +171,18 @@ export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, o
 
   const update = (fn: (d: FitnessDraft) => FitnessDraft) => setDraft(d => (d ? fn(d) : d));
   const remove = (fn: (d: FitnessDraft) => FitnessDraft) => { update(fn); setVer(v => v + 1); };
-  const hasItems = !!draft && (draft.meals.length + draft.activities.length + draft.values.length) > 0;
+  const hasItems = edits.length > 0 || (!!draft && (draft.meals.length + draft.activities.length + draft.values.length) > 0);
   const trackerName = (id: string) => data.logTrackers.find(t => t.id === id);
   const save = () => {
-    if (!draft || !hasItems || busy) return;
-    onSave(draft);
+    if (!hasItems || busy) return;
+    const asEdits: LogEdit[] = edits.flatMap(({ index, delete: del, ...patch }) => {
+      const target = logged[index];
+      return target ? [{ id: target.id, ...(del ? { delete: true } : { patch: patch as LogEdit['patch'] }) }] : [];
+    });
+    onSave(draft ?? EMPTY(day), asEdits);
     setSaved(true);
     setDraft(EMPTY(day));
+    setEdits([]);
     setMsgs(m => [...m, { role: 'ai', text: 'Saved ✓ Anything else?' }]);
   };
   const chooseManual = (m: boolean) => {
@@ -198,7 +208,7 @@ export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, o
 
         {manual ? (
           <div className="flex-1 overflow-y-auto px-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] pt-3">
-            <ManualLog key={`${preset?.kind ?? ''}-${preset?.kind === 'meal' ? preset.slot : ''}`} data={data} day={day} onSave={onSave}
+            <ManualLog key={`${preset?.kind ?? ''}-${preset?.kind === 'meal' ? preset.slot : ''}`} data={data} day={day} onSave={d => onSave(d, [])}
               initialKind={preset?.kind ?? 'meal'} defaultSlot={preset?.kind === 'meal' ? preset.slot : nowSlot} />
           </div>
         ) : (<>
@@ -223,10 +233,33 @@ export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, o
           ))}
           {busy && <div className="f-muted flex items-center gap-2 text-sm"><Loader2 className="h-4 w-4 animate-spin" aria-hidden />Reading…</div>}
 
-          {hasItems && draft && (
+          {hasItems && (
             <div className="f-card space-y-2 p-3" aria-label="Draft to save">
-              <p className="text-xs font-semibold uppercase tracking-wide f-muted">To save{dayText}</p>
-              {draft.meals.map((m, i) => (
+              {edits.length > 0 && (
+                <div className="space-y-1.5 border-b border-[var(--f-line)] pb-2">
+                  <p className="text-xs font-semibold uppercase tracking-wide f-muted">Changes to what you logged</p>
+                  {edits.map((e, i) => {
+                    const old = logged[e.index];
+                    if (!old) return null;
+                    const next = { ...old, ...e };
+                    const kOld = Math.round(old.kcal), kNew = flooredKcal(next);
+                    return (
+                      <div key={`e${i}`} className="flex items-start gap-2 text-sm">
+                        <span className="min-w-0 flex-1">
+                          <span className={`block ${e.delete ? 'line-through f-muted' : ''}`}>{e.delete ? old.name : next.name}</span>
+                          <span className="f-muted block text-xs tabular-nums">
+                            {e.delete ? 'will be removed' : `${kOld} → ${kNew} kcal · P ${Math.round(next.proteinG)} · C ${Math.round(next.carbsG ?? 0)} · F ${Math.round(next.fatG ?? 0)} · Fibre ${Math.round(next.fiberG ?? 0)} g`}
+                          </span>
+                        </span>
+                        <button type="button" className="f-muted -mr-2 flex h-9 w-9 shrink-0 items-center justify-center" aria-label={`Don't change ${old.name}`}
+                          onClick={() => setEdits(xs => xs.filter((_, j) => j !== i))}><X className="h-4 w-4" /></button>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+              {draft && (draft.meals.length + draft.activities.length + draft.values.length) > 0 && <p className="text-xs font-semibold uppercase tracking-wide f-muted">To save{dayText}</p>}
+              {draft?.meals.map((m, i) => (
                 <div key={`m${ver}-${i}`} className="flex items-end gap-2">
                   <Utensils className="mb-2 h-4 w-4 shrink-0 text-[var(--f-chart-a)]" aria-hidden />
                   <span className="mb-1.5 min-w-0 flex-1">
@@ -243,7 +276,7 @@ export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, o
                     onClick={() => remove(d => ({ ...d, meals: d.meals.filter((_, j) => j !== i) }))}><X className="h-4 w-4" /></button>
                 </div>
               ))}
-              {draft.activities.map((a, i) => (
+              {draft?.activities.map((a, i) => (
                 <div key={`a${ver}-${i}`} className="flex items-end gap-2">
                   {a.stepBased ? <Footprints className="mb-2 h-4 w-4 shrink-0 text-[var(--f-chart-b)]" aria-hidden /> : <Dumbbell className="mb-2 h-4 w-4 shrink-0 text-[var(--f-chart-b)]" aria-hidden />}
                   <span className="mb-1.5 min-w-0 flex-1 truncate text-sm font-medium">{a.name}</span>
@@ -253,7 +286,7 @@ export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, o
                     onClick={() => remove(d => ({ ...d, activities: d.activities.filter((_, j) => j !== i) }))}><X className="h-4 w-4" /></button>
                 </div>
               ))}
-              {draft.values.map((v, i) => {
+              {draft?.values.map((v, i) => {
                 const t = trackerName(v.trackerId);
                 const note = describeValueChange(data, draft, v);
                 return (
@@ -289,7 +322,7 @@ export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, o
               <Globe className="h-5 w-5" />
             </button>
             <AutoTextarea ref={inputRef} maxRows={6} className="min-h-[2.75rem] flex-1"
-              placeholder={listening ? 'Listening…' : draft && hasItems ? 'Correct it, e.g. “make it 3 rotis”' : 'What did you eat or do?'}
+              placeholder={listening ? 'Listening…' : hasItems ? 'Correct it, e.g. “make it 3 rotis”' : logged.length ? 'What did you eat or do? Or change a logged meal, e.g. “lunch was 2 bowls”' : 'What did you eat or do?'}
               value={interim ? `${text} ${interim}`.trim() : text} onChange={e => setText(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); void send(); } }} aria-label="Message" />
             {supported && (

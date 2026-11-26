@@ -345,6 +345,23 @@ export function applyDraft(data: AppData, draft: FitnessDraft, newId: () => stri
   return finish(w);
 }
 
+export type LogEdit = { id: string; delete?: boolean; patch?: Partial<Pick<Meal, 'name' | 'kcal' | 'proteinG' | 'carbsG' | 'fatG' | 'fiberG' | 'slot'>> };
+
+/** Change or delete already-logged meals in one save (edits from the chat). Ids and order are kept; calories floored at the macros. */
+export function applyLogEdits(data: AppData, ymd: string, edits: LogEdit[], newId: () => string): AppData {
+  const w = begin(data, ymd, newId);
+  const byId = new Map(edits.map(e => [e.id, e]));
+  w.day.meals = w.day.meals.flatMap(m => {
+    const e = byId.get(m.id);
+    if (!e) return [m];
+    if (e.delete) return [];
+    const next = { ...m, ...pick(e.patch ?? {}, ['name', 'kcal', 'proteinG', 'carbsG', 'fatG', 'fiberG', 'slot']) };
+    return [{ ...next, kcal: flooredKcal(next) }];
+  });
+  writeFood(w);
+  return finish(w);
+}
+
 /** Edit or delete (patch null) one logged meal or activity, then recompute the day's totals. */
 export function editDayItem(
   data: AppData, ymd: string, kind: 'meal' | 'activity', id: string, patch: Partial<Meal & Activity> | null, newId: () => string,

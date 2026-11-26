@@ -2,13 +2,14 @@
 
 import { getSupabase } from '@/lib/supabase';
 import { requireUser } from '@/lib/session';
-import { sendPush } from '@/lib/push';
+import { isPushEndpoint, sendPush } from '@/lib/push';
 
 type SubJSON = { endpoint?: string; keys?: { p256dh?: string; auth?: string } };
 
 export async function savePushSubscription(sub: SubJSON, userAgent: string, replacesEndpoint?: string): Promise<void> {
   const username = await requireUser();
   if (!sub.endpoint || !sub.keys?.p256dh || !sub.keys?.auth) throw new Error('Invalid push subscription.');
+  if (!isPushEndpoint(sub.endpoint)) throw new Error('Unsupported push service.');
   const supabase = getSupabase();
   if (replacesEndpoint && replacesEndpoint !== sub.endpoint) {
     await supabase.from('push_subscriptions').delete().eq('endpoint', replacesEndpoint).eq('username', username);

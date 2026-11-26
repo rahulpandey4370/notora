@@ -21,6 +21,19 @@ function configure() {
   configured = true;
 }
 
+// The server POSTs to a subscription endpoint, so only accept real push
+// services (Chrome/Android, Safari/iOS, Firefox, Edge): anything else is SSRF.
+const PUSH_HOSTS = ['fcm.googleapis.com', 'push.apple.com', 'push.services.mozilla.com', 'notify.windows.com'];
+export function isPushEndpoint(endpoint: string): boolean {
+  try {
+    const u = new URL(endpoint);
+    const host = u.hostname.toLowerCase().replace(/\.$/, '');
+    return u.protocol === 'https:' && !u.port && PUSH_HOSTS.some(h => host === h || host.endsWith(`.${h}`));
+  } catch {
+    return false;
+  }
+}
+
 /** Sends to every device `username` enabled notifications on. Returns how many accepted it. */
 export async function sendPush(username: string, payload: PushPayload): Promise<number> {
   configure();
@@ -30,7 +43,7 @@ export async function sendPush(username: string, payload: PushPayload): Promise<
   if (error) throw new Error(`Could not load push subscriptions: ${error.message}`);
 
   const results = await Promise.allSettled(
-    (subs ?? []).map(s =>
+    (subs ?? []).filter(s => isPushEndpoint(s.endpoint)).map(s =>
       webpush.sendNotification(
         { endpoint: s.endpoint, keys: { p256dh: s.p256dh, auth: s.auth } },
         JSON.stringify(payload),

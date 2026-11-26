@@ -79,11 +79,12 @@ function totalsOf(rows: Row[]): UsageTotals {
 
 // ponytail: sums in JS over the raw rows (fine for tens of thousands of calls);
 // move to a SQL group-by if ai_usage grows past ~100k rows in a year.
-async function rowsBetween(from: number, to: number): Promise<Row[]> {
+async function rowsBetween(username: string, from: number, to: number): Promise<Row[]> {
   const out: Row[] = [];
   for (let off = 0; ; off += 1000) {
     const { data, error } = await getSupabase().from('ai_usage')
       .select('created_at, feature, model_key, operation, input_tokens, cached_tokens, output_tokens, reasoning_tokens, cost_usd, latency_ms, ok, error')
+      .eq('username', username)
       .gte('created_at', new Date(from).toISOString()).lte('created_at', new Date(to).toISOString())
       .order('created_at', { ascending: false }).range(off, off + 999);
     if (error) throw new Error(`Could not read usage: ${error.message}`);
@@ -95,7 +96,7 @@ async function rowsBetween(from: number, to: number): Promise<Row[]> {
   }
 }
 
-export async function getUsageReport(range: UsageRange = '30d', granularity?: Granularity): Promise<UsageReport> {
+export async function getUsageReport(username: string, range: UsageRange = '30d', granularity?: Granularity): Promise<UsageReport> {
   const now = Date.now();
   const { from, to, g: auto } = periodOf(range, now);
   const g = granularity ?? auto;
@@ -105,7 +106,7 @@ export async function getUsageReport(range: UsageRange = '30d', granularity?: Gr
   const today = startOfIstDay(now);
   const weekStart = today - ((new Date(today + IST).getUTCDay() + 6) % 7) * DAY;
 
-  const all = await rowsBetween(Math.min(prevFrom, monthStart, weekStart), Math.max(to, now));
+  const all = await rowsBetween(username, Math.min(prevFrom, monthStart, weekStart), Math.max(to, now));
   const at = (r: Row) => Date.parse(r.created_at);
   const rows = all.filter(r => at(r) >= from && at(r) <= to);
   const cost = (xs: Row[]) => xs.reduce((s, r) => s + Number(r.cost_usd ?? 0), 0);

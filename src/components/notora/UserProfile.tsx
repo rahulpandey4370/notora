@@ -24,9 +24,11 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { LogOut, User as UserIcon, Award, Bell, KeyRound, Loader2 } from 'lucide-react';
+import { LogOut, User as UserIcon, Award, Bell, KeyRound, Loader2, Gauge } from 'lucide-react';
+import Link from 'next/link';
 import type { User, UserStats } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
+import { usePushNotifications } from '@/hooks/use-push-notifications';
 
 interface UserProfileProps {
   user: User;
@@ -43,28 +45,18 @@ export default function UserProfile({ user, userStats }: UserProfileProps) {
   const [passwordChangeLoading, setPasswordChangeLoading] = useState(false);
 
 
-  const handleEnableNotifications = async () => {
-    if (!('Notification' in window) || !('serviceWorker' in navigator)) {
-      toast({
-        variant: 'destructive',
-        title: 'Unsupported Browser',
-        description: 'Your browser does not support push notifications.',
-      });
-      return;
-    }
-
-    const permission = await Notification.requestPermission();
-    if (permission === 'granted') {
-      toast({
-        title: 'Notifications Enabled!',
-        description: 'You will now receive updates from Notora.',
-      });
-    } else {
-       toast({
-        variant: 'destructive',
-        title: 'Notifications Denied',
-        description: 'You have blocked notifications. You can change this in your browser settings.',
-      });
+  const push = usePushNotifications();
+  const togglePush = async () => {
+    try {
+      if (push.status === 'on') {
+        await push.disable();
+        toast({ title: 'Notifications off on this device' });
+      } else {
+        await push.enable();
+        toast({ title: 'Notifications on', description: 'A test notification is on its way.' });
+      }
+    } catch (e: any) {
+      toast({ variant: 'destructive', title: "Couldn't change notifications", description: e?.message });
     }
   };
 
@@ -133,9 +125,19 @@ export default function UserProfile({ user, userStats }: UserProfileProps) {
             <Award className="mr-2 h-4 w-4"/>
             <span>{userStats.xp} XP Total</span>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={handleEnableNotifications}>
+        <DropdownMenuItem
+          onSelect={(e) => { e.preventDefault(); void togglePush(); }}
+          disabled={push.busy || push.status === 'loading'}
+        >
           <Bell className="mr-2 h-4 w-4" />
-          <span>Enable Notifications</span>
+          <span>
+            {push.status === 'on' ? 'Turn off notifications'
+              : push.status === 'blocked' ? 'Notifications blocked'
+              : 'Enable notifications'}
+          </span>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href="/usage"><Gauge className="mr-2 h-4 w-4" /><span>AI usage &amp; cost</span></Link>
         </DropdownMenuItem>
         <DropdownMenuItem onSelect={() => setIsPasswordDialogOpen(true)}>
             <KeyRound className="mr-2 h-4 w-4" />

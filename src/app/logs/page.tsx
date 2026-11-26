@@ -14,6 +14,8 @@ import type { Task, AppData, LogEntry } from '@/lib/types';
 import { format, startOfDay, subDays } from 'date-fns';
 import AddNewLogCard from '@/components/notora/AddNewLogCard';
 import LogStreakDisplay from '@/components/notora/LogStreakDisplay';
+import HealthConnectCard from '@/components/notora/HealthConnectCard';
+import { Suspense } from 'react';
 
 interface LogsPageProps {
   showcase?: boolean;
@@ -66,7 +68,7 @@ export default function LogsPage({ showcase = false }: LogsPageProps) {
   
   const getStepsForDate = (date: Date): number | undefined => {
     if (!data) return undefined;
-    const stepsTracker = data.logTrackers.find(t => t.name === 'Steps');
+    const stepsTracker = data.logTrackers.find(t => t.healthMetric === 'steps') ?? data.logTrackers.find(t => t.name === 'Steps');
     if (!stepsTracker) return undefined;
     const dateStr = format(startOfDay(date), 'yyyy-MM-dd');
     const log = stepsTracker.logs.find(l => l.date === dateStr);
@@ -124,6 +126,7 @@ export default function LogsPage({ showcase = false }: LogsPageProps) {
     <AppLayout data={data}>
       <div className="p-4 md:p-8 space-y-6">
         <LogStreakDisplay logTrackers={data.logTrackers || []} />
+        {!showcase && <Suspense fallback={null}><HealthConnectCard /></Suspense>}
         <AddNewLogCard data={data} onDataChange={handleDataChange} />
         <LogManager
           logTrackers={data.logTrackers || []}

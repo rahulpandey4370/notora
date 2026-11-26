@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createHash } from 'crypto';
 import { getSupabase } from '@/lib/supabase';
 import { users as defaultUsers } from '@/lib/users';
+import { createSessionToken, SESSION_COOKIE, sessionCookieOptions } from '@/lib/session';
 
 type StoredUser = {
   username: string;
@@ -59,7 +60,9 @@ export async function POST(request: Request) {
     if (inputPasswordHash === user.passwordHash) {
       // Password matches. Return user data without the password hash.
       const { passwordHash, ...userToReturn } = user;
-      return NextResponse.json(userToReturn);
+      const res = NextResponse.json(userToReturn);
+      res.cookies.set(SESSION_COOKIE, createSessionToken(user.username), sessionCookieOptions);
+      return res;
     } else {
       // Password does not match
       return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });

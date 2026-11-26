@@ -3,6 +3,7 @@
 
 import { useState } from 'react';
 import UserProfile from './UserProfile';
+import QuickFind from './QuickFind';
 import { Button } from '@/components/ui/button';
 import { Wand2, Cpu, CalendarRange } from 'lucide-react';
 import DayEndSummaryDialog from './DayEndSummaryDialog';
@@ -105,6 +106,7 @@ export default function Header({ user, tasks, userStats }: HeaderProps) {
 
         <SaveIndicator />
 
+        <QuickFind />
         <Button variant="outline" size="sm" onClick={() => setSummaryOpen(true)}>
           <Wand2 className="mr-0 md:mr-2 h-4 w-4" />
           <span className="hidden md:inline">Day End Summary</span>

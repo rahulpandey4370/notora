@@ -48,7 +48,7 @@ const customTransformStickyNoteFlow = ai.defineFlow(
     outputSchema: CustomTransformStickyNoteOutputSchema,
   },
   async (input, { context }) => {
-    const modelId = context?.modelId || 'gemini-1.5-flash-latest';
+    const modelId = context?.modelId || 'gemini-2.5-flash';
     let output;
 
     // Provider routing lives in the unified client — this flow just

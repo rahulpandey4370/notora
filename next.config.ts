@@ -15,6 +15,8 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  // Same as FinWise: Turbopack dev can't bundle @google/adk; load it from node_modules.
+  serverExternalPackages: ['@google/adk'],
   images: {
     remotePatterns: [
       {

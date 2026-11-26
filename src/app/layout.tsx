@@ -8,6 +8,10 @@ import { AppProvider } from '@/contexts/app-context';
 import ModelCatalogSync from '@/components/providers/model-catalog-sync';
 import { resolveEnabledProviders } from '@/lib/ai-providers-server';
 
+// Server actions run under the page that calls them; the ADK chat can make several
+// model and tool calls per message (FinWise's chat route allows 300s). 60s fits every Vercel plan.
+export const maxDuration = 60;
+
 export const metadata: Metadata = {
   title: 'Notora',
   description: 'Your magical productivity assistant.',

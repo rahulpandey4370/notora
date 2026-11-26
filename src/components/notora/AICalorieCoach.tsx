@@ -262,11 +262,24 @@ export default function AICalorieCoach({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      setMealImage(event.target?.result as string);
+    // Phone photos are 3-8 MB; server actions accept 1 MB (Vercel: 4.5 MB).
+    // Shrink to 1280px JPEG (~150-300 KB): plenty for the model to see the food.
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      const scale = Math.min(1, 1280 / Math.max(img.width, img.height));
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(img.width * scale);
+      canvas.height = Math.round(img.height * scale);
+      canvas.getContext('2d')!.drawImage(img, 0, 0, canvas.width, canvas.height);
+      setMealImage(canvas.toDataURL('image/jpeg', 0.8));
+      URL.revokeObjectURL(url);
     };
-    reader.readAsDataURL(file);
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      toast({ variant: 'destructive', title: "Couldn't read that photo", description: 'Try a JPEG or PNG.' });
+    };
+    img.src = url;
   };
   
   const handleAnalyzeMeal = async () => {
@@ -280,7 +293,7 @@ export default function AICalorieCoach({
     try {
         const result = await analyzeFoodCalories({
             foodDescription: mealDescription,
-            foodImage: mealImage,
+            foodImage: mealImage ?? undefined,
         }, selectedModel);
         setMealAnalysis({ output: result, image: mealImage || undefined });
     } catch(e) {

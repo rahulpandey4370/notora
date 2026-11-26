@@ -13,8 +13,11 @@
 import { AzureOpenAI, OpenAI } from 'openai';
 import Anthropic from '@anthropic-ai/sdk';
 import { z, ZodSchema } from 'zod';
+import { zodToJsonSchema } from 'zod-to-json-schema';
 import { ai } from '@/ai/genkit';
 import { resolveModel, type AIProvider } from '@/lib/model-catalog';
+import { requireUser } from '@/lib/session';
+import { tracked, usageFrom } from '@/lib/usage';
 
 // ---------------------------------------------------------------------------
 // Clients — created lazily so a missing key only breaks the provider that
@@ -84,9 +87,16 @@ const MAX_TOKENS = 16000;
  * json_object` is rejected with a 400 unless the word "json" appears in the
  * messages, and not every flow's prompt says it.
  */
-const JSON_ONLY_SUFFIX =
-  '\n\nRespond with a single valid JSON object and nothing else. ' +
-  'Do not wrap it in markdown code fences and do not add commentary.';
+/**
+ * The exact keys come from the flow's output schema: without them the model
+ * guesses field names from the prompt wording (e.g. "polished" instead of
+ * "polishedContent") and the response fails validation.
+ */
+function jsonOnlySuffix(outputSchema: ZodSchema): string {
+  const schema = JSON.stringify(zodToJsonSchema(outputSchema, { $refStrategy: 'none' }));
+  return '\n\nRespond with a single valid JSON object matching this JSON Schema, using exactly these keys, and nothing else. ' +
+    `Do not wrap it in markdown code fences and do not add commentary.\n${schema}`;
+}
 
 // ---------------------------------------------------------------------------
 // Handlebars-like template renderer (kept behaviour-identical to the original
@@ -203,21 +213,33 @@ export async function callStructuredLLM<T extends ZodSchema>(
   promptName: string,
   inputSchema?: ZodSchema
 ): Promise<z.infer<T>> {
+  // Every AI flow is a public server action that routes through here; without
+  // this, anyone could spend this app's AI credits.
+  await requireUser();
   const model = resolveModel(modelIdOrKey);
   const provider: AIProvider = model?.provider ?? inferProvider(modelIdOrKey);
   const apiModel = model?.id ?? stripProviderPrefix(modelIdOrKey);
 
+  // Every call is recorded in ai_usage (tokens, estimated cost, latency) for the Usage page.
+  const meta = { modelKey: `${provider}::${apiModel}`, operation: 'structured' as const, feature: featureOf(promptName) };
   switch (provider) {
     case 'anthropic':
-      return callAnthropic(apiModel, promptTemplate, input, outputSchema);
+      return callAnthropic(apiModel, promptTemplate, input, outputSchema, meta);
     case 'openai':
-      return callOpenAICompatible(getOpenAIClient(), apiModel, promptTemplate, input, outputSchema);
+      return callOpenAICompatible(getOpenAIClient(), apiModel, promptTemplate, input, outputSchema, meta);
     case 'azure':
-      return callOpenAICompatible(getAzureClient(), apiModel, promptTemplate, input, outputSchema);
+      return callOpenAICompatible(getAzureClient(), apiModel, promptTemplate, input, outputSchema, meta);
     case 'google':
     default:
-      return callGemini(apiModel, promptTemplate, input, outputSchema, promptName, inputSchema);
+      return callGemini(apiModel, promptTemplate, input, outputSchema, promptName, inputSchema, meta);
   }
+}
+
+type UsageMeta = { modelKey: string; operation: 'structured'; feature: string };
+
+/** "polishStickyNotePrompt" → "polish-sticky-note": the feature name on the Usage page. */
+function featureOf(promptName: string): string {
+  return promptName.replace(/Prompt$/, '').replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
 }
 
 function stripProviderPrefix(idOrKey: string): string {
@@ -247,22 +269,23 @@ async function callOpenAICompatible<T extends ZodSchema>(
   apiModel: string,
   promptTemplate: string,
   input: Record<string, any>,
-  outputSchema: T
+  outputSchema: T,
+  meta: UsageMeta
 ): Promise<z.infer<T>> {
-  const textPrompt = simpleTemplateRender(promptTemplate, input) + JSON_ONLY_SUFFIX;
+  const textPrompt = simpleTemplateRender(promptTemplate, input) + jsonOnlySuffix(outputSchema);
   const content: any[] = [{ type: 'text', text: textPrompt }];
 
   const image = findImage(input);
   if (image) content.push({ type: 'image_url', image_url: { url: image } });
 
-  const response = await retryable(() =>
+  const response = await tracked(meta, () => retryable(() =>
     client.chat.completions.create({
       model: apiModel,
       messages: [{ role: 'user', content }] as any,
       response_format: { type: 'json_object' },
       stream: false,
     } as any)
-  );
+  ), (r: any) => usageFrom.openaiChat(r?.usage));
 
   const raw = (response as any).choices?.[0]?.message?.content;
   if (!raw) throw new Error(`${apiModel} returned an empty response.`);
@@ -292,13 +315,14 @@ async function callAnthropic<T extends ZodSchema>(
   apiModel: string,
   promptTemplate: string,
   input: Record<string, any>,
-  outputSchema: T
+  outputSchema: T,
+  meta: UsageMeta
 ): Promise<z.infer<T>> {
   const client = getAnthropicClient();
   const textPrompt = simpleTemplateRender(promptTemplate, input);
 
   const content: Anthropic.ContentBlockParam[] = [
-    { type: 'text', text: textPrompt + JSON_ONLY_SUFFIX },
+    { type: 'text', text: textPrompt + jsonOnlySuffix(outputSchema) },
   ];
 
   const image = parseDataUri(findImage(input));
@@ -311,14 +335,14 @@ async function callAnthropic<T extends ZodSchema>(
   }
 
   // No temperature/top_p — current Claude models reject them outright.
-  const response = await retryable(() =>
+  const response = await tracked(meta, () => retryable(() =>
     client.messages.create({
       model: apiModel,
       max_tokens: MAX_TOKENS,
       system: 'You are a precise assistant inside the Notora productivity app. You always reply with a single JSON object matching the requested shape.',
       messages: [{ role: 'user', content }],
     })
-  );
+  ), r => usageFrom.anthropic(r.usage));
 
   // Safety classifiers can decline with HTTP 200 — check before reading content.
   if (response.stop_reason === 'refusal') {
@@ -341,7 +365,8 @@ async function callGemini<T extends ZodSchema>(
   input: Record<string, any>,
   outputSchema: T,
   promptName: string,
-  inputSchema?: ZodSchema
+  inputSchema: ZodSchema | undefined,
+  meta: UsageMeta
 ): Promise<z.infer<T>> {
   const prompt = ai.definePrompt({
     name: promptName,
@@ -349,7 +374,160 @@ async function callGemini<T extends ZodSchema>(
     output: { schema: outputSchema as any },
     prompt: promptTemplate,
   });
-  const response = await retryable(() => prompt(input, { model: `googleai/${apiModel}` }));
+  const response = await tracked(meta, () => retryable(() => prompt(input, { model: `googleai/${apiModel}` })), (r: any) => usageFrom.gemini(r?.usage));
   if (!response.output) throw new Error(`Gemini (${apiModel}) returned no structured output.`);
   return response.output as z.infer<T>;
+}
+
+// ---------------------------------------------------------------------------
+// Tool calling, used by the ADK agent in src/ai/adk (adapted from FinWise's
+// ai-client.ts). Gemini isn't here: ADK's own Gemini class handles it.
+// ---------------------------------------------------------------------------
+export type ToolCall = { id: string; name: string; args: Record<string, unknown> };
+export type ToolChatMessage =
+  | { role: 'system'; content: string }
+  | { role: 'user'; content: string }
+  | { role: 'assistant'; content?: string; toolCalls?: ToolCall[] }
+  | { role: 'tool'; toolCallId: string; name: string; content: string };
+export type ToolSpec = { name: string; description: string; parameters: Record<string, unknown> };
+type ToolChatConfig = { maxOutputTokens?: number; onText?: (delta: string) => void; feature?: string };
+
+export async function callToolChatLLM(
+  modelKey: string,
+  messages: ToolChatMessage[],
+  tools: ToolSpec[],
+  config?: ToolChatConfig
+): Promise<{ text: string; toolCalls: ToolCall[] }> {
+  await requireUser(); // public server action, like callStructuredLLM
+  const model = resolveModel(modelKey);
+  const provider: AIProvider = model?.provider ?? inferProvider(modelKey);
+  const apiModel = model?.id ?? stripProviderPrefix(modelKey);
+  const meta = { modelKey: `${provider}::${apiModel}`, operation: 'tool_chat' as const, feature: config?.feature };
+  if (provider === 'anthropic') return anthropicToolChat(apiModel, messages, tools, config, meta);
+  if (provider === 'google') throw new Error('Gemini tool calls go through ADK\u2019s Gemini model, not callToolChatLLM.');
+  // Current OpenAI reasoning models only take function tools on the Responses API.
+  if (provider === 'openai') return openAIResponsesToolChat(apiModel, messages, tools, config, meta);
+
+  const oaMessages = messages.map(m => {
+    if (m.role === 'tool') return { role: 'tool', tool_call_id: m.toolCallId, content: m.content };
+    if (m.role === 'assistant') {
+      return {
+        role: 'assistant',
+        content: m.content ?? null,
+        ...(m.toolCalls?.length
+          ? { tool_calls: m.toolCalls.map(c => ({ id: c.id, type: 'function', function: { name: c.name, arguments: JSON.stringify(c.args) } })) }
+          : {}),
+      };
+    }
+    return { role: m.role, content: m.content };
+  });
+  const response: any = await tracked(meta, () => retryable(() => getAzureClient().chat.completions.create({
+    model: apiModel,
+    messages: oaMessages as any,
+    ...(tools.length ? { tools: tools.map(t => ({ type: 'function' as const, function: t })) } : {}),
+    max_completion_tokens: config?.maxOutputTokens ?? MAX_TOKENS,
+  } as any)), (r: any) => usageFrom.openaiChat(r?.usage));
+  const msg = response.choices?.[0]?.message ?? {};
+  const toolCalls: ToolCall[] = (msg.tool_calls ?? []).map((c: any) => ({ id: c.id, name: c.function?.name, args: safeJson(c.function?.arguments) }));
+  return { text: msg.content ?? '', toolCalls };
+}
+
+type ToolMeta = { modelKey: string; operation: 'tool_chat'; feature?: string };
+
+async function openAIResponsesToolChat(
+  apiModel: string,
+  messages: ToolChatMessage[],
+  tools: ToolSpec[],
+  config: ToolChatConfig | undefined,
+  meta: ToolMeta
+): Promise<{ text: string; toolCalls: ToolCall[] }> {
+  const client = getOpenAIClient();
+  const instructions = messages.filter(m => m.role === 'system').map(m => m.content).join('\n\n');
+  const input: any[] = [];
+  for (const m of messages) {
+    if (m.role === 'user') input.push({ role: 'user', content: m.content });
+    else if (m.role === 'tool') input.push({ type: 'function_call_output', call_id: m.toolCallId, output: m.content });
+    else if (m.role === 'assistant') {
+      if (m.content) input.push({ role: 'assistant', content: m.content });
+      for (const c of m.toolCalls ?? []) input.push({ type: 'function_call', call_id: c.id, name: c.name, arguments: JSON.stringify(c.args) });
+    }
+  }
+  // No temperature: the reasoning models reject it, and the tool loop doesn't need it.
+  const body: any = {
+    model: apiModel,
+    ...(instructions ? { instructions } : {}),
+    input,
+    ...(tools.length ? { tools: tools.map(t => ({ type: 'function', name: t.name, description: t.description, parameters: t.parameters, strict: false })) } : {}),
+    max_output_tokens: config?.maxOutputTokens ?? MAX_TOKENS,
+    store: false,
+  };
+  const onText = config?.onText;
+  const response: any = await tracked(meta, () => retryable(() => {
+    if (!onText) return client.responses.create(body);
+    const stream = client.responses.stream(body);
+    stream.on('response.output_text.delta', (e: any) => onText(e.delta));
+    return stream.finalResponse();
+  }), (r: any) => usageFrom.openaiResponses(r?.usage));
+  const output: any[] = response.output ?? [];
+  const toolCalls: ToolCall[] = output
+    .filter(o => o.type === 'function_call')
+    .map(o => ({ id: o.call_id, name: o.name, args: safeJson(o.arguments) }));
+  const text = response.output_text
+    ?? output.filter(o => o.type === 'message').flatMap(o => o.content ?? []).filter((c: any) => c.type === 'output_text').map((c: any) => c.text).join('');
+  return { text, toolCalls };
+}
+
+function safeJson(raw: unknown): Record<string, unknown> {
+  if (typeof raw !== 'string' || !raw.trim()) return {};
+  try { return JSON.parse(raw); } catch { return {}; }
+}
+
+async function anthropicToolChat(
+  apiModel: string,
+  messages: ToolChatMessage[],
+  tools: ToolSpec[],
+  config: ToolChatConfig | undefined,
+  meta: ToolMeta
+): Promise<{ text: string; toolCalls: ToolCall[] }> {
+  const client = getAnthropicClient();
+  const system = messages.filter(m => m.role === 'system').map(m => m.content).join('\n\n');
+
+  // Anthropic wants tool results as user turns, and no two turns from the same side in a row.
+  const turns: Array<{ role: 'user' | 'assistant'; content: any[] }> = [];
+  const push = (role: 'user' | 'assistant', block: any) => {
+    const last = turns[turns.length - 1];
+    if (last?.role === role) last.content.push(block);
+    else turns.push({ role, content: [block] });
+  };
+  for (const m of messages) {
+    if (m.role === 'system') continue;
+    if (m.role === 'user') push('user', { type: 'text', text: m.content });
+    else if (m.role === 'tool') push('user', { type: 'tool_result', tool_use_id: m.toolCallId, content: m.content });
+    else {
+      if (m.content) push('assistant', { type: 'text', text: m.content });
+      for (const c of m.toolCalls ?? []) push('assistant', { type: 'tool_use', id: c.id, name: c.name, input: c.args });
+    }
+  }
+  if (turns.length === 0 || turns[0].role !== 'user') turns.unshift({ role: 'user', content: [{ type: 'text', text: 'Please continue.' }] });
+
+  const params = {
+    model: apiModel,
+    max_tokens: config?.maxOutputTokens ?? MAX_TOKENS,
+    ...(system ? { system } : {}),
+    messages: turns as any,
+    ...(tools.length ? { tools: tools.map(t => ({ name: t.name, description: t.description, input_schema: t.parameters as any })) } : {}),
+  };
+  const onText = config?.onText;
+  const response = await tracked(meta, () => retryable(() => {
+    if (!onText) return client.messages.create(params);
+    const stream = client.messages.stream(params);
+    stream.on('text', onText);
+    return stream.finalMessage();
+  }), r => usageFrom.anthropic(r.usage));
+
+  const text = response.content.filter((b): b is Anthropic.TextBlock => b.type === 'text').map(b => b.text).join('');
+  const toolCalls = response.content
+    .filter((b): b is Anthropic.ToolUseBlock => b.type === 'tool_use')
+    .map(b => ({ id: b.id, name: b.name, args: (b.input ?? {}) as Record<string, unknown> }));
+  return { text, toolCalls };
 }

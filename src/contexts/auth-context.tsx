@@ -19,16 +19,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
+    let stored: User | null = null;
     try {
-      const storedUser = localStorage.getItem('notora-user');
-      if (storedUser) {
-        setUser(JSON.parse(storedUser));
-      }
+      const raw = localStorage.getItem('notora-user');
+      if (raw) stored = JSON.parse(raw);
     } catch (error) {
-        console.error("Failed to parse user from localStorage", error);
-        localStorage.removeItem('notora-user');
+      console.error("Failed to parse user from localStorage", error);
+      localStorage.removeItem('notora-user');
     }
-    setLoading(false);
+    if (!stored) { setLoading(false); return; }
+    // The server only trusts the httpOnly session cookie. A device signed in
+    // before that cookie existed (or whose cookie expired) must sign in again
+    // rather than be shown an empty workspace.
+    fetch('/api/session')
+      .then(async (r) => {
+        if (r.status === 401) throw new Error('signed-out');
+        if (r.ok) {
+          const { username } = await r.json();
+          if (username !== stored!.username.toLowerCase()) throw new Error('signed-out');
+        }
+        setUser(stored);
+      })
+      .catch((e) => {
+        if (e?.message === 'signed-out') localStorage.removeItem('notora-user');
+        else setUser(stored); // offline: keep the local session, saves will report errors
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   const login = async (email: string, pass: string): Promise<boolean> => {
@@ -54,6 +70,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = () => {
+    void fetch('/api/session', { method: 'DELETE' }).catch(() => {});
     setUser(null);
     localStorage.removeItem('notora-user');
     router.push('/login');

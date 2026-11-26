@@ -1,7 +1,8 @@
 
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useContext } from 'react';
+import { AppContext } from '@/contexts/app-context';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bot, User, Send, Loader2, X, MessageSquare, Cpu } from 'lucide-react';
 
@@ -30,13 +31,14 @@ export default function ContextualChatbot({ pageContext }: ContextualChatbotProp
   const [loading, setLoading] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { selectedModel } = useModelStore();
+  const app = useContext(AppContext);
 
   useEffect(() => {
     if (isOpen) {
       setMessages([
         {
           role: 'model',
-          content: "Hello! I'm your AI assistant. Ask me anything about the content on this page.",
+          content: "Hi! Ask me about anything in Notora: tasks, notes, journal, links or your trackers. I can also add a task or save a note.",
         },
       ]);
     } else {
@@ -64,13 +66,15 @@ export default function ContextualChatbot({ pageContext }: ContextualChatbotProp
 
     try {
       const result = await contextualChat({
-        history: messages,
+        history: messages.map(({ role, content }) => ({ role, content })),
         query: input,
         pageContext: JSON.stringify(pageContext, null, 2),
       }, selectedModel);
       
       const aiMessage: ChatMessage = { role: 'model', content: result.response, modelId: result.modelId };
       setMessages((prev) => [...prev, aiMessage]);
+      // The assistant added a task or note: show it without a manual refresh.
+      if (result.changed) await app?.reload();
 
     } catch (error) {
       console.error('Chatbot error:', error);

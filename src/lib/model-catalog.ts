@@ -30,6 +30,8 @@ export interface CatalogModel {
   tags: ModelTag[];
   /** USD per million input / output tokens, where published. */
   inputPerMTok?: number;
+  /** USD per million cached input tokens; usage tracking assumes 10% of input if unset. */
+  cachedInputPerMTok?: number;
   outputPerMTok?: number;
   contextWindow?: number;
   notes?: string;
@@ -63,14 +65,39 @@ export const ANTHROPIC_MODELS: CatalogModel[] = [
 
 /** OpenAI — first-party API (not Azure). */
 export const OPENAI_MODELS: CatalogModel[] = [
+  // GPT-6.x — ids and prices copied from ai-expense-tracker's catalog
+  // (confirmed against GET /v1/models 2026-11-20, pricing page 2026-11-24).
+  { key: 'openai::gpt-6.2-astra', id: 'gpt-6.2-astra', provider: 'openai',
+    label: 'GPT-6.2 Astra', tags: ['flagship', 'reasoning'],
+    inputPerMTok: 8, cachedInputPerMTok: 0.4, outputPerMTok: 40,
+    notes: 'Newest flagship (Nov 2026).' },
+  { key: 'openai::gpt-6.2-sol', id: 'gpt-6.2-sol', provider: 'openai',
+    label: 'GPT-6.2 Sol', tags: ['balanced'],
+    inputPerMTok: 2, cachedInputPerMTok: 0.1, outputPerMTok: 10,
+    notes: 'Newest general-purpose tier. Good default.' },
+  { key: 'openai::gpt-6.1-sol', id: 'gpt-6.1-sol', provider: 'openai',
+    label: 'GPT-6.1 Sol', tags: ['balanced'],
+    inputPerMTok: 2, cachedInputPerMTok: 0.1, outputPerMTok: 10 },
+  { key: 'openai::gpt-6.1-terra', id: 'gpt-6.1-terra', provider: 'openai',
+    label: 'GPT-6.1 Terra', tags: ['fast'],
+    inputPerMTok: 1, cachedInputPerMTok: 0.05, outputPerMTok: 5, notes: 'Fast mid tier.' },
+  { key: 'openai::gpt-6-astra', id: 'gpt-6-astra', provider: 'openai',
+    label: 'GPT-6 Astra', tags: ['reasoning'],
+    inputPerMTok: 10, cachedInputPerMTok: 1, outputPerMTok: 50 },
+  { key: 'openai::gpt-6-sol', id: 'gpt-6-sol', provider: 'openai',
+    label: 'GPT-6 Sol', tags: ['balanced'],
+    inputPerMTok: 2, cachedInputPerMTok: 0.2, outputPerMTok: 10 },
+  { key: 'openai::gpt-6-luna', id: 'gpt-6-luna', provider: 'openai',
+    label: 'GPT-6 Luna', tags: ['cheap', 'fast'],
+    inputPerMTok: 0.1, cachedInputPerMTok: 0.01, outputPerMTok: 0.5,
+    notes: 'Cheapest GPT-6 tier — ideal for note titles and quick transforms.' },
   { key: 'openai::gpt-5.6-sol', id: 'gpt-5.6-sol', provider: 'openai',
-    label: 'GPT-5.6 Sol', tags: ['flagship', 'reasoning'],
+    label: 'GPT-5.6 Sol', tags: ['reasoning'],
     inputPerMTok: 5, outputPerMTok: 30, contextWindow: 1_050_000,
-    notes: 'Current flagship.' },
+    notes: 'Previous flagship.' },
   { key: 'openai::gpt-5.6-terra', id: 'gpt-5.6-terra', provider: 'openai',
     label: 'GPT-5.6 Terra', tags: ['balanced'],
-    inputPerMTok: 2, outputPerMTok: 12, contextWindow: 1_050_000,
-    notes: 'Balanced tier. Good default.' },
+    inputPerMTok: 2, outputPerMTok: 12, contextWindow: 1_050_000 },
   { key: 'openai::gpt-5.6-luna', id: 'gpt-5.6-luna', provider: 'openai',
     label: 'GPT-5.6 Luna', tags: ['cheap', 'fast'],
     inputPerMTok: 0.2, outputPerMTok: 1.2, contextWindow: 1_050_000,

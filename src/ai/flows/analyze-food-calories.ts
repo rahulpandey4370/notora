@@ -49,7 +49,7 @@ const promptTemplate = `You are an expert nutritionist specializing in Indian cu
 {{/if}}
 
 **Your Task:**
-1.  **Identify Food Items:** Carefully identify each distinct food item in the meal from the image and/or description.
+1.  **Identify Food Items:** Carefully identify each distinct food item in the meal from the image and/or description. If both are given, count everything visible in the photo and use the description to refine it (portions, preparation, extra items); the description does not replace the photo unless it says so.
 2.  **Estimate Portion Sizes:** Based on visual cues (like comparison to the plate size) or text descriptions, estimate the portion size for each item (e.g., 1 bowl, 2 pieces, 150g). Be realistic.
 3.  **Calculate Calories:** For each item, provide an accurate calorie estimate based on its ingredients and estimated portion size. Be very specific about Indian food items (e.g., distinguish between a plain roti and a butter naan).
 4.  **Sum Total Calories:** Calculate the sum of calories for all identified items.
@@ -64,7 +64,7 @@ const analyzeFoodCaloriesFlow = ai.defineFlow(
     outputSchema: AnalyzeFoodCaloriesOutputSchema,
   },
   async (input, { context }) => {
-    const modelId = context?.modelId || 'gemini-1.5-flash-latest';
+    const modelId = context?.modelId || 'gemini-2.5-flash';
     let output;
 
     // Provider routing lives in the unified client — this flow just

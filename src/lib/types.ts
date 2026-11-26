@@ -204,6 +204,8 @@ export interface LogTracker {
     logs: LogEntry[];
     goal?: number;
     isFlippable?: boolean;
+    /** Filled automatically from Fitbit / Google Health (see lib/health-merge.ts). */
+    healthMetric?: 'steps' | 'sleep' | 'restingHr';
 }
 
 export interface JournalEntry {

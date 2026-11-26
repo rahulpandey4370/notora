@@ -3,7 +3,7 @@
 
 import { createContext, useState, useEffect, useCallback, useRef, type ReactNode } from 'react';
 import { useAuth } from '@/hooks/use-auth';
-import { getAppData, saveAppData } from '@/lib/storage';
+import { getAppData, createAppData, saveAppData } from '@/lib/storage';
 import type { AppData } from '@/lib/types';
 import { v4 as uuidv4 } from 'uuid';
 import { useToast } from '@/hooks/use-toast';
@@ -45,114 +45,128 @@ interface AppContextType {
   saveState: SaveState;
   handleDataChange: (newData: AppData) => void;
   toast: ReturnType<typeof useToast>['toast'];
+  /** Re-fetch from the server (e.g. after a health sync). */
+  reload: () => Promise<void>;
 }
 
 export const AppContext = createContext<AppContextType | undefined>(undefined);
 
+/** Fill fields older documents lack, and rebuild per-note undo history (not persisted). */
+function normalize(appData: AppData): AppData {
+  return {
+    ...appData,
+    tasks: (appData.tasks ?? []).map(t => ({ ...t, createdAt: t.createdAt || new Date().toISOString() })),
+    noteBoards: (appData.noteBoards ?? []).map(b => ({
+      ...b,
+      notes: (b.notes ?? []).map(n => ({
+        ...n,
+        title: n.title || '',
+        history: n.history || { past: [], present: { title: n.title || '', content: n.content }, future: [] },
+      })),
+    })),
+    logTrackers: appData.logTrackers ?? [],
+    journalEntries: appData.journalEntries ?? [],
+    savedLinks: appData.savedLinks ?? [],
+    taskTemplates: appData.taskTemplates ?? [],
+    taskTemplateBundles: appData.taskTemplateBundles ?? [],
+    userStats: appData.userStats ?? { xp: 0 },
+  };
+}
+
+function freshDefaults(): AppData {
+  return {
+    ...defaultAppData,
+    noteBoards: [{
+      ...defaultAppData.noteBoards[0],
+      id: uuidv4(),
+      notes: [{ ...defaultAppData.noteBoards[0].notes[0], id: uuidv4() }],
+    }],
+  };
+}
+
 export function AppProvider({ children }: { children: ReactNode }) {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, logout } = useAuth();
   const [data, setData] = useState<AppData | null>(null);
   const [loading, setLoading] = useState(true);
   const [saveState, setSaveState] = useState<SaveState>('idle');
   const { toast } = useToast();
 
-  const loadData = useCallback(async (username: string) => {
-    setLoading(true);
-    let appData = await getAppData(username);
-    
-    if (!appData) {
-      console.log(`No data found for ${username}, creating default data.`);
-      const newDefaultData: AppData = { 
-        ...defaultAppData,
-        tasks: defaultAppData.tasks.map(t => ({...t, createdAt: new Date().toISOString(), date: new Date().toISOString()})),
-        noteBoards: [{
-          ...defaultAppData.noteBoards[0], 
-          id: uuidv4(),
-          notes: [{...defaultAppData.noteBoards[0].notes[0], id: uuidv4()}] 
-        }],
-        savedLinks: [],
-        logTrackers: [],
-        journalEntries: [],
-        taskTemplates: [],
-        taskTemplateBundles: [],
-      };
-      await saveAppData(username, newDefaultData);
-      appData = newDefaultData;
-    } else {
-      // Backwards compatibility for old data
-      appData.tasks = appData.tasks.map(t => ({ ...t, createdAt: t.createdAt || new Date().toISOString() }));
-      appData.noteBoards = appData.noteBoards.map(b => ({
-        ...b,
-        notes: b.notes.map(n => ({
-          ...n, 
-          title: n.title || '',
-          history: n.history || { past: [], present: { title: n.title || '', content: n.content }, future: [] }
-        }))
-      }));
-      if (!appData.logTrackers) {
-        appData.logTrackers = [];
-      }
-      if (!appData.journalEntries) {
-        appData.journalEntries = [];
-      }
-      if (!appData.taskTemplates) {
-        appData.taskTemplates = [];
-      }
-      if (!appData.taskTemplateBundles) {
-        appData.taskTemplateBundles = [];
-      }
+  // Server version (updated_at) the on-screen data is based on; every save is
+  // conditional on it so a stale device can't overwrite newer edits.
+  const version = useRef<string | null>(null);
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pendingData = useRef<AppData | null>(null);
+  const inFlight = useRef<Promise<void> | null>(null);
+
+  const reportError = useCallback(async (err: any, title: string) => {
+    // Production builds mask server-action error messages, so ask the server
+    // directly whether the session is still valid before blaming the network.
+    const signedOut = await fetch('/api/session').then(r => r.status === 401).catch(() => false);
+    if (signedOut) { logout(); return; }
+    const message: string = err?.message ?? '';
+    const masked = !message || /Server Components render/i.test(message);
+    toast({ variant: 'destructive', title, description: masked ? 'Check your connection and try again.' : message });
+  }, [toast, logout]);
+
+  const loadData = useCallback(async (opts: { quiet?: boolean; onlyIfChanged?: boolean } = {}) => {
+    if (!opts.quiet) setLoading(true);
+    try {
+      // getAppData throws on errors; null strictly means "no row yet".
+      const stored = (await getAppData()) ?? (await createAppData(freshDefaults()));
+      // Refocus with nothing new elsewhere: keep the screen (and any half-typed draft) as is.
+      if (opts.onlyIfChanged && stored.version === version.current) return;
+      version.current = stored.version;
+      setData(normalize(stored.data));
+    } catch (err) {
+      reportError(err, "Couldn't load your workspace");
+    } finally {
+      if (!opts.quiet) setLoading(false);
     }
-    
-    setData(appData);
-    setLoading(false);
-  }, []);
+  }, [reportError]);
 
   useEffect(() => {
-    if (!authLoading) {
-      if (user) {
-        loadData(user.username);
-      } else {
-        // Not logged in, no data to load
-        setLoading(false);
-        setData(null);
-      }
-    }
+    if (authLoading) return;
+    if (user) loadData();
+    else { setLoading(false); setData(null); }
   }, [user, authLoading, loadData]);
 
   /**
-   * Persist state.
-   *
-   * Two problems this solves:
-   *  1. The previous implementation called `saveAppData` without `await` and
-   *     without `.catch`. `saveAppData` re-throws on failure, so a failed write
-   *     produced an unhandled rejection while the UI had *already* rendered the
-   *     change as if it succeeded — silent data loss. Now failures surface as a
-   *     toast and flip `saveState` to 'error'.
-   *  2. Persistence writes the entire AppData document (hundreds of KB once you
-   *     have real history) on *every* commit — each checkbox toggle, each note
-   *     drag-stop. Coalescing on a short trailing debounce collapses a burst of
-   *     edits into one write while keeping the UI instant.
+   * Persist state: debounced (a burst of edits = one write), serialised (a
+   * second write waits for the first, so it is based on the new version), and
+   * failures surface as a toast instead of silently losing the edit.
    */
-  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const pendingData = useRef<AppData | null>(null);
-
-  const flushSave = useCallback(async () => {
-    if (!user || !pendingData.current) return;
+  const flushSave = useCallback(async (): Promise<void> => {
+    if (inFlight.current) { await inFlight.current; }
+    if (!user || !pendingData.current || !version.current) return;
     const payload = pendingData.current;
     pendingData.current = null;
-    setSaveState('saving');
-    try {
-      await saveAppData(user.username, payload);
-      setSaveState('saved');
-    } catch (err: any) {
-      setSaveState('error');
-      toast({
-        variant: 'destructive',
-        title: "Changes couldn't be saved",
-        description: err?.message ?? 'Your last edit is still on screen but did not reach the server. Check your connection.',
-      });
-    }
-  }, [user, toast]);
+    const run = (async () => {
+      setSaveState('saving');
+      try {
+        const result = await saveAppData(payload, version.current!);
+        if (result.ok) {
+          version.current = result.version;
+          setSaveState(pendingData.current ? 'saving' : 'saved');
+        } else {
+          setSaveState('error');
+          toast({
+            variant: 'destructive',
+            title: 'Updated on another device',
+            description: 'Your workspace changed elsewhere, so it has been reloaded. Your last edit here was not saved; please redo it.',
+          });
+          pendingData.current = null;
+          await loadData({ quiet: true });
+        }
+      } catch (err: any) {
+        setSaveState('error');
+        // Keep the edit queued so the next change or a refocus retries it.
+        pendingData.current = pendingData.current ?? payload;
+        reportError(err, "Changes couldn't be saved");
+      }
+    })();
+    inFlight.current = run;
+    try { await run; } finally { if (inFlight.current === run) inFlight.current = null; }
+  }, [user, toast, loadData, reportError]);
 
   const handleDataChange = useCallback((newData: AppData) => {
     if (!user) return;
@@ -162,6 +176,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (saveTimer.current) clearTimeout(saveTimer.current);
     saveTimer.current = setTimeout(() => { void flushSave(); }, 600);
   }, [user, flushSave]);
+
+  // Coming back to the app (phone unlock, switching tabs): pull edits made on
+  // other devices, unless this device has unsaved edits of its own.
+  useEffect(() => {
+    if (!user) return;
+    const onVisible = () => {
+      if (document.visibilityState !== 'visible') return;
+      if (pendingData.current) { void flushSave(); return; }
+      if (!inFlight.current) void loadData({ quiet: true, onlyIfChanged: true });
+    };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => document.removeEventListener('visibilitychange', onVisible);
+  }, [user, flushSave, loadData]);
+
+  const reload = useCallback(() => loadData({ quiet: true }), [loadData]);
 
   // Don't let a debounced write get dropped by a tab close / navigation.
   useEffect(() => {
@@ -177,7 +206,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [flushSave]);
 
   return (
-    <AppContext.Provider value={{ data, loading, saveState, handleDataChange, toast }}>
+    <AppContext.Provider value={{ data, loading, saveState, handleDataChange, toast, reload }}>
       {children}
     </AppContext.Provider>
   );

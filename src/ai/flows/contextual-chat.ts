@@ -1,87 +1,21 @@
-
 'use server';
 /**
- * @fileOverview An AI flow for a contextual chatbot that understands the user's current page content.
- *
- * - contextualChat - A function that handles the chat conversation.
- * - ContextualChatInput - The input type for the contextualChat function.
- * - ContextualChatOutput - The return type for the contextualChat function.
+ * The chat assistant. Runs on Google ADK (src/ai/adk/notora-agent.ts), so it can
+ * look things up across the whole workspace and add tasks or notes when asked.
  */
+import type { ModelId } from '@/lib/types';
+import { requireUser } from '@/lib/session';
+import { runNotoraAgent } from '@/ai/adk/notora-agent';
 
-import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
-import { ModelId } from '@/lib/types';
-import { callStructuredLLM } from '@/lib/ai-client';
-
-const ChatMessageSchema = z.object({
-  role: z.enum(['user', 'model']),
-  content: z.string(),
-});
-
-const ContextualChatInputSchema = z.object({
-  history: z.array(ChatMessageSchema).describe('The history of the conversation so far.'),
-  query: z.string().describe('The user\'s latest message or question.'),
-  pageContext: z.string().describe('A JSON string representing the data and content of the current page the user is viewing. This provides the context for the conversation.'),
-});
-export type ContextualChatInput = z.infer<typeof ContextualChatInputSchema>;
-
-const ContextualChatOutputSchema = z.object({
-  response: z.string().describe('The AI\'s response to the user\'s query, based on the provided context and history.'),
-});
-export type ContextualChatOutput = z.infer<typeof ContextualChatOutputSchema> & { modelId?: ModelId };
+export type ContextualChatInput = {
+  history: { role: 'user' | 'model'; content: string }[];
+  query: string;
+  pageContext: string;
+};
+export type ContextualChatOutput = { response: string; modelId?: ModelId; changed?: boolean };
 
 export async function contextualChat(input: ContextualChatInput, modelId: ModelId): Promise<ContextualChatOutput> {
-  const result = await contextualChatFlow(input, { context: { modelId } });
+  await requireUser();
+  const result = await runNotoraAgent({ ...input, modelKey: modelId || 'google::gemini-2.5-flash' });
   return { ...result, modelId };
 }
-
-const promptTemplate = `You are an intelligent assistant for the Notora productivity app. Your role is to help the user by answering questions based on the content of the page they are currently viewing.
-
-You will be given the conversation history, the user's current query, and a JSON object representing the data on the current page. Use this page context to answer the user's questions accurately.
-
-If the user asks a general question, answer it helpfully. If the question is about the data on the page, use the JSON context to formulate your answer.
-
-**Conversation History:**
-{{#each history}}
-- {{role}}: {{{content}}}
-{{/each}}
-
-**Page Context (JSON Data):**
-\`\`\`json
-{{{pageContext}}}
-\`\`\`
-
-**User's New Query:**
-"{{{query}}}"
-
-Based on all this information, provide a helpful and concise response.`;
-
-const contextualChatFlow = ai.defineFlow(
-  {
-    name: 'contextualChatFlow',
-    inputSchema: ContextualChatInputSchema,
-    outputSchema: ContextualChatOutputSchema,
-  },
-  async (input, { context }) => {
-    const modelId = context?.modelId || 'gemini-1.5-flash-latest';
-    let output;
-
-    // Provider routing lives in the unified client — this flow just
-    // says what it wants and which model to use.
-    output = await callStructuredLLM(
-      modelId,
-      promptTemplate,
-      input,
-      ContextualChatOutputSchema,
-      'contextualChatPrompt',
-      ContextualChatInputSchema,
-    );
-
-    if (!output) {
-      throw new Error("Flow failed to produce a valid output.");
-    }
-    return output;
-  }
-);
-
-    

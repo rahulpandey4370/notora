@@ -72,7 +72,7 @@ const getLogInsightsFlow = ai.defineFlow(
     outputSchema: GetLogInsightsOutputSchema,
   },
   async (input, { context }) => {
-    const modelId = context?.modelId || 'gemini-1.5-flash-latest';
+    const modelId = context?.modelId || 'gemini-2.5-flash';
     let output;
 
     // Provider routing lives in the unified client — this flow just

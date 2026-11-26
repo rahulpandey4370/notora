@@ -12,6 +12,11 @@ A personal productivity workspace built with Next.js — tasks, journal, sticky 
 - **Log Trackers** — configurable trackers (calories, water, steps, etc.) with goals and daily activity notes; AI calorie coach included.
 - **Multi-user** — two-user local auth (SHA-256 hashed passwords); per-user data isolation via separate Azure blobs.
 - **PWA** — installable, with service worker (via `@ducanh2912/next-pwa`).
+- **Push notifications** — morning plan and evening check-in on the Home Screen app (Web Push).
+- **Fitbit sync** — steps, sleep and resting heart rate from the Google Health API fill your log trackers.
+- **Search & capture** — ⌘K finds notes, journal, links and tasks, or saves a quick note.
+
+Setup for push, Fitbit and the Supabase lock-down: [docs/setup-push-fitbit.md](docs/setup-push-fitbit.md).
 
 ## Tech Stack
 

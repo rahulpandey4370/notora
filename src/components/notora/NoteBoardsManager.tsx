@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { AppData, NoteBoard } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -27,6 +27,14 @@ export default function NoteBoardsManager({ noteBoards, data, onDataChange }: No
   const [activeBoardId, setActiveBoardId] = useState<string>(noteBoards[0]?.id || '');
   const [viewMode, setViewMode] = useState<ViewMode>('sticky');
   const [noteToFocus, setNoteToFocus] = useState<string | null>(null);
+
+  // Opened from search (/notes?board=<id>): show that board.
+  useEffect(() => {
+    const board = new URLSearchParams(window.location.search).get('board');
+    if (board && noteBoards.some(b => b.id === board)) setActiveBoardId(board);
+    // Once on open only: later edits must not yank you back to this board.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleAddBoard = () => {
     if (newBoardTitle.trim() === '') return;

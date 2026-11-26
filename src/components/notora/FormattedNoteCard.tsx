@@ -7,6 +7,7 @@ import type { StickyNote } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { MicButton, appendSpeech } from './MicButton';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { MoreVertical, Trash2, Wand2, BookText, List, BrainCircuit, TextCursorInput, RotateCcw, RotateCw, Paintbrush, Loader2, X } from 'lucide-react';
 import { polishStickyNote } from '@/ai/flows/polish-sticky-note';
@@ -210,6 +211,7 @@ export default function FormattedNoteCard({ note, noteNumber, onNoteChange, onNo
                 autoFocus
               />
               <div className="flex justify-end gap-2">
+                <MicButton className="mr-auto" onText={t => setEditedContent(p => appendSpeech(p, t))} />
                 <Button variant="ghost" onClick={(e) => { e.stopPropagation(); handleCancelEditing(); }}>Done</Button>
               </div>
             </div>

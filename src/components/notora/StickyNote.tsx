@@ -6,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import type { StickyNote as StickyNoteType } from '@/lib/types';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
+import { MicButton, appendSpeech } from './MicButton';
 import { MoreVertical, Trash2, Wand2, BookText, List, BrainCircuit, Loader2, Paintbrush, TextCursorInput, RotateCcw, RotateCw, Newspaper, X } from 'lucide-react';
 import { polishStickyNote } from '@/ai/flows/polish-sticky-note';
 import { summarizeStickyNote } from '@/ai/flows/summarize-sticky-note';
@@ -214,6 +215,7 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
             {isEditing && (
                 <div className="flex-1 flex gap-1">
                     <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={handleCancelEditing}><X className="h-4 w-4 text-red-600" /></Button>
+                    <MicButton className="h-8 w-8 rounded-full" onText={t => setEditedContent(p => appendSpeech(p, t))} />
                 </div>
             )}
           <DropdownMenu>

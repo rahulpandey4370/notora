@@ -1,4 +1,5 @@
 import { FunctionTool, InMemoryRunner, LlmAgent, createEvent, isFinalResponse } from '@google/adk';
+import { searchWeb } from '@/lib/web-search';
 import { z } from 'zod';
 import { v4 as uuidv4 } from 'uuid';
 import { withAiFeature } from '@/lib/usage';
@@ -45,8 +46,14 @@ async function update(change: (d: AppData) => AppData, onChanged: () => void): P
   throw new Error('The workspace kept changing on another device; try again.');
 }
 
-function buildTools(onChanged: () => void) {
+function buildTools(onChanged: () => void, webSearch: boolean) {
   return [
+    ...(webSearch ? [tool({
+      name: 'web_search',
+      description: 'Search the web for facts outside the workspace: news, prices, nutrition, places, how-tos. Returns short results.',
+      parameters: z.object({ query: z.string().min(2) }),
+      execute: async ({ query }) => (await searchWeb(query)) ?? { error: 'Web search is unavailable right now.' },
+    })] : []),
     tool({
       name: 'list_tasks',
       description: "Tasks for one day (default today): title, priority, whether done that day. Includes that month's recurring tasks.",
@@ -139,7 +146,7 @@ export type AgentTurn = { role: 'user' | 'model'; content: string };
  * One chat turn. Earlier turns are replayed into a throwaway session
  * (FinWise's runAgentTurn pattern). `changed` tells the client to reload.
  */
-export async function runNotoraAgent(input: { query: string; history: AgentTurn[]; pageContext?: string; modelKey: string }): Promise<{ response: string; changed: boolean }> {
+export async function runNotoraAgent(input: { query: string; history: AgentTurn[]; pageContext?: string; modelKey: string; webSearch?: boolean }): Promise<{ response: string; changed: boolean }> {
   // Gemini runs through ADK's own client, not callToolChatLLM, so it skips that
   // guard: check the session here for every provider.
   await requireUser();
@@ -149,8 +156,11 @@ export async function runNotoraAgent(input: { query: string; history: AgentTurn[
     description: "Answers questions about the user's Notora workspace and adds tasks or notes when asked.",
     model: adkModelFor(input.modelKey),
     instruction: [INSTRUCTION, `Today is ${todayYmd()} (${TZ}).`,
+      input.webSearch
+        ? 'Web search is ON: use web_search for anything about the outside world or that may have changed, and name the sites you used.'
+        : 'Web search is OFF: answer outside questions from your own knowledge and say it may be out of date.',
       input.pageContext ? `The page the user is looking at (JSON, may be truncated):\n${clip(input.pageContext, 6000)}` : ''].filter(Boolean).join('\n\n'),
-    tools: buildTools(() => { changed = true; }),
+    tools: buildTools(() => { changed = true; }, !!input.webSearch),
     generateContentConfig: { temperature: 0.2 },
   });
 

@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
+import { MicButton, appendSpeech } from './MicButton';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { v4 as uuidv4 } from 'uuid';
@@ -119,6 +120,7 @@ const JournalEditor = ({ entry, selectedDate, onSave, onCancel, allTags }: Journ
               rows={15}
             />
             <div className="flex items-center justify-end mt-4 gap-4">
+                <MicButton className="mr-auto" onText={t => setContent(p => appendSpeech(p, t))} />
                 <span className="text-sm text-muted-foreground">{wordCount} word{wordCount !== 1 && 's'}</span>
                 <Button onClick={handleSaveClick}><Save className="mr-2 h-4 w-4" /> Save Entry</Button>
             </div>

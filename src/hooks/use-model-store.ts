@@ -16,6 +16,9 @@ interface ModelStoreState {
   availableModels: CatalogModel[];
   selectedModel: ModelId;
   setModel: (modelId: ModelId) => void;
+  /** The header's web search switch: AI features search the web only while it's on. */
+  webSearch: boolean;
+  setWebSearch: (on: boolean) => void;
   /**
    * Replace the catalog with the list the SERVER resolved from real API keys.
    * The client cannot see non-public env vars, so without this the picker is
@@ -30,6 +33,8 @@ export const useModelStore = create<ModelStoreState>()(
       availableModels: catalogModels(),
       selectedModel: defaultModelKey(),
       setModel: (modelId) => set({ selectedModel: modelId }),
+      webSearch: false,
+      setWebSearch: (on) => set({ webSearch: on }),
       hydrateProviders: (providers) =>
         set((state) => {
           const models = catalogModels(providers);
@@ -48,9 +53,10 @@ export const useModelStore = create<ModelStoreState>()(
       // Only the selection is worth persisting. The catalog must come from code
       // so newly-added models appear immediately instead of being pinned to
       // whatever list was cached in localStorage on a previous visit.
-      partialize: (state) => ({ selectedModel: state.selectedModel }),
+      partialize: (state) => ({ selectedModel: state.selectedModel, webSearch: state.webSearch }),
       merge: (persisted, current) => {
         const stored = (persisted as { selectedModel?: string } | undefined)?.selectedModel;
+        const webSearch = (persisted as { webSearch?: boolean } | undefined)?.webSearch === true;
         // Migrate a bare id (pre-key) to its key, and drop a selection whose
         // provider is no longer enabled.
         const resolved = resolveModel(stored);
@@ -58,6 +64,7 @@ export const useModelStore = create<ModelStoreState>()(
           ...current,
           availableModels: catalogModels(),
           selectedModel: resolved?.key ?? defaultModelKey(),
+          webSearch,
         };
       },
     }

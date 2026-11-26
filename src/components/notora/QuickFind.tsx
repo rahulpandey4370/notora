@@ -7,6 +7,7 @@ import { Search, StickyNote, BookOpen, Link2, CheckSquare, Plus } from 'lucide-r
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { MicButton, appendSpeech } from './MicButton';
 import { useApp } from '@/hooks/use-app';
 
 type Hit = { kind: 'note' | 'journal' | 'link' | 'task'; id: string; title: string; snippet: string; href: string };
@@ -91,7 +92,7 @@ export default function QuickFind() {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="p-0 gap-0 max-w-lg top-[20%] translate-y-0">
           <DialogTitle className="sr-only">Search or capture</DialogTitle>
-          <div className="p-3 border-b">
+          <div className="p-3 border-b flex items-center gap-1">
             <Input
               autoFocus
               value={q}
@@ -106,6 +107,7 @@ export default function QuickFind() {
               placeholder="Search everything, or type a thought and press Enter"
               aria-label="Search notes, journal, links and tasks"
             />
+            <MicButton onText={t => setQ(p => appendSpeech(p, t))} />
           </div>
           <div className="max-h-[50vh] overflow-y-auto p-1">
             {hits.map(h => {

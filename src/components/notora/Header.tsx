@@ -5,7 +5,7 @@ import { useState } from 'react';
 import UserProfile from './UserProfile';
 import QuickFind from './QuickFind';
 import { Button } from '@/components/ui/button';
-import { Wand2, Cpu, CalendarRange } from 'lucide-react';
+import { Wand2, Cpu, CalendarRange, Globe } from 'lucide-react';
 import DayEndSummaryDialog from './DayEndSummaryDialog';
 import type { Task, User, UserStats } from '@/lib/types';
 import { ModeToggle } from './ModeToggle';
@@ -41,7 +41,7 @@ export default function Header({ user, tasks, userStats }: HeaderProps) {
   const [summaryOpen, setSummaryOpen] = useState(false);
   const [weeklyOpen, setWeeklyOpen] = useState(false);
   const { data: appData } = useApp();
-  const { availableModels, selectedModel, setModel } = useModelStore();
+  const { availableModels, selectedModel, setModel, webSearch, setWebSearch } = useModelStore();
 
   // Grouped by provider rather than by "starts with gemini": that string test
   // put Claude models under an "OpenAI" heading and couldn't tell a first-party
@@ -62,6 +62,11 @@ export default function Header({ user, tasks, userStats }: HeaderProps) {
         </Link>
       </div>
       <div className="flex items-center gap-2 md:gap-4">
+        <Button variant={webSearch ? 'default' : 'outline'} size="sm" aria-pressed={webSearch} onClick={() => setWebSearch(!webSearch)}
+          aria-label={`Web search ${webSearch ? 'on' : 'off'}`} title={webSearch ? 'Web search on: AI looks things up online' : 'Web search off'}>
+          <Globe className="h-4 w-4 md:mr-2" />
+          <span className="hidden md:inline">Web {webSearch ? 'on' : 'off'}</span>
+        </Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" aria-label={`AI model: ${activeModel?.label ?? selectedModel}. Change model.`}>

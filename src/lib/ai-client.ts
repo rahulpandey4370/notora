@@ -293,6 +293,25 @@ async function callOpenAICompatible<T extends ZodSchema>(
 }
 
 /**
+ * Paid fallback for src/lib/web-search.ts: OpenAI's built-in search tool (billed per search)
+ * answers in a few plain lines. Tavily's free quota is tried first.
+ */
+export async function openAIWebSearch(query: string): Promise<string> {
+  await requireUser();
+  const apiModel = 'gpt-6-luna';
+  const response: any = await tracked({ modelKey: `openai::${apiModel}`, operation: 'structured', feature: 'web-search' }, () => retryable(() =>
+    getOpenAIClient().responses.create({
+      model: apiModel,
+      input: `Search the web, then answer in at most 6 short lines of plain facts with numbers. No links. Query: ${query}`,
+      tools: [{ type: 'web_search' }],
+      tool_choice: 'required',
+      store: false,
+    } as any)
+  ), (r: any) => usageFrom.openaiResponses(r?.usage));
+  return String(response.output_text ?? '').trim();
+}
+
+/**
  * Validate a model response without leaking a raw ZodError to the caller.
  *
  * `outputSchema.parse()` throws a JSON dump of Zod issues. In a Server Action

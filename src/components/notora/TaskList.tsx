@@ -5,6 +5,7 @@ import { useState } from 'react';
 import type { AppData, Task } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { MicButton, appendSpeech } from './MicButton';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, Calendar as CalendarIcon, Sparkles, Loader2 } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
@@ -106,6 +107,7 @@ export default function TaskList({ data, onDataChange, currentMonth }: TaskListP
           }}
           className="flex-grow min-w-[150px] nb-border rounded-md h-9"
         />
+        <MicButton className="h-9 w-9" onText={t => setNewTaskTitle(p => appendSpeech(p, t))} />
         <Button
           type="button"
           variant="outline"

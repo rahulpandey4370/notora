@@ -243,4 +243,14 @@ export interface AppData {
   journalEntries: JournalEntry[];
   taskTemplates?: TaskTemplate[];
   taskTemplateBundles?: TaskTemplateBundle[];
+  /** Body stats for burn estimates (Logs page). */
+  fitnessProfile?: FitnessProfile;
+  /** Meals and workouts logged per day (yyyy-MM-dd); trackers hold the derived totals. */
+  fitnessDays?: Record<string, FitnessDay>;
 }
+
+export interface FitnessProfile { sex: 'male' | 'female'; birthYear: number; heightCm: number }
+export interface Meal { id: string; name: string; kcal: number; proteinG: number }
+export interface Activity { id: string; name: string; minutes: number; kcal: number; stepBased: boolean }
+/** burnBase: a stored day total carried over when workouts are added to that day. */
+export interface FitnessDay { meals: Meal[]; activities: Activity[]; burnBase?: number }

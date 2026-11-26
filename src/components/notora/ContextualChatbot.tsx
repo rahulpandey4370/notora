@@ -8,6 +8,7 @@ import { Bot, User, Send, Loader2, X, MessageSquare, Cpu } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { MicButton, appendSpeech } from './MicButton';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '../ui/scroll-area';
 import { cn } from '@/lib/utils';
@@ -30,7 +31,7 @@ export default function ContextualChatbot({ pageContext }: ContextualChatbotProp
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
-  const { selectedModel } = useModelStore();
+  const { selectedModel, webSearch } = useModelStore();
   const app = useContext(AppContext);
 
   useEffect(() => {
@@ -69,6 +70,7 @@ export default function ContextualChatbot({ pageContext }: ContextualChatbotProp
         history: messages.map(({ role, content }) => ({ role, content })),
         query: input,
         pageContext: JSON.stringify(pageContext, null, 2),
+        webSearch,
       }, selectedModel);
       
       const aiMessage: ChatMessage = { role: 'model', content: result.response, modelId: result.modelId };
@@ -177,6 +179,7 @@ export default function ContextualChatbot({ pageContext }: ContextualChatbotProp
                     onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                     disabled={loading}
                   />
+                  <MicButton onText={t => setInput(p => appendSpeech(p, t))} />
                   <Button onClick={handleSend} disabled={loading}>
                     {loading ? (
                       <Loader2 className="h-4 w-4 animate-spin" />

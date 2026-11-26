@@ -15,6 +15,7 @@ import { customTransformStickyNote } from '@/ai/flows/custom-transform-sticky-no
 import { Loader2, Sparkles } from 'lucide-react';
 import type { StickyNote } from '@/lib/types';
 import { Textarea } from '../ui/textarea';
+import { MicButton, appendSpeech } from './MicButton';
 
 interface CustomPromptDialogProps {
   open: boolean;
@@ -79,6 +80,7 @@ export default function CustomPromptDialog({
                     }
                 }}
             />
+            <div className="flex justify-end"><MicButton onText={t => setPrompt(p => appendSpeech(p, t))} /></div>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>

@@ -11,6 +11,7 @@ export type ContextualChatInput = {
   history: { role: 'user' | 'model'; content: string }[];
   query: string;
   pageContext: string;
+  webSearch?: boolean;
 };
 export type ContextualChatOutput = { response: string; modelId?: ModelId; changed?: boolean };
 

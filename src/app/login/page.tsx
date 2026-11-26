@@ -54,7 +54,7 @@ export default function LoginPage() {
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
-                <img src="https://placehold.co/64x64/FFDA63/000000.png?text=N" alt="Notora Logo" data-ai-hint="logo initial" className="rounded-lg"/>
+                <img src="/notora-logo.svg" alt="Notora" width="64" height="64" className="rounded-lg"/>
             </div>
           <CardTitle className="font-headline">Welcome to Notora</CardTitle>
           <CardDescription>Your magical productivity assistant</CardDescription>

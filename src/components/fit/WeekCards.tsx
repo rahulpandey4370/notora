@@ -12,12 +12,13 @@ const avg = (xs: (number | undefined | null)[]) => {
 const n0 = (x: number) => Math.round(x).toLocaleString('en-US');
 const kTick = (v: number) => (v >= 1000 ? `${Math.round(v / 100) / 10}k` : String(v));
 
-function Card({ title, summary, children }: { title: string; summary: string; children: React.ReactNode }) {
+function Card({ title, summary, legend, children }: { title: string; summary: string; legend?: React.ReactNode; children: React.ReactNode }) {
   return (
-    <section className="f-card p-4" aria-label={title}>
+    <section className="f-card min-w-0 overflow-hidden p-4" aria-label={title}>
       <h3 className="text-sm font-semibold">{title}</h3>
       <p className="f-muted text-xs">{summary}</p>
       <div className="mt-3 h-36" aria-hidden>{children}</div>
+      {legend && <div className="f-muted mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs">{legend}</div>}
     </section>
   );
 }
@@ -54,6 +55,11 @@ export function WeekCards({ data, day }: { data: AppData; day: string }) {
     <div className="grid gap-4 sm:grid-cols-2">
       <div className="sm:col-span-2">
         <Card title="Calories in vs burned"
+          legend={<>
+            <span className="inline-flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-sm bg-[var(--f-chart-a)]" />In</span>
+            <span className="inline-flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-sm bg-[var(--f-chart-b)]" />Burned</span>
+            <span className="inline-flex items-center gap-1"><span className="h-0.5 w-4 rounded bg-[var(--f-sec)]" />7-day average</span>
+          </>}
           summary={avgNet == null ? 'Log meals to see your balance.' : `Avg net ${avgNet > 0 ? '+' : '−'}${n0(Math.abs(avgNet))} kcal/day ${avgNet < 0 ? '(deficit)' : '(surplus)'}`}>
           <ResponsiveContainer width="100%" height="100%">
             <ComposedChart data={rows} margin={{ top: 4, right: 4, left: -16, bottom: 0 }} barGap={2}>
@@ -70,14 +76,9 @@ export function WeekCards({ data, day }: { data: AppData; day: string }) {
             </ComposedChart>
           </ResponsiveContainer>
         </Card>
-        <div className="f-muted -mt-2 flex gap-4 px-4 pb-1 text-xs">
-          <span className="inline-flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-sm bg-[var(--f-chart-a)]" />In</span>
-          <span className="inline-flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-sm bg-[var(--f-chart-b)]" />Burned</span>
-          <span className="inline-flex items-center gap-1"><span className="h-0.5 w-4 rounded bg-[var(--f-sec)]" />7-day average</span>
-        </div>
       </div>
 
-      <Card title="Steps" summary={avgSteps == null ? 'No steps this week.' : `Avg ${n0(avgSteps)}/day${stepsGoal ? ` · goal ${n0(stepsGoal)}` : ''}`}>
+      <Card title="Steps" legend={<span className="inline-flex items-center gap-1"><span className="h-0.5 w-4 rounded bg-[var(--f-deep)]" />7-day average</span>} summary={avgSteps == null ? 'No steps this week.' : `Avg ${n0(avgSteps)}/day${stepsGoal ? ` · goal ${n0(stepsGoal)}` : ''}`}>
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart data={rows} margin={{ top: 4, right: 4, left: -16, bottom: 0 }}>
             <XAxis dataKey="label" tickLine={false} axisLine={false} />
@@ -90,7 +91,7 @@ export function WeekCards({ data, day }: { data: AppData; day: string }) {
         </ResponsiveContainer>
       </Card>
 
-      <Card title="Sleep" summary={!hasSleep ? 'Connect Fitbit to see sleep.' : `Avg ${avgSleep!.toFixed(1)} h/night`}>
+      <Card title="Sleep" legend={<span className="inline-flex items-center gap-1"><span className="h-0.5 w-4 rounded bg-[var(--f-sleep)]" />7-day average</span>} summary={!hasSleep ? 'Connect Fitbit to see sleep.' : `Avg ${avgSleep!.toFixed(1)} h/night`}>
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart data={rows} margin={{ top: 4, right: 4, left: -16, bottom: 0 }}>
             <XAxis dataKey="label" tickLine={false} axisLine={false} />

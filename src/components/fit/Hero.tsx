@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { AudioLines, Camera, Flame, Moon, HeartPulse, Pencil } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { AudioLines, CalendarDays, Camera, Flame, Footprints, Moon, HeartPulse, Pencil } from 'lucide-react';
 import { addDays } from '@/lib/fitness';
 
 /** "Had *2* rotis": numbers get the italic accent (from FinWise split's hero). */
@@ -24,35 +24,67 @@ function useTyped(lines: string[]) {
   return { text: line.slice(0, n), done: n >= line.length };
 }
 
+const daysAgo = (day: string, today: string) => Math.round((Date.parse(`${today}T00:00:00Z`) - Date.parse(`${day}T00:00:00Z`)) / 86400_000);
+const chipLabel = (day: string, today: string) => {
+  const ago = daysAgo(day, today);
+  if (ago === 0) return 'Today';
+  if (ago === 1) return 'Yesterday';
+  return new Date(`${day}T00:00:00`).toLocaleDateString('en-IN', ago < 7 ? { weekday: 'short', day: 'numeric' } : { day: 'numeric', month: 'short' });
+};
+
+/** Today, Yesterday, then earlier days in a sideways strip that keeps going back as you scroll; Pick day for anything else. */
+function DayStrip({ day, today, onDay }: { day: string; today: string; onDay: (d: string) => void }) {
+  const [count, setCount] = useState(14);
+  const shown = Math.max(count, daysAgo(day, today) + 1); // a picked day further back is added to the strip
+  const strip = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    strip.current?.querySelector<HTMLElement>('[aria-pressed="true"]')?.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
+  }, [day]);
+  const onScroll = () => {
+    const el = strip.current;
+    if (el && el.scrollLeft + el.clientWidth > el.scrollWidth - 120) setCount(c => c + 14);
+  };
+  return (
+    <div className="flex min-w-0 items-center gap-1.5">
+      <div ref={strip} onScroll={onScroll} className="f-scroll-x flex min-w-0 flex-1 gap-1.5 overflow-x-auto" role="group" aria-label="Choose a day">
+        {Array.from({ length: shown }, (_, i) => addDays(today, -i)).map(d => (
+          <button key={d} type="button" className="f-chip shrink-0" data-on={d === day} aria-pressed={d === day} onClick={() => onDay(d)}>{chipLabel(d, today)}</button>
+        ))}
+      </div>
+      <label className="f-chip relative shrink-0 cursor-pointer" title="Pick a day">
+        <CalendarDays className="h-3.5 w-3.5" aria-hidden />Pick
+        <input type="date" className="absolute inset-0 cursor-pointer opacity-0" max={today} value={day}
+          aria-label="Pick a day to view or log" onChange={e => e.target.value && onDay(e.target.value)} />
+      </label>
+    </div>
+  );
+}
+
 const dayLabel = (day: string, today: string) => {
   if (day === today) return 'Today';
   if (day === addDays(today, -1)) return 'Yesterday';
   return new Date(`${day}T00:00:00`).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' });
 };
 
-export function Hero({ day, today, onDay, rings, netKcal, sleepH, rhr, streak, fitbit, lines, onType, onVoice, onPhoto }: {
+export function Hero({ day, today, onDay, rings, netKcal, sleepH, rhr, streak, stepStreak, stepGoal, fitbit, lines, onType, onVoice, onPhoto }: {
   day: string; today: string; onDay: (ymd: string) => void; rings: React.ReactNode;
-  netKcal: number | null; sleepH?: number; rhr?: number; streak: number; fitbit?: React.ReactNode;
+  netKcal: number | null; sleepH?: number; rhr?: number; streak: number; stepStreak: number; stepGoal: number; fitbit?: React.ReactNode;
   lines: string[]; onType: () => void; onVoice: () => void; onPhoto: () => void;
 }) {
   const { text, done } = useTyped(lines);
-  const isPast = day !== today;
   return (
-    <section className="f-hero flex flex-col gap-4 p-5" aria-label="Today at a glance">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center gap-1.5">
-          <button type="button" className="f-chip" data-on={!isPast} aria-pressed={!isPast} onClick={() => onDay(today)}>Today</button>
-          <button type="button" className="f-chip" data-on={day === addDays(today, -1)} aria-pressed={day === addDays(today, -1)} onClick={() => onDay(addDays(today, -1))}>Yesterday</button>
-          <label className="f-chip relative cursor-pointer" data-on={isPast && day !== addDays(today, -1)}>
-            {isPast && day !== addDays(today, -1) ? dayLabel(day, today) : 'Pick day'}
-            <input type="date" className="absolute inset-0 cursor-pointer opacity-0" max={today} value={day}
-              aria-label="Pick a day to view or log" onChange={e => e.target.value && onDay(e.target.value)} />
-          </label>
-        </div>
-        <div className="flex items-center gap-2">
+    <section className="f-hero flex min-w-0 flex-col gap-4 p-5" aria-label="Today at a glance">
+      <div className="flex flex-col gap-2">
+        <DayStrip day={day} today={today} onDay={onDay} />
+        <div className="flex flex-wrap items-center gap-2">
           {streak > 0 && (
-            <span className="f-chip" title="Days in a row with something logged">
-              <Flame className="h-3.5 w-3.5 text-orange-500" aria-hidden />{streak}-day streak
+            <span className="f-chip" title="Days in a row you logged something yourself (meals, workouts, weight…)" aria-label={`Logging streak: ${streak} days`}>
+              <Flame className="h-3.5 w-3.5 text-orange-500" aria-hidden />{streak}d logged
+            </span>
+          )}
+          {stepStreak > 0 && (
+            <span className="f-chip" title={`Days in a row with ${stepGoal.toLocaleString('en-US')}+ steps`} aria-label={`Steps streak: ${stepStreak} days at ${stepGoal.toLocaleString('en-US')} steps or more`}>
+              <Footprints className="h-3.5 w-3.5 text-[var(--f-accent)]" aria-hidden />{stepStreak}d {stepGoal >= 1000 ? `${Math.round(stepGoal / 100) / 10}k` : stepGoal}+ steps
             </span>
           )}
           {fitbit}

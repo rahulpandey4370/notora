@@ -24,7 +24,9 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { LogOut, User as UserIcon, Award, Bell, KeyRound, Loader2, Gauge } from 'lucide-react';
+import { LogOut, User as UserIcon, Award, Bell, KeyRound, Loader2, Gauge, Globe } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { useModelStore } from '@/hooks/use-model-store';
 import Link from 'next/link';
 import type { User, UserStats } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
@@ -38,6 +40,7 @@ interface UserProfileProps {
 export default function UserProfile({ user, userStats }: UserProfileProps) {
   const { logout } = useAuth();
   const { toast } = useToast();
+  const { webSearch, setWebSearch } = useModelStore();
   const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -135,6 +138,11 @@ export default function UserProfile({ user, userStats }: UserProfileProps) {
               : push.status === 'blocked' ? 'Notifications blocked'
               : 'Enable notifications'}
           </span>
+        </DropdownMenuItem>
+        <DropdownMenuItem onSelect={(e) => { e.preventDefault(); setWebSearch(!webSearch); }}>
+          <Globe className="mr-2 h-4 w-4" />
+          <span className="flex-1">Web search for AI</span>
+          <Switch checked={webSearch} aria-label="Web search for AI" className="pointer-events-none ml-2" tabIndex={-1} />
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href="/usage"><Gauge className="mr-2 h-4 w-4" /><span>AI usage &amp; cost</span></Link>

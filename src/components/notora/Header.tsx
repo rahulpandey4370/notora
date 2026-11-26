@@ -57,12 +57,12 @@ export default function Header({ user, tasks, userStats }: HeaderProps) {
     <header className="flex items-center justify-between p-4 border-b sticky top-0 bg-background/80 backdrop-blur-sm z-20">
       <div className="flex items-center gap-2">
         <Link href="/" className='flex items-center gap-2'>
-          <img src="https://placehold.co/32x32/FFDA63/000000.png?text=N" alt="Notora Logo" data-ai-hint="logo initial" className="rounded-md" />
+          <img src="/notora-logo.svg" alt="Notora" width="32" height="32" className="rounded-md" />
           <h1 className="text-xl font-bold font-headline text-foreground hidden md:block">Notora</h1>
         </Link>
       </div>
       <div className="flex items-center gap-2 md:gap-4">
-        <Button variant={webSearch ? 'default' : 'outline'} size="sm" aria-pressed={webSearch} onClick={() => setWebSearch(!webSearch)}
+        <Button variant={webSearch ? 'default' : 'outline'} size="sm" aria-pressed={webSearch} onClick={() => setWebSearch(!webSearch)} className="hidden md:inline-flex"
           aria-label={`Web search ${webSearch ? 'on' : 'off'}`} title={webSearch ? 'Web search on: AI looks things up online' : 'Web search off'}>
           <Globe className="h-4 w-4 md:mr-2" />
           <span className="hidden md:inline">Web {webSearch ? 'on' : 'off'}</span>

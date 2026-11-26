@@ -1,5 +1,6 @@
 import { FunctionTool, InMemoryRunner, LlmAgent, createEvent, isFinalResponse } from '@google/adk';
 import { searchWeb } from '@/lib/web-search';
+import { monthlyShowsIn, recurringShowsOn } from '@/lib/tasks';
 import { z } from 'zod';
 import { v4 as uuidv4 } from 'uuid';
 import { withAiFeature } from '@/lib/usage';
@@ -56,14 +57,14 @@ function buildTools(onChanged: () => void, webSearch: boolean) {
     })] : []),
     tool({
       name: 'list_tasks',
-      description: "Tasks for one day (default today): title, priority, whether done that day. Includes that month's recurring tasks.",
+      description: "Tasks for one day (default today): title, priority, whether done that day. Includes recurring and monthly tasks.",
       parameters: z.object({ date: ymd.optional() }),
       execute: async ({ date }) => {
         const day = date ?? todayYmd();
         const tasks = (await load()).tasks.filter(t =>
           t.type === 'single' ? ymdOf(t.date) === day
-            : t.type === 'recurring' ? ymdOf(t.createdAt).slice(0, 7) === day.slice(0, 7) && ymdOf(t.createdAt) <= day
-              : t.type === 'monthly' ? t.month === day.slice(0, 7) : false);
+            : t.type === 'recurring' ? recurringShowsOn(t, day, ymdOf(t.createdAt))
+              : t.type === 'monthly' ? monthlyShowsIn(t, day.slice(0, 7)) : false);
         return { date: day, tasks: tasks.map(t => ({ title: t.title, priority: t.priority, type: t.type, done: (t.completions ?? []).includes(day) })) };
       },
     }),

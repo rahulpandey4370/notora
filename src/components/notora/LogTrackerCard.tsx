@@ -213,14 +213,14 @@ export default function LogTrackerCard({ tracker, cardIndex, onDelete, onTracker
         >
             <Card className={cn("flex flex-col h-full", cardColorClass)}>
                 <CardHeader>
-                    <div className="flex justify-between items-start">
-                        <div>
-                            <CardTitle>{tracker.name}</CardTitle>
+                    <div className="flex justify-between items-start gap-2">
+                        <div className="min-w-0">
+                            <CardTitle className="break-words">{tracker.name}</CardTitle>
                             <CardDescription>Unit: {tracker.unit} {tracker.goal ? `| Goal: ${tracker.goal}` : ''}</CardDescription>
                         </div>
-                        <div className="flex items-center">
-                            <Button variant="outline" size="sm" className="mr-2" onClick={() => setAllLogsOpen(true)}>
-                                <BookOpen className="mr-2 h-4 w-4" /> View All
+                        <div className="flex shrink-0 items-center">
+                            <Button variant="outline" size="sm" className="mr-2" onClick={() => setAllLogsOpen(true)} aria-label="View all logs">
+                                <BookOpen className="h-4 w-4 sm:mr-2" /><span className="hidden sm:inline">View All</span>
                             </Button>
                             <AlertDialog>
                                 <AlertDialogTrigger asChild>

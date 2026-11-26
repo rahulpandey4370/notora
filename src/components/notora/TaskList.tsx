@@ -82,6 +82,7 @@ export default function TaskList({ data, onDataChange, currentMonth }: TaskListP
       month: addTaskType === 'monthly' ? format(currentMonth, 'yyyy-MM') : undefined,
       week: addTaskType === 'weekly' && taskDate ? `${format(taskDate, 'yyyy')}-${getWeek(taskDate)}` : undefined,
       carryForwardCount: 0,
+      ...(addTaskType === 'recurring' || addTaskType === 'monthly' ? { ongoing: true } : {}),
     };
     
     onDataChange({ ...data, tasks: [...data.tasks, newTask] });

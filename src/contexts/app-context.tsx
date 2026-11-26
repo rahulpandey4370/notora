@@ -3,6 +3,8 @@
 
 import { createContext, useState, useEffect, useCallback, useRef, type ReactNode } from 'react';
 import { useAuth } from '@/hooks/use-auth';
+import { format } from 'date-fns';
+import { adoptOngoing } from '@/lib/tasks';
 import { getAppData, createAppData, saveAppData } from '@/lib/storage';
 import type { AppData } from '@/lib/types';
 import { v4 as uuidv4 } from 'uuid';
@@ -176,6 +178,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (saveTimer.current) clearTimeout(saveTimer.current);
     saveTimer.current = setTimeout(() => { void flushSave(); }, 600);
   }, [user, flushSave]);
+
+  // One-time upgrade: recurring/monthly tasks now carry on until switched off (src/lib/tasks.ts).
+  // Returns null once nothing old-style is left, so this saves at most once.
+  useEffect(() => {
+    if (!data || !user) return;
+    const upgraded = adoptOngoing(data.tasks, format(new Date(), 'yyyy-MM-dd'));
+    if (upgraded) handleDataChange({ ...data, tasks: upgraded });
+  }, [data, user, handleDataChange]);
 
   // Coming back to the app (phone unlock, switching tabs): pull edits made on
   // other devices, unless this device has unsaved edits of its own.

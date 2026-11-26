@@ -30,7 +30,7 @@ export default function SidebarContent({ onLinkClick }: SidebarContentProps) {
       {/* Mobile view: List */}
       <nav className="md:hidden flex flex-col p-4 space-y-2">
         <Link href="/" className='flex items-center gap-2 mb-4'>
-            <img src="https://placehold.co/32x32/FFDA63/000000.png?text=N" alt="Notora Logo" data-ai-hint="logo initial" className="rounded-md" />
+            <img src="/notora-logo.svg" alt="Notora" width="32" height="32" className="rounded-md" />
             <h1 className="text-xl font-bold font-headline text-foreground">Notora</h1>
         </Link>
         {navItems.map((item) => (

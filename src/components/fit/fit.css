@@ -94,6 +94,10 @@ html.dark[data-fit-look="grape"] .fit-ui { --f-accent: #a98bff; --f-deep: #c3adf
 .f-voice-btn:active { transform: scale(.94); }
 .dark .f-voice-btn { color: #04201f; }
 
+/* sideways day strip: no scrollbar, a soft fade at the right edge */
+.f-scroll-x { scrollbar-width: none; -webkit-mask-image: linear-gradient(90deg, #000 88%, transparent); mask-image: linear-gradient(90deg, #000 88%, transparent); padding-right: 1.5rem; }
+.f-scroll-x::-webkit-scrollbar { display: none; }
+
 .f-row { display: flex; align-items: center; gap: .75rem; padding: .75rem 1rem; }
 .f-row + .f-row { border-top: 1px solid var(--f-line); }
 

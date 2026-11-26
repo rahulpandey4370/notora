@@ -146,6 +146,12 @@ export const TaskSchema = z.object({
   week: z.string().optional(),
   carryForwardCount: z.number().optional(),
   originalXp: z.number().optional(),
+  /** Recurring/monthly: repeats until endsOn (see src/lib/tasks.ts). Unset = old one-month rule. */
+  ongoing: z.boolean().optional(),
+  /** Last day (yyyy-MM-dd) a repeating task shows; monthly tasks use its month. */
+  endsOn: z.string().optional(),
+  /** Recurring: first day shown (set on the copy an edit creates); otherwise the creation day. */
+  startsOn: z.string().optional(),
 });
 export type Task = z.infer<typeof TaskSchema>;
 

@@ -1,6 +1,7 @@
 
 'use client';
 
+import { recurringShowsOn } from '@/lib/tasks';
 import { useState, useMemo, useEffect } from 'react';
 import type { AppData, Task } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -55,8 +56,7 @@ export default function CalendarAnalysis({ data }: CalendarAnalysisProps) {
             case 'single':
                 return task.date ? isSameDay(parseISO(task.date), taskDay) : false;
             case 'recurring':
-                const createdAt = startOfDay(new Date(task.createdAt));
-                return isSameMonth(taskDay, createdAt) && (isSameDay(taskDay, createdAt) || isAfter(taskDay, createdAt));
+                return recurringShowsOn(task, format(taskDay, 'yyyy-MM-dd'));
             case 'weekly':
                 if (!task.week) return false;
                 const weekStartDate = dfStartOfWeek(new Date(task.week.replace(/(\d{4})-(\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });

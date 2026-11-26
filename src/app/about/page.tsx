@@ -39,7 +39,7 @@ export default function AboutPage() {
           <Card className="dark:neon-dashboard">
             <CardHeader className="text-center">
               <div className="flex justify-center mb-4">
-                <img src="https://placehold.co/80x80/FFDA63/000000.png?text=N" alt="Notora Logo" data-ai-hint="logo initial" className="rounded-lg" />
+                <img src="/notora-logo.svg" alt="Notora" width="80" height="80" className="rounded-lg" />
               </div>
               <CardTitle className="text-4xl font-headline">About Notora</CardTitle>
               <CardDescription className="text-lg">

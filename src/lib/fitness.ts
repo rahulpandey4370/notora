@@ -377,6 +377,19 @@ export function suggestTargets(data: AppData, today: string): { steps: number; p
 }
 
 /** Consecutive days with something logged by the user (Fitbit syncs don't count). */
+/** Consecutive days at or over the step goal (Fitbit or typed); today counts once it's reached. */
+export function stepsStreak(data: AppData, today: string): number {
+  const t = findTracker(data, 'steps');
+  if (!t) return 0;
+  const goal = t.goal || 10000;
+  const hit = (d: string) => (valueOn(t, d) ?? 0) >= goal;
+  let d = hit(today) ? today : addDays(today, -1);
+  let n = 0;
+  while (hit(d)) { n++; d = addDays(d, -1); }
+  return n;
+}
+
+/** Consecutive days you logged something yourself (Fitbit's automatic entries don't count). */
 export function loggingStreak(data: AppData, today: string): number {
   const dates = new Set((data.logTrackers ?? []).flatMap(t => t.logs.filter(l => !l.id.startsWith('fitbit-')).map(l => l.date)));
   let d = dates.has(today) ? today : addDays(today, -1);

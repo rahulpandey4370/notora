@@ -1,5 +1,6 @@
 'use client';
 
+import { monthlyShowsIn, recurringShowsOn } from '@/lib/tasks';
 import { useState } from 'react';
 import type { AppData, Task, TaskTemplate, TaskTemplateBundle } from '@/lib/types';
 import { Button } from '@/components/ui/button';
@@ -55,8 +56,14 @@ export default function TaskTemplates({ data, onDataChange, currentMonth, toast 
       month: tpl.type === 'monthly' ? format(currentMonth, 'yyyy-MM') : undefined,
       week: tpl.type === 'weekly' ? `${format(now, 'yyyy')}-${getWeek(now)}` : undefined,
       carryForwardCount: 0,
+      ...(tpl.type === 'recurring' || tpl.type === 'monthly' ? { ongoing: true } : {}),
     };
   };
+
+  /** Recurring and monthly tasks now carry on by themselves, so re-adding one would double it. */
+  const alreadyRepeating = (tpl: TaskTemplate) => data.tasks.some(t =>
+    t.type === tpl.type && t.title.trim().toLowerCase() === tpl.title.trim().toLowerCase() &&
+    (t.type === 'recurring' ? recurringShowsOn(t, format(new Date(), 'yyyy-MM-dd')) : t.type === 'monthly' && monthlyShowsIn(t, format(currentMonth, 'yyyy-MM'))));
 
   const addTemplate = () => {
     if (newTitle.trim() === '') return;
@@ -84,6 +91,7 @@ export default function TaskTemplates({ data, onDataChange, currentMonth, toast 
   };
 
   const addTemplateAsTask = (tpl: TaskTemplate) => {
+    if (alreadyRepeating(tpl)) { toast?.({ title: 'Already repeating', description: `"${tpl.title}" carries on by itself; no need to add it again.` }); return; }
     onDataChange({ ...data, tasks: [...data.tasks, materializeTask(tpl)] });
     toast?.({ title: 'Task added', description: `"${tpl.title}" added to your tasks.` });
   };
@@ -110,11 +118,12 @@ export default function TaskTemplates({ data, onDataChange, currentMonth, toast 
   const applyBundle = (bundle: TaskTemplateBundle) => {
     const tasksToAdd = bundle.templateIds
       .map(tid => templates.find(t => t.id === tid))
-      .filter((t): t is TaskTemplate => !!t)
-      .map(materializeTask);
-    if (tasksToAdd.length === 0) return;
-    onDataChange({ ...data, tasks: [...data.tasks, ...tasksToAdd] });
-    toast?.({ title: 'Bundle applied', description: `Added ${tasksToAdd.length} tasks from "${bundle.name}".` });
+      .filter((t): t is TaskTemplate => !!t);
+    const fresh = tasksToAdd.filter(t => !alreadyRepeating(t)).map(materializeTask);
+    const skipped = tasksToAdd.length - fresh.length;
+    if (fresh.length === 0) { toast?.({ title: 'Nothing to add', description: `Everything in "${bundle.name}" is already repeating.` }); return; }
+    onDataChange({ ...data, tasks: [...data.tasks, ...fresh] });
+    toast?.({ title: 'Bundle applied', description: `Added ${fresh.length} tasks from "${bundle.name}"${skipped ? ` (${skipped} already repeating)` : ''}.` });
   };
 
   const toggleBundleSelected = (id: string) => {

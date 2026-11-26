@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Notora">
+  <defs>
+    <linearGradient id="nt-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#F7BE16"/>
+      <stop offset="0.55" stop-color="#E09A05"/>
+      <stop offset="1" stop-color="#B36A00"/>
+    </linearGradient>
+    <radialGradient id="nt-glow" cx="0.3" cy="0.2" r="0.7">
+      <stop offset="0" stop-color="#FFF3C4" stop-opacity="0.5"/>
+      <stop offset="0.65" stop-color="#FFF3C4" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="512" height="512" rx="118" fill="url(#nt-bg)"/>
+  <rect width="512" height="512" rx="118" fill="url(#nt-glow)"/>
+  <g fill="#FFF6D6" opacity="0.55">
+    <circle cx="96" cy="112" r="5"/><circle cx="128" cy="78" r="3"/><circle cx="430" cy="420" r="4"/><circle cx="398" cy="448" r="2.5"/><circle cx="80" cy="410" r="3"/>
+  </g>
+  <g fill="#2A1206">
+    <rect x="128" y="148" width="50" height="224" rx="25"/>
+    <rect x="334" y="148" width="50" height="224" rx="25"/>
+  </g>
+  <polygon points="-30,0 32,0 10,120 48,120 -16,292 -4,156 -44,156" transform="translate(152 176) rotate(-47) scale(0.9)" fill="#2A1206" stroke="#2A1206" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M410 70 C414 98 422 106 450 110 C422 114 414 122 410 150 C406 122 398 114 370 110 C398 106 406 98 410 70 Z" fill="#2A1206"/>
+  <path d="M448 166 C450 178 454 182 466 184 C454 186 450 190 448 202 C446 190 442 186 430 184 C442 182 446 178 448 166 Z" fill="#2A1206"/>
+</svg>

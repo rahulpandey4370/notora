@@ -20,6 +20,9 @@ import TaskItem from '@/components/notora/TaskItem';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getTaskXp } from '@/lib/utils';
+import { v4 as uuidv4 } from 'uuid';
+import { deleteFrom, editFrom, isRepeating, monthlyShowsIn, recurringShowsOn } from '@/lib/tasks';
+import RepeatingTasks from '@/components/notora/RepeatingTasks';
 import { useShowcase } from '@/contexts/showcase-context';
 import type { Toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -94,7 +97,7 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
         const taskXpValue = getTaskXp(task);
         const completionsForMonth = (task.completions || []).filter(c => isSameMonth(new Date(c), currentMonth));
 
-        if (task.type === 'monthly' && task.month === format(currentMonth, 'yyyy-MM')) {
+        if (task.type === 'monthly' && monthlyShowsIn(task, format(currentMonth, 'yyyy-MM'))) {
             total += taskXpValue;
             if (completionsForMonth.length > 0) {
                 achieved += taskXpValue;
@@ -115,13 +118,12 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
                 }
             }
         } else if (task.type === 'recurring') {
-            const taskStartDate = startOfDay(new Date(task.createdAt));
             const monthStart = startOfMonth(currentMonth);
 
             const daysInMonth = Array.from({ length: endOfMonth(currentMonth).getDate() }, (_, i) => addDays(monthStart, i));
             
             daysInMonth.forEach(dayInMonth => {
-                if (isSameMonth(dayInMonth, taskStartDate) && (isAfter(dayInMonth, taskStartDate) || isSameDay(dayInMonth, taskStartDate))) {
+                if (recurringShowsOn(task, format(dayInMonth, 'yyyy-MM-dd'))) {
                     total += taskXpValue;
                     if ((task.completions || []).includes(format(dayInMonth, 'yyyy-MM-dd'))) {
                         achieved += taskXpValue;
@@ -214,6 +216,21 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
     handleDataChange({ ...data, tasks: newTasks, userStats: { xp: data.userStats.xp + xpChange }});
   };
 
+  /** A repeating task: keep it on earlier days, drop it after today. */
+  /** Repeating tasks, from today on: earlier days keep the task and their ticks. */
+  const onDeleteFromToday = (id: string) => {
+    const task = data.tasks.find(t => t.id === id);
+    if (!task) return;
+    const { task: kept, removed } = deleteFrom(task, format(new Date(), 'yyyy-MM-dd'));
+    handleDataChange({ ...data, tasks: kept ? data.tasks.map(t => (t.id === id ? kept : t)) : data.tasks.filter(t => t.id !== id), userStats: { xp: data.userStats.xp - removed * getTaskXp(task) } });
+  };
+  const onEditFromToday = (id: string, edit: { title: string; priority: Task['priority'] }) => {
+    const task = data.tasks.find(t => t.id === id);
+    if (!task) return;
+    const parts = editFrom(task, edit, format(new Date(), 'yyyy-MM-dd'), uuidv4);
+    handleDataChange({ ...data, tasks: data.tasks.flatMap(t => (t.id === id ? parts : [t])) });
+  };
+
   const handleCarryForward = (id: string) => {
     const task = data.tasks.find(t => t.id === id);
     if (!task) return;
@@ -260,9 +277,7 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
               case 'single': 
                 return task.date ? isSameDay(parseISO(task.date), date) : false;
               case 'recurring':
-                const createdAt = startOfDay(new Date(task.createdAt));
-                // Show if the task is viewed for a day in the same month as its creation.
-                return isSameMonth(date, createdAt) && (isSameDay(date, createdAt) || isAfter(date, createdAt));
+                return recurringShowsOn(task, format(date, 'yyyy-MM-dd'));
               case 'weekly':
                 if (!task.week) return false;
                 const taskWeekStartDate = startOfWeek(new Date(task.week.replace(/(\d{4})-(\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
@@ -275,7 +290,7 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
       });
   };
   
-  const monthlyTasks = data.tasks.filter(t => t.type === 'monthly' && t.month === format(currentMonth, 'yyyy-MM'));
+  const monthlyTasks = data.tasks.filter(t => monthlyShowsIn(t, format(currentMonth, 'yyyy-MM')));
   
   const tasksForCurrentDay = getTasksForDate(currentDay);
   const completedCountForDay = tasksForCurrentDay.filter(t => (t.completions || []).includes(format(currentDay, 'yyyy-MM-dd'))).length;
@@ -311,6 +326,7 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
             currentMonth={currentMonth}
             toast={toast}
         />
+        <RepeatingTasks data={data} onDataChange={handleDataChange} />
 
         <Tabs defaultValue="daily" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
@@ -363,6 +379,8 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
                                         task={task}
                                         onToggle={() => onToggle(task.id, currentDay)}
                                         onDelete={() => onDelete(task.id)}
+                                        onDeleteFromToday={task.type === 'recurring' && isRepeating(task) ? () => onDeleteFromToday(task.id) : undefined}
+                                        onEditFromToday={task.type === 'recurring' && isRepeating(task) ? e => onEditFromToday(task.id, e) : undefined}
                                         isCompleted={isCompleted}
                                         onCarryForward={canCarryForward ? () => handleCarryForward(task.id) : undefined}
                                         isPastDue={isPastDue && !isCompleted}
@@ -398,6 +416,8 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
                                     task={task}
                                     onToggle={() => onToggle(task.id, currentMonth)}
                                     onDelete={() => onDelete(task.id)}
+                                    onDeleteFromToday={isRepeating(task) ? () => onDeleteFromToday(task.id) : undefined}
+                                    onEditFromToday={isRepeating(task) ? e => onEditFromToday(task.id, e) : undefined}
                                     isCompleted={(task.completions || []).includes(format(startOfMonth(currentMonth), 'yyyy-MM-dd'))}
                                />
                             ))}

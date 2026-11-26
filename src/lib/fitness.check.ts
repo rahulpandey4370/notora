@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import type { AppData, LogTracker } from '@/lib/types';
 import {
   applyDraft, bmr, dayBurn, dayIntake, describeValueChange, editDayItem, goalEta, loggingStreak,
-  clearBurnBase, sanitizeDraft, setTargets, suggestTargets, trendSeries, weeklyRate, type TrendPoint,
+  clearBurnBase, sanitizeDraft, setTargets, suggestTargets, trendSeries, weeklyRate, stepsStreak, type TrendPoint,
 } from './fitness';
 
 const TODAY = '2026-11-26';
@@ -247,5 +247,14 @@ const bmr80 = bmr(profile, 80, TODAY);
   assert.equal(d1.fitnessDays![TODAY].burnBase, undefined, 'the Fitbit value is not turned into a typed base');
   const d2 = applyDraft(d0, { date: TODAY, meals: [], activities: [], values: [{ trackerId: 'Calories Burned', value: 2500 }] }, id);
   assert.equal(dayBurn(d2, TODAY).total, 2500, 'a typed burn total still wins');
+}
+// Steps streak: consecutive days at or over the step goal, Fitbit days included; today counts once reached.
+{
+  const days = (vals: number[]) => vals.map((v, i) => [ymdOffset(TODAY, -i), v, `fitbit-steps-${ymdOffset(TODAY, -i)}`] as [string, number, string]);
+  const st = (vals: number[], goal?: number) => base([tracker('Steps', 'steps', days(vals), { healthMetric: 'steps', ...(goal ? { goal } : {}) })]);
+  assert.equal(stepsStreak(st([4000, 10500, 12000, 10032, 11000, 10100, 900]), TODAY), 5, "today isn't done yet: count from yesterday");
+  assert.equal(stepsStreak(st([10200, 10500, 12000]), TODAY), 3, 'today counts once the goal is reached');
+  assert.equal(stepsStreak(st([9000, 8000, 9500], 8000), TODAY), 3, "uses the tracker's own goal");
+  assert.equal(stepsStreak(base([]), TODAY), 0);
 }
 console.log('fitness checks passed');

@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { UserRound } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Activity, AppData, Meal } from '@/lib/types';
-import { applyDraft, clearBurnBase, dayBurn, dayIntake, editDayItem, findTracker, loggingStreak, valueOn, type FitnessDraft } from '@/lib/fitness';
+import { applyDraft, clearBurnBase, dayBurn, dayIntake, editDayItem, findTracker, loggingStreak, stepsStreak, valueOn, type FitnessDraft } from '@/lib/fitness';
 import { fitSerif } from './font';
 import { Hero } from './Hero';
 import { Ring } from './Ring';
@@ -19,6 +19,7 @@ import { LogSheet } from './LogSheet';
 import { TargetsSheet } from './TargetsSheet';
 import { ManageSheet } from './ManageSheet';
 import { LookPicker, useFitLook } from './Looks';
+import { AiSummary } from './AiSummary';
 
 const EXAMPLES = ['94.1 kg, 12k steps, 110g protein', 'Had 2 rotis and dal, walked 40 min', 'Snap your lunch, I’ll count it', 'Ran 5k in 32 min'];
 const k = (n: number) => Math.round(n).toLocaleString('en-US');
@@ -70,6 +71,7 @@ export function FitnessPage({ data, onDataChange, showcase = false }: { data: Ap
       rhr: valueOn(findTracker(data, 'restingHr'), day),
       net: intake.kcal != null && burn.total != null ? intake.kcal - burn.total : null,
       streak: loggingStreak(data, today),
+      stepStreak: stepsStreak(data, today),
       lines: heroLines(data, day),
     };
   }, [data, day, today]);
@@ -83,9 +85,9 @@ export function FitnessPage({ data, onDataChange, showcase = false }: { data: Ap
   return (
     <div className={cn('fit-ui min-h-full', fitSerif.variable)}>
       <div className="mx-auto w-full max-w-6xl space-y-4 p-4 pb-28 md:p-8">
-        <div className="grid gap-4 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
-          <div className="space-y-4">
-            <Hero day={day} today={today} onDay={setDay} streak={s.streak} netKcal={s.net} sleepH={s.sleep} rhr={s.rhr}
+        <div className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
+          <div className="min-w-0 space-y-4">
+            <Hero day={day} today={today} onDay={setDay} streak={s.streak} stepStreak={s.stepStreak} stepGoal={s.stepsGoal || 10000} netKcal={s.net} sleepH={s.sleep} rhr={s.rhr}
               fitbit={showcase ? undefined : <FitbitChip />} lines={s.lines}
               onType={() => openLog('type')} onVoice={() => openLog('voice')} onPhoto={() => openLog('photo')}
               rings={<>
@@ -111,6 +113,7 @@ export function FitnessPage({ data, onDataChange, showcase = false }: { data: Ap
         </div>
 
         <TrackerTiles data={data} today={day} onOpen={setOpenTracker} onManage={() => setManageOpen(true)} />
+        <AiSummary data={data} today={today} aiDisabled={showcase} />
         <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
           <button type="button" className="f-chip" onClick={() => setTargetsOpen(true)}><UserRound className="h-3.5 w-3.5" aria-hidden />Targets &amp; profile</button>
           <LookPicker look={look} onLook={setLook} />

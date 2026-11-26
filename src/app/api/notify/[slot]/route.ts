@@ -1,3 +1,4 @@
+import { recurringShowsOn } from '@/lib/tasks';
 import { NextResponse } from 'next/server';
 import { getSupabase } from '@/lib/supabase';
 import { pushConfigured, sendPushOnce } from '@/lib/push';
@@ -20,8 +21,8 @@ const ymdOf = (v?: string) => (!v ? '' : /^\d{4}-\d{2}-\d{2}$/.test(v) ? v : ymd
 function tasksForToday(tasks: Task[], today: string): Task[] {
   return tasks.filter(t => {
     if (t.type === 'single') return ymdOf(t.date) === today;
-    // Mirrors the Tasks page: a recurring task shows every day of the month it was created in.
-    if (t.type === 'recurring') { const c = ymdOf(t.createdAt); return c.slice(0, 7) === today.slice(0, 7) && c <= today; }
+    // Same rule as the Tasks page (src/lib/tasks.ts), with the start date in the app's time zone.
+    if (t.type === 'recurring') return recurringShowsOn(t, today, ymdOf(t.createdAt));
     return false;
   });
 }

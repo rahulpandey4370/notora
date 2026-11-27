@@ -23,16 +23,16 @@ export type SaveResult = { ok: true; version: string } | { ok: false; conflict: 
 /** null = this user has no row yet. Throws on any other failure (never treat an outage as "new user"). */
 export async function getAppData(): Promise<Stored | null> {
   const username = await requireUser();
-  const { data, error } = await getSupabase()
-    .from('app_data')
-    .select('data, updated_at')
-    .eq('username', username)
-    .maybeSingle();
+  // Both reads at once: the document and the synced Fitbit days.
+  const [{ data, error }, health] = await Promise.all([
+    getSupabase().from('app_data').select('data, updated_at').eq('username', username).maybeSingle(),
+    recentHealthDays(username),
+  ]);
   if (error) throw new Error(`Couldn't load your data: ${error.message}`);
   if (!data) return null;
   // Fitbit days live in their own table (so a background sync never conflicts
   // with an open device) and are folded into the log trackers here.
-  const merged = mergeHealthIntoTrackers(data.data as AppData, await recentHealthDays(username));
+  const merged = mergeHealthIntoTrackers(data.data as AppData, health);
   return { data: merged, version: data.updated_at };
 }
 

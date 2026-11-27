@@ -1,6 +1,7 @@
 'use client';
 
-import { createContext, useState, useEffect, type ReactNode } from 'react';
+import { createContext, useState, useEffect, useCallback, type ReactNode } from 'react';
+import { clearDeviceCache } from '@/lib/device-cache';
 import { useRouter } from 'next/navigation';
 import type { User } from '@/lib/types';
 
@@ -28,23 +29,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.removeItem('notora-user');
     }
     if (!stored) { setLoading(false); return; }
-    // The server only trusts the httpOnly session cookie. A device signed in
-    // before that cookie existed (or whose cookie expired) must sign in again
-    // rather than be shown an empty workspace.
-    fetch('/api/session')
+    // Show the app straight away; the session is checked in the background
+    // (the server only trusts the httpOnly cookie, so a dead session can't see
+    // anything, and is signed out here as soon as the check answers).
+    const s = stored;
+    setUser(prev => prev ?? s);
+    setLoading(false);
+    fetch('/api/session', { method: 'GET', cache: 'no-store' })
       .then(async (r) => {
         if (r.status === 401) throw new Error('signed-out');
         if (r.ok) {
           const { username } = await r.json();
           if (username !== stored!.username.toLowerCase()) throw new Error('signed-out');
         }
-        setUser(stored);
+        setUser(prev => (prev?.username === stored!.username ? prev : stored));
       })
       .catch((e) => {
-        if (e?.message === 'signed-out') localStorage.removeItem('notora-user');
-        else setUser(stored); // offline: keep the local session, saves will report errors
-      })
-      .finally(() => setLoading(false));
+        if (e?.message === 'signed-out') { localStorage.removeItem('notora-user'); clearDeviceCache(); setUser(null); }
+        // offline: keep the local session, saves will report errors
+      });
   }, []);
 
   const login = async (email: string, pass: string): Promise<boolean> => {
@@ -69,12 +72,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return false;
   };
 
-  const logout = () => {
+  const logout = useCallback(() => {
     void fetch('/api/session', { method: 'DELETE' }).catch(() => {});
     setUser(null);
     localStorage.removeItem('notora-user');
+    clearDeviceCache();
     router.push('/login');
-  };
+  }, [router]);
 
   return (
     <AuthContext.Provider value={{ user, loading, login, logout }}>

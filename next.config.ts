@@ -4,6 +4,8 @@ import type {NextConfig} from 'next';
 const withPWA = require('@ducanh2912/next-pwa').default({
   dest: 'public',
   disable: process.env.NODE_ENV === 'development',
+  // Default true: a full page reload every time the phone regains signal, wiping what's on screen.
+  reloadOnOnline: false,
 });
 
 

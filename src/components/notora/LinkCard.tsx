@@ -124,19 +124,19 @@ export default function LinkCard({ link, onDelete, onUpdate }: LinkCardProps) {
                     <div className="flex items-center gap-1">
                         {isEditing ? (
                             <>
-                                <Button variant="ghost" size="icon" onClick={handleSave} className="text-green-500 hover:text-green-500 rounded-full">
+                                <Button variant="ghost" size="icon" onClick={handleSave} className="text-green-500 hover:text-green-500 rounded-full" aria-label="Save changes">
                                     <Save className="h-4 w-4" />
                                 </Button>
-                                <Button variant="ghost" size="icon" onClick={handleCancel} className="text-destructive hover:text-destructive rounded-full">
+                                <Button variant="ghost" size="icon" onClick={handleCancel} className="text-destructive hover:text-destructive rounded-full" aria-label="Cancel editing">
                                     <X className="h-4 w-4" />
                                 </Button>
                             </>
                         ) : (
                             <>
-                                <Button variant="ghost" size="icon" onClick={() => setIsEditing(true)} className="text-black/60 hover:text-black rounded-full">
+                                <Button variant="ghost" size="icon" onClick={() => setIsEditing(true)} className="text-muted-foreground hover:text-foreground rounded-full" aria-label={`Edit ${link.title || 'link'}`}>
                                     <Edit className="h-4 w-4" />
                                 </Button>
-                                <Button variant="ghost" size="icon" onClick={() => onDelete(link.id)} className="text-black/60 hover:text-destructive hover:bg-destructive/10 rounded-full">
+                                <Button variant="ghost" size="icon" onClick={() => onDelete(link.id)} className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-full" aria-label={`Delete ${link.title || 'link'}`}>
                                     <Trash2 className="h-4 w-4" />
                                 </Button>
                             </>

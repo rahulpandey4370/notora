@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useRef, useState, useMemo } from 'react';
 import type { AppData, SavedLink } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,6 +11,7 @@ import { analyzeLink } from '@/ai/flows/analyze-link';
 import { searchLinks } from '@/ai/flows/search-links';
 import { linkCategories } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
+import { ToastAction } from '@/components/ui/toast';
 import LinkCard from './LinkCard';
 import { motion } from 'framer-motion';
 import { useModelStore } from '@/hooks/use-model-store';
@@ -31,6 +32,9 @@ export default function LinkManager({ savedLinks, data, onDataChange }: LinkMana
   const [searchModel, setSearchModel] = useState<string | undefined>();
   const { toast } = useToast();
   const { selectedModel } = useModelStore();
+  // The latest data, so Undo restores into what's current (not a snapshot from before the delete).
+  const latest = useRef({ data, onDataChange });
+  latest.current = { data, onDataChange };
 
   const handleAddLink = async () => {
     if (!newUrl.trim()) return;
@@ -46,42 +50,42 @@ export default function LinkManager({ savedLinks, data, onDataChange }: LinkMana
       return;
     }
 
-    setLoading(true);
+    // Show it straight away; the AI fills in title, summary and category behind it.
+    const url = newUrl.trim();
+    const id = uuidv4();
+    const host = (() => { try { return new URL(url).hostname.replace(/^www\./, ''); } catch { return url; } })();
+    const placeholder: SavedLink = { id, url, title: host, summary: 'Analyzing…', category: 'Other', dateAdded: new Date().toISOString() };
+    onDataChange({ ...data, savedLinks: [placeholder, ...(data.savedLinks || [])] });
+    setNewUrl('');
+    // Patch only this link in whatever the data is by then (other edits made meanwhile are kept).
+    const patch = (p: Partial<SavedLink>) => {
+      const { data: cur, onDataChange: save } = latest.current;
+      if (!(cur.savedLinks || []).some(l => l.id === id)) return; // deleted meanwhile
+      save({ ...cur, savedLinks: (cur.savedLinks || []).map(l => (l.id === id ? { ...l, ...p } : l)) });
+    };
     try {
-      const result = await analyzeLink({ url: newUrl }, selectedModel);
-      const newLink: SavedLink = {
-        id: uuidv4(),
-        url: newUrl,
-        title: result.title,
-        summary: result.summary,
-        category: result.category,
-        dateAdded: new Date().toISOString(),
-        model: result.modelId,
-      };
-
-      const updatedLinks = [newLink, ...(data.savedLinks || [])];
-      onDataChange({ ...data, savedLinks: updatedLinks });
-      setNewUrl('');
-
-      toast({
-        title: 'Link Saved!',
-        description: `"${result.title}" has been added to your collection.`,
-      });
+      const result = await analyzeLink({ url }, selectedModel);
+      patch({ title: result.title, summary: result.summary, category: result.category, model: result.modelId });
     } catch (error) {
       console.error('Failed to analyze link:', error);
-      toast({
-        variant: 'destructive',
-        title: 'Analysis Failed',
-        description: 'Could not analyze the provided link. Please try again.',
-      });
-    } finally {
-      setLoading(false);
+      patch({ summary: 'Couldn’t analyze this link. It’s saved; tap edit to add a title and notes.' });
+      toast({ variant: 'destructive', title: 'Saved, but not analyzed', description: 'The link is in your list. Tap edit to add details, or try adding it again later.' });
     }
   };
 
   const handleDeleteLink = (id: string) => {
-    const updatedLinks = (data.savedLinks || []).filter((link) => link.id !== id);
-    onDataChange({ ...data, savedLinks: updatedLinks });
+    const links = data.savedLinks || [];
+    const index = links.findIndex(l => l.id === id);
+    if (index === -1) return;
+    const removed = links[index];
+    onDataChange({ ...data, savedLinks: links.filter(l => l.id !== id) });
+    const restore = () => {
+      const { data: cur, onDataChange: save } = latest.current;
+      const now = cur.savedLinks || [];
+      if (now.some(l => l.id === id)) return;
+      save({ ...cur, savedLinks: [...now.slice(0, index), removed, ...now.slice(index)] });
+    };
+    toast({ title: 'Link deleted', description: removed.title || removed.url, action: <ToastAction altText="Undo delete" onClick={restore}>Undo</ToastAction> });
   };
   
   const handleUpdateLink = (id: string, updatedData: Partial<Omit<SavedLink, 'id'>>) => {

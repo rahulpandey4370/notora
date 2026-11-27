@@ -18,10 +18,12 @@ import { Input } from '../ui/input';
 import { cn } from '@/lib/utils';
 import { generateNoteTitle } from '@/ai/flows/generate-note-title';
 import { SparkleIcon } from './SparkleIcon';
+import { useModelStore } from '@/hooks/use-model-store';
+import { useToast } from '@/hooks/use-toast';
 
 interface StickyNoteProps {
   note: StickyNoteType;
-  onChange: (id: string, newContent: Partial<StickyNoteType>) => void;
+  onChange: (id: string, newContent: Partial<StickyNoteType> & { undo?: boolean; redo?: boolean }) => void;
   onDelete: (id: string) => void;
   onStopDrag: (id: string, position: { x: number; y: number }) => void;
   constraintsRef: React.RefObject<HTMLDivElement>;
@@ -49,6 +51,8 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState(note.content);
   const [editedTitle, setEditedTitle] = useState(note.title || '');
+  const { selectedModel } = useModelStore();
+  const { toast } = useToast();
 
   const x = useMotionValue(note.position.x);
   const y = useMotionValue(note.position.y);
@@ -99,33 +103,34 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
         switch (operation) {
             case 'title':
               if (!contentToProcess) return;
-              result = await generateNoteTitle({ content: contentToProcess });
+              result = await generateNoteTitle({ content: contentToProcess }, selectedModel);
               onChange(note.id, { title: result.title });
               if (isEditing) setEditedTitle(result.title);
               break;
             case 'polish':
-                result = await polishStickyNote({ content: contentToProcess });
+                result = await polishStickyNote({ content: contentToProcess }, selectedModel);
                 onChange(note.id, { content: result.polishedContent });
                 if(isEditing) setEditedContent(result.polishedContent);
                 break;
             case 'summarize':
-                result = await summarizeStickyNote({ content: contentToProcess });
+                result = await summarizeStickyNote({ content: contentToProcess }, selectedModel);
                 onChange(note.id, { content: result.summary });
                 if(isEditing) setEditedContent(result.summary);
                 break;
             case 'bulletify':
-                result = await bulletifyStickyNote({ text: contentToProcess });
+                result = await bulletifyStickyNote({ text: contentToProcess }, selectedModel);
                 onChange(note.id, { content: result.bulletifiedText });
                 if(isEditing) setEditedContent(result.bulletifiedText);
                 break;
             case 'simplify':
-                result = await simplifyStickyNote({ text: contentToProcess });
+                result = await simplifyStickyNote({ text: contentToProcess }, selectedModel);
                 onChange(note.id, { content: result.simplifiedText });
                 if(isEditing) setEditedContent(result.simplifiedText);
                 break;
         }
     } catch (error) {
         console.error(`Failed to ${operation} note:`, error);
+        toast({ variant: 'destructive', title: 'AI action failed', description: `Couldn't ${operation === 'title' ? 'generate a title' : operation} this note. Try again.` });
     } finally {
         setAiLoading(null);
     }
@@ -187,7 +192,7 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
           ): (
             <h3 className="font-bold text-sm p-1 truncate flex-1">{note.title || 'Note'}</h3>
           )}
-          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full flex-shrink-0" onClick={(e) => { e.stopPropagation(); handleAIAction('title'); }} disabled={aiLoading === 'title'}>
+          <Button variant="ghost" size="icon" aria-label="Generate title with AI" className="h-8 w-8 rounded-full flex-shrink-0" onClick={(e) => { e.stopPropagation(); handleAIAction('title'); }} disabled={aiLoading === 'title'}>
             {aiLoading === 'title' ? <Loader2 className="h-4 w-4 animate-spin"/> : <SparkleIcon className="h-4 w-4" />}
           </Button>
         </div>
@@ -214,13 +219,13 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
         <div className="flex items-center justify-end px-2 py-1 flex-shrink-0 mt-auto" onClick={e => e.stopPropagation()}>
             {isEditing && (
                 <div className="flex-1 flex gap-1">
-                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={handleCancelEditing}><X className="h-4 w-4 text-red-600" /></Button>
+                    <Button variant="ghost" size="icon" aria-label="Discard changes" className="h-8 w-8 rounded-full" onClick={handleCancelEditing}><X className="h-4 w-4 text-red-600" /></Button>
                     <MicButton className="h-8 w-8 rounded-full" onText={t => setEditedContent(p => appendSpeech(p, t))} />
                 </div>
             )}
           <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
+                  <Button variant="ghost" size="icon" aria-label="Note options" className="h-8 w-8 rounded-full">
                       <MoreVertical className="h-4 w-4" />
                   </Button>
               </DropdownMenuTrigger>
@@ -256,7 +261,7 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
                       <Paintbrush className="mr-2 h-4 w-4" /> Change Color
                       <div className='flex gap-1 ml-auto'>
                           {themes.map(theme => (
-                              <button key={theme} onClick={(e) => {
+                              <button key={theme} aria-label={`Change color to ${theme}`} onClick={(e) => {
                                   e.stopPropagation();
                                   onChange(note.id, { theme });
                               }} className={`w-4 h-4 rounded-full ${themeColors[theme].split(' ')[0]}`} />

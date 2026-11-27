@@ -5,7 +5,7 @@ import { pushConfigured, sendPushOnce } from '@/lib/push';
 import { healthConfigured, ReconnectNeeded, recentHealthDays, syncHealth } from '@/lib/health';
 import type { AppData, Task } from '@/lib/types';
 import { mergeHealthIntoTrackers } from '@/lib/health-merge';
-import { dueReminders, reminderFor, weighedOn } from '@/lib/reminders';
+import { dueReminders, isMealReminder, reminderFor, weighedOn } from '@/lib/reminders';
 import { checkinPush, weeklyCheckin } from '@/lib/checkin';
 import type { Food } from '@/lib/food-match';
 
@@ -138,19 +138,22 @@ async function tick() {
     try {
       const { data: row } = await supabase.from('app_data').select('data').eq('username', username).maybeSingle();
       if (!row?.data) { report[username] = ['no data']; continue; }
-      // Only people who use the Logs page get meal reminders.
+      // Meal reminders only for people who use the Logs page; the 9 AM tasks one for everyone.
       const raw = row.data as AppData;
-      if (!raw.fitnessProfile && !Object.keys(raw.fitnessDays ?? {}).length) { report[username] = ['skipped: not using the Logs page']; continue; }
+      const usesLogs = !!raw.fitnessProfile || Object.keys(raw.fitnessDays ?? {}).length > 0;
+      const mine = due.filter(id => usesLogs || !isMealReminder(id));
+      if (!mine.length) { report[username] = ['skipped: not using the Logs page']; continue; }
       // Fold in today's Fitbit weigh-in and steps, as the app does on load.
       const data = mergeHealthIntoTrackers(row.data as AppData, await recentHealthDays(username, 2));
       let foods: Food[] = [];
-      if (due.includes('close')) {
+      if (mine.includes('close')) {
         const { data: rows } = await supabase.from('foods').select('id, name, aliases, unit, kcal, protein_g, carbs_g, fat_g, fiber_g, servings').eq('username', username);
         foods = (rows ?? []).map(r => ({ id: r.id, name: r.name, aliases: r.aliases ?? [], unit: r.unit, kcal: Number(r.kcal), proteinG: Number(r.protein_g), carbsG: Number(r.carbs_g), fatG: Number(r.fat_g), fiberG: Number(r.fiber_g), servings: r.servings ?? [] }));
       }
-      const week = due.includes('checkin') ? weeklyCheckin(data, today) : null;
-      for (const id of due) {
-        const payload = reminderFor(id, data, today, { weighedToday: weighedOn(data, today), foods, checkin: week ? checkinPush(week) : null });
+      const week = mine.includes('checkin') ? weeklyCheckin(data, today) : null;
+      const todayTasks = mine.includes('tasks') || mine.includes('wrapup') ? tasksForToday(data.tasks ?? [], today).map(t => ({ title: t.title, done: (t.completions ?? []).includes(today) })) : undefined;
+      for (const id of mine) {
+        const payload = reminderFor(id, data, today, { weighedToday: weighedOn(data, today), foods, checkin: week ? checkinPush(week) : null, todayTasks, usesLogs });
         if (!payload) { out.push(`${id}: nothing to say`); continue; }
         const sent = await sendPushOnce(`${id}:${username}:${today}`, username, { ...payload, tag: `meal-${id}` });
         out.push(`${id}: ${sent ? 'sent' : 'not sent (already sent or no device)'}`);

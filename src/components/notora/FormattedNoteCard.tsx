@@ -17,11 +17,13 @@ import { simplifyStickyNote } from '@/ai/flows/simplify-sticky-note';
 import CustomPromptDialog from './CustomPromptDialog';
 import { cn } from '@/lib/utils';
 import { Input } from '../ui/input';
+import { useModelStore } from '@/hooks/use-model-store';
+import { useToast } from '@/hooks/use-toast';
 
 interface FormattedNoteCardProps {
   note: StickyNote;
   noteNumber: number;
-  onNoteChange: (id: string, newContent: Partial<StickyNote>) => void;
+  onNoteChange: (id: string, newContent: Partial<StickyNote> & { undo?: boolean; redo?: boolean }) => void;
   onNoteDelete: (id: string) => void;
   scrollRef?: React.RefObject<HTMLDivElement>;
 }
@@ -44,6 +46,8 @@ export default function FormattedNoteCard({ note, noteNumber, onNoteChange, onNo
   const [editedContent, setEditedContent] = useState(note.content);
   const [aiLoading, setAiLoading] = useState<AIOperation | null>(null);
   const [isPromptDialogOpen, setIsPromptDialogOpen] = useState(false);
+  const { selectedModel } = useModelStore();
+  const { toast } = useToast();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const autoSaveTimer = useRef<NodeJS.Timeout | null>(null);
 
@@ -96,28 +100,29 @@ export default function FormattedNoteCard({ note, noteNumber, onNoteChange, onNo
         const contentToProcess = isEditing ? editedContent : note.content;
         switch (operation) {
             case 'polish':
-                result = await polishStickyNote({ content: contentToProcess });
+                result = await polishStickyNote({ content: contentToProcess }, selectedModel);
                 onNoteChange(note.id, { content: result.polishedContent });
                 if(isEditing) setEditedContent(result.polishedContent);
                 break;
             case 'summarize':
-                result = await summarizeStickyNote({ content: contentToProcess });
+                result = await summarizeStickyNote({ content: contentToProcess }, selectedModel);
                 onNoteChange(note.id, { content: result.summary });
                 if(isEditing) setEditedContent(result.summary);
                 break;
             case 'bulletify':
-                result = await bulletifyStickyNote({ text: contentToProcess });
+                result = await bulletifyStickyNote({ text: contentToProcess }, selectedModel);
                 onNoteChange(note.id, { content: result.bulletifiedText });
                 if(isEditing) setEditedContent(result.bulletifiedText);
                 break;
             case 'simplify':
-                result = await simplifyStickyNote({ text: contentToProcess });
+                result = await simplifyStickyNote({ text: contentToProcess }, selectedModel);
                 onNoteChange(note.id, { content: result.simplifiedText });
                 if(isEditing) setEditedContent(result.simplifiedText);
                 break;
         }
     } catch (error) {
         console.error(`Failed to ${operation} note:`, error);
+        toast({ variant: 'destructive', title: 'AI action failed', description: `Couldn't ${operation} this note. Try again.` });
     } finally {
         setAiLoading(null);
     }
@@ -154,7 +159,7 @@ export default function FormattedNoteCard({ note, noteNumber, onNoteChange, onNo
           )}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0">
+              <Button variant="ghost" size="icon" aria-label="Note options" className="h-8 w-8 flex-shrink-0">
                 <MoreVertical className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -186,7 +191,7 @@ export default function FormattedNoteCard({ note, noteNumber, onNoteChange, onNo
                 <Paintbrush className="mr-2 h-4 w-4" /> Change Color
                 <div className='flex gap-1 ml-auto'>
                     {themes.map(theme => (
-                        <button key={theme} onClick={(e) => {
+                        <button key={theme} aria-label={`Change color to ${theme}`} onClick={(e) => {
                             e.stopPropagation();
                             onNoteChange(note.id, { theme });
                         }} className={`w-4 h-4 rounded-full ${cn(themeColors[theme].replace('border-l-4 ','bg-[').replace(']','/30]'))}`} />

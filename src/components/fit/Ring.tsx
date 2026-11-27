@@ -1,22 +1,33 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { LucideIcon } from 'lucide-react';
 
 const num = (n: number) => Math.round(n).toLocaleString('en-US');
 
 export { fmtSleep } from '@/lib/fitness';
 
-/** Counts 0 → `to` (ease-out) each time `run` turns on. Jumps straight there for reduced-motion users. */
+/**
+ * Counts up (ease-out) to `to`: from 0 when the card comes into view, and from
+ * the number already shown when the value changes (logging a meal doesn't
+ * restart it from 0, which looked like a reload). Jumps there for reduced motion.
+ */
 function useCountUp(to: number | undefined, run: boolean) {
   const [n, setN] = useState(0);
+  const shown = useRef(0);
+  const wasRunning = useRef(false);
+  shown.current = n;
   useEffect(() => {
     if (to == null) return;
+    const entering = run && !wasRunning.current;
+    wasRunning.current = run;
     if (!run) { setN(to); return; } // a card being swiped into view shows its real number
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) { setN(to); return; }
+    const from = entering ? 0 : shown.current;
+    if (from === to) return;
     let raf = 0;
     const t0 = performance.now();
     const step = (t: number) => {
       const p = Math.min((t - t0) / 1000, 1);
-      setN(to * (1 - (1 - p) ** 3));
+      setN(from + (to - from) * (1 - (1 - p) ** 3));
       if (p < 1) raf = requestAnimationFrame(step);
     };
     raf = requestAnimationFrame(step);

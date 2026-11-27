@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/use-auth';
 import { useApp } from '@/hooks/use-app';
@@ -16,7 +16,8 @@ import { ChevronLeft, ChevronRight, ClipboardList, CalendarDays } from 'lucide-r
 import { format, startOfMonth, addMonths, subMonths, isSameDay, startOfDay, addDays, subDays, isAfter, isSameMonth, endOfMonth, startOfWeek, isWithinInterval, isBefore, isYesterday, setHours, setMinutes, setSeconds, endOfDay , parseISO} from 'date-fns';
 import { toYmd } from '@/lib/date-utils';
 import type { Task } from '@/lib/types';
-import TaskItem from '@/components/notora/TaskItem';
+import TaskItem, { crossesReward, deleteWithUndo, editSingleTask } from '@/components/notora/TaskItem';
+import { weekStart } from '@/lib/week';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getTaskXp } from '@/lib/utils';
@@ -24,7 +25,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { deleteFrom, editFrom, isRepeating, monthlyShowsIn, recurringShowsOn } from '@/lib/tasks';
 import RepeatingTasks from '@/components/notora/RepeatingTasks';
 import { useShowcase } from '@/contexts/showcase-context';
-import type { Toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
 const XP_PENALTY: Record<Task['priority'], number> = {
@@ -103,8 +103,8 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
                 achieved += taskXpValue;
             }
         } else if (task.type === 'weekly' && task.week) {
-            const taskWeekStartDate = startOfWeek(new Date(task.week.replace(/(\d{4})-(\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
-            if (isSameMonth(taskWeekStartDate, currentMonth)) {
+            const taskWeekStartDate = weekStart(task.week);
+            if (taskWeekStartDate && isSameMonth(taskWeekStartDate, currentMonth)) {
                 total += taskXpValue;
                 if (completionsForMonth.length > 0) {
                     achieved += taskXpValue;
@@ -135,6 +135,10 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
     
     return { monthlyXp: achieved, totalPossibleMonthlyXp: total };
   }, [data, currentMonth]);
+
+  // Undo-delete restores into the data as it is when Undo is clicked, not as it was at delete.
+  const latest = useRef(data!);
+  if (data) latest.current = data;
 
 
   if (loading || !data || !user) {
@@ -188,7 +192,7 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
             });
             showNotification(`+${taskXp} XP! ✨`, { body: message });
 
-            if (data.userStats.xp < 100 && data.userStats.xp + xpChange >= 100) {
+            if (crossesReward(data.userStats.xp, data.userStats.xp + xpChange)) {
               const rewardMessage = 'You have earned over 100 XP. Time for a well-deserved break!';
               toast({
                 title: '🎉 Reward Yourself! 🎉',
@@ -205,15 +209,12 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
     handleDataChange({ ...data, tasks: newTasks, userStats: { xp: data.userStats.xp + xpChange } });
   };
 
-  const onDelete = (id: string) => {
-    let xpChange = 0;
-    const taskToDelete = data.tasks.find(t => t.id === id);
-    if (taskToDelete) {
-        const taskXp = getTaskXp(taskToDelete);
-        xpChange = -(taskToDelete.completions || []).length * taskXp;
-    }
-    const newTasks = data.tasks.filter((task) => task.id !== id);
-    handleDataChange({ ...data, tasks: newTasks, userStats: { xp: data.userStats.xp + xpChange }});
+  const onDelete = (id: string) => deleteWithUndo(id, latest, handleDataChange, toast);
+  const onEdit = (id: string, edit: { title: string; priority: Task['priority']; date?: string }) => {
+    const task = data.tasks.find(t => t.id === id);
+    if (!task) return;
+    const { task: next, xpDelta } = editSingleTask(task, edit);
+    handleDataChange({ ...data, tasks: data.tasks.map(t => (t.id === id ? next : t)), userStats: { ...data.userStats, xp: data.userStats.xp + xpDelta } });
   };
 
   /** A repeating task: keep it on earlier days, drop it after today. */
@@ -278,10 +279,10 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
                 return task.date ? isSameDay(parseISO(task.date), date) : false;
               case 'recurring':
                 return recurringShowsOn(task, format(date, 'yyyy-MM-dd'));
-              case 'weekly':
-                if (!task.week) return false;
-                const taskWeekStartDate = startOfWeek(new Date(task.week.replace(/(\d{4})-(\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
-                return isWithinInterval(date, { start: taskWeekStartDate, end: addDays(taskWeekStartDate, 6) });
+              case 'weekly': {
+                const taskWeekStartDate = task.week ? weekStart(task.week) : null;
+                return !!taskWeekStartDate && isWithinInterval(date, { start: taskWeekStartDate, end: endOfDay(addDays(taskWeekStartDate, 6)) });
+              }
               case 'monthly':
                 return false;
               default: 
@@ -299,35 +300,6 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
   return (
     <AppLayout data={data}>
       <main className="p-4 md:p-8 space-y-6">
-        <Card className="dark:neon-tasks">
-            <CardHeader className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div>
-                <CardTitle>My Tasks</CardTitle>
-                <CardDescription>A complete overview of your tasks.</CardDescription>
-              </div>
-               <div className="flex items-center gap-2 self-end md:self-center">
-                    <Button variant="outline" size="icon" onClick={handlePreviousMonth}><ChevronLeft className="h-4 w-4" /></Button>
-                    <span className="text-lg font-semibold w-36 text-center">{format(currentMonth, 'MMMM yyyy')}</span>
-                    <Button variant="outline" size="icon" onClick={handleNextMonth}><ChevronRight className="h-4 w-4" /></Button>
-                </div>
-            </CardHeader>
-            <CardContent>
-                <TaskList
-                    data={data}
-                    onDataChange={handleDataChange}
-                    currentMonth={currentMonth}
-                />
-            </CardContent>
-        </Card>
-        
-        <TaskTemplates
-            data={data}
-            onDataChange={handleDataChange}
-            currentMonth={currentMonth}
-            toast={toast}
-        />
-        <RepeatingTasks data={data} onDataChange={handleDataChange} />
-
         <Tabs defaultValue="daily" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="daily"><CalendarDays className="w-4 h-4 mr-2"/>Daily</TabsTrigger>
@@ -343,9 +315,9 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
                             <CardDescription>All your scheduled tasks for the selected day.</CardDescription>
                         </div>
                         <div className="flex items-center gap-2 self-start sm:self-center">
-                            <Button variant="outline" size="icon" onClick={handlePreviousDay}><ChevronLeft className="h-4 w-4" /></Button>
+                            <Button variant="outline" size="icon" onClick={handlePreviousDay} aria-label="Previous day"><ChevronLeft className="h-4 w-4" /></Button>
                             <span className="text-md font-semibold w-40 text-center">{format(currentDay, 'EEEE, MMM do')}</span>
-                            <Button variant="outline" size="icon" onClick={handleNextDay}><ChevronRight className="h-4 w-4" /></Button>
+                            <Button variant="outline" size="icon" onClick={handleNextDay} aria-label="Next day"><ChevronRight className="h-4 w-4" /></Button>
                         </div>
                     </div>
                   </CardHeader>
@@ -381,6 +353,7 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
                                         onDelete={() => onDelete(task.id)}
                                         onDeleteFromToday={task.type === 'recurring' && isRepeating(task) ? () => onDeleteFromToday(task.id) : undefined}
                                         onEditFromToday={task.type === 'recurring' && isRepeating(task) ? e => onEditFromToday(task.id, e) : undefined}
+                                        onEdit={task.type === 'single' ? e => onEdit(task.id, e) : undefined}
                                         isCompleted={isCompleted}
                                         onCarryForward={canCarryForward ? () => handleCarryForward(task.id) : undefined}
                                         isPastDue={isPastDue && !isCompleted}
@@ -422,7 +395,7 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
                                />
                             ))}
                             {monthlyTasks.length === 0 && (
-                                <p className="text-center text-muted-foreground py-10">No specific monthly goals set. Add one using the form above!</p>
+                                <p className="text-center text-muted-foreground py-10">No specific monthly goals set. Add one using the form below!</p>
                             )}
                         </div>
                     </div>
@@ -430,6 +403,35 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
               </Card>
           </TabsContent>
         </Tabs>
+
+        <Card className="dark:neon-tasks">
+            <CardHeader className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div>
+                <CardTitle>My Tasks</CardTitle>
+                <CardDescription>A complete overview of your tasks.</CardDescription>
+              </div>
+               <div className="flex items-center gap-2 self-end md:self-center">
+                    <Button variant="outline" size="icon" onClick={handlePreviousMonth} aria-label="Previous month"><ChevronLeft className="h-4 w-4" /></Button>
+                    <span className="text-lg font-semibold w-36 text-center">{format(currentMonth, 'MMMM yyyy')}</span>
+                    <Button variant="outline" size="icon" onClick={handleNextMonth} aria-label="Next month"><ChevronRight className="h-4 w-4" /></Button>
+                </div>
+            </CardHeader>
+            <CardContent>
+                <TaskList
+                    data={data}
+                    onDataChange={handleDataChange}
+                    currentMonth={currentMonth}
+                />
+            </CardContent>
+        </Card>
+        
+        <TaskTemplates
+            data={data}
+            onDataChange={handleDataChange}
+            currentMonth={currentMonth}
+            toast={toast}
+        />
+        <RepeatingTasks data={data} onDataChange={handleDataChange} />
 
       </main>
     </AppLayout>

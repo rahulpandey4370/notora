@@ -17,8 +17,8 @@ import { useFoods } from './useFoods';
 import { TrackerSheet } from './TrackerSheet';
 
 const REMINDER_LABEL: Record<string, string> = {
-  breakfast: 'Breakfast + weigh-in', morningSnack: 'Morning snack', lunch: 'Lunch', eveningSnack: 'Evening snack',
-  close: 'Close the day: what’s left, and foods that fit', dinner: 'Dinner', checkin: 'Weekly check-in (Sundays)',
+  tasks: 'Plan your day: add today’s tasks', breakfast: 'Breakfast + weigh-in', morningSnack: 'Morning snack', lunch: 'Lunch', eveningSnack: 'Evening snack',
+  close: 'Close the day: what’s left, and foods that fit', dinner: 'Dinner', wrapup: 'Wrap up: tick off tasks, log anything missing', checkin: 'Weekly check-in (Sundays)',
 };
 const time12 = (hhmm: string) => { const [h, m] = hhmm.split(':').map(Number); return `${((h + 11) % 12) + 1}:${String(m).padStart(2, '0')} ${h < 12 ? 'am' : 'pm'}`; };
 

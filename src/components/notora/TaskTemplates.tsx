@@ -13,7 +13,8 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Plus, Bookmark, Package, Trash2, Layers, ChevronDown } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
-import { format, getWeek } from 'date-fns';
+import { format } from 'date-fns';
+import { weekKey } from '@/lib/week';
 import { toYmd } from '@/lib/date-utils';
 import { cn } from '@/lib/utils';
 
@@ -54,7 +55,7 @@ export default function TaskTemplates({ data, onDataChange, currentMonth, toast 
       createdAt: now.toISOString(),
       date: tpl.type === 'single' ? toYmd(now) : undefined,
       month: tpl.type === 'monthly' ? format(currentMonth, 'yyyy-MM') : undefined,
-      week: tpl.type === 'weekly' ? `${format(now, 'yyyy')}-${getWeek(now)}` : undefined,
+      week: tpl.type === 'weekly' ? weekKey(now) : undefined,
       carryForwardCount: 0,
       ...(tpl.type === 'recurring' || tpl.type === 'monthly' ? { ongoing: true } : {}),
     };
@@ -219,10 +220,10 @@ export default function TaskTemplates({ data, onDataChange, currentMonth, toast 
                         </div>
                       </div>
                       <div className="flex items-center gap-1 shrink-0">
-                        <Button size="icon" variant="outline" className="h-8 w-8" onClick={() => addTemplateAsTask(tpl)} title="Add as task">
+                        <Button size="icon" variant="outline" className="h-8 w-8" onClick={() => addTemplateAsTask(tpl)} title="Add as task" aria-label={`Add ${tpl.title} as task`}>
                           <Plus className="w-4 h-4" />
                         </Button>
-                        <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => deleteTemplate(tpl.id)} title="Delete template">
+                        <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => deleteTemplate(tpl.id)} title="Delete template" aria-label={`Delete template ${tpl.title}`}>
                           <Trash2 className="w-4 h-4 text-destructive" />
                         </Button>
                       </div>
@@ -291,10 +292,10 @@ export default function TaskTemplates({ data, onDataChange, currentMonth, toast 
                           <div className="text-xs text-muted-foreground">{count} task{count === 1 ? '' : 's'}</div>
                         </div>
                         <div className="flex items-center gap-1 shrink-0">
-                          <Button size="icon" variant="outline" className="h-8 w-8" onClick={() => applyBundle(bundle)} title="Add all tasks">
+                          <Button size="icon" variant="outline" className="h-8 w-8" onClick={() => applyBundle(bundle)} title="Add all tasks" aria-label={`Add all tasks from ${bundle.name}`}>
                             <Plus className="w-4 h-4" />
                           </Button>
-                          <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => deleteBundle(bundle.id)} title="Delete bundle">
+                          <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => deleteBundle(bundle.id)} title="Delete bundle" aria-label={`Delete bundle ${bundle.name}`}>
                             <Trash2 className="w-4 h-4 text-destructive" />
                           </Button>
                         </div>

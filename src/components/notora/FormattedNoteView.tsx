@@ -12,9 +12,10 @@ interface FormattedNoteViewProps {
   onDataChange: (data: AppData) => void;
   noteToFocus?: string | null;
   onFocusHandled?: () => void;
+  onDeleteNote: (boardId: string, noteId: string) => void;
 }
 
-export default function FormattedNoteView({ board, data, onDataChange, noteToFocus, onFocusHandled }: FormattedNoteViewProps) {
+export default function FormattedNoteView({ board, data, onDataChange, noteToFocus, onFocusHandled, onDeleteNote }: FormattedNoteViewProps) {
   const notes = board.notes || [];
   const noteRefs = notes.reduce((acc, note) => {
     acc[note.id] = createRef<HTMLDivElement>();
@@ -68,7 +69,7 @@ export default function FormattedNoteView({ board, data, onDataChange, noteToFoc
             }
             
             const currentState = { title: note.title || '', content: note.content };
-            const nextState = { title: newValues.title ?? note.title, content: newValues.content ?? note.content };
+            const nextState = { title: newValues.title ?? note.title ?? '', content: newValues.content ?? note.content };
 
             if (currentState.title !== nextState.title || currentState.content !== nextState.content) {
                 const newPast = [...history.past, history.present].slice(-10); // Limit history
@@ -82,14 +83,7 @@ export default function FormattedNoteView({ board, data, onDataChange, noteToFoc
     onDataChange({ ...data, noteBoards: newNoteBoards });
   };
   
-  const handleNoteDelete = (noteId: string) => {
-    const newNoteBoards = data.noteBoards.map(b =>
-        b.id === board.id
-        ? { ...b, notes: b.notes.filter(note => note.id !== noteId) }
-        : b
-    );
-    onDataChange({ ...data, noteBoards: newNoteBoards });
-  };
+  const handleNoteDelete = (noteId: string) => onDeleteNote(board.id, noteId);
   
   const containerVariants = {
     hidden: { opacity: 0 },

@@ -8,7 +8,9 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "../ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "../ui/alert-dialog";
-import type { Task } from "@/lib/types";
+import type { AppData, Task } from "@/lib/types";
+import { ToastAction } from "../ui/toast";
+import type { useToast } from "@/hooks/use-toast";
 import { getTaskXp } from "@/lib/utils";
 import { Badge } from "../ui/badge";
 import { motion } from 'framer-motion';
@@ -25,8 +27,41 @@ interface TaskItemProps {
   onDeleteFromToday?: () => void;
   /** Repeating tasks: edits apply from today on; earlier days keep the task as it was. */
   onEditFromToday?: (change: { title: string; priority: Task['priority'] }) => void;
+  /** Single tasks: edit title, priority and date in place. */
+  onEdit?: (change: { title: string; priority: Task['priority']; date?: string }) => void;
   isPastDue?: boolean;
   className?: string;
+}
+
+/** Crossing 100 XP earns the "reward yourself" toast (Tasks page and Dashboard). */
+export const crossesReward = (before: number, after: number) => before < 100 && after >= 100;
+
+/** Single-task edit: a moved date takes its tick along; a priority change re-prices the ticks already earned. */
+export function editSingleTask(task: Task, edit: { title: string; priority: Task['priority']; date?: string }): { task: Task; xpDelta: number } {
+  const completions = edit.date && task.date ? (task.completions || []).map(c => (c === task.date ? edit.date! : c)) : task.completions;
+  const next = { ...task, ...edit, completions };
+  return { task: next, xpDelta: (completions || []).length * (getTaskXp(next) - getTaskXp(task)) };
+}
+
+/**
+ * Delete at once; the toast's Undo puts the task back at its old place with its ticks and XP.
+ * Undo reads `latest` (the data as it is then), so edits made after the delete are kept.
+ */
+export function deleteWithUndo(id: string, latest: { current: AppData }, onDataChange: (d: AppData) => void, toast: ReturnType<typeof useToast>['toast']) {
+  const data = latest.current;
+  const index = data.tasks.findIndex(t => t.id === id);
+  if (index < 0) return;
+  const task = data.tasks[index];
+  const xp = (task.completions || []).length * getTaskXp(task);
+  onDataChange({ ...data, tasks: data.tasks.filter(t => t.id !== id), userStats: { ...data.userStats, xp: data.userStats.xp - xp } });
+  const restore = () => {
+    const cur = latest.current;
+    if (cur.tasks.some(t => t.id === id)) return;
+    const tasks = [...cur.tasks];
+    tasks.splice(Math.min(index, tasks.length), 0, task);
+    onDataChange({ ...cur, tasks, userStats: { ...cur.userStats, xp: cur.userStats.xp + xp } });
+  };
+  toast({ title: 'Task deleted', description: task.title, action: <ToastAction altText="Undo delete" onClick={restore}>Undo</ToastAction> });
 }
 
 const priorityStyles = {
@@ -35,9 +70,10 @@ const priorityStyles = {
     Hard: "border-red-500/50 bg-red-500/10 text-red-700 dark:text-red-300",
 }
 
-export default function TaskItem({ task, onToggle, onDelete, isCompleted, onCarryForward, onDeleteFromToday, onEditFromToday, isPastDue = false, className }: TaskItemProps) {
+export default function TaskItem({ task, onToggle, onDelete, isCompleted, onCarryForward, onDeleteFromToday, onEditFromToday, onEdit, isPastDue = false, className }: TaskItemProps) {
   const [editing, setEditing] = useState(false);
-  const [draft, setDraft] = useState({ title: task.title, priority: task.priority });
+  const [draft, setDraft] = useState({ title: task.title, priority: task.priority, date: task.date });
+  const save = onEditFromToday ?? onEdit;
   const repeating = !!onDeleteFromToday;
   const period = task.type === 'monthly' ? 'month' : 'day';
   const uniqueId = `task-${task.id}-${task.date || ''}`;
@@ -69,15 +105,11 @@ export default function TaskItem({ task, onToggle, onDelete, isCompleted, onCarr
           onCheckedChange={onToggle}
           aria-labelledby={`${uniqueId}-label`}
           className="w-5 h-5 nb-border rounded-sm data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:border-slate-700"
-          disabled={isOverdue}
         />
         <label
           id={`${uniqueId}-label`}
           htmlFor={uniqueId}
-          className={cn(
-            'flex-1 text-sm font-medium cursor-pointer transition-all',
-            isOverdue && 'cursor-not-allowed'
-          )}
+          className="flex-1 text-sm font-medium cursor-pointer transition-all"
         >
           <span className={cn(
             isCompleted && 'line-through bg-primary/70 text-muted-foreground px-2 rounded-sm',
@@ -92,23 +124,23 @@ export default function TaskItem({ task, onToggle, onDelete, isCompleted, onCarr
       <Badge variant="outline" className={`font-mono text-xs ${priorityStyles[task.priority]}`}>{taskXp} XP</Badge>
 
       {canCarryForward && (
-        <Button variant="ghost" size="icon" onClick={onCarryForward} className="h-8 w-8 text-blue-500 hover:text-blue-500 rounded-full" title="Carry forward to next day">
+        <Button variant="ghost" size="icon" onClick={onCarryForward} className="h-8 w-8 text-blue-500 hover:text-blue-500 rounded-full" title="Carry forward to next day" aria-label={`Carry ${task.title} forward to next day`}>
             <ChevronsRight className="h-4 w-4" />
         </Button>
       )}
 
-      {onEditFromToday && (
+      {save && (
         <>
-          <Button variant="ghost" size="icon" aria-label={`Edit ${task.title}`} title="Edit from today on"
-            onClick={() => { setDraft({ title: task.title, priority: task.priority }); setEditing(true); }}
+          <Button variant="ghost" size="icon" aria-label={`Edit ${task.title}`} title={onEditFromToday ? 'Edit from today on' : 'Edit task'}
+            onClick={() => { setDraft({ title: task.title, priority: task.priority, date: task.date }); setEditing(true); }}
             className="h-8 w-8 text-black/60 hover:bg-primary/10 rounded-full dark:text-slate-400">
             <Pencil className="h-4 w-4" />
           </Button>
           <Dialog open={editing} onOpenChange={setEditing}>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Edit repeating task</DialogTitle>
-                <DialogDescription>Changes apply from {task.type === 'monthly' ? 'this month' : 'today'} on. Earlier {period}s keep the task as it was.</DialogDescription>
+                <DialogTitle>{onEditFromToday ? 'Edit repeating task' : 'Edit task'}</DialogTitle>
+                <DialogDescription>{onEditFromToday ? `Changes apply from ${task.type === 'monthly' ? 'this month' : 'today'} on. Earlier ${period}s keep the task as it was.` : 'Change the title, priority or date.'}</DialogDescription>
               </DialogHeader>
               <div className="space-y-3">
                 <Input value={draft.title} onChange={e => setDraft(d => ({ ...d, title: e.target.value }))} aria-label="Task title" autoFocus />
@@ -120,11 +152,14 @@ export default function TaskItem({ task, onToggle, onDelete, isCompleted, onCarr
                     <SelectItem value="Hard">Hard</SelectItem>
                   </SelectContent>
                 </Select>
+                {!onEditFromToday && task.type === 'single' && (
+                  <Input type="date" value={draft.date ?? ''} onChange={e => setDraft(d => ({ ...d, date: e.target.value || d.date }))} aria-label="Date" />
+                )}
               </div>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setEditing(false)}>Cancel</Button>
-                <Button disabled={!draft.title.trim() || (draft.title.trim() === task.title && draft.priority === task.priority)}
-                  onClick={() => { onEditFromToday({ title: draft.title.trim(), priority: draft.priority }); setEditing(false); }}>Save from {task.type === 'monthly' ? 'this month' : 'today'}</Button>
+                <Button disabled={!draft.title.trim() || (draft.title.trim() === task.title && draft.priority === task.priority && draft.date === task.date)}
+                  onClick={() => { save({ title: draft.title.trim(), priority: draft.priority, ...(onEditFromToday ? {} : { date: draft.date }) }); setEditing(false); }}>{onEditFromToday ? `Save from ${task.type === 'monthly' ? 'this month' : 'today'}` : 'Save'}</Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>

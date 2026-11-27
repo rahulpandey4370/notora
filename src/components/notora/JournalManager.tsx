@@ -13,6 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Textarea } from '@/components/ui/textarea';
 import { MicButton, appendSpeech } from './MicButton';
 import { useToast } from '@/hooks/use-toast';
+import { useModelStore } from '@/hooks/use-model-store';
 import { cn } from '@/lib/utils';
 import { v4 as uuidv4 } from 'uuid';
 import { reflectOnJournalEntry } from '@/ai/flows/reflect-on-journal-entry';
@@ -51,7 +52,7 @@ interface AIReflection {
 interface JournalEditorProps {
     entry: JournalEntry | undefined;
     selectedDate: Date;
-    onSave: (changes: Partial<JournalEntry>) => void;
+    onSave: (changes: Partial<JournalEntry>, date: Date) => void;
     onCancel: () => void;
     allTags: string[];
 }
@@ -62,29 +63,31 @@ const JournalEditor = ({ entry, selectedDate, onSave, onCancel, allTags }: Journ
     const [tags, setTags] = useState(entry?.tags || []);
     const [isTemplateChooserOpen, setTemplateChooserOpen] = useState(false);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
-    const autoSaveTimer = useRef<NodeJS.Timeout | null>(null);
+    // What's stored for this day: autosave only writes real changes on top of it.
+    const saved = useRef({ content: entry?.content || '', mood: entry?.mood, tags: entry?.tags || [] });
+    const latest = useRef({ content, mood, tags, onSave, selectedDate });
+    latest.current = { content, mood, tags, onSave, selectedDate };
 
     useEffect(() => {
         textareaRef.current?.focus();
     }, []);
 
-    const handleDataChange = useCallback(() => {
-        if (autoSaveTimer.current) {
-            clearTimeout(autoSaveTimer.current);
-        }
-        autoSaveTimer.current = setTimeout(() => {
-            onSave({ content, mood, tags });
-        }, 30000); // Auto-save after 30 seconds of inactivity
-    }, [content, mood, tags, onSave]);
+    const autoSave = useCallback(() => {
+        const { content, mood, tags, onSave, selectedDate } = latest.current;
+        const s = saved.current;
+        if (content === s.content && mood === s.mood && tags.join('\n') === s.tags.join('\n')) return; // untouched
+        if (!content.trim() && s.content.trim()) return; // never blank out a written entry without an explicit Save
+        saved.current = { content, mood, tags };
+        onSave({ content, mood, tags }, selectedDate);
+    }, []);
 
     useEffect(() => {
-        handleDataChange();
-        return () => {
-            if (autoSaveTimer.current) {
-                clearTimeout(autoSaveTimer.current);
-            }
-        };
-    }, [content, mood, tags, handleDataChange]);
+        const timer = setTimeout(autoSave, 30000); // Auto-save after 30 seconds of inactivity
+        return () => clearTimeout(timer);
+    }, [content, mood, tags, autoSave]);
+
+    // Flush a pending draft when the editor goes away (navigating off, changing day).
+    useEffect(() => autoSave, [autoSave]);
 
     const wordCount = useMemo(() => {
         return content.trim().split(/\s+/).filter(Boolean).length;
@@ -97,12 +100,12 @@ const JournalEditor = ({ entry, selectedDate, onSave, onCancel, allTags }: Journ
     }
     
     const handleSaveClick = () => {
-        if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
         if (!content.trim() && !mood && tags.length === 0 && !entry) {
             onCancel();
             return;
         };
-        onSave({ content, mood, tags });
+        saved.current = { content, mood, tags };
+        onSave({ content, mood, tags }, selectedDate);
         onCancel(); // Switch back to view mode on explicit save
     }
 
@@ -137,9 +140,15 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
   const [activeTagFilter, setActiveTagFilter] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [aiLoading, setAiLoading] = useState<'format' | 'summarize' | null>(null);
+  const [mobileTab, setMobileTab] = useState('journal');
+  // Saves can land after a re-render (autosave timer, unmount flush, AI calls): always write onto the latest data.
+  const latestData = useRef(data);
+  latestData.current = data;
 
   const { toast } = useToast();
+  const { selectedModel } = useModelStore();
   const isMobile = useIsMobile();
+  const dateKey = toYmd(selectedDate);
   
   const filteredEntries = useMemo(() => {
     let entries = initialJournalEntries;
@@ -155,18 +164,17 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
     return entries;
   }, [initialJournalEntries, activeTagFilter, searchQuery]);
 
+  // The editor always shows the selected day's real entry; filters only affect the calendar/discovery.
   const todaysEntry = useMemo(() => {
-    return filteredEntries.find(entry => isSameDay(parseISO(entry.date), selectedDate));
-  }, [filteredEntries, selectedDate]);
+    return initialJournalEntries.find(entry => isSameDay(parseISO(entry.date), selectedDate));
+  }, [initialJournalEntries, selectedDate]);
 
+  // Open/close only when the day changes: an autosave updating the entry must not close the editor.
   useEffect(() => {
-    if (!todaysEntry) {
-        setIsEditing(true);
-    } else {
-        setIsEditing(false);
-    }
+    setIsEditing(!todaysEntry);
     setAiReflection({ reflection: '', followUpQuestion: '', emotion: '', writingStyle: '', mainThemes: [], isLoading: false });
-  }, [todaysEntry, selectedDate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dateKey]);
   
   const allTags = useMemo(() => {
     const tags = new Set<string>();
@@ -176,12 +184,14 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
     return Array.from(tags).sort();
   }, [initialJournalEntries]);
 
-  const handleSave = (changes: Partial<JournalEntry>) => {
+  const handleSave = (changes: Partial<JournalEntry>, date: Date = selectedDate) => {
     let updatedEntries;
-    const existingEntry = initialJournalEntries.find(entry => isSameDay(parseISO(entry.date), selectedDate));
+    const current = latestData.current;
+    const entries = current.journalEntries || [];
+    const existingEntry = entries.find(entry => isSameDay(parseISO(entry.date), date));
 
     if (existingEntry) {
-      updatedEntries = initialJournalEntries.map(entry =>
+      updatedEntries = entries.map(entry =>
         entry.id === existingEntry.id ? { ...entry, ...changes } : entry
       );
     } else {
@@ -190,16 +200,18 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
       }
       const newEntry: JournalEntry = {
         id: uuidv4(),
-        date: toYmd(selectedDate),
+        date: toYmd(date),
         content: changes.content || '',
         mood: changes.mood,
         tags: changes.tags
       };
-      updatedEntries = [...initialJournalEntries, newEntry];
+      updatedEntries = [...entries, newEntry];
     }
-    
+
     if(updatedEntries) {
-        onDataChange({ ...data, journalEntries: updatedEntries });
+        const next = { ...current, journalEntries: updatedEntries };
+        latestData.current = next; // a second save before re-render builds on this one
+        onDataChange(next);
     }
   };
 
@@ -222,7 +234,7 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
     if (!todaysEntry?.content) return;
     setAiReflection({ reflection: '', followUpQuestion: '', emotion: '', writingStyle: '', mainThemes: [], isLoading: true });
     try {
-        const result = await reflectOnJournalEntry({ content: todaysEntry.content });
+        const result = await reflectOnJournalEntry({ content: todaysEntry.content }, selectedModel);
         setAiReflection({ ...result, isLoading: false });
     } catch(e) {
         console.error(e);
@@ -239,7 +251,7 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
     if (!todaysEntry?.content) return;
     setAiLoading('format');
     try {
-        const result = await formatJournalEntry({ content: todaysEntry.content });
+        const result = await formatJournalEntry({ content: todaysEntry.content }, selectedModel);
         handleSave({ content: result.formattedContent });
         toast({ title: 'Journal Formatted', description: 'AI has beautifully formatted your entry.' });
     } catch(e) {
@@ -254,7 +266,7 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
     if (!todaysEntry?.content) return;
     setAiLoading('summarize');
     try {
-        const result = await summarizeJournalEntry({ content: todaysEntry.content });
+        const result = await summarizeJournalEntry({ content: todaysEntry.content }, selectedModel);
         handleSave({ aiSummary: result.summary });
         toast({ title: 'Summary Generated', description: 'An AI-powered summary has been saved with your entry.' });
     } catch(e) {
@@ -325,7 +337,8 @@ a.click();
     return modifiers;
   }, [filteredEntries]);
 
-  const JournalEditorContent = useCallback(() => (
+  // Plain JSX (not components defined in render) so state changes don't remount the tree.
+  const journalEditorContent = (
       <motion.div 
         className="lg:col-span-2 space-y-8"
         initial={{ opacity: 0, x: 20 }}
@@ -379,6 +392,7 @@ a.click();
               <AnimatePresence mode="wait">
                 {isEditing ? (
                   <JournalEditor 
+                    key={`editor-${dateKey}`}
                     entry={todaysEntry}
                     selectedDate={selectedDate}
                     onSave={handleSave}
@@ -447,9 +461,9 @@ a.click();
             </div>
            )}
         </motion.div>
-  ), [selectedDate, todaysEntry, isEditing, aiReflection, allTags, initialJournalEntries, activeTagFilter, searchQuery, aiLoading, handleSave]);
+  );
 
-  const DesktopLayout = () => (
+  const desktopLayout = (
      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         <motion.div 
             className="lg:col-span-1 space-y-8"
@@ -513,18 +527,18 @@ a.click();
           </Accordion>
         </motion.div>
         
-        <JournalEditorContent />
+        {journalEditorContent}
     </div>
   );
 
-  const MobileLayout = () => (
-     <Tabs defaultValue="journal" className="w-full">
+  const mobileLayout = (
+     <Tabs value={mobileTab} onValueChange={setMobileTab} className="w-full">
       <TabsList className="grid w-full grid-cols-2">
         <TabsTrigger value="journal">Journal</TabsTrigger>
         <TabsTrigger value="explore">Explore</TabsTrigger>
       </TabsList>
       <TabsContent value="journal" className="mt-6">
-        <JournalEditorContent />
+        {journalEditorContent}
       </TabsContent>
       <TabsContent value="explore" className="mt-6 space-y-8">
         <Card className="dark:neon-journal">
@@ -575,7 +589,7 @@ a.click();
         .rdp-day_today { font-weight: bold; color: hsl(var(--chart-2)); }
       `}</style>
 
-      {isMobile ? <MobileLayout /> : <DesktopLayout />}
+      {isMobile ? mobileLayout : desktopLayout}
 
     </div>
   );

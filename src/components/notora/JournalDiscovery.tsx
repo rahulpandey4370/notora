@@ -50,15 +50,16 @@ export default function JournalDiscovery({ entries, onDateSelect, searchQuery, o
         <CardDescription>Search and rediscover your past entries.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex items-center gap-2">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" aria-hidden />
           <Input
+            type="search"
+            aria-label="Search journal entries"
             placeholder="Search entries..."
             value={searchQuery}
             onChange={(e) => onSearchQueryChange(e.target.value)}
+            className="pl-9"
           />
-          <Button variant="ghost" size="icon">
-            <Search className="h-4 w-4" />
-          </Button>
         </div>
         
         <div className="space-y-2">

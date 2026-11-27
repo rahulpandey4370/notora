@@ -3,7 +3,7 @@ import SmartEmptyState from './SmartEmptyState';
 
 import type { User, AppData, Task } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import { Calendar, Flame, TrendingUp } from 'lucide-react';
 import { format, isSameDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, addDays, isSameMonth, isAfter, startOfDay, isBefore, setHours, setMinutes, setSeconds, getDay, getDaysInMonth, endOfDay , parseISO} from 'date-fns';
 import { toYmd } from '@/lib/date-utils';
@@ -17,7 +17,8 @@ import {
   ChartContainer,
 } from "@/components/ui/chart"
 import TaskList from './TaskList';
-import TaskItem from './TaskItem';
+import TaskItem, { crossesReward, deleteWithUndo, editSingleTask } from './TaskItem';
+import { weekStart } from '@/lib/week';
 import { motion } from 'framer-motion';
 import { Progress } from '../ui/progress';
 import CalendarAnalysis from './CalendarAnalysis';
@@ -58,7 +59,11 @@ interface DashboardProps {
 export default function Dashboard({ user, data, onDataChange }: DashboardProps) {
   const { tasks } = data;
   const { toast } = useApp();
-  const today = new Date();
+  // One Date per day, so the memos below only recompute when the data or the day changes.
+  const todayStr = format(new Date(), 'yyyy-MM-dd');
+  const today = useMemo(() => parseISO(todayStr), [todayStr]);
+  const latest = useRef(data);
+  latest.current = data;
 
   const handleCarryForward = (id: string) => {
     const task = data.tasks.find(t => t.id === id);
@@ -121,7 +126,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
                 title: `+${taskXp} XP! ✨`,
                 description: `You've completed "${task.title}". Great job!`,
             });
-            if (data.userStats.xp + xpChange > 100 && data.userStats.xp <= 100) {
+            if (crossesReward(data.userStats.xp, data.userStats.xp + xpChange)) {
               toast({
                 title: '🎉 Reward Yourself! 🎉',
                 description: 'You have earned over 100 XP. Time for a well-deserved break!',
@@ -136,15 +141,12 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
     onDataChange({ ...data, tasks: newTasks, userStats: { xp: data.userStats.xp + xpChange } });
   };
 
-  const onDelete = (id: string) => {
-    let xpChange = 0;
-    const taskToDelete = data.tasks.find(t => t.id === id);
-    if (taskToDelete) {
-        const taskXp = getTaskXp(taskToDelete);
-        xpChange = -((taskToDelete.completions || []).length * taskXp);
-    }
-    const newTasks = data.tasks.filter((task) => task.id !== id);
-    onDataChange({ ...data, tasks: newTasks, userStats: { xp: data.userStats.xp + xpChange }});
+  const onDelete = (id: string) => deleteWithUndo(id, latest, onDataChange, toast);
+  const onEdit = (id: string, edit: { title: string; priority: Task['priority']; date?: string }) => {
+    const task = data.tasks.find(t => t.id === id);
+    if (!task) return;
+    const { task: next, xpDelta } = editSingleTask(task, edit);
+    onDataChange({ ...data, tasks: data.tasks.map(t => (t.id === id ? next : t)), userStats: { ...data.userStats, xp: data.userStats.xp + xpDelta } });
   };
 
   /** Repeating tasks, from today on: earlier days keep the task and their ticks. */
@@ -173,8 +175,8 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
         if (task.type === 'recurring') return recurringShowsOn(task, format(today, 'yyyy-MM-dd'));
 
         if (task.type === 'weekly' && task.week) {
-             const taskWeekDate = startOfWeek(new Date(task.week.replace(/(\d{4})-(\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
-             return isWithinInterval(todayStart, { start: taskWeekDate, end: endOfWeek(taskWeekDate, { weekStartsOn: 1 }) });
+             const taskWeekDate = weekStart(task.week);
+             return !!taskWeekDate && isWithinInterval(todayStart, { start: taskWeekDate, end: endOfWeek(taskWeekDate, { weekStartsOn: 1 }) });
         }
         return false;
     }).sort((a,b) => {
@@ -184,8 +186,15 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
     });
   }, [tasks, today]);
 
+  /** Past single tasks not ticked on their day: tick late (counts on that day) or carry forward, as on the Tasks page. */
+  const overdueTasks = useMemo(() => tasks.filter(t => {
+    if (t.type !== 'single' || !t.date) return false;
+    const day = format(parseISO(t.date), 'yyyy-MM-dd');
+    return day < todayStr && !(t.completions || []).includes(day);
+  }), [tasks, todayStr]);
+
   const { weeklyXp, totalWeeklyXp } = useMemo(() => {
-    const weekStart = startOfWeek(today, { weekStartsOn: 1 });
+    const monday = startOfWeek(today, { weekStartsOn: 1 });
     const weekEnd = endOfWeek(today, { weekStartsOn: 1 });
     
     let achieved = 0;
@@ -195,17 +204,17 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
         const taskXpValue = getTaskXp(task);
         
         if (task.type === 'weekly' && task.week) {
-            const taskWeekDate = startOfWeek(new Date(task.week.replace(/(\d{4}-)(\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
-            if (isSameDay(taskWeekDate, weekStart)) {
+            const taskWeekDate = weekStart(task.week);
+            if (taskWeekDate && isSameDay(taskWeekDate, monday)) {
                 total += taskXpValue;
-                 if ((task.completions || []).some(c => isWithinInterval(new Date(c), { start: weekStart, end: weekEnd }))) {
+                 if ((task.completions || []).some(c => isWithinInterval(parseISO(c), { start: monday, end: weekEnd }))) {
                     achieved += taskXpValue;
                 }
             }
         } else if (task.type === 'recurring') {
              // Iterate through each day of the current week
              for (let i = 0; i < 7; i++) {
-                const dayInWeek = addDays(weekStart, i);
+                const dayInWeek = addDays(monday, i);
                 if (recurringShowsOn(task, format(dayInWeek, 'yyyy-MM-dd'))) {
                     total += taskXpValue;
                     if ((task.completions || []).includes(format(dayInWeek, 'yyyy-MM-dd'))) {
@@ -215,7 +224,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
             }
         } else if (task.type === 'single' && task.date) {
             const taskDate = startOfDay(parseISO(task.date));
-            if (isWithinInterval(taskDate, { start: weekStart, end: weekEnd })) {
+            if (isWithinInterval(taskDate, { start: monday, end: weekEnd })) {
                 total += taskXpValue;
                 if ((task.completions || []).includes(format(taskDate, 'yyyy-MM-dd'))) {
                     achieved += taskXpValue;
@@ -242,8 +251,8 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
                 achieved += taskXpValue;
             }
         } else if (task.type === 'weekly' && task.week) {
-            const taskWeekStartDate = startOfWeek(new Date(task.week.replace(/(\d{4})-(\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
-            if (isSameMonth(taskWeekStartDate, today)) {
+            const taskWeekStartDate = weekStart(task.week);
+            if (taskWeekStartDate && isSameMonth(taskWeekStartDate, today)) {
                 total += taskXpValue;
                 if (completionsForMonth.length > 0) {
                     achieved += taskXpValue;
@@ -352,6 +361,24 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
                       <CardDescription>Tasks for today. ({completedTodayCount}/{allTodaysTasks.length} completed)</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
+                      <TaskList data={data} onDataChange={onDataChange} currentMonth={today} />
+                      {overdueTasks.length > 0 && (
+                        <div className="space-y-2">
+                          <h3 className="text-sm font-semibold text-destructive">Overdue ({overdueTasks.length})</h3>
+                          {overdueTasks.map(task => (
+                            <TaskItem
+                                key={`${task.id}-${task.date}`}
+                                task={task}
+                                onToggle={() => onToggle(task.id, parseISO(task.date!))}
+                                onDelete={() => onDelete(task.id)}
+                                onEdit={e => onEdit(task.id, e)}
+                                isCompleted={false}
+                                isPastDue
+                                onCarryForward={(task.carryForwardCount || 0) < 2 ? () => handleCarryForward(task.id) : undefined}
+                            />
+                          ))}
+                        </div>
+                      )}
                       <div className="pt-4 space-y-2">
                           {allTodaysTasks.length > 0 ? (
                           allTodaysTasks.map(task => {
@@ -375,6 +402,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
                                     onDelete={() => onDelete(task.id)}
                                     onDeleteFromToday={task.type === 'recurring' && isRepeating(task) ? () => onDeleteFromToday(task.id) : undefined}
                                         onEditFromToday={task.type === 'recurring' && isRepeating(task) ? e => onEditFromToday(task.id, e) : undefined}
+                                    onEdit={task.type === 'single' ? e => onEdit(task.id, e) : undefined}
                                     isCompleted={isCompleted}
                                 />
                               );
@@ -457,7 +485,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
                     </CardContent>
                     <CardFooter className="flex-col gap-2 text-sm">
                        <div className="flex items-center gap-2 font-medium leading-none">
-                          Trending up by {totalWeeklyXp > 0 ? ((weeklyXp/totalWeeklyXp) * 100).toFixed(1) : 0}% this week <TrendingUp className="h-4 w-4" />
+                          {totalWeeklyXp > 0 ? Math.round((weeklyXp / totalWeeklyXp) * 100) : 0}% of this week's XP earned {weeklyXp > 0 && <TrendingUp className="h-4 w-4" aria-hidden />}
                       </div>
                       <div className="text-muted-foreground leading-none text-center">
                         You've earned {weeklyXp} of {totalWeeklyXp} possible XP this week.
@@ -535,7 +563,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
                     </CardContent>
                     <CardFooter className="flex-col gap-2 text-sm">
                       <div className="flex items-center gap-2 font-medium leading-none">
-                        Trending up by {totalPossibleMonthlyXp > 0 ? ((monthlyXp/totalPossibleMonthlyXp) * 100).toFixed(1) : 0}% this month <TrendingUp className="h-4 w-4" />
+                        {totalPossibleMonthlyXp > 0 ? Math.round((monthlyXp / totalPossibleMonthlyXp) * 100) : 0}% of this month's XP earned {monthlyXp > 0 && <TrendingUp className="h-4 w-4" aria-hidden />}
                       </div>
                       <div className="text-muted-foreground leading-none text-center">
                         You've earned {monthlyXp} of {totalPossibleMonthlyXp} possible XP this month.

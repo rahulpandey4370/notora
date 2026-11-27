@@ -16,6 +16,8 @@ import { Loader2, Sparkles } from 'lucide-react';
 import type { StickyNote } from '@/lib/types';
 import { Textarea } from '../ui/textarea';
 import { MicButton, appendSpeech } from './MicButton';
+import { useModelStore } from '@/hooks/use-model-store';
+import { useToast } from '@/hooks/use-toast';
 
 interface CustomPromptDialogProps {
   open: boolean;
@@ -34,6 +36,8 @@ export default function CustomPromptDialog({
 }: CustomPromptDialogProps) {
   const [prompt, setPrompt] = useState('');
   const [loading, setLoading] = useState(false);
+  const { selectedModel } = useModelStore();
+  const { toast } = useToast();
 
   const handleTransform = async () => {
     if (!prompt.trim()) return;
@@ -43,13 +47,13 @@ export default function CustomPromptDialog({
       const result = await customTransformStickyNote({
         content: noteContent,
         prompt: prompt,
-      });
+      }, selectedModel);
       onContentChange(noteId, { content: result.transformedContent });
       onOpenChange(false);
       setPrompt('');
     } catch (error) {
       console.error('Failed to transform note with custom prompt:', error);
-      // You could show a toast here for the error
+      toast({ variant: 'destructive', title: 'Transform failed', description: "Couldn't transform this note. Try again." });
     } finally {
       setLoading(false);
     }

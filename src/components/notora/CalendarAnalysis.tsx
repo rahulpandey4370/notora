@@ -2,6 +2,7 @@
 'use client';
 
 import { recurringShowsOn } from '@/lib/tasks';
+import { weekStart } from '@/lib/week';
 import { useState, useMemo, useEffect } from 'react';
 import type { AppData, Task } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,7 +10,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { format, isSameDay, startOfDay, isWithinInterval, addDays, startOfWeek as dfStartOfWeek, endOfWeek as dfEndOfWeek, startOfMonth as dfStartOfMonth, isSameMonth, isAfter, differenceInDays , parseISO} from 'date-fns';
+import { format, isSameDay, startOfDay, isWithinInterval, addDays, endOfWeek as dfEndOfWeek, startOfMonth as dfStartOfMonth, isSameMonth, isAfter, differenceInDays , parseISO} from 'date-fns';
 import type { DateRange } from 'react-day-picker';
 import { cn } from '@/lib/utils';
 import { Badge } from '../ui/badge';
@@ -57,10 +58,10 @@ export default function CalendarAnalysis({ data }: CalendarAnalysisProps) {
                 return task.date ? isSameDay(parseISO(task.date), taskDay) : false;
             case 'recurring':
                 return recurringShowsOn(task, format(taskDay, 'yyyy-MM-dd'));
-            case 'weekly':
-                if (!task.week) return false;
-                const weekStartDate = dfStartOfWeek(new Date(task.week.replace(/(\d{4})-(\d{2})/, '$1-W$2-1')), { weekStartsOn: 1 });
-                return isWithinInterval(taskDay, { start: weekStartDate, end: dfEndOfWeek(weekStartDate, { weekStartsOn: 1 }) });
+            case 'weekly': {
+                const weekStartDate = task.week ? weekStart(task.week) : null;
+                return !!weekStartDate && isWithinInterval(taskDay, { start: weekStartDate, end: dfEndOfWeek(weekStartDate, { weekStartsOn: 1 }) });
+            }
             case 'monthly':
                 return false; // Monthly tasks should not be counted in daily progress.
             default:
@@ -215,7 +216,7 @@ export default function CalendarAnalysis({ data }: CalendarAnalysisProps) {
                   {selectedRange?.from ? `Selected: ${format(selectedRange.from, 'PPP')} ${selectedRange.to ? ` - ${format(selectedRange.to, 'PPP')}` : ''}` : 'Select a date or range on the calendar to start.'}
               </p>
               {selectedRange && (
-                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setSelectedRange(undefined)}>
+                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setSelectedRange(undefined)} aria-label="Clear selected range">
                   <X className="h-4 w-4" />
                 </Button>
               )}

@@ -11,7 +11,8 @@ import { Plus, Calendar as CalendarIcon, Sparkles, Loader2 } from 'lucide-react'
 import { v4 as uuidv4 } from 'uuid';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Calendar } from '../ui/calendar';
-import { format, getWeek, addMonths, subMonths, startOfWeek, parseISO } from 'date-fns';
+import { format, parseISO } from 'date-fns';
+import { weekKey } from '@/lib/week';
 import { useModelStore } from '@/hooks/use-model-store';
 import { useToast } from '@/hooks/use-toast';
 import { parseTask } from '@/ai/flows/parse-task';
@@ -80,7 +81,7 @@ export default function TaskList({ data, onDataChange, currentMonth }: TaskListP
       createdAt: new Date().toISOString(),
       date: addTaskType === 'single' && taskDate ? toYmd(taskDate) : undefined,
       month: addTaskType === 'monthly' ? format(currentMonth, 'yyyy-MM') : undefined,
-      week: addTaskType === 'weekly' && taskDate ? `${format(taskDate, 'yyyy')}-${getWeek(taskDate)}` : undefined,
+      week: addTaskType === 'weekly' && taskDate ? weekKey(taskDate) : undefined,
       carryForwardCount: 0,
       ...(addTaskType === 'recurring' || addTaskType === 'monthly' ? { ongoing: true } : {}),
     };

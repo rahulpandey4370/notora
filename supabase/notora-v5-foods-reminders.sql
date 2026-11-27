@@ -31,8 +31,8 @@ grant all on notora.foods to service_role;
 -- ---------------------------------------------------------------------------
 -- 2. Meal-time reminders. One job every 30 minutes; the schedule itself lives
 --    in the app (src/lib/reminders.ts), so changing times needs no SQL:
---      10:00 breakfast + weigh-in, 11:30 morning snack, 13:00 lunch,
---      19:00 evening snack, 20:30 close the day, 22:00 dinner,
+--      09:00 plan your day (tasks), 10:00 breakfast + weigh-in, 11:30 morning snack, 13:00 lunch,
+--      19:00 evening snack, 20:30 close the day, 22:00 dinner, 23:00 wrap up (tasks + missing meals),
 --      Sunday 11:00 weekly check-in. Each is skipped if already logged.
 --    Replace YOUR_CRON_SECRET (your CRON_SECRET from Vercel), then run this block.
 --    To stop: select cron.unschedule('notora-reminders');

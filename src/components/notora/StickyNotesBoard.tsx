@@ -15,6 +15,7 @@ interface StickyNotesBoardProps {
   data: AppData;
   onDataChange: (data: AppData) => void;
   onSwitchView: (noteId: string) => void;
+  onDeleteNote: (boardId: string, noteId: string) => void;
 }
 
 const themes: StickyNoteType['theme'][] = ['yellow', 'blue', 'green', 'pink', 'purple'];
@@ -22,7 +23,7 @@ const NOTE_WIDTH = 256;
 const NOTE_HEIGHT = 256;
 const PADDING = 24;
 
-export default function StickyNotesBoard({ board, data, onDataChange, onSwitchView }: StickyNotesBoardProps) {
+export default function StickyNotesBoard({ board, data, onDataChange, onSwitchView, onDeleteNote }: StickyNotesBoardProps) {
   const constraintsRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
 
@@ -113,7 +114,7 @@ export default function StickyNotesBoard({ board, data, onDataChange, onSwitchVi
             }
             
             const currentState = { title: note.title || '', content: note.content };
-            const nextState = { title: newValues.title ?? note.title, content: newValues.content ?? note.content };
+            const nextState = { title: newValues.title ?? note.title ?? '', content: newValues.content ?? note.content };
 
             if (currentState.title !== nextState.title || currentState.content !== nextState.content) {
                 const newPast = [...history.past, history.present].slice(-10); // Limit history
@@ -127,12 +128,7 @@ export default function StickyNotesBoard({ board, data, onDataChange, onSwitchVi
     onDataChange({ ...data, noteBoards: newNoteBoards });
   };
 
-  const handleDelete = (noteId: string) => {
-    const newNoteBoards = data.noteBoards.map(b => 
-      b.id === board.id ? { ...b, notes: b.notes.filter(note => note.id !== noteId) } : b
-    );
-    onDataChange({ ...data, noteBoards: newNoteBoards });
-  };
+  const handleDelete = (noteId: string) => onDeleteNote(board.id, noteId);
 
   const handleStopDrag = (noteId: string, position: { x: number, y: number }) => {
      if (isMobile) return;

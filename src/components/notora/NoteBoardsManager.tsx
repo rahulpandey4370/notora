@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { AppData, NoteBoard } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,6 +12,8 @@ import FormattedNoteView from './FormattedNoteView';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '../ui/alert-dialog';
 import { ScrollArea, ScrollBar } from '../ui/scroll-area';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu';
+import { useToast } from '@/hooks/use-toast';
+import { ToastAction } from '@/components/ui/toast';
 
 interface NoteBoardsManagerProps {
   noteBoards: NoteBoard[];
@@ -27,6 +29,14 @@ export default function NoteBoardsManager({ noteBoards, data, onDataChange }: No
   const [activeBoardId, setActiveBoardId] = useState<string>(noteBoards[0]?.id || '');
   const [viewMode, setViewMode] = useState<ViewMode>('sticky');
   const [noteToFocus, setNoteToFocus] = useState<string | null>(null);
+  const { toast } = useToast();
+  const undoToast = useRef<{ dismiss: () => void } | null>(null);
+  // Undo can fire long after the delete: it must restore into the latest data, not a stale snapshot.
+  const latestData = useRef(data);
+  latestData.current = data;
+
+  // A late Undo after leaving the page would write an old document: drop the toast with the page.
+  useEffect(() => () => undoToast.current?.dismiss(), []);
 
   // Opened from search (/notes?board=<id>): show that board.
   useEffect(() => {
@@ -59,6 +69,24 @@ export default function NoteBoardsManager({ noteBoards, data, onDataChange }: No
     }
   };
   
+  const handleDeleteNote = (boardId: string, noteId: string) => {
+    const board = data.noteBoards.find(b => b.id === boardId);
+    const index = board?.notes.findIndex(n => n.id === noteId) ?? -1;
+    if (!board || index < 0) return;
+    const note = board.notes[index];
+    onDataChange({ ...data, noteBoards: data.noteBoards.map(b => b.id === boardId ? { ...b, notes: b.notes.filter(n => n.id !== noteId) } : b) });
+
+    const restore = () => {
+      const current = latestData.current;
+      const target = current.noteBoards.find(b => b.id === boardId);
+      if (!target || target.notes.some(n => n.id === noteId)) return; // board gone or already restored
+      const notes = [...target.notes];
+      notes.splice(Math.min(index, notes.length), 0, note);
+      onDataChange({ ...current, noteBoards: current.noteBoards.map(b => b.id === boardId ? { ...b, notes } : b) });
+    };
+    undoToast.current = toast({ title: 'Note deleted', action: <ToastAction altText="Undo delete" onClick={restore}>Undo</ToastAction> });
+  };
+
   const handleStartEdit = (board: NoteBoard) => {
     setEditingBoard({ id: board.id, title: board.title });
   }
@@ -105,7 +133,7 @@ export default function NoteBoardsManager({ noteBoards, data, onDataChange }: No
       <div className="flex flex-col md:flex-row gap-4 justify-between items-center">
         <Tabs value={activeBoardId} onValueChange={setActiveBoardId} className="w-full md:w-auto">
           <ScrollArea className="w-full whitespace-nowrap">
-              <TabsList>
+              <TabsList className="h-auto">
               {noteBoards.map(board => (
                   <div key={board.id} className="relative group flex items-center pr-1 rounded-md hover:bg-muted has-[[data-state=active]]:bg-background">
                   {editingBoard?.id === board.id ? (
@@ -120,8 +148,8 @@ export default function NoteBoardsManager({ noteBoards, data, onDataChange }: No
                             className="h-8 w-32"
                             autoFocus
                         />
-                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleConfirmEdit}><Check className="h-4 w-4" /></Button>
-                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleCancelEdit}><X className="h-4 w-4" /></Button>
+                        <Button variant="ghost" size="icon" aria-label="Save board name" className="h-10 w-10" onClick={handleConfirmEdit}><Check className="h-4 w-4" /></Button>
+                        <Button variant="ghost" size="icon" aria-label="Cancel renaming" className="h-10 w-10" onClick={handleCancelEdit}><X className="h-4 w-4" /></Button>
                       </div>
                   ) : (
                       <>
@@ -130,7 +158,7 @@ export default function NoteBoardsManager({ noteBoards, data, onDataChange }: No
                           </TabsTrigger>
                           <DropdownMenu>
                               <DropdownMenuTrigger asChild>
-                                  <Button variant="ghost" size="icon" className="h-8 w-8 opacity-50 group-hover:opacity-100 data-[state=open]:opacity-100">
+                                  <Button variant="ghost" size="icon" aria-label={`Options for board ${board.title}`} className="h-10 w-10 opacity-50 group-hover:opacity-100 data-[state=open]:opacity-100">
                                       <MoreVertical className="h-4 w-4" />
                                   </Button>
                               </DropdownMenuTrigger>
@@ -180,12 +208,13 @@ export default function NoteBoardsManager({ noteBoards, data, onDataChange }: No
         {noteBoards.length > 0 ? (
           activeBoard && (
             viewMode === 'sticky' ? (
-              <StickyNotesBoard board={activeBoard} data={data} onDataChange={onDataChange} onSwitchView={handleSwitchToFormattedView}/>
+              <StickyNotesBoard board={activeBoard} data={data} onDataChange={onDataChange} onDeleteNote={handleDeleteNote} onSwitchView={handleSwitchToFormattedView}/>
             ) : (
               <FormattedNoteView 
                 board={activeBoard} 
                 data={data} 
                 onDataChange={onDataChange} 
+                onDeleteNote={handleDeleteNote}
                 noteToFocus={noteToFocus} 
                 onFocusHandled={handleFocusHandled}
               />

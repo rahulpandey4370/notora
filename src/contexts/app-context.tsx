@@ -148,9 +148,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const stored = (await api<Stored | null>({ op: 'load' })) ?? (await api<Stored>({ op: 'create', data: freshDefaults() }));
       const base = version.current ?? cachedVersion.current;
       if (stored.version === base) {
-        // Nothing new elsewhere: keep the screen (and any edits made meanwhile) as is.
+        // Workspace unchanged elsewhere. Fitbit data lives in its own table and is merged in on
+        // load without bumping the version, so take the server copy when nothing is unsaved.
+        // With edits pending, keep them; the next load brings the Fitbit numbers.
         version.current = stored.version;
         if (pendingData.current) void flushSave();
+        else if (!inFlight.current) { // a save still landing would otherwise be rolled back on screen
+          const next = normalize(stored.data);
+          // ponytail: whole-document JSON compare (~350 KB) to skip a no-op re-render. After a local edit jsonb key
+          // order can differ, costing one harmless extra re-render; add a server health stamp if it shows up in profiles.
+          setData(prev => (JSON.stringify(prev) === JSON.stringify(next) ? prev : next));
+        }
       } else {
         if (pendingData.current) {
           // Changed on another device while this one had unsaved edits: the server copy wins.

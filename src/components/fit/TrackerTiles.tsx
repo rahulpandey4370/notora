@@ -2,17 +2,15 @@ import { useMemo } from 'react';
 import { Line, LineChart, ResponsiveContainer, YAxis } from 'recharts';
 import { Settings2 } from 'lucide-react';
 import type { AppData, LogTracker } from '@/lib/types';
-import { addDays, dayBurn, findTracker, valueOn } from '@/lib/fitness';
+import { addDays } from '@/lib/fitness';
+import { direction, trackerValueOn } from '@/lib/tracker-stats';
 
-// Falling is good for these (same list LogTrackerCard uses).
-const DECREASE_IS_GOOD = new Set(['Weight', 'Daily Calorie Intake', 'Resting heart rate']);
 const fmt = (n: number) => (Math.abs(n) >= 100 ? Math.round(n).toLocaleString('en-US') : String(Math.round(n * 10) / 10));
 
 function seriesFor(data: AppData, t: LogTracker, today: string) {
-  const isBurn = t === findTracker(data, 'burned');
   return Array.from({ length: 15 }, (_, i) => {
     const d = addDays(today, i - 14);
-    const v = isBurn ? dayBurn(data, d).total ?? undefined : valueOn(t, d);
+    const v = trackerValueOn(data, t, d);
     return { d, v: v == null ? undefined : Math.round(v * 10) / 10 };
   });
 }
@@ -34,7 +32,7 @@ export function TrackerTiles({ data, today, onOpen, onManage }: { data: AppData;
     // Too few points in 15 days for a line (e.g. weekly weigh-ins): draw the last 15 entries instead.
     const spark = s.filter(p => p.v != null).length >= 2 ? s
       : [...t.logs].filter(l => l.value).sort((a, b) => a.date.localeCompare(b.date)).slice(-15).map(l => ({ d: l.date, v: l.value }));
-    return { t, s: spark, latest, change, stale };
+    return { t, s: spark, latest, change, stale, dir: direction(data, t, latest?.v) };
   }), [data, today]);
 
   return (
@@ -47,8 +45,8 @@ export function TrackerTiles({ data, today, onOpen, onManage }: { data: AppData;
         <p className="f-muted text-sm">No trackers yet. Log something above, or add one in Manage.</p>
       ) : (
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
-          {tiles.map(({ t, s, latest, change, stale }) => {
-            const good = change == null || Math.abs(change) < 0.01 ? null : (change < 0) === DECREASE_IS_GOOD.has(t.name);
+          {tiles.map(({ t, s, latest, change, stale, dir }) => {
+            const good = change == null || Math.abs(change) < 0.01 || dir === 'neutral' ? null : (change > 0) === (dir === 'up');
             return (
               <button key={t.id} type="button" onClick={() => onOpen(t.id)} className="f-card flex min-h-[8.5rem] flex-col p-3 text-left"
                 aria-label={`${t.name}: ${latest ? `${fmt(latest.v!)} ${t.unit}` : 'no recent value'}${change != null ? `, ${change > 0 ? 'up' : 'down'} ${Math.abs(Math.round(change * 100))}% vs last week` : ''}. Open details`}>
@@ -56,7 +54,7 @@ export function TrackerTiles({ data, today, onOpen, onManage }: { data: AppData;
                 <span className="mt-1 text-xl font-bold tabular-nums">{latest ? fmt(latest.v!) : '—'} <span className="f-muted text-xs font-normal">{t.unit}</span></span>
                 {stale && <span className="f-muted text-xs">on {new Date(`${latest!.d}T00:00:00`).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</span>}
                 {change != null && Math.abs(change) >= 0.01 && (
-                  <span className={`text-xs font-semibold ${good ? 'f-good' : 'f-bad'}`}>{change > 0 ? '▲' : '▼'} {Math.abs(Math.round(change * 100))}% vs last week</span>
+                  <span className={`text-xs font-semibold ${good == null ? 'f-muted' : good ? 'f-good' : 'f-bad'}`}>{change > 0 ? '▲' : '▼'} {Math.abs(Math.round(change * 100))}% vs last week</span>
                 )}
                 <div className="mt-auto h-10" aria-hidden>
                   <ResponsiveContainer width="100%" height="100%">

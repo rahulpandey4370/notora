@@ -1,13 +1,11 @@
 import { useState } from 'react';
 import { Suspense } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet';
-import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
 import HealthConnectCard from '@/components/notora/HealthConnectCard';
 import type { AppData, LogTracker } from '@/lib/types';
+import { ConfirmDelete } from './TrackerSheet';
 
 /** Create, edit and delete trackers, and connect Fitbit. */
 export function ManageSheet({ open, onOpenChange, data, onDataChange, showcase }: {
@@ -50,21 +48,8 @@ export function ManageSheet({ open, onOpenChange, data, onDataChange, showcase }
                 <input className="f-input mt-0.5 !py-1.5" type="number" inputMode="decimal" step="any" defaultValue={t.goal ?? ''}
                   onBlur={e => { const v = e.target.value.trim(); const n = Number(v); const next = v === '' ? undefined : Number.isFinite(n) ? n : t.goal; if (next !== t.goal) patch(t.id, { goal: next }); }} />
               </label>
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <button type="button" className="f-muted mt-4 flex h-11 w-9 items-center justify-center" aria-label={`Delete ${t.name}`}><Trash2 className="h-4 w-4" /></button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Delete “{t.name}”?</AlertDialogTitle>
-                    <AlertDialogDescription>This removes the tracker and all {t.logs.length} of its entries. It can’t be undone.</AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={() => onDataChange({ ...data, logTrackers: data.logTrackers.filter(x => x.id !== t.id) })}>Delete</AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
+              <ConfirmDelete label="Delete" confirm={`Delete ${t.logs.length}?`} className="!min-h-11 !px-3 !text-xs"
+                onConfirm={() => onDataChange({ ...data, logTrackers: data.logTrackers.filter(x => x.id !== t.id) })} />
             </li>
           ))}
         </ul>

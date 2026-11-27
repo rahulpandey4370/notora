@@ -4,12 +4,10 @@ import { useCallback, useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { formatDistanceToNow } from 'date-fns';
 import { Watch, RefreshCw, Loader2, Unplug } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { useApp } from '@/hooks/use-app';
 import { getHealthStatus, syncHealthNow, disconnectHealth, type HealthStatus } from '@/lib/health-actions';
 
-/** Connect / sync / reconnect Fitbit (via Google Health). Data lands in the Steps, Sleep and Resting heart rate trackers. */
+/** Connect / sync / reconnect Fitbit (via Google Health). Data lands in the Steps, Sleep and Resting heart rate trackers. Styled for the Logs page (inside .fit-ui). */
 export default function HealthConnectCard() {
   const { toast, reload } = useApp();
   const params = useSearchParams();
@@ -50,13 +48,12 @@ export default function HealthConnectCard() {
 
   const connectHref = '/api/health/connect';
   return (
-    <Card>
-      <CardContent className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center">
+    <div className="f-card flex flex-col gap-3 p-4 sm:flex-row sm:items-center">
         <div className="flex items-center gap-3 flex-1 min-w-0">
-          <Watch className="h-5 w-5 shrink-0 text-primary" />
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--f-tint)]"><Watch className="h-5 w-5 text-[var(--f-deep)]" aria-hidden /></span>
           <div className="min-w-0">
             <p className="font-medium">Fitbit</p>
-            <p className="text-sm text-muted-foreground">
+            <p className="f-muted text-sm">
               {status.state === 'disconnected' && 'Fill Steps, Sleep and Resting heart rate automatically.'}
               {status.state === 'reconnect' && status.message}
               {status.state === 'connected' && (status.lastSyncAt
@@ -64,27 +61,24 @@ export default function HealthConnectCard() {
                 : 'Connected, not synced yet')}
             </p>
             {status.state === 'connected' && status.lastError && (
-              <p className="text-xs text-destructive break-words">{status.lastError}</p>
+              <p className="f-bad text-xs break-words">{status.lastError}</p>
             )}
           </div>
         </div>
         <div className="flex gap-2">
           {status.state === 'connected' ? (
             <>
-              <Button size="sm" variant="outline" onClick={sync} disabled={busy}>
-                {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}Sync now
-              </Button>
-              <Button size="sm" variant="ghost" onClick={disconnect} disabled={busy} aria-label="Disconnect Fitbit">
+              <button type="button" className="f-pill flex-1 sm:flex-none" onClick={sync} disabled={busy}>
+                {busy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <RefreshCw className="h-4 w-4" aria-hidden />}Sync now
+              </button>
+              <button type="button" className="f-icon-btn h-11 w-11" onClick={disconnect} disabled={busy} aria-label="Disconnect Fitbit">
                 <Unplug className="h-4 w-4" />
-              </Button>
+              </button>
             </>
           ) : (
-            <Button size="sm" asChild>
-              <a href={connectHref}>{status.state === 'reconnect' ? 'Reconnect' : 'Connect'}</a>
-            </Button>
+            <a className="f-pill f-pill-primary flex-1 sm:flex-none" href={connectHref}>{status.state === 'reconnect' ? 'Reconnect' : 'Connect'}</a>
           )}
         </div>
-      </CardContent>
-    </Card>
+    </div>
   );
 }

@@ -138,7 +138,7 @@ export function FitnessPage({ data, onDataChange, showcase = false }: { data: Ap
         onReplace={(it, draft) => onDataChange(applyDraft(editDayItem(data, day, it.kind, it.id, null, uuidv4), draft, uuidv4))} />
       <TargetsSheet open={targetsOpen} onOpenChange={setTargetsOpen} data={data} today={today} onSave={onDataChange} />
       <ManageSheet open={manageOpen} onOpenChange={setManageOpen} data={data} onDataChange={onDataChange} showcase={showcase} />
-      <TrackerSheet tracker={tracker} onClose={() => setOpenTracker(null)}
+      <TrackerSheet tracker={tracker} data={data} day={day} today={today} aiDisabled={showcase} onClose={() => setOpenTracker(null)}
         onChange={p => onDataChange({ ...data, logTrackers: data.logTrackers.map(t => (t.id === openTracker ? { ...t, ...p } : t)) })}
         onDelete={() => { onDataChange({ ...data, logTrackers: data.logTrackers.filter(t => t.id !== openTracker) }); setOpenTracker(null); }} />
     </div>

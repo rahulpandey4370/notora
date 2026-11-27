@@ -1173,6 +1173,1142 @@
     "source": "https://fdc.nal.usda.gov/food-details/171412/nutrients",
     "quote": "Oil, coconut (FDC 171412): 1 tbsp = 13.6 g"
    }
+  ],
+  "Domino's Achari Do Pyaza, Medium, 100% Wheat Thin Crust (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 181,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 411 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 181 g. Density from Achari Do Pyaza is not on Domino's India \"Calorie Transparency\" sheet; median Medium HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g. The sheet has no 100% Wheat Thin Crust data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Achari Do Pyaza, Regular, 100% Wheat Thin Crust (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 215,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 487 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 215 g. Density from Achari Do Pyaza is not on Domino's India \"Calorie Transparency\" sheet; median Regular HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g. The sheet has no 100% Wheat Thin Crust data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Achari Do Pyaza, Regular, Cheese Burst (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 419,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 950 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 419 g. Density from Achari Do Pyaza is not on Domino's India \"Calorie Transparency\" sheet; median Regular HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g. The sheet has no Cheese Burst data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Achari Do Pyaza, Medium, Fresh Pan (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 298,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 676 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 298 g. Density from Achari Do Pyaza is not on Domino's India \"Calorie Transparency\" sheet; median Medium HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g. The sheet has no Fresh Pan data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Achari Do Pyaza, Regular, Fresh Pan (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 349,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 792 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 349 g. Density from Achari Do Pyaza is not on Domino's India \"Calorie Transparency\" sheet; median Regular HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g. The sheet has no Fresh Pan data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Achari Do Pyaza, Large, New Hand Tossed (1 serving = 1/4 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 249,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 564 kcal per serve (dominos.co.in menu data) / 2.26 kcal/g = 249 g. Density from Achari Do Pyaza is not on Domino's India \"Calorie Transparency\" sheet; median Large HT-crust density of the sheet's 25 pizzas = 2.26 kcal/g."
+   }
+  ],
+  "Domino's Achari Do Pyaza, Medium, New Hand Tossed (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 284,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 645 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 284 g. Density from Achari Do Pyaza is not on Domino's India \"Calorie Transparency\" sheet; median Medium HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g."
+   }
+  ],
+  "Domino's Achari Do Pyaza, Regular, New Hand Tossed (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 324,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 735 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 324 g. Density from Achari Do Pyaza is not on Domino's India \"Calorie Transparency\" sheet; median Regular HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g."
+   }
+  ],
+  "Domino's Cheese n Corn, Medium, 100% Wheat Thin Crust (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 162,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 367 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 162 g. Density from Cheese n Corn is not on Domino's India \"Calorie Transparency\" sheet; median Medium HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g. The sheet has no 100% Wheat Thin Crust data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Cheese n Corn, Regular, 100% Wheat Thin Crust (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 203,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 461 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 203 g. Density from Cheese n Corn is not on Domino's India \"Calorie Transparency\" sheet; median Regular HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g. The sheet has no 100% Wheat Thin Crust data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Cheese n Corn, Regular, Cheese Burst (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 406,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 921 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 406 g. Density from Cheese n Corn is not on Domino's India \"Calorie Transparency\" sheet; median Regular HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g. The sheet has no Cheese Burst data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Cheese n Corn, Medium, Fresh Pan (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 278,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 631 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 278 g. Density from Cheese n Corn is not on Domino's India \"Calorie Transparency\" sheet; median Medium HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g. The sheet has no Fresh Pan data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Cheese n Corn, Regular, Fresh Pan (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 328,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 744 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 328 g. Density from Cheese n Corn is not on Domino's India \"Calorie Transparency\" sheet; median Regular HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g. The sheet has no Fresh Pan data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Cheese n Corn, Large, New Hand Tossed (1 serving = 1/4 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 231,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 522 kcal per serve (dominos.co.in menu data) / 2.26 kcal/g = 231 g. Density from Cheese n Corn is not on Domino's India \"Calorie Transparency\" sheet; median Large HT-crust density of the sheet's 25 pizzas = 2.26 kcal/g."
+   }
+  ],
+  "Domino's Cheese n Corn, Medium, New Hand Tossed (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 264,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 600 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 264 g. Density from Cheese n Corn is not on Domino's India \"Calorie Transparency\" sheet; median Medium HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g."
+   }
+  ],
+  "Domino's Cheese n Corn, Regular, New Hand Tossed (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 313,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 709 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 313 g. Density from Cheese n Corn is not on Domino's India \"Calorie Transparency\" sheet; median Regular HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g."
+   }
+  ],
+  "Domino's Chicken Dominator, Medium, 100% Wheat Thin Crust (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 201,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 494 kcal per serve (dominos.co.in menu data) / 2.46 kcal/g = 201 g. Density from Chicken Dominator Medium on Domino's India \"Calorie Transparency\" sheet (HT crust): 226.7 kcal per 92 g serving = 2.46 kcal/g. The sheet has no 100% Wheat Thin Crust data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Chicken Dominator, Regular, 100% Wheat Thin Crust (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 224,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 553 kcal per serve (dominos.co.in menu data) / 2.46 kcal/g = 224 g. Density from Chicken Dominator Regular on Domino's India \"Calorie Transparency\" sheet (HT crust): 172.5 kcal per 70 g serving = 2.46 kcal/g. The sheet has no 100% Wheat Thin Crust data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Chicken Dominator, Regular, Cheese Burst (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 417,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 1028 kcal per serve (dominos.co.in menu data) / 2.46 kcal/g = 417 g. Density from Chicken Dominator Regular on Domino's India \"Calorie Transparency\" sheet (HT crust): 172.5 kcal per 70 g serving = 2.46 kcal/g. The sheet has no Cheese Burst data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Chicken Dominator, Medium, Fresh Pan (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 308,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 759 kcal per serve (dominos.co.in menu data) / 2.46 kcal/g = 308 g. Density from Chicken Dominator Medium on Domino's India \"Calorie Transparency\" sheet (HT crust): 226.7 kcal per 92 g serving = 2.46 kcal/g. The sheet has no Fresh Pan data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Chicken Dominator, Regular, Fresh Pan (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 345,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 851 kcal per serve (dominos.co.in menu data) / 2.46 kcal/g = 345 g. Density from Chicken Dominator Regular on Domino's India \"Calorie Transparency\" sheet (HT crust): 172.5 kcal per 70 g serving = 2.46 kcal/g. The sheet has no Fresh Pan data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Chicken Dominator, Large, New Hand Tossed (1 serving = 1/4 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 241,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 621 kcal per serve (dominos.co.in menu data) / 2.57 kcal/g = 241 g. Density from Chicken Dominator Large on Domino's India \"Calorie Transparency\" sheet (HT crust): 399.0 kcal per 155 g serving = 2.57 kcal/g."
+   }
+  ],
+  "Domino's Chicken Dominator, Medium, New Hand Tossed (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 295,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 728 kcal per serve (dominos.co.in menu data) / 2.46 kcal/g = 295 g. Density from Chicken Dominator Medium on Domino's India \"Calorie Transparency\" sheet (HT crust): 226.7 kcal per 92 g serving = 2.46 kcal/g."
+   }
+  ],
+  "Domino's Chicken Dominator, Regular, New Hand Tossed (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 325,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 801 kcal per serve (dominos.co.in menu data) / 2.46 kcal/g = 325 g. Density from Chicken Dominator Regular on Domino's India \"Calorie Transparency\" sheet (HT crust): 172.5 kcal per 70 g serving = 2.46 kcal/g."
+   }
+  ],
+  "Domino's Chicken Fiesta, Medium, 100% Wheat Thin Crust (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 173,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 400 kcal per serve (dominos.co.in menu data) / 2.31 kcal/g = 173 g. Density from Chicken Fiesta Medium on Domino's India \"Calorie Transparency\" sheet (HT crust): 217.4 kcal per 94 g serving = 2.31 kcal/g. The sheet has no 100% Wheat Thin Crust data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Chicken Fiesta, Regular, 100% Wheat Thin Crust (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 209,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 482 kcal per serve (dominos.co.in menu data) / 2.31 kcal/g = 209 g. Density from Chicken Fiesta Regular on Domino's India \"Calorie Transparency\" sheet (HT crust): 150.1 kcal per 65 g serving = 2.31 kcal/g. The sheet has no 100% Wheat Thin Crust data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Chicken Fiesta, Regular, Cheese Burst (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 409,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 945 kcal per serve (dominos.co.in menu data) / 2.31 kcal/g = 409 g. Density from Chicken Fiesta Regular on Domino's India \"Calorie Transparency\" sheet (HT crust): 150.1 kcal per 65 g serving = 2.31 kcal/g. The sheet has no Cheese Burst data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Chicken Fiesta, Medium, Fresh Pan (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 287,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 664 kcal per serve (dominos.co.in menu data) / 2.31 kcal/g = 287 g. Density from Chicken Fiesta Medium on Domino's India \"Calorie Transparency\" sheet (HT crust): 217.4 kcal per 94 g serving = 2.31 kcal/g. The sheet has no Fresh Pan data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Chicken Fiesta, Regular, Fresh Pan (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 331,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 765 kcal per serve (dominos.co.in menu data) / 2.31 kcal/g = 331 g. Density from Chicken Fiesta Regular on Domino's India \"Calorie Transparency\" sheet (HT crust): 150.1 kcal per 65 g serving = 2.31 kcal/g. The sheet has no Fresh Pan data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Chicken Fiesta, Large, New Hand Tossed (1 serving = 1/4 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 238,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 546 kcal per serve (dominos.co.in menu data) / 2.30 kcal/g = 238 g. Density from Chicken Fiesta Large on Domino's India \"Calorie Transparency\" sheet (HT crust): 227.7 kcal per 99 g serving = 2.30 kcal/g."
+   }
+  ],
+  "Domino's Chicken Fiesta, Medium, New Hand Tossed (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 274,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 633 kcal per serve (dominos.co.in menu data) / 2.31 kcal/g = 274 g. Density from Chicken Fiesta Medium on Domino's India \"Calorie Transparency\" sheet (HT crust): 217.4 kcal per 94 g serving = 2.31 kcal/g."
+   }
+  ],
+  "Domino's Chicken Fiesta, Regular, New Hand Tossed (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 316,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 730 kcal per serve (dominos.co.in menu data) / 2.31 kcal/g = 316 g. Density from Chicken Fiesta Regular on Domino's India \"Calorie Transparency\" sheet (HT crust): 150.1 kcal per 65 g serving = 2.31 kcal/g."
+   }
+  ],
+  "Domino's Chicken Golden Delight, Medium, 100% Wheat Thin Crust (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 194,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 455 kcal per serve (dominos.co.in menu data) / 2.34 kcal/g = 194 g. Density from Chicken Golden Delight Medium on Domino's India \"Calorie Transparency\" sheet (HT crust): 185.2 kcal per 79 g serving = 2.34 kcal/g. The sheet has no 100% Wheat Thin Crust data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Chicken Golden Delight, Regular, 100% Wheat Thin Crust (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 208,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 485 kcal per serve (dominos.co.in menu data) / 2.33 kcal/g = 208 g. Density from Chicken Golden Delight Regular on Domino's India \"Calorie Transparency\" sheet (HT crust): 170.0 kcal per 73 g serving = 2.33 kcal/g. The sheet has no 100% Wheat Thin Crust data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Chicken Golden Delight, Regular, Cheese Burst (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 432,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 1007 kcal per serve (dominos.co.in menu data) / 2.33 kcal/g = 432 g. Density from Chicken Golden Delight Regular on Domino's India \"Calorie Transparency\" sheet (HT crust): 170.0 kcal per 73 g serving = 2.33 kcal/g. The sheet has no Cheese Burst data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Chicken Golden Delight, Medium, Fresh Pan (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 307,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 719 kcal per serve (dominos.co.in menu data) / 2.34 kcal/g = 307 g. Density from Chicken Golden Delight Medium on Domino's India \"Calorie Transparency\" sheet (HT crust): 185.2 kcal per 79 g serving = 2.34 kcal/g. The sheet has no Fresh Pan data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Chicken Golden Delight, Regular, Fresh Pan (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 357,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 830 kcal per serve (dominos.co.in menu data) / 2.33 kcal/g = 357 g. Density from Chicken Golden Delight Regular on Domino's India \"Calorie Transparency\" sheet (HT crust): 170.0 kcal per 73 g serving = 2.33 kcal/g. The sheet has no Fresh Pan data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Chicken Golden Delight, Large, New Hand Tossed (1 serving = 1/4 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 255,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 598 kcal per serve (dominos.co.in menu data) / 2.34 kcal/g = 255 g. Density from Chicken Golden Delight Large on Domino's India \"Calorie Transparency\" sheet (HT crust): 225.1 kcal per 96 g serving = 2.34 kcal/g."
+   }
+  ],
+  "Domino's Chicken Golden Delight, Medium, New Hand Tossed (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 294,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 688 kcal per serve (dominos.co.in menu data) / 2.34 kcal/g = 294 g. Density from Chicken Golden Delight Medium on Domino's India \"Calorie Transparency\" sheet (HT crust): 185.2 kcal per 79 g serving = 2.34 kcal/g."
+   }
+  ],
+  "Domino's Chicken Golden Delight, Regular, New Hand Tossed (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 315,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 733 kcal per serve (dominos.co.in menu data) / 2.33 kcal/g = 315 g. Density from Chicken Golden Delight Regular on Domino's India \"Calorie Transparency\" sheet (HT crust): 170.0 kcal per 73 g serving = 2.33 kcal/g."
+   }
+  ],
+  "Domino's Chicken Pepperoni, Medium, 100% Wheat Thin Crust (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 188,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 428 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 188 g. Density from Chicken Pepperoni is not on Domino's India \"Calorie Transparency\" sheet; median Medium HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g. The sheet has no 100% Wheat Thin Crust data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Chicken Pepperoni, Regular, 100% Wheat Thin Crust (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 222,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 505 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 222 g. Density from Chicken Pepperoni is not on Domino's India \"Calorie Transparency\" sheet; median Regular HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g. The sheet has no 100% Wheat Thin Crust data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Chicken Pepperoni, Regular, Cheese Burst (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 431,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 979 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 431 g. Density from Chicken Pepperoni is not on Domino's India \"Calorie Transparency\" sheet; median Regular HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g. The sheet has no Cheese Burst data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Chicken Pepperoni, Medium, Fresh Pan (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 305,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 692 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 305 g. Density from Chicken Pepperoni is not on Domino's India \"Calorie Transparency\" sheet; median Medium HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g. The sheet has no Fresh Pan data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Chicken Pepperoni, Regular, Fresh Pan (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 354,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 802 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 354 g. Density from Chicken Pepperoni is not on Domino's India \"Calorie Transparency\" sheet; median Regular HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g. The sheet has no Fresh Pan data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Chicken Pepperoni, Large, New Hand Tossed (1 serving = 1/4 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 255,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 577 kcal per serve (dominos.co.in menu data) / 2.26 kcal/g = 255 g. Density from Chicken Pepperoni is not on Domino's India \"Calorie Transparency\" sheet; median Large HT-crust density of the sheet's 25 pizzas = 2.26 kcal/g."
+   }
+  ],
+  "Domino's Chicken Pepperoni, Medium, New Hand Tossed (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 291,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 661 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 291 g. Density from Chicken Pepperoni is not on Domino's India \"Calorie Transparency\" sheet; median Medium HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g."
+   }
+  ],
+  "Domino's Chicken Pepperoni, Regular, New Hand Tossed (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 332,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 753 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 332 g. Density from Chicken Pepperoni is not on Domino's India \"Calorie Transparency\" sheet; median Regular HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g."
+   }
+  ],
+  "Domino's Chicken Sausage, Medium, 100% Wheat Thin Crust (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 186,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 422 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 186 g. Density from Chicken Sausage is not on Domino's India \"Calorie Transparency\" sheet; median Medium HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g. The sheet has no 100% Wheat Thin Crust data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Chicken Sausage, Regular, 100% Wheat Thin Crust (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 229,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 519 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 229 g. Density from Chicken Sausage is not on Domino's India \"Calorie Transparency\" sheet; median Regular HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g. The sheet has no 100% Wheat Thin Crust data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Chicken Sausage, Regular, Cheese Burst (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 431,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 978 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 431 g. Density from Chicken Sausage is not on Domino's India \"Calorie Transparency\" sheet; median Regular HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g. The sheet has no Cheese Burst data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Chicken Sausage, Regular, Classic Hand Tossed (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 258,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 586 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 258 g. Density from Chicken Sausage is not on Domino's India \"Calorie Transparency\" sheet; median Regular HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g."
+   }
+  ],
+  "Domino's Chicken Sausage, Medium, Fresh Pan (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 302,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 686 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 302 g. Density from Chicken Sausage is not on Domino's India \"Calorie Transparency\" sheet; median Medium HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g. The sheet has no Fresh Pan data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Chicken Sausage, Large, New Hand Tossed (1 serving = 1/4 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 251,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 568 kcal per serve (dominos.co.in menu data) / 2.26 kcal/g = 251 g. Density from Chicken Sausage is not on Domino's India \"Calorie Transparency\" sheet; median Large HT-crust density of the sheet's 25 pizzas = 2.26 kcal/g."
+   }
+  ],
+  "Domino's Chicken Sausage, Medium, New Hand Tossed (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 289,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 655 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 289 g. Density from Chicken Sausage is not on Domino's India \"Calorie Transparency\" sheet; median Medium HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g."
+   }
+  ],
+  "Domino's Chicken Sausage, Regular, New Hand Tossed (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 338,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 767 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 338 g. Density from Chicken Sausage is not on Domino's India \"Calorie Transparency\" sheet; median Regular HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g."
+   }
+  ],
+  "Domino's Double Cheese Margherita, Medium, 100% Wheat Thin Crust (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 147,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 382 kcal per serve (dominos.co.in menu data) / 2.60 kcal/g = 147 g. Density from Double Cheese Margherita Medium on Domino's India \"Calorie Transparency\" sheet (HT crust): 166.7 kcal per 64 g serving = 2.60 kcal/g. The sheet has no 100% Wheat Thin Crust data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Double Cheese Margherita, Regular, 100% Wheat Thin Crust (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 187,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 487 kcal per serve (dominos.co.in menu data) / 2.60 kcal/g = 187 g. Density from Double Cheese Margherita Regular on Domino's India \"Calorie Transparency\" sheet (HT crust): 145.5 kcal per 56 g serving = 2.60 kcal/g. The sheet has no 100% Wheat Thin Crust data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Double Cheese Margherita, Regular, Cheese Burst (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 364,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 947 kcal per serve (dominos.co.in menu data) / 2.60 kcal/g = 364 g. Density from Double Cheese Margherita Regular on Domino's India \"Calorie Transparency\" sheet (HT crust): 145.5 kcal per 56 g serving = 2.60 kcal/g. The sheet has no Cheese Burst data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Double Cheese Margherita, Medium, Fresh Pan (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 250,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 651 kcal per serve (dominos.co.in menu data) / 2.60 kcal/g = 250 g. Density from Double Cheese Margherita Medium on Domino's India \"Calorie Transparency\" sheet (HT crust): 166.7 kcal per 64 g serving = 2.60 kcal/g. The sheet has no Fresh Pan data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Double Cheese Margherita, Regular, Fresh Pan (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 295,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 767 kcal per serve (dominos.co.in menu data) / 2.60 kcal/g = 295 g. Density from Double Cheese Margherita Regular on Domino's India \"Calorie Transparency\" sheet (HT crust): 145.5 kcal per 56 g serving = 2.60 kcal/g. The sheet has no Fresh Pan data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Double Cheese Margherita, Large, New Hand Tossed (1 serving = 1/4 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 208,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 537 kcal per serve (dominos.co.in menu data) / 2.59 kcal/g = 208 g. Density from Double Cheese Margherita Large on Domino's India \"Calorie Transparency\" sheet (HT crust): 279.3 kcal per 108 g serving = 2.59 kcal/g."
+   }
+  ],
+  "Domino's Farmhouse, Medium, 100% Wheat Thin Crust (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 173,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 385 kcal per serve (dominos.co.in menu data) / 2.22 kcal/g = 173 g. Density from Farmhouse Medium on Domino's India \"Calorie Transparency\" sheet (HT crust): 184.6 kcal per 83 g serving = 2.22 kcal/g. The sheet has no 100% Wheat Thin Crust data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Farmhouse, Regular, 100% Wheat Thin Crust (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 214,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 479 kcal per serve (dominos.co.in menu data) / 2.24 kcal/g = 214 g. Density from Farmhouse Regular on Domino's India \"Calorie Transparency\" sheet (HT crust): 156.5 kcal per 70 g serving = 2.24 kcal/g. The sheet has no 100% Wheat Thin Crust data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Farmhouse, Regular, Cheese Burst (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 420,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 939 kcal per serve (dominos.co.in menu data) / 2.24 kcal/g = 420 g. Density from Farmhouse Regular on Domino's India \"Calorie Transparency\" sheet (HT crust): 156.5 kcal per 70 g serving = 2.24 kcal/g. The sheet has no Cheese Burst data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Farmhouse, Medium, Fresh Pan (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 292,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 650 kcal per serve (dominos.co.in menu data) / 2.22 kcal/g = 292 g. Density from Farmhouse Medium on Domino's India \"Calorie Transparency\" sheet (HT crust): 184.6 kcal per 83 g serving = 2.22 kcal/g. The sheet has no Fresh Pan data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Farmhouse, Regular, Fresh Pan (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 341,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 762 kcal per serve (dominos.co.in menu data) / 2.24 kcal/g = 341 g. Density from Farmhouse Regular on Domino's India \"Calorie Transparency\" sheet (HT crust): 156.5 kcal per 70 g serving = 2.24 kcal/g. The sheet has no Fresh Pan data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Farmhouse, Large, New Hand Tossed (1 serving = 1/4 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 243,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 539 kcal per serve (dominos.co.in menu data) / 2.22 kcal/g = 243 g. Density from Farmhouse Large on Domino's India \"Calorie Transparency\" sheet (HT crust): 253.5 kcal per 114 g serving = 2.22 kcal/g."
+   }
+  ],
+  "Domino's Farmhouse, Medium, New Hand Tossed (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 278,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 619 kcal per serve (dominos.co.in menu data) / 2.22 kcal/g = 278 g. Density from Farmhouse Medium on Domino's India \"Calorie Transparency\" sheet (HT crust): 184.6 kcal per 83 g serving = 2.22 kcal/g."
+   }
+  ],
+  "Domino's Farmhouse, Regular, New Hand Tossed (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 325,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 727 kcal per serve (dominos.co.in menu data) / 2.24 kcal/g = 325 g. Density from Farmhouse Regular on Domino's India \"Calorie Transparency\" sheet (HT crust): 156.5 kcal per 70 g serving = 2.24 kcal/g."
+   }
+  ],
+  "Domino's Fresh Veggie, Medium, 100% Wheat Thin Crust (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 160,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 364 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 160 g. Density from Fresh Veggie is not on Domino's India \"Calorie Transparency\" sheet; median Medium HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g. The sheet has no 100% Wheat Thin Crust data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Fresh Veggie, Regular, 100% Wheat Thin Crust (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 200,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 454 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 200 g. Density from Fresh Veggie is not on Domino's India \"Calorie Transparency\" sheet; median Regular HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g. The sheet has no 100% Wheat Thin Crust data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Fresh Veggie, Regular, Cheese Burst (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 402,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 913 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 402 g. Density from Fresh Veggie is not on Domino's India \"Calorie Transparency\" sheet; median Regular HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g. The sheet has no Cheese Burst data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Fresh Veggie, Medium, Fresh Pan (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 277,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 629 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 277 g. Density from Fresh Veggie is not on Domino's India \"Calorie Transparency\" sheet; median Medium HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g. The sheet has no Fresh Pan data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Fresh Veggie, Regular, Fresh Pan (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 324,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 736 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 324 g. Density from Fresh Veggie is not on Domino's India \"Calorie Transparency\" sheet; median Regular HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g. The sheet has no Fresh Pan data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Fresh Veggie, Large, New Hand Tossed (1 serving = 1/4 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 230,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 520 kcal per serve (dominos.co.in menu data) / 2.26 kcal/g = 230 g. Density from Fresh Veggie is not on Domino's India \"Calorie Transparency\" sheet; median Large HT-crust density of the sheet's 25 pizzas = 2.26 kcal/g."
+   }
+  ],
+  "Domino's Fresh Veggie, Medium, New Hand Tossed (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 263,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 598 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 263 g. Density from Fresh Veggie is not on Domino's India \"Calorie Transparency\" sheet; median Medium HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g."
+   }
+  ],
+  "Domino's Fresh Veggie, Regular, New Hand Tossed (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 309,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 701 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 309 g. Density from Fresh Veggie is not on Domino's India \"Calorie Transparency\" sheet; median Regular HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g."
+   }
+  ],
+  "Domino's Indi Chicken Tikka, Medium, 100% Wheat Thin Crust (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 222,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 503 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 222 g. Density from Indi Chicken Tikka is not on Domino's India \"Calorie Transparency\" sheet; median Medium HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g. The sheet has no 100% Wheat Thin Crust data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Indi Chicken Tikka, Regular, 100% Wheat Thin Crust (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 269,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 612 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 269 g. Density from Indi Chicken Tikka is not on Domino's India \"Calorie Transparency\" sheet; median Regular HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g. The sheet has no 100% Wheat Thin Crust data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Indi Chicken Tikka, Regular, Cheese Burst (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 472,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 1071 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 472 g. Density from Indi Chicken Tikka is not on Domino's India \"Calorie Transparency\" sheet; median Regular HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g. The sheet has no Cheese Burst data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Indi Chicken Tikka, Medium, Fresh Pan (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 338,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 768 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 338 g. Density from Indi Chicken Tikka is not on Domino's India \"Calorie Transparency\" sheet; median Medium HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g. The sheet has no Fresh Pan data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Indi Chicken Tikka, Regular, Fresh Pan (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 394,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 894 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 394 g. Density from Indi Chicken Tikka is not on Domino's India \"Calorie Transparency\" sheet; median Regular HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g. The sheet has no Fresh Pan data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Indi Chicken Tikka, Large, New Hand Tossed (1 serving = 1/4 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 283,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 640 kcal per serve (dominos.co.in menu data) / 2.26 kcal/g = 283 g. Density from Indi Chicken Tikka is not on Domino's India \"Calorie Transparency\" sheet; median Large HT-crust density of the sheet's 25 pizzas = 2.26 kcal/g."
+   }
+  ],
+  "Domino's Indi Chicken Tikka, Medium, New Hand Tossed (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 324,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 737 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 324 g. Density from Indi Chicken Tikka is not on Domino's India \"Calorie Transparency\" sheet; median Medium HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g."
+   }
+  ],
+  "Domino's Indi Chicken Tikka, Regular, New Hand Tossed (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 379,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 859 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 379 g. Density from Indi Chicken Tikka is not on Domino's India \"Calorie Transparency\" sheet; median Regular HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g."
+   }
+  ],
+  "Domino's Indi Tandoori Paneer, Medium, 100% Wheat Thin Crust (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 252,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 573 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 252 g. Density from Indi Tandoori Paneer is not on Domino's India \"Calorie Transparency\" sheet; median Medium HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g. The sheet has no 100% Wheat Thin Crust data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Indi Tandoori Paneer, Regular, 100% Wheat Thin Crust (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 310,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 705 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 310 g. Density from Indi Tandoori Paneer is not on Domino's India \"Calorie Transparency\" sheet; median Regular HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g. The sheet has no 100% Wheat Thin Crust data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Indi Tandoori Paneer, Regular, Cheese Burst (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 515,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 1170 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 515 g. Density from Indi Tandoori Paneer is not on Domino's India \"Calorie Transparency\" sheet; median Regular HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g. The sheet has no Cheese Burst data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Indi Tandoori Paneer, Medium, Fresh Pan (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 369,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 837 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 369 g. Density from Indi Tandoori Paneer is not on Domino's India \"Calorie Transparency\" sheet; median Medium HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g. The sheet has no Fresh Pan data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Indi Tandoori Paneer, Regular, Fresh Pan (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 438,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 993 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 438 g. Density from Indi Tandoori Paneer is not on Domino's India \"Calorie Transparency\" sheet; median Regular HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g. The sheet has no Fresh Pan data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Indi Tandoori Paneer, Large, New Hand Tossed (1 serving = 1/4 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 310,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 701 kcal per serve (dominos.co.in menu data) / 2.26 kcal/g = 310 g. Density from Indi Tandoori Paneer is not on Domino's India \"Calorie Transparency\" sheet; median Large HT-crust density of the sheet's 25 pizzas = 2.26 kcal/g."
+   }
+  ],
+  "Domino's Indi Tandoori Paneer, Medium, New Hand Tossed (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 355,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 806 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 355 g. Density from Indi Tandoori Paneer is not on Domino's India \"Calorie Transparency\" sheet; median Medium HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g."
+   }
+  ],
+  "Domino's Indi Tandoori Paneer, Regular, New Hand Tossed (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 420,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 952 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 420 g. Density from Indi Tandoori Paneer is not on Domino's India \"Calorie Transparency\" sheet; median Regular HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g."
+   }
+  ],
+  "Domino's Margherita, Medium, 100% Wheat Thin Crust (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 131,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 351 kcal per serve (dominos.co.in menu data) / 2.67 kcal/g = 131 g. Density from Margherita Medium on Domino's India \"Calorie Transparency\" sheet (HT crust): 184.4 kcal per 69 g serving = 2.67 kcal/g. The sheet has no 100% Wheat Thin Crust data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Margherita, Regular, 100% Wheat Thin Crust (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 165,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 440 kcal per serve (dominos.co.in menu data) / 2.66 kcal/g = 165 g. Density from Margherita Regular on Domino's India \"Calorie Transparency\" sheet (HT crust): 138.5 kcal per 52 g serving = 2.66 kcal/g. The sheet has no 100% Wheat Thin Crust data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Margherita, Regular, Cheese Burst (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 338,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 899 kcal per serve (dominos.co.in menu data) / 2.66 kcal/g = 338 g. Density from Margherita Regular on Domino's India \"Calorie Transparency\" sheet (HT crust): 138.5 kcal per 52 g serving = 2.66 kcal/g. The sheet has no Cheese Burst data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Margherita, Regular, Fresh Pan (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 271,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 722 kcal per serve (dominos.co.in menu data) / 2.66 kcal/g = 271 g. Density from Margherita Regular on Domino's India \"Calorie Transparency\" sheet (HT crust): 138.5 kcal per 52 g serving = 2.66 kcal/g. The sheet has no Fresh Pan data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Margherita, Large, New Hand Tossed (1 serving = 1/4 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 191,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 509 kcal per serve (dominos.co.in menu data) / 2.67 kcal/g = 191 g. Density from Margherita Large on Domino's India \"Calorie Transparency\" sheet (HT crust): 256.4 kcal per 96 g serving = 2.67 kcal/g."
+   }
+  ],
+  "Domino's Margherita, Medium, New Hand Tossed (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 219,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 585 kcal per serve (dominos.co.in menu data) / 2.67 kcal/g = 219 g. Density from Margherita Medium on Domino's India \"Calorie Transparency\" sheet (HT crust): 184.4 kcal per 69 g serving = 2.67 kcal/g."
+   }
+  ],
+  "Domino's Margherita, Regular, New Hand Tossed (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 258,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 688 kcal per serve (dominos.co.in menu data) / 2.66 kcal/g = 258 g. Density from Margherita Regular on Domino's India \"Calorie Transparency\" sheet (HT crust): 138.5 kcal per 52 g serving = 2.66 kcal/g."
+   }
+  ],
+  "Domino's Mexican Green Wave, Medium, 100% Wheat Thin Crust (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 166,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 369 kcal per serve (dominos.co.in menu data) / 2.22 kcal/g = 166 g. Density from Mexican Green Wave Medium on Domino's India \"Calorie Transparency\" sheet (HT crust): 181.9 kcal per 82 g serving = 2.22 kcal/g. The sheet has no 100% Wheat Thin Crust data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Mexican Green Wave, Regular, 100% Wheat Thin Crust (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 206,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 459 kcal per serve (dominos.co.in menu data) / 2.22 kcal/g = 206 g. Density from Mexican Green Wave Regular on Domino's India \"Calorie Transparency\" sheet (HT crust): 144.5 kcal per 65 g serving = 2.22 kcal/g. The sheet has no 100% Wheat Thin Crust data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Mexican Green Wave, Regular, Cheese Burst (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 413,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 918 kcal per serve (dominos.co.in menu data) / 2.22 kcal/g = 413 g. Density from Mexican Green Wave Regular on Domino's India \"Calorie Transparency\" sheet (HT crust): 144.5 kcal per 65 g serving = 2.22 kcal/g. The sheet has no Cheese Burst data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Mexican Green Wave, Medium, Fresh Pan (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 286,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 633 kcal per serve (dominos.co.in menu data) / 2.22 kcal/g = 286 g. Density from Mexican Green Wave Medium on Domino's India \"Calorie Transparency\" sheet (HT crust): 181.9 kcal per 82 g serving = 2.22 kcal/g. The sheet has no Fresh Pan data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Mexican Green Wave, Regular, Fresh Pan (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 334,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 742 kcal per serve (dominos.co.in menu data) / 2.22 kcal/g = 334 g. Density from Mexican Green Wave Regular on Domino's India \"Calorie Transparency\" sheet (HT crust): 144.5 kcal per 65 g serving = 2.22 kcal/g. The sheet has no Fresh Pan data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Mexican Green Wave, Large, New Hand Tossed (1 serving = 1/4 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 236,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 525 kcal per serve (dominos.co.in menu data) / 2.22 kcal/g = 236 g. Density from Mexican Green Wave Large on Domino's India \"Calorie Transparency\" sheet (HT crust): 253.4 kcal per 114 g serving = 2.22 kcal/g."
+   }
+  ],
+  "Domino's Mexican Green Wave, Medium, New Hand Tossed (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 271,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 602 kcal per serve (dominos.co.in menu data) / 2.22 kcal/g = 271 g. Density from Mexican Green Wave Medium on Domino's India \"Calorie Transparency\" sheet (HT crust): 181.9 kcal per 82 g serving = 2.22 kcal/g."
+   }
+  ],
+  "Domino's Mexican Green Wave, Regular, New Hand Tossed (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 318,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 707 kcal per serve (dominos.co.in menu data) / 2.22 kcal/g = 318 g. Density from Mexican Green Wave Regular on Domino's India \"Calorie Transparency\" sheet (HT crust): 144.5 kcal per 65 g serving = 2.22 kcal/g."
+   }
+  ],
+  "Domino's Onion, Regular, Classic Hand Tossed (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 241,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 547 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 241 g. Density from Onion is not on Domino's India \"Calorie Transparency\" sheet; median Regular HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g."
+   }
+  ],
+  "Domino's Onion, Regular, Fresh Pan (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 301,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 684 kcal per serve (dominos.co.in menu data) / 2.27 kcal/g = 301 g. Density from Onion is not on Domino's India \"Calorie Transparency\" sheet; median Regular HT-crust density of the sheet's 25 pizzas = 2.27 kcal/g. The sheet has no Fresh Pan data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Peppy Paneer, Medium, 100% Wheat Thin Crust (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 194,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 488 kcal per serve (dominos.co.in menu data) / 2.51 kcal/g = 194 g. Density from Peppy Paneer Medium on Domino's India \"Calorie Transparency\" sheet (HT crust): 198.4 kcal per 79 g serving = 2.51 kcal/g. The sheet has no 100% Wheat Thin Crust data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Peppy Paneer, Regular, 100% Wheat Thin Crust (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 245,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 609 kcal per serve (dominos.co.in menu data) / 2.48 kcal/g = 245 g. Density from Peppy Paneer Regular on Domino's India \"Calorie Transparency\" sheet (HT crust): 168.8 kcal per 68 g serving = 2.48 kcal/g. The sheet has no 100% Wheat Thin Crust data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Peppy Paneer, Regular, Cheese Burst (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 431,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 1069 kcal per serve (dominos.co.in menu data) / 2.48 kcal/g = 431 g. Density from Peppy Paneer Regular on Domino's India \"Calorie Transparency\" sheet (HT crust): 168.8 kcal per 68 g serving = 2.48 kcal/g. The sheet has no Cheese Burst data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Peppy Paneer, Medium, Fresh Pan (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 300,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 753 kcal per serve (dominos.co.in menu data) / 2.51 kcal/g = 300 g. Density from Peppy Paneer Medium on Domino's India \"Calorie Transparency\" sheet (HT crust): 198.4 kcal per 79 g serving = 2.51 kcal/g. The sheet has no Fresh Pan data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Peppy Paneer, Regular, Fresh Pan (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 359,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 892 kcal per serve (dominos.co.in menu data) / 2.48 kcal/g = 359 g. Density from Peppy Paneer Regular on Domino's India \"Calorie Transparency\" sheet (HT crust): 168.8 kcal per 68 g serving = 2.48 kcal/g. The sheet has no Fresh Pan data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Peppy Paneer, Large, New Hand Tossed (1 serving = 1/4 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 252,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 628 kcal per serve (dominos.co.in menu data) / 2.49 kcal/g = 252 g. Density from Peppy Paneer Large on Domino's India \"Calorie Transparency\" sheet (HT crust): 271.9 kcal per 109 g serving = 2.49 kcal/g."
+   }
+  ],
+  "Domino's Peppy Paneer, Medium, New Hand Tossed (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 287,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 721 kcal per serve (dominos.co.in menu data) / 2.51 kcal/g = 287 g. Density from Peppy Paneer Medium on Domino's India \"Calorie Transparency\" sheet (HT crust): 198.4 kcal per 79 g serving = 2.51 kcal/g."
+   }
+  ],
+  "Domino's Peppy Paneer, Regular, New Hand Tossed (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 345,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 857 kcal per serve (dominos.co.in menu data) / 2.48 kcal/g = 345 g. Density from Peppy Paneer Regular on Domino's India \"Calorie Transparency\" sheet (HT crust): 168.8 kcal per 68 g serving = 2.48 kcal/g."
+   }
+  ],
+  "Domino's Veg Extravaganza, Medium, 100% Wheat Thin Crust (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 245,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 465 kcal per serve (dominos.co.in menu data) / 1.90 kcal/g = 245 g. Density from Veg Extravaganza Medium on Domino's India \"Calorie Transparency\" sheet (HT crust): 184.2 kcal per 97 g serving = 1.90 kcal/g. The sheet has no 100% Wheat Thin Crust data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Veg Extravaganza, Regular, 100% Wheat Thin Crust (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 284,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 541 kcal per serve (dominos.co.in menu data) / 1.90 kcal/g = 284 g. Density from Veg Extravaganza Regular on Domino's India \"Calorie Transparency\" sheet (HT crust): 173.3 kcal per 91 g serving = 1.90 kcal/g. The sheet has no 100% Wheat Thin Crust data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Veg Extravaganza, Regular, Cheese Burst (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 538,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 1025 kcal per serve (dominos.co.in menu data) / 1.90 kcal/g = 538 g. Density from Veg Extravaganza Regular on Domino's India \"Calorie Transparency\" sheet (HT crust): 173.3 kcal per 91 g serving = 1.90 kcal/g. The sheet has no Cheese Burst data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Veg Extravaganza, Medium, Fresh Pan (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 384,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 728 kcal per serve (dominos.co.in menu data) / 1.90 kcal/g = 384 g. Density from Veg Extravaganza Medium on Domino's India \"Calorie Transparency\" sheet (HT crust): 184.2 kcal per 97 g serving = 1.90 kcal/g. The sheet has no Fresh Pan data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Veg Extravaganza, Regular, Fresh Pan (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 445,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 848 kcal per serve (dominos.co.in menu data) / 1.90 kcal/g = 445 g. Density from Veg Extravaganza Regular on Domino's India \"Calorie Transparency\" sheet (HT crust): 173.3 kcal per 91 g serving = 1.90 kcal/g. The sheet has no Fresh Pan data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Veg Extravaganza, Large, New Hand Tossed (1 serving = 1/4 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 320,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 607 kcal per serve (dominos.co.in menu data) / 1.90 kcal/g = 320 g. Density from Veg Extravaganza Large on Domino's India \"Calorie Transparency\" sheet (HT crust): 242.6 kcal per 128 g serving = 1.90 kcal/g."
+   }
+  ],
+  "Domino's Veg Extravaganza, Medium, New Hand Tossed (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 367,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 697 kcal per serve (dominos.co.in menu data) / 1.90 kcal/g = 367 g. Density from Veg Extravaganza Medium on Domino's India \"Calorie Transparency\" sheet (HT crust): 184.2 kcal per 97 g serving = 1.90 kcal/g."
+   }
+  ],
+  "Domino's Veg Extravaganza, Regular, New Hand Tossed (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 414,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 789 kcal per serve (dominos.co.in menu data) / 1.90 kcal/g = 414 g. Density from Veg Extravaganza Regular on Domino's India \"Calorie Transparency\" sheet (HT crust): 173.3 kcal per 91 g serving = 1.90 kcal/g."
+   }
+  ],
+  "Domino's Veggie Paradise, Medium, 100% Wheat Thin Crust (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 173,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 377 kcal per serve (dominos.co.in menu data) / 2.18 kcal/g = 173 g. Density from Veggie Paradise Medium on Domino's India \"Calorie Transparency\" sheet (HT crust): 167.7 kcal per 77 g serving = 2.18 kcal/g. The sheet has no 100% Wheat Thin Crust data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Veggie Paradise, Regular, 100% Wheat Thin Crust (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 215,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 468 kcal per serve (dominos.co.in menu data) / 2.18 kcal/g = 215 g. Density from Veggie Paradise Regular on Domino's India \"Calorie Transparency\" sheet (HT crust): 156.7 kcal per 72 g serving = 2.18 kcal/g. The sheet has no 100% Wheat Thin Crust data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Veggie Paradise, Regular, Cheese Burst (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 426,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 927 kcal per serve (dominos.co.in menu data) / 2.18 kcal/g = 426 g. Density from Veggie Paradise Regular on Domino's India \"Calorie Transparency\" sheet (HT crust): 156.7 kcal per 72 g serving = 2.18 kcal/g. The sheet has no Cheese Burst data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Veggie Paradise, Medium, Fresh Pan (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 295,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 642 kcal per serve (dominos.co.in menu data) / 2.18 kcal/g = 295 g. Density from Veggie Paradise Medium on Domino's India \"Calorie Transparency\" sheet (HT crust): 167.7 kcal per 77 g serving = 2.18 kcal/g. The sheet has no Fresh Pan data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Veggie Paradise, Regular, Fresh Pan (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 345,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 750 kcal per serve (dominos.co.in menu data) / 2.18 kcal/g = 345 g. Density from Veggie Paradise Regular on Domino's India \"Calorie Transparency\" sheet (HT crust): 156.7 kcal per 72 g serving = 2.18 kcal/g. The sheet has no Fresh Pan data, so the hand-tossed density is used."
+   }
+  ],
+  "Domino's Veggie Paradise, Large, New Hand Tossed (1 serving = 1/4 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 244,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 530 kcal per serve (dominos.co.in menu data) / 2.17 kcal/g = 244 g. Density from Veggie Paradise Large on Domino's India \"Calorie Transparency\" sheet (HT crust): 210.9 kcal per 97 g serving = 2.17 kcal/g."
+   }
+  ],
+  "Domino's Veggie Paradise, Medium, New Hand Tossed (1 serving = 1/2 pizza)": [
+   {
+    "label": "serving (est.)",
+    "amount": 280,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 610 kcal per serve (dominos.co.in menu data) / 2.18 kcal/g = 280 g. Density from Veggie Paradise Medium on Domino's India \"Calorie Transparency\" sheet (HT crust): 167.7 kcal per 77 g serving = 2.18 kcal/g."
+   }
+  ],
+  "Domino's Veggie Paradise, Regular, New Hand Tossed (whole pizza)": [
+   {
+    "label": "pizza (est.)",
+    "amount": 329,
+    "source": "https://web.archive.org/web/20210603145209id_/https://www.dominos.co.in/files/download.php",
+    "quote": "Estimate: 715 kcal per serve (dominos.co.in menu data) / 2.18 kcal/g = 329 g. Density from Veggie Paradise Regular on Domino's India \"Calorie Transparency\" sheet (HT crust): 156.7 kcal per 72 g serving = 2.18 kcal/g."
+   }
+  ],
+  "Chapati / roti with ghee (1 chapati, 36 g dough)": [
+   {
+    "label": "chapati (cooked)",
+    "amount": 29,
+    "source": "https://apjcn.qdu.edu.cn/16_2_22.pdf",
+    "quote": "Derived: cooked chapati moisture 34.7 g/100 g (Chiplonkar & Agte 2007, Appendix I \"Unleavened whole wheat flour pan cake (Chapati) 34.7\"); atta moisture 11.10 g/100 g (IFCT 2017 A019). (20 g atta x 0.889 + 1 g ghee) / (1 - 0.347) = 28.8 g. USDA FDC 2707713 \"1 small chappatti or roti (6\\\")\" = 27 g agrees."
+   }
+  ],
+  "Phulka / roti, no ghee (1 phulka)": [
+   {
+    "label": "phulka (cooked)",
+    "amount": 27,
+    "source": "https://fdc.nal.usda.gov/food-details/2707713/portions",
+    "quote": "USDA FDC 2707713 Bread, chappatti or roti: \"1 small chappatti or roti (6\\\")\" = 27 g. Matches derivation from Chiplonkar & Agte 2007 chapati moisture 34.7%: 20 g atta x 0.889 / 0.653 = 27.2 g."
+   }
+  ],
+  "Plain paratha (1 paratha, 56 g dough)": [
+   {
+    "label": "paratha (est.)",
+    "amount": 50,
+    "source": "https://apjcn.qdu.edu.cn/16_2_22.pdf",
+    "quote": "Estimate (no measured cooked weight found): dry matter 80/3 g atta x 0.889 (IFCT A019 moisture 11.10) + 9 g oil (2 tbsp x 13.5 g / 3) = 32.7 g, at the chapati moisture 34.7% from Chiplonkar & Agte 2007 = 50 g; below the 55.75 g raw batch per paratha."
+   }
+  ],
+  "Aloo paratha (1 paratha, 93 g dough)": [
+   {
+    "label": "paratha (est.)",
+    "amount": 90,
+    "source": "https://apjcn.qdu.edu.cn/16_2_22.pdf",
+    "quote": "Estimate: Chiplonkar & Agte 2007 Appendix I \"Potato stuffed whole wheat flour roti (Alu paratha) 55.5\" g water/100 g, applied to INDB ASC098 dry matter (atta, potato F006 80.72, onion G017 85.76 moisture from IFCT 2017, 9 g oil per paratha) = about 90 g cooked."
+   }
+  ],
+  "Rajma curry (1 bowl, 30 g dry rajma)": [
+   {
+    "label": "bowl (est.)",
+    "amount": 236,
+    "source": "https://www.foodandnutritionjournal.org/volume8number1/assessment-of-portion-sizes-of-food-items-commonly-consumed-by-urban-indian-adults-a-preliminary-study/",
+    "quote": "Sharma & Chadha 2020, Table 2 \"8. Rajmah curry ... 236 (228.5,343) Bowl-2\": median portion 236 g, recipe ratio 30 g raw pulse / 155 ml water, the same 30 g of rajma as INDB ASC165's one bowl."
+   }
+  ],
+  "Poha (1 bowl, 20 g dry flakes)": [
+   {
+    "label": "bowl (est.)",
+    "amount": 75,
+    "source": "https://nin.res.in/ebooks/IFCT2017.pdf",
+    "quote": "Estimate (no measured cooked weight found): INDB BFP044 per bowl = 20 g flakes + 15 g potato + 5 g peanuts + 5 g oil + spices (54.6 g raw); rinsed rice flakes take up about their own weight of water (+20 g) = about 75 g cooked."
+   }
+  ],
+  "Yu Zingy Cheese Instant Cup Noodles (1 cup, 80 g)": [
+   {
+    "label": "cup (80 g dry)",
+    "amount": 80,
+    "source": "https://blinkit.com/prn/x/prid/481721",
+    "quote": "Label: one 80 g cup (dry weight), values given for 1 full prepared bowl; per 100 g here is per 100 g of dry noodles."
+   }
   ]
  },
  "notFound": [

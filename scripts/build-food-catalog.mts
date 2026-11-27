@@ -4,6 +4,7 @@
 // Run: npx tsx scripts/build-food-catalog.mts
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { check, type ResearchFile } from './food-research-validate.mts';
+import { perPieceTo100 } from '../src/lib/food-match.ts';
 
 const DIR = 'data/food-research';
 const items: (ResearchFile['items'][number] & { file: string })[] = [];
@@ -21,7 +22,9 @@ const slug = (s: string) => s.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]
 const r1 = (n: number) => Math.round(n * 10) / 10;
 
 // servings.json: sourced serving weights for foods whose nutrition source gives none (fruits, vegetables…).
-type ServingsFile = { servings: Record<string, { label: string; amount: number; source: string; quote: string }[]> };
+// For a food sourced per piece (unit "serving"), its FIRST entry is what that one piece weighs: the food is
+// converted to per 100 g (or ml, with "unit": "ml") so it logs by weight as well as by count.
+type ServingsFile = { servings: Record<string, { label: string; amount: number; unit?: 'g' | 'ml'; source: string; quote: string }[]> };
 let extraServings: ServingsFile['servings'] = {};
 try { extraServings = (JSON.parse(readFileSync(`${DIR}/servings.json`, 'utf8')) as ServingsFile).servings; } catch { /* none yet */ }
 for (const [name, list] of Object.entries(extraServings)) for (const s of list) {
@@ -37,10 +40,18 @@ for (const f of readdirSync(DIR).filter(f => f.endsWith('.json') && f !== 'servi
 for (const name of Object.keys(extraServings)) {
   const it = items.find(i => i.name === name);
   if (!it) { console.warn(`servings.json: no food named "${name}" yet (skipped)`); continue; }
-  if (it.unit === 'serving') continue;
+  if (it.unit === 'serving') {
+    const [piece, ...rest] = extraServings[name];
+    const v = perPieceTo100({ kcal: it.kcal, proteinG: it.proteinG, carbsG: it.carbsG, fatG: it.fatG, fiberG: it.fiberG ?? 0, servings: rest.map(({ label, amount }) => ({ label, amount })) }, piece.amount, piece.unit ?? 'g', piece.label);
+    Object.assign(it, v);
+    continue;
+  }
   const have = new Set((it.servings ?? []).map(s => s.label.toLowerCase()));
   it.servings = [...(it.servings ?? []), ...extraServings[name].filter(s => !have.has(s.label.toLowerCase())).map(({ label, amount }) => ({ label, amount }))];
 }
+// Every food must log by weight: per-piece-only foods need their piece weight in servings.json.
+const perPiece = items.filter(i => i.unit === 'serving' && i.group !== INGREDIENTS).map(i => i.name);
+if (perPiece.length) { failed = true; console.error(`No g/ml basis (add the piece weight to servings.json): ${perPiece.length} — ${perPiece.slice(0, 20).join('; ')}${perPiece.length > 20 ? '…' : ''}`); }
 if (failed) process.exit(1);
 
 const ids = new Map<string, string>();

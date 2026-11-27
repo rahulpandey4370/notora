@@ -4,7 +4,7 @@ import { useModelStore } from '@/hooks/use-model-store';
 import { describeFood, type DescribedFood } from '@/ai/flows/describe-food';
 import type { AppData, MealSlot } from '@/lib/types';
 import { MEAL_SLOTS, type FitnessDraft } from '@/lib/fitness';
-import { norm, scaleFood, type Amount, type Food } from '@/lib/food-match';
+import { norm, perPieceTo100, scaleFood, type Amount, type Food } from '@/lib/food-match';
 import type { FoodsApi } from './useFoods';
 import { INGREDIENTS, type CatalogFood } from '@/lib/food-catalog';
 import { ConfirmDelete } from './TrackerSheet';
@@ -12,7 +12,10 @@ import { ConfirmDelete } from './TrackerSheet';
 const n = (s: string) => { const v = Number(s); return s.trim() !== '' && Number.isFinite(v) && v >= 0 ? v : undefined; };
 const per = (f: Pick<Food, 'unit'>) => (f.unit === 'serving' ? '1 serving' : `100 ${f.unit}`);
 
-/** Add or edit a saved food. Values are per 100 g / 100 ml / 1 serving, plus handy servings ("1 roti = 40 g"). */
+/**
+ * Add or edit a saved food. Values are per 100 g / 100 ml, or per 1 piece with what that piece weighs
+ * (saved as per 100 g + the piece, so it logs by count and by weight), plus handy servings ("1 roti = 40 g").
+ */
 export function FoodEditor({ initial, onSave, onCancel }: {
   initial?: Partial<Food>; onSave: (f: Omit<Food, 'id'> & { id?: string }) => Promise<{ ok: boolean; error?: string }>; onCancel: () => void;
 }) {
@@ -21,18 +24,26 @@ export function FoodEditor({ initial, onSave, onCancel }: {
     kcal: initial?.kcal != null ? String(initial.kcal) : '', proteinG: initial?.proteinG != null ? String(initial.proteinG) : '',
     carbsG: initial?.carbsG != null ? String(initial.carbsG) : '', fatG: initial?.fatG != null ? String(initial.fatG) : '', fiberG: initial?.fiberG != null ? String(initial.fiberG) : '',
     servings: (initial?.servings ?? []).map(s => ({ label: s.label, amount: String(s.amount) })),
+    piece: 'piece', pieceWeight: '', pieceUnit: 'g' as 'g' | 'ml',
   });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const set = (p: Partial<typeof f>) => setF(x => ({ ...x, ...p }));
-  const valid = f.name.trim() && n(f.kcal) != null;
+  const isPiece = f.unit === 'serving';
+  const weight = n(f.pieceWeight);
+  const valid = f.name.trim() && n(f.kcal) != null && (!isPiece || (!!weight && !!f.piece.trim()));
+  const servingUnit = isPiece ? f.pieceUnit : f.unit;
   const submit = async () => {
     if (!valid || busy) return;
     setBusy(true); setError('');
-    const r = await onSave({
-      ...(initial?.id ? { id: initial.id } : {}), name: f.name.trim(), aliases: f.aliases.split(',').map(a => a.trim()).filter(Boolean), unit: f.unit as Food['unit'],
+    const food = {
+      name: f.name.trim(), aliases: f.aliases.split(',').map(a => a.trim()).filter(Boolean),
       kcal: n(f.kcal) ?? 0, proteinG: n(f.proteinG) ?? 0, carbsG: n(f.carbsG) ?? 0, fatG: n(f.fatG) ?? 0, fiberG: n(f.fiberG) ?? 0,
-      servings: f.unit === 'serving' ? [] : f.servings.flatMap(s => (s.label.trim() && n(s.amount) ? [{ label: s.label.trim(), amount: n(s.amount)! }] : [])),
+      servings: f.servings.flatMap(s => (s.label.trim() && n(s.amount) ? [{ label: s.label.trim(), amount: n(s.amount)! }] : [])),
+    };
+    const r = await onSave({
+      ...(initial?.id ? { id: initial.id } : {}),
+      ...(isPiece ? perPieceTo100(food, weight!, f.pieceUnit, f.piece.trim()) : { ...food, unit: f.unit as 'g' | 'ml' }),
     });
     setBusy(false);
     if (!r.ok) setError(r.error ?? 'Couldn’t save.');
@@ -52,13 +63,26 @@ export function FoodEditor({ initial, onSave, onCancel }: {
       </label>
       <label className="flex flex-col gap-1 text-sm"><span className="font-medium">Values are per</span>
         <select className="f-input" value={f.unit} onChange={e => set({ unit: e.target.value as Food['unit'] })}>
-          <option value="g">100 g</option><option value="ml">100 ml</option><option value="serving">1 serving (bar, packet, piece)</option>
+          <option value="g">100 g</option><option value="ml">100 ml</option><option value="serving">1 piece / pack (roti, bar, bottle)</option>
         </select>
       </label>
+      {isPiece && (
+        <div className="space-y-1">
+          <div className="flex items-center gap-2 text-sm">
+            <span className="f-muted">1</span>
+            <input className="f-input !py-1.5 min-w-[5rem] flex-1" value={f.piece} placeholder="piece, roti, bar" aria-label="Piece name" onChange={e => set({ piece: e.target.value })} />
+            <span className="f-muted">weighs</span>
+            <input className="f-input !py-1.5 !w-20 shrink-0" type="number" inputMode="decimal" min={0} step="any" value={f.pieceWeight} aria-label={`Weight of 1 ${f.piece || 'piece'}`} onChange={e => set({ pieceWeight: e.target.value })} />
+            <select className="f-input !py-1.5 !w-16 shrink-0 !px-2" value={f.pieceUnit} aria-label="Weight unit" onChange={e => set({ pieceUnit: e.target.value as 'g' | 'ml' })}>
+              <option value="g">g</option><option value="ml">ml</option>
+            </select>
+          </div>
+          <p className="f-muted text-xs">Needed so it can be logged in {f.pieceUnit} as well as by count. Use the label&apos;s net weight, or weigh one.</p>
+        </div>
+      )}
       <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
         {field('kcal', 'kcal')}{field('proteinG', 'Protein g')}{field('carbsG', 'Carbs g')}{field('fatG', 'Fat g')}{field('fiberG', 'Fibre g')}
       </div>
-      {f.unit !== 'serving' && (
         <div className="space-y-2">
           <p className="text-sm font-medium">Handy servings <span className="f-muted font-normal">(so “2 rotis” works without a scale)</span></p>
           {f.servings.map((s, i) => (
@@ -67,15 +91,14 @@ export function FoodEditor({ initial, onSave, onCancel }: {
               <input className="f-input !py-1.5 min-w-0 flex-1" value={s.label} placeholder="roti, scoop, katori" aria-label="Serving name"
                 onChange={e => set({ servings: f.servings.map((x, j) => (j === i ? { ...x, label: e.target.value } : x)) })} />
               <span className="f-muted">=</span>
-              <input className="f-input !py-1.5 w-20" type="number" inputMode="decimal" min={0} step="any" value={s.amount} aria-label={`Serving size in ${f.unit}`}
+              <input className="f-input !py-1.5 !w-20 shrink-0" type="number" inputMode="decimal" min={0} step="any" value={s.amount} aria-label={`Serving size in ${servingUnit}`}
                 onChange={e => set({ servings: f.servings.map((x, j) => (j === i ? { ...x, amount: e.target.value } : x)) })} />
-              <span className="f-muted w-5">{f.unit}</span>
+              <span className="f-muted w-5">{servingUnit}</span>
               <button type="button" className="f-muted flex h-9 w-9 items-center justify-center" aria-label="Remove serving" onClick={() => set({ servings: f.servings.filter((_, j) => j !== i) })}><X className="h-4 w-4" /></button>
             </div>
           ))}
           {f.servings.length < 5 && <button type="button" className="f-chip" onClick={() => set({ servings: [...f.servings, { label: '', amount: '' }] })}><Plus className="h-3.5 w-3.5" aria-hidden />Add a serving</button>}
         </div>
-      )}
       {error && <p className="f-bad text-sm" aria-live="polite">{error}</p>}
       <div className="flex gap-2">
         <button type="button" className="f-pill flex-1" onClick={onCancel}>Cancel</button>
@@ -156,6 +179,7 @@ function AmountPicker({ food, slot, onLog, onEdit, onDelete, builtIn }: { food: 
       <div className="flex flex-wrap gap-1.5">
         {quick.map(v => <button key={v} type="button" className="f-chip !min-h-9" data-on={qty === v} onClick={() => setQty(v)}>{unit === 'grams' ? `${v} ${food.unit}` : `${v} ${unit === 'serving' ? 'serving' : unit.slice(2)}`}</button>)}
       </div>
+      {food.unit === 'serving' && <p className="f-muted text-xs">Saved without a weight, so only servings work. Tap ✎ and add what 1 serving weighs to log it in g or ml too.</p>}
       <p className="text-sm tabular-nums">{meal ? <><strong>{meal.kcal} kcal</strong> · P {meal.proteinG} · C {meal.carbsG} · F {meal.fatG} · Fibre {meal.fiberG} g</> : <span className="f-muted">Enter an amount</span>}</p>
       <div className="flex flex-wrap items-center gap-2">
         <select className="f-input !py-2 w-auto" value={to} onChange={e => setTo(e.target.value as MealSlot)} aria-label="Meal">

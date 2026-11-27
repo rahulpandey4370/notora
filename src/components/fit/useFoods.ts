@@ -10,7 +10,7 @@ const DEMO: Food[] = [
   { id: 'demo-roti', name: 'Whole wheat roti', aliases: ['roti', 'chapati', 'phulka'], unit: 'g', kcal: 297, proteinG: 9.6, carbsG: 54, fatG: 3.7, fiberG: 9, servings: [{ label: 'roti', amount: 40 }] },
   { id: 'demo-whey', name: 'Whey protein', aliases: ['whey', 'protein shake'], unit: 'g', kcal: 393, proteinG: 78, carbsG: 9, fatG: 6, fiberG: 0, servings: [{ label: 'scoop', amount: 33 }] },
   { id: 'demo-banana', name: 'Banana', aliases: [], unit: 'g', kcal: 89, proteinG: 1.1, carbsG: 23, fatG: 0.3, fiberG: 2.6, servings: [{ label: 'banana', amount: 118 }] },
-  { id: 'demo-bar', name: 'Yoga Bar protein bar', aliases: ['protein bar'], unit: 'serving', kcal: 210, proteinG: 20, carbsG: 22, fatG: 7, fiberG: 5, servings: [] },
+  { id: 'demo-bar', name: 'Yoga Bar protein bar', aliases: ['protein bar'], unit: 'g', kcal: 350, proteinG: 33.3, carbsG: 36.7, fatG: 11.7, fiberG: 8.3, servings: [{ label: 'bar', amount: 60 }] },
 ];
 
 export type FoodsApi = {

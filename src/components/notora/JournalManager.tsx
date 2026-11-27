@@ -348,8 +348,8 @@ a.click();
         <StreakDisplay journalEntries={initialJournalEntries} />
         <Card className="min-h-[400px] flex flex-col dark:neon-journal">
             <CardHeader>
-              <div className="flex justify-between items-start gap-4">
-                <div className='flex-1'>
+              <div className="flex flex-wrap justify-between items-start gap-x-4 gap-y-3">
+                <div className='min-w-[14rem] flex-1'>
                     <CardTitle className="flex items-center gap-2">
                       <BookHeart className="text-primary"/>
                       {format(selectedDate, 'EEEE, MMMM do, yyyy')}
@@ -359,7 +359,7 @@ a.click();
                     {todaysEntry ? `Your thoughts from this day.` : `What's on your mind today?`}
                     </CardDescription>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild><Button variant="outline" size="sm"><Download className="mr-2 h-4 w-4" /> Export</Button></DropdownMenuTrigger>
                     <DropdownMenuContent>

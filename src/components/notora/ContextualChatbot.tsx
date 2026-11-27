@@ -4,7 +4,7 @@
 import { useState, useRef, useEffect, useContext } from 'react';
 import { AppContext } from '@/contexts/app-context';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bot, User, Send, Loader2, X, MessageSquare, Cpu, Check, ShieldCheck, Maximize2, Minimize2 } from 'lucide-react';
+import { Bot, User, Send, Loader2, X, MessageSquare, Cpu, Check, Copy, ShieldCheck, Maximize2, Minimize2 } from 'lucide-react';
 import '@/components/fit/fit.css';
 import { fitSerif } from '@/components/fit/font';
 import { applyAgentActions } from '@/ai/flows/apply-agent-actions';
@@ -126,6 +126,9 @@ export default function ContextualChatbot({ pageContext }: ContextualChatbotProp
 
   const close = () => { setIsOpen(false); setFull(false); };
   const newChat = () => setMessages([{ role: 'model', content: GREETING }]);
+  // Selecting text on a phone is fiddly: every reply gets a one-tap Copy.
+  const [copied, setCopied] = useState<number | null>(null);
+  const copy = (i: number, text: string) => void navigator.clipboard?.writeText(text).then(() => { setCopied(i); setTimeout(() => setCopied(c => (c === i ? null : c)), 1500); }).catch(() => {});
 
   // One message list, styled for the small panel (app look) or full screen (Logs look).
   const list = (
@@ -139,7 +142,7 @@ export default function ContextualChatbot({ pageContext }: ContextualChatbotProp
           )}
           <div className={cn('max-w-[80%] p-3', full ? 'rounded-2xl' : 'rounded-lg',
             message.role === 'user' ? (full ? 'bg-[var(--f-deep)] text-white dark:text-[#04201f]' : 'bg-primary text-primary-foreground') : (full ? 'f-card' : 'bg-muted'))}>
-            <p className={cn('whitespace-pre-wrap', full ? 'text-[0.95rem] leading-relaxed' : 'text-sm')}>{message.content}</p>
+            <p className={cn('select-text whitespace-pre-wrap', full ? 'text-[0.95rem] leading-relaxed' : 'text-sm')}>{message.content}</p>
             {message.pending?.length ? (
               <div className={cn('mt-2 p-2 text-sm', full ? 'rounded-xl border border-[var(--f-line)] bg-[var(--f-tint)]' : 'rounded-md border bg-background/70')} role="group" aria-label="Proposed changes">
                 <p className="mb-1 flex items-center gap-1 text-xs font-semibold"><ShieldCheck className="h-3.5 w-3.5" aria-hidden />Waiting for your OK</p>
@@ -168,8 +171,13 @@ export default function ContextualChatbot({ pageContext }: ContextualChatbotProp
                 )}
               </div>
             ) : null}
-            {message.role === 'model' && message.modelId && (
-              <div className="flex items-center gap-1 pt-2 text-xs opacity-50"><Cpu className="h-3 w-3" aria-hidden /> {message.modelId}</div>
+            {message.role === 'model' && index > 0 && (
+              <div className="flex items-center gap-3 pt-1 text-xs">
+                <button type="button" className="-ml-1 inline-flex min-h-9 items-center gap-1 px-1 opacity-70" onClick={() => copy(index, message.content)} aria-label="Copy this reply">
+                  {copied === index ? <Check className="h-3.5 w-3.5" aria-hidden /> : <Copy className="h-3.5 w-3.5" aria-hidden />}{copied === index ? 'Copied' : 'Copy'}
+                </button>
+                {message.modelId && <span className="flex items-center gap-1 opacity-50"><Cpu className="h-3 w-3" aria-hidden /> {message.modelId}</span>}
+              </div>
             )}
           </div>
           {message.role === 'user' && (
@@ -232,7 +240,7 @@ export default function ContextualChatbot({ pageContext }: ContextualChatbotProp
         {isOpen && full && (
           <motion.div key="full" role="dialog" aria-modal="true" aria-label="Notora chat"
             initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 24 }} transition={{ duration: 0.22, ease: [0.23, 1, 0.32, 1] }}
-            className={cn('fit-ui fixed inset-0 z-[60] flex flex-col', fitSerif.variable)}>
+            className={cn('fit-ui fixed inset-0 bottom-[var(--kb,0px)] z-[60] flex flex-col', fitSerif.variable)}>
             <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col overflow-hidden px-4 pt-[max(1rem,env(safe-area-inset-top))]">
               <div className="flex items-center justify-between gap-3 pb-3">
                 <h2 className="fit-display flex items-center gap-2 text-[1.9rem]"><Bot className="h-6 w-6 text-[var(--f-deep)]" aria-hidden />Notora <em>chat</em></h2>

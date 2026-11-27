@@ -10,7 +10,8 @@ assert.equal(new Set(catalog.map(f => f.id)).size, catalog.length, 'ids are uniq
 assert.equal(catalog.at(-1)!.group, INGREDIENTS, 'Ingredients come last');
 for (const f of catalog) {
   assert.ok(f.kcal >= 0 && f.proteinG >= 0 && f.carbsG >= 0 && f.fatG >= 0, `${f.name}: no negative values`);
-  if (f.unit !== 'serving') assert.ok(f.kcal <= 902, `${f.name}: per-100 kcal is plausible`);
+  assert.notEqual(f.unit, 'serving', `${f.name}: has a g/ml basis, so it logs by weight as well as by serving`);
+  assert.ok(f.kcal <= 902, `${f.name}: per-100 kcal is plausible`);
 }
 const cat = matchable(catalog);
 assert.ok(!cat.some(f => f.group === INGREDIENTS), 'raw ingredients are never auto-matched');

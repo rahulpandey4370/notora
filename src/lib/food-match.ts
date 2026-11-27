@@ -58,6 +58,19 @@ export function scaleFood(f: Food, a: Amount, slot?: MealSlot): FoodDraftMeal | 
   };
 }
 
+/**
+ * Values for one piece/pack → per 100 g (or ml), with the piece kept as the first serving,
+ * so a food logs both ways: "2 parathas" gives exactly the piece's numbers, "120 g" works too.
+ */
+export function perPieceTo100<T extends Omit<Food, 'id' | 'unit'>>(f: T, weight: number, unit: 'g' | 'ml', label: string): T & { unit: 'g' | 'ml' } {
+  const k = 100 / weight;
+  const key = norm(label);
+  return {
+    ...f, unit, kcal: r1(f.kcal * k), proteinG: r1(f.proteinG * k), carbsG: r1(f.carbsG * k), fatG: r1(f.fatG * k), fiberG: r1(f.fiberG * k),
+    servings: [{ label, amount: weight }, ...f.servings.filter(s => norm(s.label) !== key)],
+  };
+}
+
 /** Per-100 g (or per-serving) values from a logged portion, for "Save to My Foods". */
 export function perBasis(m: Pick<Meal, 'kcal' | 'proteinG' | 'carbsG' | 'fatG' | 'fiberG'>, grams?: number) {
   const f = grams && grams > 0 ? 100 / grams : 1;

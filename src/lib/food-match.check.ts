@@ -1,6 +1,6 @@
 // Run: npx tsx src/lib/food-match.check.ts
 import assert from 'node:assert/strict';
-import { matchText, parseSegment, perBasis, scaleFood, type Food } from './food-match';
+import { matchText, parseSegment, perBasis, perPieceTo100, scaleFood, type Food } from './food-match';
 
 const food = (p: Partial<Food> & Pick<Food, 'id' | 'name'>): Food => ({ aliases: [], unit: 'g', kcal: 0, proteinG: 0, carbsG: 0, fatG: 0, fiberG: 0, servings: [], ...p });
 const rice = food({ id: 'rice', name: 'Steamed white rice', aliases: ['rice'], kcal: 130, proteinG: 2.7, carbsG: 28, fatG: 0.3, fiberG: 0.4 });
@@ -57,4 +57,10 @@ assert.equal(matchText('2 chapatis', foods).kind, 'all', 'an alias still works')
 // Save to My Foods from a logged portion
 assert.deepEqual(perBasis({ kcal: 195, proteinG: 4.05, carbsG: 42, fatG: 0.45, fiberG: 0.6 }, 150), { unit: 'g', kcal: 130, proteinG: 2.7, carbsG: 28, fatG: 0.3, fiberG: 0.4 });
 assert.equal(perBasis({ kcal: 210, proteinG: 20 }).unit, 'serving', 'no grams → one serving, never a guessed weight');
+// A per-piece food converted with its weight: one piece keeps its numbers (±1%), and grams work too.
+const bar100: Food = perPieceTo100({ ...bar, servings: [] }, 60, 'g', 'bar');
+assert.equal(bar100.unit, 'g');
+assert.equal(bar100.servings[0].label, 'bar');
+assert.ok(Math.abs(scaleFood(bar100, { count: 1 })!.kcal - 210) <= 2, 'one bar is still ~210 kcal');
+assert.equal(scaleFood(bar100, { grams: 30 })!.kcal, 105, 'half a bar by grams');
 console.log('food-match: all checks passed');

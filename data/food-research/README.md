@@ -31,5 +31,8 @@ Rules:
 - `servings`: real pack sizes / piece weights from the source (e.g. "pack" 35 g, "slice" 30 g, "biscuit" 7.5 g). Don't invent them.
 - `source` must be the page you actually read the numbers on (brand site, the brand's nutrition PDF, BigBasket/Amazon/Blinkit product page with the label text, Open Food Facts product page, INDB/IFCT/USDA FoodData Central). Search-result snippets and calorie-counting aggregator sites (HealthifyMe, Nutritionix, fatsecret, myfitnesspal, etc.) are NOT sources.
 - If you can't find a trustworthy source, put the item in `notFound`. Missing is fine; a guess is not.
+- Exception, weights only: every food must log in g/ml as well as servings. When no source publishes the weight of a piece or bowl
+  (cooked rotis, home dishes, restaurant pizzas), use the best estimate for the Indian context in `servings.json`: label the serving
+  "(est.)" and put the derivation and the numbers it rests on in `quote`. Nutrition values themselves still need a source.
 - Before finishing, run: `npx tsx validate.mts <your file>` from the project root
   `/Users/rahul.pandey/experiments/p-projects/notora` (path to validate.mts: this folder). Fix every ERROR.

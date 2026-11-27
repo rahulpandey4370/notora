@@ -26,7 +26,7 @@ export function ManageSheet({ open, onOpenChange, data, onDataChange, showcase }
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" className="fit-ui f-sheet max-h-[92dvh] overflow-y-auto rounded-t-[28px] border-0 px-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] pt-6 sm:mx-auto sm:max-w-lg">
+      <SheetContent side="bottom" className="fit-ui f-sheet max-h-[calc((100dvh-var(--kb,0px))*0.92)] overflow-y-auto rounded-t-[28px] border-0 px-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] pt-6 sm:mx-auto sm:max-w-lg">
         <SheetTitle className="fit-display text-2xl text-[var(--f-ink)]">Manage <em>trackers</em></SheetTitle>
         <SheetDescription className="f-muted text-sm">Rename, set goals, add new ones, or connect Fitbit.</SheetDescription>
 

@@ -333,3 +333,9 @@
     animation: none;
   }
 }
+
+/* iPhone: Safari zooms the page in whenever a field under 16px gets focus, and
+   stays zoomed (sideways scrolling, tiny tap targets). 16px stops that. iOS only. */
+@supports (-webkit-touch-callout: none) {
+  input, textarea, select { font-size: 16px !important; }
+}

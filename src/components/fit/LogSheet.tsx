@@ -235,7 +235,7 @@ export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, o
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" className="fit-ui f-sheet flex max-h-[92dvh] flex-col gap-0 rounded-t-[28px] border-0 p-0 sm:mx-auto sm:max-w-lg">
+      <SheetContent side="bottom" className="fit-ui f-sheet flex max-h-[calc((100dvh-var(--kb,0px))*0.92)] flex-col gap-0 rounded-t-[28px] border-0 p-0 sm:mx-auto sm:max-w-lg">
         <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-2 px-5 pb-2 pt-5 pr-12">
           <div className="min-w-[13rem] flex-1">
             <SheetTitle className="fit-display text-2xl text-[var(--f-ink)]">Log <em>it</em></SheetTitle>
@@ -327,7 +327,7 @@ export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, o
                 </div>
                 {saving === i && (
                   <div className="mt-2">
-                    <p className="f-muted mb-2 text-xs">{m.grams ? `Saved per 100 g from this ${m.grams} g portion. Tidy the name so it matches how you'll type it.` : 'No weight for this portion, so it’s saved as 1 serving. Switch to “100 g” and enter values per 100 g if you know them.'}</p>
+                    <p className="f-muted mb-2 text-xs">{m.grams ? `Saved per 100 g from this ${m.grams} g portion. Tidy the name so it matches how you'll type it.` : 'These are the numbers for this portion. Add what it weighs (g or ml) so it logs by weight as well as by serving.'}</p>
                     <FoodEditor initial={{ name: m.name.replace(/,?\s*\d+(\.\d+)?\s*(g|gm|grams?|ml)\b.*$/i, '').trim() || m.name, ...perBasis(m, m.grams), servings: [] }}
                       onCancel={() => setSaving(null)} onSave={saveToFoods(i)} />
                   </div>

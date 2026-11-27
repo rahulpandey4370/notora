@@ -7,6 +7,7 @@ import { ThemeProvider } from '@/components/providers/theme-provider';
 import { AppProvider } from '@/contexts/app-context';
 import ModelCatalogSync from '@/components/providers/model-catalog-sync';
 import { resolveEnabledProviders } from '@/lib/ai-providers-server';
+import KeyboardInset from '@/components/providers/keyboard-inset';
 
 // Server actions run under the page that calls them; the ADK chat can make several
 // model and tool calls per message (FinWise's chat route allows 300s). 60s fits every Vercel plan.
@@ -16,10 +17,16 @@ export const metadata: Metadata = {
   title: 'Notora',
   description: 'Your magical productivity assistant.',
   manifest: "/manifest.json",
+  // Home-screen web app on iPhone: full screen, normal status bar.
+  appleWebApp: { capable: true, title: 'Notora', statusBarStyle: 'default' },
 };
 
 export const viewport: Viewport = {
   themeColor: "#FFDA63",
+  width: 'device-width',
+  initialScale: 1,
+  // Lets env(safe-area-inset-*) report the home indicator / notch, which the sheets and chat pad for.
+  viewportFit: 'cover',
 };
 
 
@@ -49,6 +56,7 @@ export default function RootLayout({
               <ModelCatalogSync providers={resolveEnabledProviders()} />
               {children}
               <Toaster />
+              <KeyboardInset />
             </AppProvider>
           </AuthProvider>
         </ThemeProvider>

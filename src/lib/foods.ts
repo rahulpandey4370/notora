@@ -20,14 +20,15 @@ const isMissing = (e: { code?: string; message?: string }) => e.code === '42P01'
 const SETUP = 'My Foods isn’t set up yet: run supabase/notora-v5-foods-reminders.sql in Supabase.';
 const COLS = 'id, name, aliases, unit, kcal, protein_g, carbs_g, fat_g, fiber_g, servings';
 
-/** Trust nothing from the client: trimmed text, finite non-negative numbers, a known unit, at most 10 servings. */
+/** Trust nothing from the client: trimmed text, finite non-negative numbers, per 100 g or ml (never per piece only), at most 10 servings. */
 function clean(f: Omit<Food, 'id'>) {
   const n = (v: unknown) => (typeof v === 'number' && Number.isFinite(v) && v >= 0 ? Math.round(v * 10) / 10 : 0);
   const name = String(f.name ?? '').trim().slice(0, 80);
   if (!name) throw new Error('A food needs a name.');
+  if (f.unit !== 'g' && f.unit !== 'ml') throw new Error('Add what 1 piece weighs (g or ml), so it can be logged by weight too.');
   return {
     name, aliases: (f.aliases ?? []).map(a => String(a).trim().slice(0, 40)).filter(Boolean).slice(0, 10),
-    unit: (['g', 'ml', 'serving'] as const).includes(f.unit) ? f.unit : 'g',
+    unit: f.unit,
     kcal: n(f.kcal), protein_g: n(f.proteinG), carbs_g: n(f.carbsG), fat_g: n(f.fatG), fiber_g: n(f.fiberG),
     servings: (f.servings ?? []).filter(s => String(s.label ?? '').trim() && n(s.amount) > 0).slice(0, 10).map(s => ({ label: String(s.label).trim().slice(0, 30), amount: n(s.amount) })),
   };

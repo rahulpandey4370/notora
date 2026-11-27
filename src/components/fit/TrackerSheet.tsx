@@ -64,7 +64,7 @@ export function TrackerSheet({ tracker, data, day, today, aiDisabled, onClose, o
 }) {
   return (
     <Sheet open={!!tracker} onOpenChange={o => !o && onClose()}>
-      <SheetContent side="bottom" className="fit-ui f-sheet max-h-[92dvh] overflow-y-auto rounded-t-[28px] border-0 px-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] pt-6 sm:mx-auto sm:max-w-2xl">
+      <SheetContent side="bottom" className="fit-ui f-sheet max-h-[calc((100dvh-var(--kb,0px))*0.92)] overflow-y-auto rounded-t-[28px] border-0 px-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] pt-6 sm:mx-auto sm:max-w-2xl">
         {tracker && <Body key={tracker.id} t={tracker} data={data} day={day} today={today} aiDisabled={aiDisabled} onChange={onChange} onDelete={onDelete} />}
       </SheetContent>
     </Sheet>

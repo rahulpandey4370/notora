@@ -39,7 +39,7 @@ export default function Dock() {
   }
 
   return (
-    <nav aria-label="Main" className="fixed bottom-5 left-0 right-0 z-50 flex justify-center px-2">
+    <nav aria-label="Main" className="fixed bottom-[max(1.25rem,env(safe-area-inset-bottom))] left-0 right-0 z-50 flex justify-center px-2">
       {/* 6 × 44px + gaps fits a 375px phone; full size from sm up. */}
       <motion.div className="mx-auto flex h-16 items-end gap-2 rounded-2xl bg-black/10 px-3 pb-3 backdrop-blur-md sm:gap-4 sm:px-4">
         <TooltipProvider>

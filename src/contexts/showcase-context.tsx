@@ -36,6 +36,18 @@ function demoFitness(): Pick<AppData, 'logTrackers' | 'fitnessProfile' | 'fitnes
       [todayYmd]: [{ id: 'fw1', name: 'Morning walk', type: 'WALKING', minutes: 32, kcal: 150, distanceKm: 2.6, avgHr: 108, start: '07:10' }],
     },
     fitnessDays: {
+      // A few earlier days, so "Same as yesterday" and the usual picks show up.
+      ...Object.fromEntries([1, 2, 3, 4].map(back => [days[59 - back].date, {
+        meals: [
+          back % 2 ? { id: `pm-b${back}`, name: 'Oats with milk and banana', kcal: 360, proteinG: 14, carbsG: 58, fatG: 8, fiberG: 7, slot: 'breakfast' as const }
+            : { id: `pm-b${back}`, name: '3 egg omelette, 2 toast', kcal: 420, proteinG: 26, carbsG: 30, fatG: 20, fiberG: 3, slot: 'breakfast' as const },
+          { id: `pm-l${back}`, name: 'Steamed white rice, 150 g', kcal: 195, proteinG: 4, carbsG: 42, fatG: 0.5, fiberG: 0.6, slot: 'lunch' as const, foodId: 'demo-rice', grams: 150 },
+          { id: `pm-d${back}`, name: 'Dal tadka, 1 katori', kcal: 220, proteinG: 11, carbsG: 26, fatG: 8, fiberG: 6, slot: 'lunch' as const },
+          { id: `pm-s${back}`, name: 'Whey protein × 1 (33 g)', kcal: 130, proteinG: 26, carbsG: 3, fatG: 2, fiberG: 0, slot: 'eveningSnack' as const, foodId: 'demo-whey', grams: 33 },
+          { id: `pm-n${back}`, name: 'Paneer bhurji, 2 rotis', kcal: 610, proteinG: 32, carbsG: 46, fatG: 32, fiberG: 7, slot: 'dinner' as const },
+        ],
+        activities: [],
+      }])),
       [todayYmd]: {
         meals: [
           { id: 'dm1', name: 'Poha with peanuts, 1 plate', kcal: 380, proteinG: 10, carbsG: 58, fatG: 12, fiberG: 4, slot: 'breakfast' },

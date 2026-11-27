@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Check } from 'lucide-react';
+import type { AppData } from '@/lib/types';
 
 // FinWise split's four looks, same palettes (tokens in fit.css). Lagoon is the default teal.
 const LOOKS = [
@@ -11,17 +12,23 @@ const LOOKS = [
 export type LookId = (typeof LOOKS)[number]['id'];
 const KEY = 'fit-look';
 
-/** The chosen look, saved on this device. Set on <html> so the sheets (rendered outside the page) follow it. */
-export function useFitLook(): [LookId, (l: LookId) => void] {
-  const [look, setLook] = useState<LookId>('lagoon');
+/**
+ * The chosen look: saved with your data (so every device follows it), with
+ * this device's last choice as a fallback before the data loads. Set on
+ * <html> so the sheets (rendered outside the page) follow it.
+ */
+export function useFitLook(data?: AppData, onDataChange?: (d: AppData) => void): [LookId, (l: LookId) => void] {
+  const [local, setLocal] = useState<LookId>('lagoon');
   useEffect(() => {
-    try { const v = localStorage.getItem(KEY); if (LOOKS.some(l => l.id === v)) setLook(v as LookId); } catch { /* storage blocked: default look */ }
+    try { const v = localStorage.getItem(KEY); if (LOOKS.some(l => l.id === v)) setLocal(v as LookId); } catch { /* storage blocked: default look */ }
   }, []);
+  const look: LookId = data?.logsLook ?? local;
   useEffect(() => {
     document.documentElement.dataset.fitLook = look;
+    try { localStorage.setItem(KEY, look); } catch { /* not saved */ }
     return () => { delete document.documentElement.dataset.fitLook; };
   }, [look]);
-  return [look, l => { setLook(l); try { localStorage.setItem(KEY, l); } catch { /* not saved */ } }];
+  return [look, l => { setLocal(l); if (data && onDataChange) onDataChange({ ...data, logsLook: l }); }];
 }
 
 export function LookPicker({ look, onLook }: { look: LookId; onLook: (l: LookId) => void }) {

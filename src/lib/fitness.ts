@@ -16,6 +16,12 @@ export type TrackerKey = keyof typeof TRACKER | 'sleep' | 'restingHr';
 const ALPHA = 0.1;            // trend-weight smoothing
 const STEP_KCAL_PER_KG = 0.0005;
 
+/** Hours → "7h 17m" from whole minutes (no 6-minute steps, never "7h 60m"). */
+export const fmtSleep = (h: number) => {
+  const m = Math.round(h * 60), hh = Math.floor(m / 60), mm = m % 60;
+  return hh ? `${hh}h${mm ? ` ${mm}m` : ''}` : `${mm}m`;
+};
+
 export function addDays(ymd: string, days: number): string {
   const d = new Date(`${ymd}T00:00:00Z`);
   d.setUTCDate(d.getUTCDate() + days);
@@ -199,6 +205,34 @@ export function mealsBySlot(meals: Meal[]): Record<MealSlot | 'other', Meal[]> {
   const out = { breakfast: [], morningSnack: [], lunch: [], eveningSnack: [], dinner: [], other: [] } as Record<MealSlot | 'other', Meal[]>;
   for (const m of meals) out[m.slot && SLOT_IDS.has(m.slot) ? m.slot : 'other'].push(m);
   return out;
+}
+
+export type QuickMeal = Omit<Meal, 'id'>;
+const isTotal = (m: Meal) => m.name === 'Day total' || m.name === 'Earlier total';
+const strip = ({ id: _id, ...m }: Meal): QuickMeal => m;
+
+/**
+ * One-tap re-log for a meal section: what you had in it the day before, then
+ * your most-logged items there in the 30 days before (2+ times, most often
+ * first, then most recent), without repeating yesterday's.
+ */
+export function quickPicks(data: AppData, ymd: string, slot: MealSlot): { yesterday: QuickMeal[]; usual: QuickMeal[] } {
+  const inSlot = (d: string) => (data.fitnessDays?.[d]?.meals ?? []).filter(m => m.slot === slot && !isTotal(m));
+  const yesterday = inSlot(addDays(ymd, -1)).map(strip);
+  const key = (m: { name: string }) => m.name.trim().toLowerCase();
+  const seen = new Set(yesterday.map(key));
+  const counts = new Map<string, { meal: QuickMeal; n: number; last: string }>();
+  for (let i = 2; i <= 31; i++) {
+    const d = addDays(ymd, -i);
+    for (const m of inSlot(d)) {
+      const k = key(m);
+      if (seen.has(k)) continue;
+      const c = counts.get(k);
+      if (c) c.n++; else counts.set(k, { meal: strip(m), n: 1, last: d });
+    }
+  }
+  const usual = [...counts.values()].filter(c => c.n >= 2).sort((a, b) => b.n - a.n || b.last.localeCompare(a.last)).slice(0, 3).map(c => c.meal);
+  return { yesterday, usual };
 }
 
 /** A meal's calories, never below what its macros add up to (protein and carbs 4 kcal/g, fat 9). */
@@ -403,11 +437,11 @@ export function sanitizeDraft(draft: FitnessDraft, todayYmd: string, dayYmd: str
   return {
     date: ok(draft.date) ? draft.date : dayYmd,
     meals: draft.meals.map(m => {
-      const { slot, ...rest } = m;
+      const { slot, grams, ...rest } = m;
       const proteinG = pos(m.proteinG), carbsG = pos(m.carbsG), fatG = pos(m.fatG);
       // Under-counting hurts a weight-loss log most: calories are never below what the macros add up to.
       const kcal = Math.max(pos(m.kcal), Math.round(proteinG * 4 + carbsG * 4 + fatG * 9));
-      return { ...rest, kcal, proteinG, carbsG, fatG, fiberG: pos(m.fiberG), ...(slot && SLOT_IDS.has(slot) ? { slot } : {}) };
+      return { ...rest, kcal, proteinG, carbsG, fatG, fiberG: pos(m.fiberG), ...(slot && SLOT_IDS.has(slot) ? { slot } : {}), ...(pos(grams) ? { grams: Math.round(pos(grams)) } : {}) };
     }),
     activities: draft.activities.map(a => ({ ...a, minutes: pos(a.minutes), kcal: pos(a.kcal), stepBased: !!a.stepBased })),
     values: draft.values.filter(v => pos(v.value) > 0),
@@ -451,7 +485,8 @@ export function suggestTargets(data: AppData, today: string): { steps: number; p
   return {
     steps: 10000,
     proteinG: kg ? Math.round((1.6 * kg) / 5) * 5 : null,
-    kcal: mean == null ? null : Math.round((mean - 500) / 50) * 50,
+    // Never below resting burn, and never under 1,500 (men) / 1,200 (women).
+    kcal: mean == null ? null : Math.round(Math.max(mean - 500, data.fitnessProfile?.sex === 'female' ? 1200 : 1500, data.fitnessProfile && kg ? bmr(data.fitnessProfile, kg, today) : 0) / 50) * 50,
   };
 }
 

@@ -28,6 +28,8 @@ export type ParseFitnessLogInput = {
   loggedMeals?: (Omit<FitnessDraft['meals'][number], never> & { index: number })[];
   /** Pending edits from an earlier turn, when the user is correcting them. */
   currentEdits?: LoggedMealEdit[];
+  /** The user's saved foods that this message mentions (exact nutrition; see lib/food-match). */
+  knownFoods?: string[];
 };
 export type LoggedMealEdit = { index: number; delete?: boolean; name?: string; kcal?: number; proteinG?: number; carbsG?: number; fatG?: number; fiberG?: number; slot?: string };
 export type ParseFitnessLogOutput = FitnessDraft & { reply: string; web?: 'tavily' | 'openai'; edits: LoggedMealEdit[] };
@@ -42,6 +44,7 @@ const OutputSchema = z.object({
     fatG: z.number().optional().describe('Estimated fat in grams'),
     fiberG: z.number().optional().describe('Estimated dietary fibre in grams'),
     slot: z.string().optional().describe('One of: breakfast, morningSnack, lunch, eveningSnack, dinner'),
+    grams: z.number().optional().describe('Weight of this portion in grams (ml for drinks) when stated or confidently known; omit if unsure'),
   })).default([]),
   activities: z.array(z.object({
     name: z.string(),
@@ -80,6 +83,10 @@ Meals ALREADY LOGGED for {{{dayYmd}}} (index: name | kcal | protein g | carbs g 
 The user is correcting this earlier draft. Return the FULL revised draft (keep everything they didn't change):
 {{{draftJson}}}
 {{/if}}
+{{#if foodsText}}
+The user's SAVED FOODS with exact nutrition (use these numbers, scaled to the amount eaten, instead of estimating; they are the user's own measured values):
+{{{foodsText}}}
+{{/if}}
 {{#if webFacts}}
 Web search results for this message (use them for branded, packaged or restaurant items; ignore anything unrelated):
 {{{webFacts}}}
@@ -116,6 +123,7 @@ export async function parseFitnessLog(input: ParseFitnessLogInput, modelId: Mode
       draftJson: input.currentDraft || input.currentEdits?.length ? JSON.stringify({ ...input.currentDraft, edits: input.currentEdits ?? [] }) : '',
       loggedText: (input.loggedMeals ?? []).map(m => `${m.index}: ${m.name} | ${Math.round(m.kcal)} | ${m.proteinG ?? 0} | ${m.carbsG ?? 0} | ${m.fatG ?? 0} | ${m.fiberG ?? 0} | ${m.slot ?? 'other'}`).join('\n'),
       webFacts: web?.text ?? '',
+      foodsText: (input.knownFoods ?? []).slice(0, 20).join('\n'),
       localTime: input.localTime ?? 'unknown',
     },
     OutputSchema,

@@ -8,14 +8,27 @@ type Form = { sex: 'male' | 'female'; age: string; height: string; weightGoal: s
 const str = (n: number | null | undefined) => (n == null ? '' : String(n));
 const num = (s: string) => { const n = Number(s); return s.trim() !== '' && Number.isFinite(n) && n > 0 ? n : undefined; };
 
-/** Age/sex/height and the four targets. Suggestions pre-fill empty goals. */
+/** Age/sex/height and the four targets, in a bottom sheet (quick edits from the Logs page). */
 export function TargetsSheet({ open, onOpenChange, data, today, onSave }: {
   open: boolean; onOpenChange: (o: boolean) => void; data: AppData; today: string; onSave: (next: AppData) => void;
 }) {
+  return (
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent side="bottom" className="fit-ui f-sheet max-h-[92dvh] overflow-y-auto rounded-t-[28px] border-0 px-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] pt-6 sm:mx-auto sm:max-w-lg">
+        <SheetTitle className="fit-display text-2xl text-[var(--f-ink)]">Targets &amp; <em>you</em></SheetTitle>
+        <SheetDescription className="f-muted text-sm">Used for your burn estimate and the rings. Synced to all your devices. Also on your Profile page.</SheetDescription>
+        {open && <TargetsForm data={data} today={today} onSave={next => { onSave(next); onOpenChange(false); }} />}
+      </SheetContent>
+    </Sheet>
+  );
+}
+
+/** Age/sex/height and the four targets. Suggestions pre-fill empty goals. Used by the sheet and the Profile page. */
+export function TargetsForm({ data, today, onSave }: { data: AppData; today: string; onSave: (next: AppData) => void }) {
   const [f, setF] = useState<Form | null>(null);
+  const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    if (!open) return;
     const year = Number(today.slice(0, 4));
     let p: Partial<FitnessProfile> = data.fitnessProfile ?? {};
     if (!data.fitnessProfile) {
@@ -35,7 +48,7 @@ export function TargetsSheet({ open, onOpenChange, data, today, onSave }: {
       protein: str(findTracker(data, 'protein')?.goal ?? s.proteinG),
       steps: str(findTracker(data, 'steps')?.goal ?? s.steps),
     });
-  }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const age = f ? num(f.age) : undefined, height = f ? num(f.height) : undefined;
   const valid = !!f && age != null && age >= 10 && age <= 110 && height != null && height >= 100 && height <= 250;
@@ -43,13 +56,13 @@ export function TargetsSheet({ open, onOpenChange, data, today, onSave }: {
     if (!f || !valid) return;
     const profile: FitnessProfile = { sex: f.sex, birthYear: Number(today.slice(0, 4)) - age!, heightCm: height! };
     onSave(setTargets(data, profile, { weight: num(f.weightGoal), intake: num(f.kcal), protein: num(f.protein), steps: num(f.steps) }, uuidv4));
-    onOpenChange(false);
+    setSaved(true);
   };
   const field = (key: keyof Form, label: string, unit: string, hint?: string) => (
     <label className="flex flex-col gap-1 text-sm">
       <span className="font-medium">{label}</span>
       <span className="flex items-center gap-2">
-        <input className="f-input" type="number" inputMode="decimal" min={0} step="any" value={f?.[key] ?? ''} onChange={e => setF(x => x && { ...x, [key]: e.target.value })} />
+        <input className="f-input" type="number" inputMode="decimal" min={0} step="any" value={f?.[key] ?? ''} onChange={e => { setSaved(false); setF(x => x && { ...x, [key]: e.target.value }); }} aria-label={label} />
         <span className="f-muted w-12 text-xs">{unit}</span>
       </span>
       {hint && <span className="f-muted text-xs">{hint}</span>}
@@ -57,18 +70,14 @@ export function TargetsSheet({ open, onOpenChange, data, today, onSave }: {
   );
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" className="fit-ui f-sheet max-h-[92dvh] overflow-y-auto rounded-t-[28px] border-0 px-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] pt-6 sm:mx-auto sm:max-w-lg">
-        <SheetTitle className="fit-display text-2xl text-[var(--f-ink)]">Targets &amp; <em>you</em></SheetTitle>
-        <SheetDescription className="f-muted text-sm">Used for your burn estimate and the rings. Synced to all your devices.</SheetDescription>
-        {f && (
+        f && (
           <div className="mt-4 space-y-5">
             <fieldset className="space-y-3">
               <legend className="f-muted mb-1 text-xs font-semibold uppercase tracking-wide">About you</legend>
               <div className="flex gap-2" role="group" aria-label="Sex (for the BMR formula)">
                 {(['male', 'female'] as const).map(s => (
                   <button key={s} type="button" aria-pressed={f.sex === s} className="f-chip flex-1 justify-center" data-on={f.sex === s}
-                    onClick={() => setF({ ...f, sex: s })}>{s === 'male' ? 'Male' : 'Female'}</button>
+                    onClick={() => { setSaved(false); setF({ ...f, sex: s }); }}>{s === 'male' ? 'Male' : 'Female'}</button>
                 ))}
               </div>
               <div className="grid grid-cols-2 gap-3">{field('age', 'Age', 'years')}{field('height', 'Height', 'cm')}</div>
@@ -81,10 +90,8 @@ export function TargetsSheet({ open, onOpenChange, data, today, onSave }: {
               {field('steps', 'Steps', 'steps')}
             </fieldset>
             {!valid && <p className="f-bad text-xs">Enter your age and height to save.</p>}
-            <button type="button" className="f-pill f-pill-primary w-full" disabled={!valid} onClick={save}>Save</button>
+            <button type="button" className="f-pill f-pill-primary w-full" disabled={!valid} onClick={save}>{saved ? 'Saved ✓' : 'Save'}</button>
           </div>
-        )}
-      </SheetContent>
-    </Sheet>
+        )
   );
 }

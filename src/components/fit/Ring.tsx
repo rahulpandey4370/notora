@@ -3,18 +3,14 @@ import type { LucideIcon } from 'lucide-react';
 
 const num = (n: number) => Math.round(n).toLocaleString('en-US');
 
-/** Hours → "7h 17m" from whole minutes (no 6-minute steps, never "7h 60m"). */
-export const fmtSleep = (h: number) => {
-  const m = Math.round(h * 60), hh = Math.floor(m / 60), mm = m % 60;
-  return hh ? `${hh}h${mm ? ` ${mm}m` : ''}` : `${mm}m`;
-};
+export { fmtSleep } from '@/lib/fitness';
 
 /** Counts 0 → `to` (ease-out) each time `run` turns on. Jumps straight there for reduced-motion users. */
 function useCountUp(to: number | undefined, run: boolean) {
   const [n, setN] = useState(0);
   useEffect(() => {
     if (to == null) return;
-    if (!run) { setN(0); return; }
+    if (!run) { setN(to); return; } // a card being swiped into view shows its real number
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) { setN(to); return; }
     let raf = 0;
     const t0 = performance.now();

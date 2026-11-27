@@ -4,7 +4,7 @@ import type { AppData, LogTracker } from '@/lib/types';
 import {
   applyDraft, bmr, dayBurn, dayIntake, describeValueChange, editDayItem, goalEta, loggingStreak,
   clearBurnBase, sanitizeDraft, setTargets, suggestTargets, trendSeries, weeklyRate, stepsStreak, type TrendPoint,
-  MEAL_SLOTS, slotBudgets, slotForTime, mealsBySlot, dayMacros, applyLogEdits,
+  MEAL_SLOTS, slotBudgets, slotForTime, mealsBySlot, dayMacros, applyLogEdits, quickPicks, addDays,
 } from './fitness';
 
 const TODAY = '2026-11-26';
@@ -339,5 +339,21 @@ const bmr80 = bmr(profile, 80, TODAY);
   assert.equal(dayIntake(d1, TODAY).kcal, 1325, 'day total updated in the same save');
   assert.equal(dayMacros(d1, TODAY).kcal, 1325);
   assert.equal(applyLogEdits(d0, TODAY, [{ id: 'nope', patch: { kcal: 1 } }], id).fitnessDays![TODAY].meals.length, 4, 'an unknown id changes nothing');
+}
+// One-tap re-log: yesterday's items for the meal, then the usual ones (2+ times in 30 days, not repeating yesterday's).
+{
+  const mk = (name: string, slot: 'breakfast' | 'lunch' = 'breakfast') => ({ id: name + Math.random(), name, kcal: 100, proteinG: 5, slot });
+  const days: AppData['fitnessDays'] = {
+    [addDays(TODAY, -1)]: { meals: [mk('Poha'), mk('Rice', 'lunch')], activities: [] },
+    [addDays(TODAY, -2)]: { meals: [mk('Oats'), mk('Poha')], activities: [] },
+    [addDays(TODAY, -3)]: { meals: [mk('Oats'), mk('Eggs')], activities: [] },
+    [addDays(TODAY, -5)]: { meals: [mk('Eggs'), mk('Day total')], activities: [] },
+    [addDays(TODAY, -6)]: { meals: [mk('Eggs')], activities: [] },
+    [addDays(TODAY, -40)]: { meals: [mk('Idli'), mk('Idli')], activities: [] },
+  };
+  const q = quickPicks({ ...base([]), fitnessDays: days }, TODAY, 'breakfast');
+  assert.deepEqual(q.yesterday.map(m => m.name), ['Poha']);
+  assert.ok(!('id' in q.yesterday[0]), 'ids dropped so a re-log gets new ones');
+  assert.deepEqual(q.usual.map(m => m.name), ['Eggs', 'Oats'], 'most often first; Poha not repeated; Idli too old; Day total skipped');
 }
 console.log('fitness checks passed');

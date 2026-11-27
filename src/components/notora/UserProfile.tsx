@@ -124,6 +124,9 @@ export default function UserProfile({ user, userStats }: UserProfileProps) {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link href="/profile"><UserIcon className="mr-2 h-4 w-4" /><span>Profile &amp; settings</span></Link>
+        </DropdownMenuItem>
         <DropdownMenuItem disabled>
             <Award className="mr-2 h-4 w-4"/>
             <span>{userStats.xp} XP Total</span>

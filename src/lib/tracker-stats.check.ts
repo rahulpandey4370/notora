@@ -1,6 +1,7 @@
 // Run: npx tsx src/lib/tracker-stats.check.ts
 import assert from 'node:assert/strict';
-import { stats, type Point } from './tracker-stats';
+import { direction, stats, type Point } from './tracker-stats';
+import type { AppData } from './types';
 
 // 2026-11-01 is a Sunday. Steps-like, goal 10k, higher is better; last day (today) not logged yet.
 const pts: Point[] = [8000, 11000, undefined, 10000, 12000, 10500, undefined].map((value, i) => ({ date: `2026-11-0${i + 1}`, value }));
@@ -28,4 +29,11 @@ const none = stats([{ date: '2026-11-01' }], undefined, 'up');
 assert.equal(none.avg, null);
 assert.equal(none.goalDays, null);
 assert.equal(none.streak, null);
+// Tape measurements: a shrinking waist is good; arm and chest can go either way.
+{
+  const d = { logTrackers: [] } as unknown as AppData;
+  assert.equal(direction(d, { id: 'w', name: 'Waist', unit: 'cm', logs: [] }), 'down');
+  assert.equal(direction(d, { id: 'a', name: 'Arm', unit: 'cm', logs: [] }), 'neutral');
+  assert.equal(direction(d, { id: 's', name: 'Steps', unit: 'steps', logs: [] }), 'up');
+}
 console.log('tracker-stats: all checks passed');

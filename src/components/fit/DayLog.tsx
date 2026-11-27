@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Dumbbell, Flame, Footprints, Plus, Sparkles, Utensils, Watch, X } from 'lucide-react';
+import { Dumbbell, Flame, Footprints, Plus, RotateCcw, Sparkles, Utensils, Watch, X } from 'lucide-react';
 import type { Activity, AppData, Meal, MealSlot } from '@/lib/types';
-import { MEAL_SLOTS, dayBurn, dayMacros, mealsBySlot, slotBudgets } from '@/lib/fitness';
+import { MEAL_SLOTS, dayBurn, dayMacros, mealsBySlot, quickPicks, slotBudgets, type QuickMeal } from '@/lib/fitness';
 import type { ItemRef } from './ItemSheet';
 
 type Patch = Partial<Meal & Activity> | null;
@@ -29,11 +29,13 @@ function Row({ icon, title, detail, amount, tone, onOpen, onDelete }: {
 export type AddTarget = { kind: 'meal'; slot: MealSlot } | { kind: 'workout' };
 
 /** The picked day's log in two tabs: Food (five sections with calorie budgets) and Workouts. Tap a row to edit, × to delete. */
-export function DayLog({ data, day, kcalGoal, onEdit, onOpen, onClearBurn, onAdd, onAiEdit }: {
+export function DayLog({ data, day, kcalGoal, onEdit, onOpen, onClearBurn, onAdd, onAiEdit, onQuickAdd }: {
   data: AppData; day: string; kcalGoal?: number;
   onEdit: (kind: 'meal' | 'activity', id: string, patch: Patch) => void; onOpen: (item: ItemRef) => void; onClearBurn: () => void; onAdd: (target: AddTarget) => void;
   /** Opens the Log it chat to change logged meals in words ("lunch was 2 bowls", "all had ghee"). */
   onAiEdit: () => void;
+  /** One tap re-logs these meals into a section (yesterday's, or a usual pick). */
+  onQuickAdd: (meals: QuickMeal[], slot: MealSlot) => void;
 }) {
   const [tab, setTab] = useState<'food' | 'workouts'>('food');
   const fd = data.fitnessDays?.[day];
@@ -125,7 +127,25 @@ export function DayLog({ data, day, kcalGoal, onEdit, onOpen, onClearBurn, onAdd
                   </div>
                   <button type="button" className="f-icon-btn h-9 w-9 shrink-0" aria-label={`Add to ${label}`} onClick={() => onAdd({ kind: 'meal', slot: id })}><Plus className="h-4 w-4" /></button>
                 </div>
-                {groups[id].length > 0 && <ul>{groups[id].map(mealRow)}</ul>}
+                {groups[id].length > 0 ? <ul>{groups[id].map(mealRow)}</ul> : (() => {
+                  const q = quickPicks(data, day, id);
+                  if (!q.yesterday.length && !q.usual.length) return null;
+                  return (
+                    <div className="f-scroll-x flex gap-1.5 overflow-x-auto px-4 pb-2 pt-1" role="group" aria-label={`Quick add to ${label}`}>
+                      {q.yesterday.length > 0 && (
+                        <button type="button" className="f-chip shrink-0 !min-h-9" onClick={() => onQuickAdd(q.yesterday, id)}
+                          aria-label={`Log the same ${label.toLowerCase()} as yesterday: ${q.yesterday.map(m => m.name).join(', ')}`}>
+                          <RotateCcw className="h-3.5 w-3.5" aria-hidden />Same as yesterday · {k(sum(q.yesterday as Meal[]))}
+                        </button>
+                      )}
+                      {q.usual.map(m => (
+                        <button key={m.name} type="button" className="f-chip shrink-0 !min-h-9 max-w-[14rem]" onClick={() => onQuickAdd([m], id)} aria-label={`Log ${m.name} to ${label}`}>
+                          <Plus className="h-3.5 w-3.5 shrink-0" aria-hidden /><span className="truncate">{m.name}</span><span className="shrink-0 tabular-nums">· {k(m.kcal)}</span>
+                        </button>
+                      ))}
+                    </div>
+                  );
+                })()}
               </div>
             );
           })}

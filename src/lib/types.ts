@@ -255,14 +255,20 @@ export interface AppData {
   fitnessDays?: Record<string, FitnessDay>;
   /** Workouts from the Fitbit sync per day (yyyy-MM-dd), refreshed on every load. */
   fitbitWorkouts?: Record<string, FitbitWorkout[]>;
+  /** Progress photos: files live in a private Supabase Storage bucket (lib/progress-photos.ts); this holds where and when. */
+  progressPhotos?: ProgressPhoto[];
+  /** The Logs page colour theme (Profile page); synced so it follows you to every device. */
+  logsLook?: 'lagoon' | 'onyx' | 'coral' | 'grape';
 }
 
+export interface ProgressPhoto { id: string; date: string; path: string; pose: 'front' | 'side' | 'back'; note?: string }
 export interface FitnessProfile { sex: 'male' | 'female'; birthYear: number; heightCm: number }
 /** A workout the Fitbit recorded (Google Health exercise session); its calories are already in the Fitbit burn. */
 export interface FitbitWorkout { id: string; name: string; type: string; minutes: number; kcal: number; distanceKm?: number; avgHr?: number; start: string }
 export type MealSlot = 'breakfast' | 'morningSnack' | 'lunch' | 'eveningSnack' | 'dinner';
 /** slot: which section of the day it belongs to; older meals have none (shown under Other). */
-export interface Meal { id: string; name: string; kcal: number; proteinG: number; carbsG?: number; fatG?: number; fiberG?: number; slot?: MealSlot; notes?: string }
+/** foodId/grams: logged from My Foods (lib/food-match), or the AI's portion weight when it gave one. */
+export interface Meal { id: string; name: string; kcal: number; proteinG: number; carbsG?: number; fatG?: number; fiberG?: number; slot?: MealSlot; notes?: string; foodId?: string; grams?: number }
 export interface Activity { id: string; name: string; minutes: number; kcal: number; stepBased: boolean; notes?: string }
 /** burnBase: a stored day total carried over when workouts are added to that day. */
 export interface FitnessDay { meals: Meal[]; activities: Activity[]; burnBase?: number }

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { format } from 'date-fns';
-import { Camera, Check, Dumbbell, Footprints, Globe, Loader2, Mic, Send, Square, Utensils, X } from 'lucide-react';
+import { Camera, Check, Dumbbell, Footprints, Globe, Loader2, Mic, Send, Square, Star, Utensils, X } from 'lucide-react';
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import type { AppData } from '@/lib/types';
@@ -11,13 +11,17 @@ import type { MealSlot } from '@/lib/types';
 import type { AddTarget } from './DayLog';
 import { ManualLog } from './ManualLog';
 import { AutoTextarea } from './AutoTextarea';
+import { describeFood, foodsFor, matchText, perBasis, type Food } from '@/lib/food-match';
+import { FoodEditor, FoodsPanel } from './FoodsPanel';
+import type { FoodsApi } from './useFoods';
 
-const FORM_KEY = 'fit-log-form'; // remembers whether the user last chose the no-AI form
+const FORM_KEY = 'fit-log-form'; // remembers which tab the user last chose: '0' AI, '1' form, 'foods'
+type View = 'ai' | 'foods' | 'form';
 
 const SR = () => (typeof window === 'undefined' ? null : (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition || null);
 
 /** Phone photos are 3-8 MB; server actions take 1 MB. 1280px JPEG is plenty for the model. */
-function downscale(file: File): Promise<string> {
+export function downscale(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const url = URL.createObjectURL(file);
     const img = new Image();
@@ -49,9 +53,9 @@ function NumField({ label, value, onChange, width = 'w-16' }: { label: string; v
 }
 
 /** "Log it": type, speak or snap → AI draft cards → Save. Nothing is written before Save. */
-export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, onSave, aiDisabled }: {
+export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, onSave, aiDisabled, foods }: {
   open: boolean; onOpenChange: (o: boolean) => void; mode: 'type' | 'voice' | 'photo' | 'form' | 'ai'; preset?: AddTarget;
-  data: AppData; day: string; today: string; onSave: (draft: FitnessDraft, edits: LogEdit[]) => void; aiDisabled?: boolean;
+  data: AppData; day: string; today: string; onSave: (draft: FitnessDraft, edits: LogEdit[]) => void; aiDisabled?: boolean; foods: FoodsApi;
 }) {
   const { selectedModel, webSearch, setWebSearch } = useModelStore();
   const [msgs, setMsgs] = useState<Msg[]>([]);
@@ -64,7 +68,9 @@ export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, o
   const [busy, setBusy] = useState(false);
   const [listening, setListening] = useState(false);
   const [saved, setSaved] = useState(false);
-  const [manual, setManual] = useState(false);
+  const [view, setView] = useState<View>('ai');
+  const manual = view !== 'ai';
+  const [saving, setSaving] = useState<number | null>(null); // draft meal being saved to My Foods
   const [ver, setVer] = useState(0); // bumps on each AI reply so number fields re-read their values
   const recRef = useRef<any>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -79,9 +85,15 @@ export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, o
     reqRef.current++;
     if (open) {
       setMsgs([]); setText(''); setInterim(''); setPhoto(null); setDraft(null); setEdits([]); setSaved(false);
-      let form = false;
-      try { form = mode === 'form' || (mode === 'type' && localStorage.getItem(FORM_KEY) === '1'); } catch { form = mode === 'form'; } // 'ai' always opens the chat
-      setManual(form);
+      let v: View = mode === 'form' ? 'form' : 'ai';
+      try {
+        const last = localStorage.getItem(FORM_KEY);
+        // A meal section's + opens My Foods when you have some saved; plain "type" reopens your last tab. 'ai' always opens the chat.
+        if (mode === 'form' && preset?.kind === 'meal' && foods.foods.length) v = 'foods';
+        else if (mode === 'type') v = last === '1' ? 'form' : last === 'foods' && foods.foods.length ? 'foods' : 'ai';
+      } catch { /* default */ }
+      setView(v); setSaving(null);
+      const form = v !== 'ai';
       if (form) { /* the form takes focus on tap */ }
       else if (mode === 'photo') setTimeout(() => fileRef.current?.click(), 80);
       else if (mode === 'voice' && SR()) start();
@@ -134,6 +146,15 @@ export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, o
     const image = photo ?? undefined;
     setMsgs(m => [...m, { role: 'user', text: said, image }]);
     setText(''); setInterim(''); setPhoto(null); setSaved(false);
+    // Only saved foods in the message ("150g rice, 2 rotis"): log from My Foods, no AI call. Still a draft until Save.
+    // Not while a draft or edits are open: "make it 3 rotis" is a correction for the AI.
+    const local = !image && said && !hasItems ? matchText(said, foods.foods, nowSlot) : null;
+    if (local?.kind === 'all') {
+      setDraft(d => ({ ...(d ?? EMPTY(day)), date: d?.date ?? day, meals: [...(d?.meals ?? []), ...local.meals] }));
+      setVer(v => v + 1);
+      setMsgs(m => [...m, { role: 'ai', text: `From My Foods, no AI used: ${local.meals.map(x => `${x.name} (${x.kcal} kcal)`).join(', ')}. Check, then Save.` }]);
+      return;
+    }
     if (aiDisabled) {
       // Showcase: a fixed sample so the draft cards and Save can be tried without AI.
       setDraft({ date: day, meals: [{ name: '2 rotis', kcal: 220, proteinG: 6, slot: nowSlot }], activities: [{ name: 'Jog', minutes: 30, kcal: 320, stepBased: true }], values: [] });
@@ -155,6 +176,7 @@ export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, o
         localTime: format(new Date(), 'HH:mm'),
         loggedMeals: logged.map((m, index) => ({ index, name: m.name, kcal: m.kcal, proteinG: m.proteinG, carbsG: m.carbsG, fatG: m.fatG, fiberG: m.fiberG, slot: m.slot })),
         currentEdits: edits.length ? edits : undefined,
+        knownFoods: said ? foodsFor(said, foods.foods).map(describeFood) : undefined,
       }, selectedModel);
       if (req !== reqRef.current) return;
       const { reply, web, edits: changed, ...next } = r;
@@ -185,28 +207,38 @@ export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, o
     setEdits([]);
     setMsgs(m => [...m, { role: 'ai', text: 'Saved ✓ Anything else?' }]);
   };
-  const chooseManual = (m: boolean) => {
-    if (m) stop();
-    setManual(m);
-    try { localStorage.setItem(FORM_KEY, m ? '1' : '0'); } catch { /* not remembered */ }
+  const choose = (v: View) => {
+    if (v !== 'ai') stop();
+    setView(v);
+    try { localStorage.setItem(FORM_KEY, v === 'form' ? '1' : v === 'foods' ? 'foods' : '0'); } catch { /* not remembered */ }
+  };
+  const saveToFoods = (i: number) => async (f: Omit<Food, 'id'> & { id?: string }) => {
+    const r = await foods.save(f);
+    if (r.ok && r.food) { update(d => ({ ...d, meals: d.meals.map((x, j) => (j === i ? { ...x, foodId: r.food!.id } : x)) })); setSaving(null); }
+    return r;
   };
   const dayText = draft && draft.date !== day ? ` for ${new Date(`${draft.date}T00:00:00`).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}` : '';
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="bottom" className="fit-ui f-sheet flex max-h-[92dvh] flex-col gap-0 rounded-t-[28px] border-0 p-0 sm:mx-auto sm:max-w-lg">
-        <div className="flex items-start justify-between gap-3 px-5 pb-2 pt-5 pr-12">
-          <div>
+        <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-2 px-5 pb-2 pt-5 pr-12">
+          <div className="min-w-[13rem] flex-1">
             <SheetTitle className="fit-display text-2xl text-[var(--f-ink)]">Log <em>it</em></SheetTitle>
-            <SheetDescription className="f-muted text-sm">{manual ? 'Fill in the numbers yourself. No AI.' : 'Meals, workouts or numbers — type, speak, or send a photo.'}</SheetDescription>
+            <SheetDescription className="f-muted text-sm">{view === 'form' ? 'Fill in the numbers yourself. No AI.' : view === 'foods' ? 'Your saved foods, scaled to what you ate. No AI.' : 'Meals, workouts or numbers — type, speak, or send a photo.'}</SheetDescription>
           </div>
           <div className="flex shrink-0 gap-1" role="group" aria-label="How to log">
-            <button type="button" className="f-chip" data-on={!manual} aria-pressed={!manual} onClick={() => chooseManual(false)}>AI</button>
-            <button type="button" className="f-chip" data-on={manual} aria-pressed={manual} onClick={() => chooseManual(true)}>Form</button>
+            <button type="button" className="f-chip !px-2.5" data-on={view === 'ai'} aria-pressed={view === 'ai'} onClick={() => choose('ai')}>AI</button>
+            {foods.status !== 'missing' && <button type="button" className="f-chip !px-2.5" data-on={view === 'foods'} aria-pressed={view === 'foods'} onClick={() => choose('foods')}>My foods</button>}
+            <button type="button" className="f-chip !px-2.5" data-on={view === 'form'} aria-pressed={view === 'form'} onClick={() => choose('form')}>Form</button>
           </div>
         </div>
 
-        {manual ? (
+        {view === 'foods' ? (
+          <div className="flex-1 overflow-y-auto px-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] pt-3">
+            <FoodsPanel foods={foods} data={data} day={day} slot={preset?.kind === 'meal' ? preset.slot : nowSlot} onSave={d => onSave(d, [])} aiDisabled={aiDisabled} />
+          </div>
+        ) : manual ? (
           <div className="flex-1 overflow-y-auto px-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] pt-3">
             <ManualLog key={`${preset?.kind ?? ''}-${preset?.kind === 'meal' ? preset.slot : ''}`} data={data} day={day} onSave={d => onSave(d, [])}
               initialKind={preset?.kind ?? 'meal'} defaultSlot={preset?.kind === 'meal' ? preset.slot : nowSlot} />
@@ -259,12 +291,12 @@ export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, o
                 </div>
               )}
               {draft && (draft.meals.length + draft.activities.length + draft.values.length) > 0 && <p className="text-xs font-semibold uppercase tracking-wide f-muted">To save{dayText}</p>}
-              {draft?.meals.map((m, i) => (
-                <div key={`m${ver}-${i}`} className="flex items-end gap-2">
+              {draft?.meals.map((m, i) => (<div key={`m${ver}-${i}`}>
+                <div className="flex items-end gap-2">
                   <Utensils className="mb-2 h-4 w-4 shrink-0 text-[var(--f-chart-a)]" aria-hidden />
                   <span className="mb-1.5 min-w-0 flex-1">
                     <span className="block text-sm font-medium">{m.name}</span>
-                    <span className="f-muted block text-[11px] tabular-nums">C {Math.round(m.carbsG ?? 0)} · F {Math.round(m.fatG ?? 0)} · Fibre {Math.round(m.fiberG ?? 0)} g</span>
+                    <span className="f-muted block text-[11px] tabular-nums">C {Math.round(m.carbsG ?? 0)} · F {Math.round(m.fatG ?? 0)} · Fibre {Math.round(m.fiberG ?? 0)} g{m.foodId ? ' · ★ My Foods' : ''}</span>
                     <select className="f-muted mt-0.5 max-w-full bg-transparent text-xs underline decoration-dotted underline-offset-2" aria-label={`Meal for ${m.name}`}
                       value={m.slot ?? nowSlot} onChange={e => update(d => ({ ...d, meals: d.meals.map((x, j) => (j === i ? { ...x, slot: e.target.value as MealSlot } : x)) }))}>
                       {MEAL_SLOTS.map(x => <option key={x.id} value={x.id}>{x.label}</option>)}
@@ -272,10 +304,21 @@ export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, o
                   </span>
                   <NumField label="kcal" value={m.kcal} onChange={n => update(d => ({ ...d, meals: d.meals.map((x, j) => (j === i ? { ...x, kcal: n } : x)) }))} />
                   <NumField label="protein g" value={m.proteinG} onChange={n => update(d => ({ ...d, meals: d.meals.map((x, j) => (j === i ? { ...x, proteinG: n } : x)) }))} />
+                  {!m.foodId && foods.status === 'ready' && (
+                    <button type="button" className="f-muted -mr-1 mb-0 flex h-11 w-9 shrink-0 items-center justify-center" aria-label={`Save ${m.name} to My Foods`} aria-expanded={saving === i}
+                      onClick={() => setSaving(s => (s === i ? null : i))}><Star className="h-4 w-4" /></button>
+                  )}
                   <button type="button" className="f-muted -mr-2 mb-0 flex h-11 w-11 shrink-0 items-center justify-center" aria-label={`Remove ${m.name}`}
-                    onClick={() => remove(d => ({ ...d, meals: d.meals.filter((_, j) => j !== i) }))}><X className="h-4 w-4" /></button>
+                    onClick={() => { setSaving(null); remove(d => ({ ...d, meals: d.meals.filter((_, j) => j !== i) })); }}><X className="h-4 w-4" /></button>
                 </div>
-              ))}
+                {saving === i && (
+                  <div className="mt-2">
+                    <p className="f-muted mb-2 text-xs">{m.grams ? `Saved per 100 g from this ${m.grams} g portion. Tidy the name so it matches how you'll type it.` : 'No weight for this portion, so it’s saved as 1 serving. Switch to “100 g” and enter values per 100 g if you know them.'}</p>
+                    <FoodEditor initial={{ name: m.name.replace(/,?\s*\d+(\.\d+)?\s*(g|gm|grams?|ml)\b.*$/i, '').trim() || m.name, ...perBasis(m, m.grams), servings: [] }}
+                      onCancel={() => setSaving(null)} onSave={saveToFoods(i)} />
+                  </div>
+                )}
+              </div>))}
               {draft?.activities.map((a, i) => (
                 <div key={`a${ver}-${i}`} className="flex items-end gap-2">
                   {a.stepBased ? <Footprints className="mb-2 h-4 w-4 shrink-0 text-[var(--f-chart-b)]" aria-hidden /> : <Dumbbell className="mb-2 h-4 w-4 shrink-0 text-[var(--f-chart-b)]" aria-hidden />}

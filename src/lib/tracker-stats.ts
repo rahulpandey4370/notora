@@ -19,6 +19,9 @@ export const isDerived = (data: AppData, t: LogTracker) =>
 export function direction(data: AppData, t: LogTracker, latest?: number): Direction {
   if (t.healthMetric === 'restingHr' || t === findTracker(data, 'intake')) return 'down';
   if (t.healthMetric === 'breaths') return 'neutral';
+  const name = t.name.trim().toLowerCase();
+  if (['waist', 'hips', 'hip', 'thigh', 'neck'].includes(name)) return 'down';
+  if (t.unit === 'cm') return 'neutral'; // arm and chest can grow with muscle
   if (t.healthMetric === 'weight' || t === findTracker(data, 'weight')) return t.goal != null && latest != null ? (t.goal < latest ? 'down' : 'up') : 'neutral';
   return 'up';
 }

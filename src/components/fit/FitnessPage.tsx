@@ -19,9 +19,12 @@ import { TrackerSheet } from './TrackerSheet';
 import { LogSheet } from './LogSheet';
 import { TargetsSheet } from './TargetsSheet';
 import { ManageSheet } from './ManageSheet';
-import { LookPicker, useFitLook } from './Looks';
+import Link from 'next/link';
+import { useFitLook } from './Looks';
 import { AiSummary } from './AiSummary';
 import { ItemSheet, type ItemRef } from './ItemSheet';
+import { useFoods } from './useFoods';
+import { ProgressHub } from './ProgressHub';
 
 const EXAMPLES = ['94.1 kg, 12k steps, 110g protein', 'Had 2 rotis and dal, walked 40 min', 'Snap your lunch, I’ll count it', 'Ran 5k in 32 min'];
 const k = (n: number) => Math.round(n).toLocaleString('en-US');
@@ -58,8 +61,9 @@ export function FitnessPage({ data, onDataChange, showcase = false }: { data: Ap
   const [targetsOpen, setTargetsOpen] = useState(false);
   const [manageOpen, setManageOpen] = useState(false);
   const [openTracker, setOpenTracker] = useState<string | null>(null);
-  const [look, setLook] = useFitLook();
+  useFitLook(data, onDataChange); // applies your saved Logs look; you change it on the Profile page
   const [item, setItem] = useState<ItemRef | null>(null);
+  const foods = useFoods(showcase);
 
   const s = useMemo(() => {
     const intake = dayIntake(data, day);
@@ -115,10 +119,12 @@ export function FitnessPage({ data, onDataChange, showcase = false }: { data: Ap
               </button>
             )}
             <DayLog data={data} day={day} kcalGoal={s.kcalGoal} onEdit={edit} onClearBurn={() => onDataChange(clearBurnBase(data, day, uuidv4))}
-              onOpen={setItem} onAdd={preset => setLog({ open: true, mode: 'form', preset })} onAiEdit={() => setLog({ open: true, mode: 'ai' })} />
+              onOpen={setItem} onAdd={preset => setLog({ open: true, mode: 'form', preset })} onAiEdit={() => setLog({ open: true, mode: 'ai' })}
+              onQuickAdd={(meals, slot) => save({ date: day, meals: meals.map(m => ({ ...m, slot })), activities: [], values: [] })} />
           </div>
           <div className="space-y-4">
             <WeightCard data={data} today={today} onSetGoal={() => setTargetsOpen(true)} />
+            <ProgressHub data={data} today={today} onDataChange={onDataChange} showcase={showcase} />
             <WeekCards data={data} day={day} />
           </div>
         </div>
@@ -126,12 +132,11 @@ export function FitnessPage({ data, onDataChange, showcase = false }: { data: Ap
         <TrackerTiles data={data} today={day} onOpen={setOpenTracker} onManage={() => setManageOpen(true)} />
         <AiSummary data={data} today={today} aiDisabled={showcase} />
         <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
-          <button type="button" className="f-chip" onClick={() => setTargetsOpen(true)}><UserRound className="h-3.5 w-3.5" aria-hidden />Targets &amp; profile</button>
-          <LookPicker look={look} onLook={setLook} />
+          <Link href={showcase ? '/showcase/profile' : '/profile'} className="f-chip"><UserRound className="h-3.5 w-3.5" aria-hidden />Profile: targets, body, look &amp; reminders</Link>
         </div>
       </div>
 
-      <LogSheet open={log.open} onOpenChange={o => setLog(l => ({ ...l, open: o }))} mode={log.mode} preset={log.preset} data={data} day={day} today={today} onSave={save} aiDisabled={showcase} />
+      <LogSheet open={log.open} onOpenChange={o => setLog(l => ({ ...l, open: o }))} mode={log.mode} preset={log.preset} data={data} day={day} today={today} onSave={save} aiDisabled={showcase} foods={foods} />
       <ItemSheet item={item} data={data} day={day} today={today} aiDisabled={showcase} onClose={() => setItem(null)}
         onSave={(it, patch) => onDataChange(editDayItem(data, day, it.kind, it.id, patch, uuidv4))}
         onDelete={it => onDataChange(editDayItem(data, day, it.kind, it.id, null, uuidv4))}

@@ -30,7 +30,7 @@ assert.equal(stepsT.healthMetric, 'steps', 'existing "Steps" tracker is reused')
 assert.equal(stepsT.logs.find(l => l.date === '2026-03-04')!.value, 5000, 'manual entry wins');
 assert.equal(stepsT.logs.find(l => l.date === '2026-03-05')!.value, 120);
 const sleepT = merged.logTrackers.find(t => t.healthMetric === 'sleep')!;
-assert.equal(sleepT.logs[0].value, 7.3, 'sleep in hours, 1 decimal');
+assert.equal(Math.round(sleepT.logs[0].value * 60), 437, 'sleep keeps Fitbit\'s exact minutes');
 
 // Idempotent, and a later sync updates Fitbit's own entry.
 const again = mergeHealthIntoTrackers(merged, [{ date: '2026-03-05', steps: 9000 }]);

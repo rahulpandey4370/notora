@@ -107,5 +107,35 @@ html.dark[data-fit-look="grape"] .fit-ui { --f-accent: #a98bff; --f-deep: #c3adf
 .f-ring-bar { transition: stroke-dashoffset .9s var(--f-ease); }
 @media (prefers-reduced-motion: reduce) { .f-ring-bar { transition: none; } }
 
+/* hero stat carousel: a glassy card lit by its stat's colour (--c), text rising in as it arrives */
+.f-stat {
+  border-radius: 22px; border: 1px solid var(--f-line);
+  background:
+    radial-gradient(120% 150% at 0% 50%, color-mix(in srgb, var(--c) 16%, transparent), transparent 62%),
+    color-mix(in srgb, var(--f-card) 80%, transparent);
+  box-shadow: 0 1px 0 color-mix(in srgb, #fff 60%, transparent) inset, 0 10px 30px -18px color-mix(in srgb, var(--c) 55%, transparent);
+  backdrop-filter: blur(6px);
+}
+.f-stat[data-active="true"] .f-stat-text > * { animation: f-rise .6s var(--f-ease) both; }
+.f-stat[data-active="true"] .f-stat-text > :nth-child(2) { animation-delay: 60ms; }
+.f-stat[data-active="true"] .f-stat-text > :nth-child(3) { animation-delay: 120ms; }
+.f-stat[data-active="true"] .f-stat-text > :nth-child(4) { animation-delay: 180ms; }
+@keyframes f-rise { from { opacity: 0; transform: translateY(8px); filter: blur(2px); } }
+
+/* dots: a 44px-tall tap target around a small pill; the current one widens and fills over the autoplay delay */
+.f-dot { display: inline-flex; align-items: center; justify-content: center; min-height: 2.75rem; padding: 0 .3rem; }
+.f-dot > span {
+  position: relative; overflow: hidden; display: block; width: .45rem; height: .45rem; border-radius: 999px;
+  background: color-mix(in srgb, var(--f-deep) 22%, transparent); transition: width .4s var(--f-ease), background .4s var(--f-ease);
+}
+.f-dot[data-on="true"] > span { width: 1.6rem; background: color-mix(in srgb, var(--f-deep) 35%, transparent); }
+.f-dot > span > i { position: absolute; inset: 0; border-radius: inherit; background: var(--f-deep); transform-origin: left; animation: f-fill 4.5s linear both; }
+@keyframes f-fill { from { transform: scaleX(0); } }
+@media (prefers-reduced-motion: reduce) {
+  .f-stat[data-active="true"] .f-stat-text > * { animation: none; }
+  .f-dot > span { transition: none; }
+  .f-dot[data-on="true"] > span { background: var(--f-deep); }
+}
+
 /* recharts text in the page's colours */
 .fit-ui .recharts-cartesian-axis-tick-value { fill: var(--f-sec); font-size: 11px; }

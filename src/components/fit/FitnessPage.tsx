@@ -2,13 +2,14 @@ import './fit.css';
 import { useEffect, useMemo, useState } from 'react';
 import { format } from 'date-fns';
 import { v4 as uuidv4 } from 'uuid';
-import { UserRound } from 'lucide-react';
+import { Drumstick, Flame, Footprints, Moon, UserRound } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Activity, AppData, Meal } from '@/lib/types';
 import { applyDraft, applyLogEdits, clearBurnBase, dayBurn, dayIntake, editDayItem, findTracker, loggingStreak, stepsStreak, valueOn, type FitnessDraft, type LogEdit } from '@/lib/fitness';
 import { fitSerif } from './font';
 import { Hero } from './Hero';
-import { Ring } from './Ring';
+import { fmtSleep } from './Ring';
+import { StatCarousel } from './StatCarousel';
 import { FitbitChip } from './FitbitChip';
 import { WeightCard } from './WeightCard';
 import { WeekCards } from './WeekCards';
@@ -70,6 +71,7 @@ export function FitnessPage({ data, onDataChange, showcase = false }: { data: Ap
       proteinGoal: findTracker(data, 'protein')?.goal,
       kcalGoal: findTracker(data, 'intake')?.goal,
       sleep: valueOn(findTracker(data, 'sleep'), day),
+      sleepGoal: findTracker(data, 'sleep')?.goal ?? 8,
       rhr: valueOn(findTracker(data, 'restingHr'), day),
       net: intake.kcal != null && burn.total != null ? intake.kcal - burn.total : null,
       streak: loggingStreak(data, today),
@@ -94,14 +96,15 @@ export function FitnessPage({ data, onDataChange, showcase = false }: { data: Ap
       <div className="mx-auto w-full max-w-6xl space-y-4 p-4 pb-28 md:p-8">
         <div className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
           <div className="min-w-0 space-y-4">
-            <Hero day={day} today={today} onDay={setDay} streak={s.streak} stepStreak={s.stepStreak} stepGoal={s.stepsGoal || 10000} netKcal={s.net} sleepH={s.sleep} rhr={s.rhr}
+            <Hero day={day} today={today} onDay={setDay} streak={s.streak} stepStreak={s.stepStreak} stepGoal={s.stepsGoal || 10000} netKcal={s.net} rhr={s.rhr}
               fitbit={showcase ? undefined : <FitbitChip />} lines={s.lines}
               onType={() => openLog('type')} onVoice={() => openLog('voice')} onPhoto={() => openLog('photo')}
-              rings={<>
-                <Ring label="Steps" unit="steps" value={s.steps} target={s.stepsGoal} onSetTarget={() => setTargetsOpen(true)} />
-                <Ring label="Protein" unit="g" value={s.intake.proteinG} target={s.proteinGoal} color="var(--f-chart-a)" onSetTarget={() => setTargetsOpen(true)} />
-                <Ring label="Calories" unit="kcal" value={s.intake.kcal} target={s.kcalGoal} over="bad" color="var(--f-chart-b)" onSetTarget={() => setTargetsOpen(true)} />
-              </>} />
+              rings={<StatCarousel onSetTarget={() => setTargetsOpen(true)} slides={[
+                { key: 'steps', label: 'Steps', unit: 'steps', icon: Footprints, value: s.steps, target: s.stepsGoal },
+                { key: 'sleep', label: 'Sleep', unit: '', icon: Moon, value: s.sleep, target: s.sleepGoal, color: 'var(--f-sleep)', format: fmtSleep, remaining: 'short', empty: 'No sleep synced yet' },
+                { key: 'kcal', label: 'Calories', unit: 'kcal', icon: Flame, value: s.intake.kcal, target: s.kcalGoal, over: 'bad', color: 'var(--f-chart-b)', remaining: 'left' },
+                { key: 'protein', label: 'Protein', unit: 'g', icon: Drumstick, value: s.intake.proteinG, target: s.proteinGoal, color: 'var(--f-chart-a)' },
+              ]} />} />
             {needsSetup && (
               <button type="button" onClick={() => setTargetsOpen(true)} className="f-card flex w-full items-center gap-3 p-4 text-left">
                 <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--f-tint)]"><UserRound className="h-5 w-5 text-[var(--f-deep)]" aria-hidden /></span>

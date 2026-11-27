@@ -7,7 +7,6 @@ import type { ModelId } from '@/lib/types';
 import {
   availableModels as catalogModels,
   defaultModelKey,
-  resolveModel,
   type AIProvider,
   type CatalogModel,
 } from '@/lib/model-catalog';
@@ -50,23 +49,14 @@ export const useModelStore = create<ModelStoreState>()(
     {
       name: 'notora-model-selection',
       storage: createJSONStorage(() => localStorage),
-      // Only the selection is worth persisting. The catalog must come from code
-      // so newly-added models appear immediately instead of being pinned to
-      // whatever list was cached in localStorage on a previous visit.
-      partialize: (state) => ({ selectedModel: state.selectedModel, webSearch: state.webSearch }),
-      merge: (persisted, current) => {
-        const stored = (persisted as { selectedModel?: string } | undefined)?.selectedModel;
-        const webSearch = (persisted as { webSearch?: boolean } | undefined)?.webSearch === true;
-        // Migrate a bare id (pre-key) to its key, and drop a selection whose
-        // provider is no longer enabled.
-        const resolved = resolveModel(stored);
-        return {
-          ...current,
-          availableModels: catalogModels(),
-          selectedModel: resolved?.key ?? defaultModelKey(),
-          webSearch,
-        };
-      },
+      // Only the web search switch is persisted. The model starts on the
+      // default (GPT-6 Luna) at every launch; a pick in the header lasts until
+      // the next launch. The catalog always comes from code.
+      partialize: (state) => ({ webSearch: state.webSearch }),
+      merge: (persisted, current) => ({
+        ...current,
+        webSearch: (persisted as { webSearch?: boolean } | undefined)?.webSearch === true,
+      }),
     }
   )
 );

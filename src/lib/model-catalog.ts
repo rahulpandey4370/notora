@@ -214,9 +214,9 @@ export function resolveModel(idOrKey: string | undefined | null, providers?: AIP
   return matches.find(m => m.provider === 'azure') ?? matches[0];
 }
 
-/** The key the app should start on when nothing is stored. */
+/** The key the app starts on at every launch. */
 export function defaultModelKey(providers?: AIProvider[]): string {
   const models = availableModels(providers);
-  // Prefer a balanced-tagged model, else the first on offer.
-  return (models.find(m => m.tags.includes('balanced')) ?? models[0])?.key ?? 'google::gemini-2.5-flash';
+  // GPT-6 Luna when OpenAI is enabled, else a balanced-tagged model, else the first on offer.
+  return (models.find(m => m.id === 'gpt-6-luna') ?? models.find(m => m.tags.includes('balanced')) ?? models[0])?.key ?? 'google::gemini-2.5-flash';
 }

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { AudioLines, CalendarDays, Camera, Flame, Footprints, Moon, HeartPulse, Pencil } from 'lucide-react';
+import { AudioLines, CalendarDays, Camera, Flame, Footprints, HeartPulse, Pencil } from 'lucide-react';
 import { addDays } from '@/lib/fitness';
 
 /** "Had *2* rotis": numbers get the italic accent (from FinWise split's hero). */
@@ -66,9 +66,9 @@ const dayLabel = (day: string, today: string) => {
   return new Date(`${day}T00:00:00`).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' });
 };
 
-export function Hero({ day, today, onDay, rings, netKcal, sleepH, rhr, streak, stepStreak, stepGoal, fitbit, lines, onType, onVoice, onPhoto }: {
+export function Hero({ day, today, onDay, rings, netKcal, rhr, streak, stepStreak, stepGoal, fitbit, lines, onType, onVoice, onPhoto }: {
   day: string; today: string; onDay: (ymd: string) => void; rings: React.ReactNode;
-  netKcal: number | null; sleepH?: number; rhr?: number; streak: number; stepStreak: number; stepGoal: number; fitbit?: React.ReactNode;
+  netKcal: number | null; rhr?: number; streak: number; stepStreak: number; stepGoal: number; fitbit?: React.ReactNode;
   lines: string[]; onType: () => void; onVoice: () => void; onPhoto: () => void;
 }) {
   const { text, done } = useTyped(lines);
@@ -93,7 +93,7 @@ export function Hero({ day, today, onDay, rings, netKcal, sleepH, rhr, streak, s
 
       <h1 className="fit-display text-[1.9rem]">{dayLabel(day, today)}<span className="sr-only">: rings and totals</span></h1>
 
-      <div className="grid grid-cols-3 justify-items-center gap-2">{rings}</div>
+      {rings}
 
       <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-sm">
         <span>
@@ -105,10 +105,6 @@ export function Hero({ day, today, onDay, rings, netKcal, sleepH, rhr, streak, s
             </strong>
           )}
         </span>
-        {sleepH != null && (
-          <span className="inline-flex items-center gap-1"><Moon className="h-3.5 w-3.5 text-[var(--f-sleep)]" aria-hidden />
-            Slept <strong>{Math.floor(sleepH)}h {Math.round((sleepH % 1) * 60)}m</strong></span>
-        )}
         {rhr != null && (
           <span className="inline-flex items-center gap-1"><HeartPulse className="h-3.5 w-3.5 text-[var(--f-coral)]" aria-hidden />
             RHR <strong>{Math.round(rhr)}</strong></span>

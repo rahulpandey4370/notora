@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { Bar, CartesianGrid, ComposedChart, Line, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import type { AppData } from '@/lib/types';
 import { addDays, dayBurn, dayIntake, findTracker, valueOn } from '@/lib/fitness';
+import { fmtSleep } from './Ring';
 
 const tip = { background: 'var(--f-card)', border: '1px solid var(--f-line)', borderRadius: 12, color: 'var(--f-ink)' };
 const dow = (ymd: string) => new Date(`${ymd}T00:00:00`).toLocaleDateString('en-IN', { weekday: 'short' }).slice(0, 2);
@@ -96,7 +97,7 @@ export function WeekCards({ data, day }: { data: AppData; day: string }) {
           <ComposedChart data={rows} margin={{ top: 4, right: 4, left: -16, bottom: 0 }}>
             <XAxis dataKey="label" tickLine={false} axisLine={false} />
             <YAxis tickLine={false} axisLine={false} width={44} domain={[0, 'dataMax + 1']} allowDecimals={false} />
-            <Tooltip contentStyle={tip} cursor={{ fill: 'var(--f-tint)' }} formatter={(v: number, name: string) => [`${Math.floor(v)}h ${Math.round((v % 1) * 60)}m`, name === 'sleepAvg' ? '7-day avg' : 'Sleep']} />
+            <Tooltip contentStyle={tip} cursor={{ fill: 'var(--f-tint)' }} formatter={(v: number, name: string) => [fmtSleep(v), name === 'sleepAvg' ? '7-day avg' : 'Sleep']} />
             <ReferenceLine y={sleepGoal ?? 8} stroke="var(--f-good)" strokeDasharray="4 4" />
             <Bar dataKey="sleep" fill="var(--f-sleep)" fillOpacity={0.55} radius={[6, 6, 0, 0]} isAnimationActive={false} />
             <Line dataKey="sleepAvg" type="monotone" stroke="var(--f-sleep)" strokeWidth={2.5} dot={false} connectNulls isAnimationActive={false} />

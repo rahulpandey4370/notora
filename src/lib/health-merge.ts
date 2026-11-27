@@ -170,7 +170,7 @@ export function combineDays(...lists: HealthDay[][]): HealthDay[] {
 
 const TRACKERS: Record<HealthMetric, { name: string; unit: string; goal?: number; aliases: string[]; value: (d: HealthDay) => number | null | undefined }> = {
   steps: { name: 'Steps', unit: 'steps', goal: 10000, aliases: ['steps', 'step count'], value: d => d.steps },
-  sleep: { name: 'Sleep', unit: 'hours', goal: 8, aliases: ['sleep'], value: d => (d.sleep_minutes == null ? null : Math.round((d.sleep_minutes / 60) * 10) / 10) },
+  sleep: { name: 'Sleep', unit: 'hours', goal: 8, aliases: ['sleep'], value: d => (d.sleep_minutes == null ? null : d.sleep_minutes / 60) }, // exact: Fitbit's minutes, unrounded,
   restingHr: { name: 'Resting heart rate', unit: 'bpm', goal: 60, aliases: ['resting heart rate', 'resting hr', 'rhr'], value: d => d.resting_hr },
   weight: { name: 'Weight', unit: 'kg', aliases: ['weight', 'body weight'], value: d => d.weight_kg },
   burned: { name: 'Calories Burned', unit: 'kcal', aliases: ['calories burned', 'calories burnt'], value: d => d.kcal_total },

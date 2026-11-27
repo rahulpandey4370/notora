@@ -61,6 +61,21 @@ export function realBurn(data: AppData, today: string): RealBurn {
   };
 }
 
+/**
+ * The correction for a single day: real burn ÷ the estimates' average over the
+ * same days. A day's Fitbit (or formula) burn × this = that day's real burn, so
+ * busy days still burn more than quiet ones, just corrected to your results.
+ * null without enough data (show the estimate alone).
+ */
+export function realScale(b: RealBurn): number | null {
+  if (!b.ok) return null;
+  const parts = [b.fitbit, b.formula].filter((p): p is { avg: number; days: number } => !!p);
+  const days = parts.reduce((s, p) => s + p.days, 0);
+  if (!days) return null;
+  const est = parts.reduce((s, p) => s + p.avg * p.days, 0) / days;
+  return est > 0 ? b.real / est : null;
+}
+
 /** Lowest daily target the app will suggest: resting burn, and never under 1,500 (men) / 1,200 (women). */
 export function kcalFloor(data: AppData, today: string): number {
   const p = data.fitnessProfile, kg = weightOn(data, today);

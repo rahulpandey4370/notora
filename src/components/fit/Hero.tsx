@@ -66,9 +66,9 @@ const dayLabel = (day: string, today: string) => {
   return new Date(`${day}T00:00:00`).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' });
 };
 
-export function Hero({ day, today, onDay, rings, netKcal, rhr, streak, stepStreak, stepGoal, fitbit, lines, onType, onVoice, onPhoto }: {
+export function Hero({ day, today, onDay, rings, netKcal, netReal, burnLabel = 'Fitbit', rhr, streak, stepStreak, stepGoal, fitbit, lines, onType, onVoice, onPhoto }: {
   day: string; today: string; onDay: (ymd: string) => void; rings: React.ReactNode;
-  netKcal: number | null; rhr?: number; streak: number; stepStreak: number; stepGoal: number; fitbit?: React.ReactNode;
+  netKcal: number | null; /** Net against your real burn (Progress → Real burn); null until there's enough data. */ netReal?: number | null; burnLabel?: string; rhr?: number; streak: number; stepStreak: number; stepGoal: number; fitbit?: React.ReactNode;
   lines: string[]; onType: () => void; onVoice: () => void; onPhoto: () => void;
 }) {
   const { text, done } = useTyped(lines);
@@ -96,15 +96,25 @@ export function Hero({ day, today, onDay, rings, netKcal, rhr, streak, stepStrea
       {rings}
 
       <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-sm">
-        <span>
-          Net{' '}
-          {netKcal == null ? <strong>—</strong> : (
-            <strong className={netKcal < 0 ? 'f-good' : netKcal > 0 ? 'f-bad' : ''}>
-              {netKcal > 0 ? '+' : netKcal < 0 ? '−' : ''}{Math.abs(Math.round(netKcal)).toLocaleString('en-US')} kcal
-              <span className="font-normal"> {netKcal < 0 ? 'deficit' : netKcal > 0 ? 'surplus' : 'even'}</span>
-            </strong>
-          )}
-        </span>
+        {(() => {
+          // "Fitbit / real": net against the tracker's burn, then against your real burn when it's known.
+          const sign = (n: number) => `${n > 0 ? '+' : n < 0 ? '−' : ''}${Math.abs(Math.round(n)).toLocaleString('en-US')}`;
+          const tone = (n: number) => (n < 0 ? 'f-good' : n > 0 ? 'f-bad' : '');
+          const word = (n: number) => (n < 0 ? 'deficit' : n > 0 ? 'surplus' : 'even');
+          if (netKcal == null) return <span>Net <strong>—</strong></span>;
+          const last = netReal ?? netKcal;
+          return (
+            <span className="inline-flex flex-col items-center leading-tight"
+              aria-label={`Net ${sign(netKcal)} kcal with ${burnLabel} burn${netReal != null ? `, ${sign(netReal)} kcal with your real burn` : ''}`}>
+              <span aria-hidden>
+                Net <strong className={tone(netKcal)}>{sign(netKcal)}</strong>
+                {netReal != null && <> <span className="f-muted">/</span> <strong className={tone(netReal)}>{sign(netReal)}</strong></>}
+                <span className={`font-semibold ${tone(last)}`}> kcal {word(last)}</span>
+              </span>
+              {netReal != null && <span className="f-muted text-[10px] font-semibold uppercase tracking-[0.12em]" aria-hidden>{burnLabel} / real burn</span>}
+            </span>
+          );
+        })()}
         {rhr != null && (
           <span className="inline-flex items-center gap-1"><HeartPulse className="h-3.5 w-3.5 text-[var(--f-coral)]" aria-hidden />
             RHR <strong>{Math.round(rhr)}</strong></span>

@@ -24,6 +24,7 @@ import { useFitLook } from './Looks';
 import { AiSummary } from './AiSummary';
 import { ItemSheet, type ItemRef } from './ItemSheet';
 import { useFoods } from './useFoods';
+import { realBurn, realScale } from '@/lib/real-burn';
 import { ProgressHub } from './ProgressHub';
 
 const EXAMPLES = ['94.1 kg, 12k steps, 110g protein', 'Had 2 rotis and dal, walked 40 min', 'Snap your lunch, I’ll count it', 'Ran 5k in 32 min'];
@@ -65,6 +66,8 @@ export function FitnessPage({ data, onDataChange, showcase = false }: { data: Ap
   const [item, setItem] = useState<ItemRef | null>(null);
   const foods = useFoods(showcase);
 
+  // Your real burn (intake vs trend weight) → a per-day correction for the hero and the week chart.
+  const scale = useMemo(() => realScale(realBurn(data, today)), [data, today]);
   const s = useMemo(() => {
     const intake = dayIntake(data, day);
     const burn = dayBurn(data, day);
@@ -78,11 +81,14 @@ export function FitnessPage({ data, onDataChange, showcase = false }: { data: Ap
       sleepGoal: findTracker(data, 'sleep')?.goal ?? 8,
       rhr: valueOn(findTracker(data, 'restingHr'), day),
       net: intake.kcal != null && burn.total != null ? intake.kcal - burn.total : null,
+      // Same day against your real burn: the day's estimate × your personal correction.
+      netReal: scale != null && intake.kcal != null && burn.total != null ? intake.kcal - burn.total * scale : null,
+      burnLabel: burn.source === 'fitbit' ? 'Fitbit' : burn.source === 'computed' ? 'Estimate' : 'Logged',
       streak: loggingStreak(data, today),
       stepStreak: stepsStreak(data, today),
       lines: heroLines(data, day),
     };
-  }, [data, day, today]);
+  }, [data, day, today, scale]);
 
   const openLog = (mode: 'type' | 'voice' | 'photo') => setLog({ open: true, mode });
   const save = (draft: FitnessDraft, edits: LogEdit[] = []) => {
@@ -100,7 +106,7 @@ export function FitnessPage({ data, onDataChange, showcase = false }: { data: Ap
       <div className="mx-auto w-full max-w-6xl space-y-4 p-4 pb-28 md:p-8">
         <div className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
           <div className="min-w-0 space-y-4">
-            <Hero day={day} today={today} onDay={setDay} streak={s.streak} stepStreak={s.stepStreak} stepGoal={s.stepsGoal || 10000} netKcal={s.net} rhr={s.rhr}
+            <Hero day={day} today={today} onDay={setDay} streak={s.streak} stepStreak={s.stepStreak} stepGoal={s.stepsGoal || 10000} netKcal={s.net} netReal={s.netReal} burnLabel={s.burnLabel} rhr={s.rhr}
               fitbit={showcase ? undefined : <FitbitChip />} lines={s.lines}
               onType={() => openLog('type')} onVoice={() => openLog('voice')} onPhoto={() => openLog('photo')}
               rings={<StatCarousel onSetTarget={() => setTargetsOpen(true)} slides={[
@@ -125,7 +131,7 @@ export function FitnessPage({ data, onDataChange, showcase = false }: { data: Ap
           <div className="space-y-4">
             <WeightCard data={data} today={today} onSetGoal={() => setTargetsOpen(true)} />
             <ProgressHub data={data} today={today} onDataChange={onDataChange} showcase={showcase} />
-            <WeekCards data={data} day={day} />
+            <WeekCards data={data} day={day} realScale={scale} />
           </div>
         </div>
 

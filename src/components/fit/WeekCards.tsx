@@ -25,7 +25,8 @@ function Card({ title, summary, legend, children }: { title: string; summary: st
 }
 
 /** The 7 days ending on `day`: calories in vs burned, steps, sleep. */
-export function WeekCards({ data, day }: { data: AppData; day: string }) {
+/** realScale: your real burn ÷ the estimates (lib/real-burn); null shows the tracker's burn alone. */
+export function WeekCards({ data, day, realScale = null }: { data: AppData; day: string; realScale?: number | null }) {
   const rows = useMemo(() => {
     const stepsT = findTracker(data, 'steps'), sleepT = findTracker(data, 'sleep');
     const at = (d: string) => {
@@ -41,13 +42,17 @@ export function WeekCards({ data, day }: { data: AppData; day: string }) {
     return days.slice(6).map((x, i) => ({
       date: x.d, label: dow(x.d), intake: x.intake, burn: x.burn, steps: x.steps, sleep: x.sleep,
       net: x.intake != null && x.burn != null ? Math.round(x.intake - x.burn) : undefined,
+      real: realScale != null && x.burn != null ? Math.round(x.burn * realScale) : undefined,
+      netReal: realScale != null && x.intake != null && x.burn != null ? Math.round(x.intake - x.burn * realScale) : undefined,
       intakeAvg: roll(i, 'intake'), burnAvg: roll(i, 'burn'), stepsAvg: roll(i, 'steps'), sleepAvg: roll(i, 'sleep', 1),
     }));
-  }, [data, day]);
+  }, [data, day, realScale]);
 
   const stepsGoal = findTracker(data, 'steps')?.goal;
   const sleepGoal = findTracker(data, 'sleep')?.goal;
   const avgNet = avg(rows.map(r => r.net));
+  const avgNetReal = avg(rows.map(r => r.netReal));
+  const signed = (n: number) => `${n > 0 ? '+' : '−'}${n0(Math.abs(n))}`;
   const avgSteps = avg(rows.map(r => r.steps));
   const avgSleep = avg(rows.map(r => r.sleep));
   const hasSleep = rows.some(r => r.sleep != null);
@@ -59,21 +64,27 @@ export function WeekCards({ data, day }: { data: AppData; day: string }) {
           legend={<>
             <span className="inline-flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-sm bg-[var(--f-chart-a)]" />In</span>
             <span className="inline-flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-sm bg-[var(--f-chart-b)]" />Burned</span>
+            {realScale != null && <span className="inline-flex items-center gap-1"><span className="w-4 border-t-2 border-dashed border-[var(--f-deep)]" />Real burn</span>}
             <span className="inline-flex items-center gap-1"><span className="h-0.5 w-4 rounded bg-[var(--f-sec)]" />7-day average</span>
           </>}
-          summary={avgNet == null ? 'Log meals to see your balance.' : `Avg net ${avgNet > 0 ? '+' : '−'}${n0(Math.abs(avgNet))} kcal/day ${avgNet < 0 ? '(deficit)' : '(surplus)'}`}>
+          summary={avgNet == null ? 'Log meals to see your balance.'
+            : avgNetReal != null ? `Avg net ${signed(avgNet)} / ${signed(avgNetReal)} kcal/day ${avgNetReal < 0 ? 'deficit' : 'surplus'} (tracker / real burn)`
+              : `Avg net ${signed(avgNet)} kcal/day ${avgNet < 0 ? '(deficit)' : '(surplus)'}`}>
           <ResponsiveContainer width="100%" height="100%">
             <ComposedChart data={rows} margin={{ top: 4, right: 4, left: -16, bottom: 0 }} barGap={2}>
               <CartesianGrid vertical={false} stroke="var(--f-line)" />
               <XAxis dataKey="label" tickLine={false} axisLine={false} />
               <YAxis tickLine={false} axisLine={false} width={44} tickFormatter={kTick} />
               <Tooltip contentStyle={tip} cursor={{ fill: 'var(--f-tint)' }}
-                labelFormatter={(_l, p) => (p?.[0]?.payload?.net != null ? `Net ${p[0].payload.net > 0 ? '+' : ''}${n0(p[0].payload.net)} kcal` : '')}
-                formatter={(v: number, name: string) => [`${n0(v)} kcal`, ({ intake: 'In', burn: 'Burned', intakeAvg: 'In, 7-day avg', burnAvg: 'Burned, 7-day avg' } as Record<string, string>)[name] ?? name]} />
+                labelFormatter={(_l, p) => { const r = p?.[0]?.payload; return r?.net != null ? `Net ${signed(r.net)}${r.netReal != null ? ` / ${signed(r.netReal)}` : ''} kcal` : ''; }}
+                formatter={(v: number, name: string, item: { payload?: { real?: number } }) => [
+                  name === 'burn' && item?.payload?.real != null ? `${n0(v)} / ${n0(item.payload.real)} real` : `${n0(v)} kcal`,
+                  ({ intake: 'In', burn: 'Burned', real: 'Real burn', intakeAvg: 'In, 7-day avg', burnAvg: 'Burned, 7-day avg' } as Record<string, string>)[name] ?? name]} />
               <Bar dataKey="intake" fill="var(--f-chart-a)" fillOpacity={0.55} radius={[6, 6, 0, 0]} isAnimationActive={false} />
               <Bar dataKey="burn" fill="var(--f-chart-b)" fillOpacity={0.55} radius={[6, 6, 0, 0]} isAnimationActive={false} />
               <Line dataKey="intakeAvg" type="monotone" stroke="var(--f-chart-a)" strokeWidth={2.5} dot={false} connectNulls isAnimationActive={false} />
               <Line dataKey="burnAvg" type="monotone" stroke="var(--f-chart-b)" strokeWidth={2.5} dot={false} connectNulls isAnimationActive={false} />
+              {realScale != null && <Line dataKey="real" type="monotone" stroke="var(--f-deep)" strokeWidth={2} strokeDasharray="5 4" dot={{ r: 2.5, fill: 'var(--f-deep)' }} connectNulls isAnimationActive={false} />}
             </ComposedChart>
           </ResponsiveContainer>
         </Card>

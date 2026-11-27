@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import type { AppData, LogEntry } from './types';
 import { addDays } from './fitness';
-import { kcalFloor, realBurn, targetFor } from './real-burn';
+import { kcalFloor, realBurn, realScale, targetFor } from './real-burn';
 
 const TODAY = '2026-11-26';
 // 70 days losing exactly 0.5 kg/week while eating 2,000 kcal on logged days; Fitbit says 2,900 burned.
@@ -35,9 +35,15 @@ if (r.ok) {
   assert.ok(Math.abs(r.gap! - 350) < 30, 'Fitbit ~350 kcal/day higher than your results');
 }
 
+// Per-day correction: Fitbit's 2,900 × scale = the real ~2,550.
+const scale = realScale(r)!;
+assert.ok(Math.abs(2900 * scale - (r.ok ? r.real : 0)) < 1, 'a Fitbit day scaled lands on the real burn');
+assert.ok(scale > 0.85 && scale < 0.9);
+
 // Not enough data: says what's missing.
 const thin = realBurn({ ...data, logTrackers: data.logTrackers.map(t => (t.id === 'i' ? { ...t, logs: t.logs.slice(-5) } : t)) }, TODAY);
 assert.ok(!thin.ok && /food logs on 14/.test(thin.need));
+assert.equal(realScale(thin), null, 'no scale without enough data');
 const noWeight = realBurn({ ...data, logTrackers: data.logTrackers.filter(t => t.id !== 'w') }, TODAY);
 assert.ok(!noWeight.ok && /weigh-ins/.test(noWeight.need));
 

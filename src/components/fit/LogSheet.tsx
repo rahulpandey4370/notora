@@ -11,7 +11,7 @@ import type { MealSlot } from '@/lib/types';
 import type { AddTarget } from './DayLog';
 import { ManualLog } from './ManualLog';
 import { AutoTextarea } from './AutoTextarea';
-import { describeFood, foodsFor, matchText, perBasis, type Food } from '@/lib/food-match';
+import { describeFood, foodsFor, matchText, nearestFoods, perBasis, type Food } from '@/lib/food-match';
 import { FoodEditor, FoodsPanel } from './FoodsPanel';
 import type { FoodsApi } from './useFoods';
 import { matchable } from '@/lib/food-catalog';
@@ -147,8 +147,17 @@ export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, o
   }, [data.fitnessDays]);
   // Foods for the AI, nearest first: what the message names, then the saved/catalogue foods behind meals already
   // logged today or in the draft, so an edit ("lunch was 2 bowls", "make the lays 2 packs") rescales exact numbers.
+  const foodById = () => new Map([...foods.foods, ...foods.catalog, ...foods.hidden].map(f => [f.id, f]));
+  // Where a logged meal's numbers came from, so the AI can answer "which of today's foods are in the catalogue?".
+  const sourceOf = (m: { name: string; foodId?: string }, byId: Map<string, Food>) => {
+    const f = m.foodId ? byId.get(m.foodId) : undefined;
+    if (f) return foods.foods.includes(f) ? `My foods: ${f.name}` : `catalogue: ${f.name}`;
+    if (!foods.catalog.length) return 'AI estimate';
+    const near = nearestFoods(m.name, matchable(foods.catalog), 1)[0];
+    return near ? `AI estimate; closest catalogue food: ${near.name}` : 'AI estimate; no close catalogue food';
+  };
   const knownFor = (said: string) => {
-    const byId = new Map([...foods.foods, ...foods.catalog].map(f => [f.id, f]));
+    const byId = foodById();
     const behind = [...logged, ...(draft?.meals ?? [])].flatMap(m => (m.foodId && byId.get(m.foodId) ? [byId.get(m.foodId)!] : []));
     return [...new Set([...foodsFor(said, foods.foods, matchable(foods.catalog)), ...behind])].slice(0, 20).map(describeFood);
   };
@@ -188,7 +197,7 @@ export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, o
         currentDraft: draft && (draft.meals.length || draft.activities.length || draft.values.length) ? draft : undefined,
         webSearch,
         localTime: format(new Date(), 'HH:mm'),
-        loggedMeals: logged.map((m, index) => ({ index, name: m.name, kcal: m.kcal, proteinG: m.proteinG, carbsG: m.carbsG, fatG: m.fatG, fiberG: m.fiberG, slot: m.slot })),
+        loggedMeals: (byId => logged.map((m, index) => ({ index, name: m.name, kcal: m.kcal, proteinG: m.proteinG, carbsG: m.carbsG, fatG: m.fatG, fiberG: m.fiberG, slot: m.slot, source: sourceOf(m, byId) })))(foodById()),
         currentEdits: edits.length ? edits : undefined,
         knownFoods: said ? knownFor(said) : undefined,
       }, selectedModel);

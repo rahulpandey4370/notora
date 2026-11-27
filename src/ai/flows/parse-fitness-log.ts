@@ -25,7 +25,7 @@ export type ParseFitnessLogInput = {
   /** The user's local time (HH:mm), to file meals under breakfast/lunch/… when the message doesn't say. */
   localTime?: string;
   /** Meals already logged that day, numbered: the message may ask to change them ("lunch was 2 bowls", "all had ghee"). */
-  loggedMeals?: (Omit<FitnessDraft['meals'][number], never> & { index: number })[];
+  loggedMeals?: (Omit<FitnessDraft['meals'][number], never> & { index: number; source?: string })[];
   /** Pending edits from an earlier turn, when the user is correcting them. */
   currentEdits?: LoggedMealEdit[];
   /** Saved foods, then catalogue foods, that this message mentions (exact nutrition; see lib/food-match). */
@@ -62,7 +62,7 @@ const OutputSchema = z.object({
     trackerId: z.string().describe('id from the tracker list'),
     value: z.number(),
   })).default([]),
-  reply: z.string().describe('One short, friendly line summarising what was understood'),
+  reply: z.string().describe('One short, friendly line summarising what was understood, or the answer when the message is a question'),
 });
 
 const PROMPT = `You log food and exercise for a fitness tracker. The user is in India; you are an expert on Indian cuisine and portion sizes.
@@ -76,7 +76,7 @@ The user's trackers (id: name, unit):
 The user's message: "{{{message}}}"
 {{#if image}}A photo is attached. It is either food (identify each item and estimate it) or a workout/fitness summary screenshot (read the activity, duration and calories).{{/if}}
 {{#if loggedText}}
-Meals ALREADY LOGGED for {{{dayYmd}}} (index: name | kcal | protein g | carbs g | fat g | fibre g | meal):
+Meals ALREADY LOGGED for {{{dayYmd}}} (index: name | kcal | protein g | carbs g | fat g | fibre g | meal | source: "My foods: …" or "catalogue: …" = logged from that food, "AI estimate" = not, with the closest catalogue food if any, which may be a different food: judge by name):
 {{{loggedText}}}
 {{/if}}
 {{#if draftJson}}
@@ -104,7 +104,8 @@ Rules:
 8. Where each item's numbers come from, in order: (a) a matching KNOWN FOOD: use its numbers exactly, only scaled to the amount (don't add rule 6b's padding to it; home-cooked known dishes already include their oil); a serving named like "scoop (40 g)" or "1 phulka" is that amount; (b) web search results that match the item: use their numbers for the stated quantity and mention it in "reply" (e.g. "per Yoga Bar's label"); (c) otherwise estimate from your own knowledge, following rule 6b.
 9. No links, URLs or citation marks anywhere in the JSON.
 11. EDITING LOGGED MEALS: if the message refers to meals already logged (by name, by meal like "lunch" or "breakfast", or "all"/"everything"/"today's food"), put the changes in "edits" with that meal's index and ONLY the fields that change (for a new portion, scale kcal and every macro; for "cooked in ghee/oil", raise kcal and fat; to remove one, set "delete": true). Never add a logged meal again under "meals". Leave meals the message doesn't mention out of "edits". The accuracy rules above apply to edits too.
-10. Every meal gets a "slot": breakfast, morningSnack, lunch, eveningSnack or dinner. Use what the message says ("for breakfast", "evening chai", "after dinner"); otherwise, if the day being logged is today, use the time now ({{{localTime}}}: before 10:30 breakfast, 10:30–12:30 morningSnack, 12:30–15:30 lunch, 15:30–18:30 eveningSnack, later dinner); otherwise pick the most likely meal for that food.`;
+10. Every meal gets a "slot": breakfast, morningSnack, lunch, eveningSnack or dinner. Use what the message says ("for breakfast", "evening chai", "after dinner"); otherwise, if the day being logged is today, use the time now ({{{localTime}}}: before 10:30 breakfast, 10:30–12:30 morningSnack, 12:30–15:30 lunch, 15:30–18:30 eveningSnack, later dinner); otherwise pick the most likely meal for that food.
+12. QUESTIONS: if the message only asks something (about the logged meals, their sources, the known foods, the catalogue or nutrition) instead of logging or changing anything, answer it in "reply" (a few short plain sentences are fine) and add nothing: empty meals, activities, edits and values, or the earlier draft returned unchanged if there is one. You see only the foods listed here, not the whole catalogue (about 1,500 foods); for anything not listed, say they can search All foods in the Foods panel.`;
 
 export async function parseFitnessLog(input: ParseFitnessLogInput, modelId: ModelId): Promise<ParseFitnessLogOutput> {
   const said = input.message?.trim();
@@ -121,7 +122,7 @@ export async function parseFitnessLog(input: ParseFitnessLogInput, modelId: Mode
       weightText: input.weightKg ? `${Math.round(input.weightKg)} kg` : '75 kg (assumed)',
       trackersText: input.trackers.map(t => `${t.id}: ${t.name} (${t.unit})`).join('\n') || '(none)',
       draftJson: input.currentDraft || input.currentEdits?.length ? JSON.stringify({ ...input.currentDraft, edits: input.currentEdits ?? [] }) : '',
-      loggedText: (input.loggedMeals ?? []).map(m => `${m.index}: ${m.name} | ${Math.round(m.kcal)} | ${m.proteinG ?? 0} | ${m.carbsG ?? 0} | ${m.fatG ?? 0} | ${m.fiberG ?? 0} | ${m.slot ?? 'other'}`).join('\n'),
+      loggedText: (input.loggedMeals ?? []).map(m => `${m.index}: ${m.name} | ${Math.round(m.kcal)} | ${m.proteinG ?? 0} | ${m.carbsG ?? 0} | ${m.fatG ?? 0} | ${m.fiberG ?? 0} | ${m.slot ?? 'other'} | ${m.source ?? 'unknown'}`).join('\n'),
       webFacts: web?.text ?? '',
       foodsText: (input.knownFoods ?? []).slice(0, 20).join('\n'),
       localTime: input.localTime ?? 'unknown',

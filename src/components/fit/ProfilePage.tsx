@@ -73,7 +73,7 @@ export function ProfilePage({ data, onDataChange, user, onLogout, showcase = fal
 }) {
   const today = format(new Date(), 'yyyy-MM-dd');
   const [look, setLook] = useFitLook(data, onDataChange);
-  const foods = useFoods(showcase);
+  const foods = useFoods(showcase, data, onDataChange);
   const push = usePushNotifications();
   const [openTracker, setOpenTracker] = useState<string | null>(null);
   const [pushMsg, setPushMsg] = useState('');

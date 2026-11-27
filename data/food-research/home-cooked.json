@@ -1,0 +1,789 @@
+{
+  "items": [
+    {
+      "name": "Boiled rice (Uble chawal)",
+      "group": "Rice, roti & dal",
+      "aliases": [
+        "rice",
+        "chawal",
+        "steamed rice",
+        "steamed white rice",
+        "white rice",
+        "plain rice",
+        "cooked rice"
+      ],
+      "unit": "g",
+      "kcal": 117,
+      "proteinG": 2.6,
+      "carbsG": 25.7,
+      "fatG": 0.2,
+      "fiberG": 1.2,
+      "servings": [
+        {
+          "label": "plate",
+          "amount": 300
+        }
+      ],
+      "source": "https://raw.githubusercontent.com/lindsayjaacks/Indian-Nutrient-Databank-INDB-/main/INDB.xlsx",
+      "sourceBasis": "INDB (Indian Nutrient Databank, 2024), INDB.xlsx, food_code ASC113: values per 100 g of recipe. INDB computes per 100 g of the summed raw ingredient weights (incl. recipe water) from IFCT 2017 with no cooking yield / moisture-loss correction, so per-100 g is approximate for the cooked dish. Serving: dataset gives 1 plate (household unit, no grams); 300 g derived as unit_serving_energy_kcal 351.6 / energy_kcal x 100. Recipe: 100 g parboiled milled rice + 200 ml water.",
+      "quote": "ASC113 | Boiled rice (Uble chawal) | energy_kcal 117.2 | protein_g 2.6 | carb_g 25.72 | fat_g 0.18 | fibre_g 1.25 (per 100 g)"
+    },
+    {
+      "name": "Chapati / roti with ghee (1 chapati, 36 g dough)",
+      "group": "Rice, roti & dal",
+      "aliases": [
+        "chapati",
+        "roti",
+        "phulka with ghee",
+        "chapati with ghee"
+      ],
+      "unit": "serving",
+      "kcal": 73,
+      "proteinG": 2.1,
+      "carbsG": 12.8,
+      "fatG": 1.3,
+      "fiberG": 2.3,
+      "source": "https://raw.githubusercontent.com/lindsayjaacks/Indian-Nutrient-Databank-INDB-/main/INDB.xlsx",
+      "sourceBasis": "INDB (Indian Nutrient Databank, 2024), INDB.xlsx, food_code ASC096: per-serving values (unit_serving_* columns, serving unit \"chapati\"). Recipe: 80 g whole wheat atta + 4 tbsp water + 1 tsp ghee, makes 4 chapatis (20 g atta each). Stored per chapati because INDB per-100 g is on raw dough weight; 36 g = dough per chapati (unit_serving_energy_kcal / energy_kcal x 100).",
+      "quote": "ASC096 | Chapati/Roti | servings_unit chapati | unit_serving_energy_kcal 72.8 | unit_serving_protein_g 2.12 | unit_serving_carb_g 12.83 | unit_serving_fat_g 1.28 | unit_serving_fibre_g 2.27"
+    },
+    {
+      "name": "Phulka / roti, no ghee (1 phulka)",
+      "group": "Rice, roti & dal",
+      "aliases": [
+        "phulka",
+        "roti",
+        "chapati",
+        "fulka"
+      ],
+      "unit": "serving",
+      "kcal": 64,
+      "proteinG": 2.1,
+      "carbsG": 12.8,
+      "fatG": 0.3,
+      "fiberG": 2.3,
+      "source": "https://raw.githubusercontent.com/lindsayjaacks/Indian-Nutrient-Databank-INDB-/main/INDB.xlsx",
+      "sourceBasis": "Derived from INDB recipe ASC096 Chapati/Roti (INDB.xlsx per-serving values; recipes.xlsx ingredients) by removing the 1 tsp ghee. Whole recipe (4 chapatis) = per-chapati x 4: 291.33 kcal, 8.460 g protein, 51.336 g carb, 5.128 g fat, 9.088 g fibre. Ghee (INDB code T506 'Ghee, butter', from the repo's UK_fct.xlsx = UK CoFID: 878 kcal, 0.1 g protein, Tr carb, 97.6 g fat, 0 fibre per 100 g); 1 tsp = 4 g per INDB.do ('replace amount_g=amount*4 if unit==\"tsp\" & food_category==\"T\" /*oils, butter and ghee*/'), so ghee = 35.12 kcal, 0.004 g protein, 0 g carb, 3.904 g fat. Phulka = (recipe - ghee) / 4 = 64.05 kcal, 2.114 g protein, 12.834 g carb, 0.306 g fat, 2.272 g fibre. Remainder attributable to 80 g atta + water = 256.2 kcal, 1.22 g fat (i.e. 320 kcal, 1.53 g fat per 100 g atta). One phulka = 20 g whole wheat atta, dry-cooked; no retention-factor adjustment applied.",
+      "quote": "recipes.xlsx ASC096: 'Whole wheat flour | 80 g -> Wheat flour, atta A019 80 g'; 'Water | enough to make a soft dough -> Water, distilled 4 tbsp'; 'Ghee or butter | 1 tsp -> Ghee, butter T506 1 tsp'; serving: 4 chapatis. INDB.xlsx ASC096 per chapati: unit_serving_energy_kcal 72.83 | protein_g 2.115 | carb_g 12.834 | fat_g 1.282 | fibre_g 2.272. UK_fct.xlsx T506 Ghee, butter: energy_kcal 878 | carb_g Tr | protein_g 0.1 | fat_g 97.6"
+    },
+    {
+      "name": "Plain paratha (1 paratha, 56 g dough)",
+      "group": "Rice, roti & dal",
+      "aliases": [
+        "paratha",
+        "parantha",
+        "plain parantha"
+      ],
+      "unit": "serving",
+      "kcal": 166,
+      "proteinG": 2.8,
+      "carbsG": 17.1,
+      "fatG": 9.4,
+      "fiberG": 3.0,
+      "source": "https://raw.githubusercontent.com/lindsayjaacks/Indian-Nutrient-Databank-INDB-/main/INDB.xlsx",
+      "sourceBasis": "INDB (Indian Nutrient Databank, 2024), INDB.xlsx, food_code ASC097: per-serving values (unit_serving_* columns, serving unit \"parantha\"). Recipe: 80 g atta + 2 tbsp sunflower oil + 4 tbsp water, makes 3 parathas. Stored per paratha because INDB per-100 g is on raw dough weight; 56 g = dough per paratha (derived).",
+      "quote": "ASC097 | Plain parantha/paratha | servings_unit parantha | unit_serving_energy_kcal 166.3 | unit_serving_protein_g 2.82 | unit_serving_carb_g 17.11 | unit_serving_fat_g 9.4 | unit_serving_fibre_g 3.03"
+    },
+    {
+      "name": "Aloo paratha (1 paratha, 93 g dough)",
+      "group": "Rice, roti & dal",
+      "aliases": [
+        "aloo paratha",
+        "aloo parantha",
+        "potato paratha",
+        "aloo ka paratha"
+      ],
+      "unit": "serving",
+      "kcal": 191,
+      "proteinG": 3.5,
+      "carbsG": 22.3,
+      "fatG": 9.5,
+      "fiberG": 3.9,
+      "source": "https://raw.githubusercontent.com/lindsayjaacks/Indian-Nutrient-Databank-INDB-/main/INDB.xlsx",
+      "sourceBasis": "INDB (Indian Nutrient Databank, 2024), INDB.xlsx, food_code ASC098: per-serving values (unit_serving_* columns, serving unit \"parantha\"). Recipe: 80 g atta + 80 g potato + 25 g onion + 2 tbsp oil + spices + 4 tbsp water, makes 3 parathas. Stored per paratha because INDB per-100 g is on raw dough/filling weight; 93 g = raw dough + filling per paratha (derived).",
+      "quote": "ASC098 | Potato parantha/paratha (Aloo ka parantha/paratha) | servings_unit parantha | unit_serving_energy_kcal 191.4 | unit_serving_protein_g 3.45 | unit_serving_carb_g 22.33 | unit_serving_fat_g 9.54 | unit_serving_fibre_g 3.9"
+    },
+    {
+      "name": "Washed moong dal (Dhuli moong ki dal)",
+      "group": "Rice, roti & dal",
+      "aliases": [
+        "moong dal",
+        "dhuli moong dal",
+        "yellow moong dal",
+        "mung dal"
+      ],
+      "unit": "g",
+      "kcal": 50,
+      "proteinG": 2.7,
+      "carbsG": 5.9,
+      "fatG": 1.7,
+      "fiberG": 1.2,
+      "servings": [
+        {
+          "label": "bowl",
+          "amount": 277
+        }
+      ],
+      "source": "https://raw.githubusercontent.com/lindsayjaacks/Indian-Nutrient-Databank-INDB-/main/INDB.xlsx",
+      "sourceBasis": "INDB (Indian Nutrient Databank, 2024), INDB.xlsx, food_code ASC151: values per 100 g of recipe. INDB computes per 100 g of the summed raw ingredient weights (incl. recipe water) from IFCT 2017 with no cooking yield / moisture-loss correction, so per-100 g is approximate for the cooked dish. Serving: dataset gives 1 bowl (household unit, no grams); 277 g derived as unit_serving_energy_kcal 138.5 / energy_kcal x 100. Recipe: 30 g moong dal + 1 tsp oil + 1 cup water per bowl.",
+      "quote": "ASC151 | Washed moong dal (Dhuli moong ki dal) | energy_kcal 50.0 | protein_g 2.68 | carb_g 5.91 | fat_g 1.68 | fibre_g 1.17 (per 100 g)"
+    },
+    {
+      "name": "Chana dal (Split bengal gram dal)",
+      "group": "Rice, roti & dal",
+      "aliases": [
+        "chana dal",
+        "channa dal",
+        "chane ki dal"
+      ],
+      "unit": "g",
+      "kcal": 100,
+      "proteinG": 4.2,
+      "carbsG": 10.0,
+      "fatG": 4.6,
+      "fiberG": 3.7,
+      "servings": [
+        {
+          "label": "bowl",
+          "amount": 292
+        }
+      ],
+      "source": "https://raw.githubusercontent.com/lindsayjaacks/Indian-Nutrient-Databank-INDB-/main/INDB.xlsx",
+      "sourceBasis": "INDB (Indian Nutrient Databank, 2024), INDB.xlsx, food_code OSR142: values per 100 g of recipe. INDB computes per 100 g of the summed raw ingredient weights (incl. recipe water) from IFCT 2017 with no cooking yield / moisture-loss correction, so per-100 g is approximate for the cooked dish. Serving: dataset gives 1 bowl (household unit, no grams); 292 g derived as unit_serving_energy_kcal 291.2 / energy_kcal x 100. Recipe: 200 g chana dal + tomato, onion + 3 tbsp ghee + 2.75 cups water, 4 bowls. The dataset marks this serving unit as guessed (remarks_1: serving unit - guessed).",
+      "quote": "OSR142 | Split bengal gram dal (Channa dal) | energy_kcal 99.7 | protein_g 4.15 | carb_g 9.99 | fat_g 4.62 | fibre_g 3.72 (per 100 g)"
+    },
+    {
+      "name": "Whole masoor dal (Masoor ki dal)",
+      "group": "Rice, roti & dal",
+      "aliases": [
+        "masoor dal",
+        "masoor",
+        "sabut masoor",
+        "lentil dal"
+      ],
+      "unit": "g",
+      "kcal": 54,
+      "proteinG": 2.3,
+      "carbsG": 5.4,
+      "fatG": 2.5,
+      "fiberG": 2.0,
+      "servings": [
+        {
+          "label": "bowl",
+          "amount": 342
+        }
+      ],
+      "source": "https://raw.githubusercontent.com/lindsayjaacks/Indian-Nutrient-Databank-INDB-/main/INDB.xlsx",
+      "sourceBasis": "INDB (Indian Nutrient Databank, 2024), INDB.xlsx, food_code ASC157: values per 100 g of recipe. INDB computes per 100 g of the summed raw ingredient weights (incl. recipe water) from IFCT 2017 with no cooking yield / moisture-loss correction, so per-100 g is approximate for the cooked dish. Serving: dataset gives 1 bowl (household unit, no grams); 342 g derived as unit_serving_energy_kcal 185.0 / energy_kcal x 100. Recipe: 30 g whole masoor + tomato, onion + 2 tsp oil + 1 cup water per bowl. Whole (not split red) masoor.",
+      "quote": "ASC157 | Whole masoor (Masoor ki dal) | energy_kcal 54.1 | protein_g 2.28 | carb_g 5.37 | fat_g 2.52 | fibre_g 1.98 (per 100 g)"
+    },
+    {
+      "name": "Rajma curry (1 bowl, 30 g dry rajma)",
+      "group": "Rice, roti & dal",
+      "aliases": [
+        "rajma",
+        "rajmah",
+        "kidney bean curry",
+        "rajma masala"
+      ],
+      "unit": "serving",
+      "kcal": 172,
+      "proteinG": 7.1,
+      "carbsG": 19.6,
+      "fatG": 6.9,
+      "fiberG": 7.0,
+      "source": "https://raw.githubusercontent.com/lindsayjaacks/Indian-Nutrient-Databank-INDB-/main/INDB.xlsx",
+      "sourceBasis": "INDB (Indian Nutrient Databank, 2024), INDB.xlsx, food_code ASC165: per-serving values (unit_serving_* columns, serving unit \"bowl\"). Recipe: 30 g dry red rajma + 50 g tomato + 25 g onion + 1.5 tsp oil + spices, 1 bowl. Stored per bowl because the recipe lists no water, so INDB per-100 g is on dry-bean weight (120 g raw ingredients per bowl).",
+      "quote": "ASC165 | Kidney bean curry (Rajmah curry) | servings_unit bowl | unit_serving_energy_kcal 172.4 | unit_serving_protein_g 7.14 | unit_serving_carb_g 19.64 | unit_serving_fat_g 6.92 | unit_serving_fibre_g 6.99"
+    },
+    {
+      "name": "Kabuli chana curry (Chole)",
+      "group": "Rice, roti & dal",
+      "aliases": [
+        "chole",
+        "chhole",
+        "chana masala",
+        "kabuli chana",
+        "chickpea curry",
+        "chole masala"
+      ],
+      "unit": "g",
+      "kcal": 69,
+      "proteinG": 2.9,
+      "carbsG": 7.6,
+      "fatG": 3.1,
+      "fiberG": 1.1,
+      "servings": [
+        {
+          "label": "bowl",
+          "amount": 356
+        }
+      ],
+      "source": "https://raw.githubusercontent.com/lindsayjaacks/Indian-Nutrient-Databank-INDB-/main/INDB.xlsx",
+      "sourceBasis": "INDB (Indian Nutrient Databank, 2024), INDB.xlsx, food_code BFP185: values per 100 g of recipe. INDB computes per 100 g of the summed raw ingredient weights (incl. recipe water) from IFCT 2017 with no cooking yield / moisture-loss correction, so per-100 g is approximate for the cooked dish. Serving: dataset gives 1 bowl (household unit, no grams); 356 g derived as unit_serving_energy_kcal 243.9 / energy_kcal x 100. Recipe: 40 g dry kabuli chana + tomato, onion + 2 tsp oil + 200 ml water per bowl.",
+      "quote": "BFP185 | Kabuli channa curry | energy_kcal 68.6 | protein_g 2.92 | carb_g 7.63 | fat_g 3.06 | fibre_g 1.12 (per 100 g)"
+    },
+    {
+      "name": "Jeera pulao (Cumin pulao)",
+      "group": "Rice, roti & dal",
+      "aliases": [
+        "jeera rice",
+        "jeera pulao",
+        "zeera rice",
+        "cumin rice"
+      ],
+      "unit": "g",
+      "kcal": 135,
+      "proteinG": 2.5,
+      "carbsG": 23.6,
+      "fatG": 3.2,
+      "fiberG": 1.4,
+      "servings": [
+        {
+          "label": "plate",
+          "amount": 270
+        }
+      ],
+      "source": "https://raw.githubusercontent.com/lindsayjaacks/Indian-Nutrient-Databank-INDB-/main/INDB.xlsx",
+      "sourceBasis": "INDB (Indian Nutrient Databank, 2024), INDB.xlsx, food_code BFP134: values per 100 g of recipe. INDB computes per 100 g of the summed raw ingredient weights (incl. recipe water) from IFCT 2017 with no cooking yield / moisture-loss correction, so per-100 g is approximate for the cooked dish. Serving: dataset gives 1 plate (household unit, no grams); 270 g derived as unit_serving_energy_kcal 365.8 / energy_kcal x 100. Recipe: 80 g parboiled rice + 20 g onion + 2 tsp oil + 160 ml water per plate.",
+      "quote": "BFP134 | Cumin pulao (Jeera/Zeera pulao) | energy_kcal 135.2 | protein_g 2.47 | carb_g 23.61 | fat_g 3.2 | fibre_g 1.4 (per 100 g)"
+    },
+    {
+      "name": "Poha (1 bowl, 20 g dry flakes)",
+      "group": "Rice, roti & dal",
+      "aliases": [
+        "poha",
+        "kanda poha",
+        "aloo poha",
+        "chivda poha"
+      ],
+      "unit": "serving",
+      "kcal": 161,
+      "proteinG": 3.3,
+      "carbsG": 19.1,
+      "fatG": 7.7,
+      "fiberG": 2.0,
+      "source": "https://raw.githubusercontent.com/lindsayjaacks/Indian-Nutrient-Databank-INDB-/main/INDB.xlsx",
+      "sourceBasis": "INDB (Indian Nutrient Databank, 2024), INDB.xlsx, food_code BFP044: per-serving values (unit_serving_* columns, serving unit \"bowl\"). Recipe: 40 g rice flakes + 30 g potato + 10 g peanuts + 10 g oil + spices, 2 bowls. Stored per bowl because the recipe weight is dry flakes with no soaking water, so INDB per-100 g is on dry weight (55 g raw ingredients per bowl).",
+      "quote": "BFP044 | Poha | servings_unit bowl | unit_serving_energy_kcal 160.8 | unit_serving_protein_g 3.32 | unit_serving_carb_g 19.13 | unit_serving_fat_g 7.72 | unit_serving_fibre_g 2.03"
+    },
+    {
+      "name": "Rava upma (Semolina upma)",
+      "group": "Rice, roti & dal",
+      "aliases": [
+        "upma",
+        "rava upma",
+        "suji upma",
+        "sooji upma"
+      ],
+      "unit": "g",
+      "kcal": 148,
+      "proteinG": 3.3,
+      "carbsG": 16.3,
+      "fatG": 7.5,
+      "fiberG": 3.2,
+      "servings": [
+        {
+          "label": "bowl",
+          "amount": 106
+        }
+      ],
+      "source": "https://raw.githubusercontent.com/lindsayjaacks/Indian-Nutrient-Databank-INDB-/main/INDB.xlsx",
+      "sourceBasis": "INDB (Indian Nutrient Databank, 2024), INDB.xlsx, food_code BFP039: values per 100 g of recipe. INDB computes per 100 g of the summed raw ingredient weights (incl. recipe water) from IFCT 2017 with no cooking yield / moisture-loss correction, so per-100 g is approximate for the cooked dish. Serving: dataset gives 1 bowl (household unit, no grams); 106 g derived as unit_serving_energy_kcal 157.1 / energy_kcal x 100. Recipe: 40 g semolina + 5 g urad dal + 30 g onion + 15 g oil + 100 ml water, 2 bowls.",
+      "quote": "BFP039 | Semolina upma (Suji/Rava upma) | energy_kcal 147.9 | protein_g 3.3 | carb_g 16.31 | fat_g 7.49 | fibre_g 3.24 (per 100 g)"
+    },
+    {
+      "name": "Idli",
+      "group": "Rice, roti & dal",
+      "aliases": [
+        "idli",
+        "idly",
+        "rice idli"
+      ],
+      "unit": "g",
+      "kcal": 138,
+      "proteinG": 4.6,
+      "carbsG": 28.2,
+      "fatG": 0.3,
+      "fiberG": 2.3,
+      "servings": [
+        {
+          "label": "idli",
+          "amount": 25
+        }
+      ],
+      "source": "https://raw.githubusercontent.com/lindsayjaacks/Indian-Nutrient-Databank-INDB-/main/INDB.xlsx",
+      "sourceBasis": "INDB (Indian Nutrient Databank, 2024), INDB.xlsx, food_code ASC144: values per 100 g of recipe. INDB computes per 100 g of the summed raw ingredient weights (incl. recipe water) from IFCT 2017 with no cooking yield / moisture-loss correction, so per-100 g is approximate for the cooked dish. Serving: dataset gives 1 idli (household unit, no grams); 25 g derived as unit_serving_energy_kcal 34.5 / energy_kcal x 100. Recipe: 60 g rice + 20 g urad dal + 120 ml water, 8 idlis.",
+      "quote": "ASC144 | Idli | energy_kcal 137.5 | protein_g 4.64 | carb_g 28.18 | fat_g 0.33 | fibre_g 2.31 (per 100 g)"
+    },
+    {
+      "name": "Sambar",
+      "group": "Rice, roti & dal",
+      "aliases": [
+        "sambar",
+        "sambhar",
+        "sambar dal"
+      ],
+      "unit": "g",
+      "kcal": 97,
+      "proteinG": 3.4,
+      "carbsG": 10.6,
+      "fatG": 4.4,
+      "fiberG": 3.5,
+      "servings": [
+        {
+          "label": "bowl",
+          "amount": 257
+        }
+      ],
+      "source": "https://raw.githubusercontent.com/lindsayjaacks/Indian-Nutrient-Databank-INDB-/main/INDB.xlsx",
+      "sourceBasis": "INDB (Indian Nutrient Databank, 2024), INDB.xlsx, food_code ASC167: values per 100 g of recipe. INDB computes per 100 g of the summed raw ingredient weights (incl. recipe water) from IFCT 2017 with no cooking yield / moisture-loss correction, so per-100 g is approximate for the cooked dish. Serving: dataset gives 1 bowl (household unit, no grams); 257 g derived as unit_serving_energy_kcal 249.3 / energy_kcal x 100. Recipe: 50 g arhar dal + brinjal, drumstick, okra, tomato, onion + 30 g fresh coconut + tamarind + 2 tsp oil + 1 cup water, 2 bowls.",
+      "quote": "ASC167 | Sambar | energy_kcal 96.9 | protein_g 3.35 | carb_g 10.57 | fat_g 4.38 | fibre_g 3.52 (per 100 g)"
+    },
+    {
+      "name": "Egg bhurji, Indian style (Anda bhujia)",
+      "group": "Eggs",
+      "aliases": [
+        "egg bhurji",
+        "anda bhurji",
+        "anda bhujia",
+        "masala scrambled egg"
+      ],
+      "unit": "g",
+      "kcal": 103,
+      "proteinG": 6.1,
+      "carbsG": 3.8,
+      "fatG": 7.0,
+      "fiberG": 1.5,
+      "servings": [
+        {
+          "label": "small bowl",
+          "amount": 126
+        }
+      ],
+      "source": "https://raw.githubusercontent.com/lindsayjaacks/Indian-Nutrient-Databank-INDB-/main/INDB.xlsx",
+      "sourceBasis": "INDB (Indian Nutrient Databank, 2024), INDB.xlsx, food_code BFP052: values per 100 g of recipe. INDB computes per 100 g of the summed raw ingredient weights (incl. recipe water) from IFCT 2017 with no cooking yield / moisture-loss correction, so per-100 g is approximate for the cooked dish. Serving: dataset gives 1 small bowl (household unit, no grams); 126 g derived as unit_serving_energy_kcal 129.5 / energy_kcal x 100. Recipe: 1 egg + 30 g onion + 30 g tomato + green chilli + 1 tsp oil.",
+      "quote": "BFP052 | Indian style egg bhujia (Anda bhujia (Indian style)) | energy_kcal 102.8 | protein_g 6.1 | carb_g 3.76 | fat_g 7.02 | fibre_g 1.53 (per 100 g)"
+    },
+    {
+      "name": "Scrambled egg with butter (Ande ki bhurji)",
+      "group": "Eggs",
+      "aliases": [
+        "scrambled egg",
+        "scrambled eggs",
+        "ande ki bhurji"
+      ],
+      "unit": "g",
+      "kcal": 156,
+      "proteinG": 10.3,
+      "carbsG": 1.4,
+      "fatG": 12.2,
+      "fiberG": 0.2,
+      "servings": [
+        {
+          "label": "egg",
+          "amount": 70
+        }
+      ],
+      "source": "https://raw.githubusercontent.com/lindsayjaacks/Indian-Nutrient-Databank-INDB-/main/INDB.xlsx",
+      "sourceBasis": "INDB (Indian Nutrient Databank, 2024), INDB.xlsx, food_code ASC059: values per 100 g of recipe. INDB computes per 100 g of the summed raw ingredient weights (incl. recipe water) from IFCT 2017 with no cooking yield / moisture-loss correction, so per-100 g is approximate for the cooked dish. Serving: dataset gives 1 egg (household unit, no grams); 70 g derived as unit_serving_energy_kcal 109.2 / energy_kcal x 100. Recipe: 1 egg + 1 tbsp milk + 1 tsp butter.",
+      "quote": "ASC059 | Scrambled egg (Ande ki bhurji) | energy_kcal 156.0 | protein_g 10.29 | carb_g 1.35 | fat_g 12.21 | fibre_g 0.24 (per 100 g)"
+    },
+    {
+      "name": "Egg curry (Anda curry)",
+      "group": "Eggs",
+      "aliases": [
+        "egg curry",
+        "anda curry",
+        "egg masala"
+      ],
+      "unit": "g",
+      "kcal": 118,
+      "proteinG": 5.4,
+      "carbsG": 4.0,
+      "fatG": 8.8,
+      "fiberG": 2.1,
+      "servings": [
+        {
+          "label": "bowl",
+          "amount": 152
+        }
+      ],
+      "source": "https://raw.githubusercontent.com/lindsayjaacks/Indian-Nutrient-Databank-INDB-/main/INDB.xlsx",
+      "sourceBasis": "INDB (Indian Nutrient Databank, 2024), INDB.xlsx, food_code BFP240: values per 100 g of recipe. INDB computes per 100 g of the summed raw ingredient weights (incl. recipe water) from IFCT 2017 with no cooking yield / moisture-loss correction, so per-100 g is approximate for the cooked dish. Serving: dataset gives 1 bowl (household unit, no grams); 152 g derived as unit_serving_energy_kcal 178.1 / energy_kcal x 100. Recipe: 1 egg + 50 g tomato + 30 g onion + 2 tsp oil + spices per bowl.",
+      "quote": "BFP240 | Egg curry (Anda curry) | energy_kcal 117.5 | protein_g 5.38 | carb_g 4.03 | fat_g 8.81 | fibre_g 2.09 (per 100 g)"
+    },
+    {
+      "name": "Chicken curry",
+      "group": "Chicken",
+      "aliases": [
+        "chicken curry",
+        "chicken sabji",
+        "murgh curry",
+        "home style chicken curry"
+      ],
+      "unit": "g",
+      "kcal": 129,
+      "proteinG": 11.8,
+      "carbsG": 3.4,
+      "fatG": 7.6,
+      "fiberG": 1.4,
+      "servings": [
+        {
+          "label": "bowl",
+          "amount": 248
+        }
+      ],
+      "source": "https://raw.githubusercontent.com/lindsayjaacks/Indian-Nutrient-Databank-INDB-/main/INDB.xlsx",
+      "sourceBasis": "INDB (Indian Nutrient Databank, 2024), INDB.xlsx, food_code ASC240: values per 100 g of recipe. INDB computes per 100 g of the summed raw ingredient weights (incl. recipe water) from IFCT 2017 with no cooking yield / moisture-loss correction, so per-100 g is approximate for the cooked dish. Serving: dataset gives 1 bowl (household unit, no grams); 248 g derived as unit_serving_energy_kcal 320.4 / energy_kcal x 100. Recipe: 250 g skinless chicken breast + 100 g tomato + 100 g onion + 1 tbsp oil + 2 tsp curd, 2 bowls. Chicken weighed raw.",
+      "quote": "ASC240 | Chicken curry | energy_kcal 129.2 | protein_g 11.79 | carb_g 3.38 | fat_g 7.57 | fibre_g 1.41 (per 100 g)"
+    },
+    {
+      "name": "Butter chicken",
+      "group": "Chicken",
+      "aliases": [
+        "butter chicken",
+        "murgh makhani",
+        "chicken makhani"
+      ],
+      "unit": "g",
+      "kcal": 137,
+      "proteinG": 10.9,
+      "carbsG": 3.7,
+      "fatG": 8.7,
+      "fiberG": 1.3,
+      "servings": [
+        {
+          "label": "large piece",
+          "amount": 275
+        }
+      ],
+      "source": "https://raw.githubusercontent.com/lindsayjaacks/Indian-Nutrient-Databank-INDB-/main/INDB.xlsx",
+      "sourceBasis": "INDB (Indian Nutrient Databank, 2024), INDB.xlsx, food_code ASC242: values per 100 g of recipe. INDB computes per 100 g of the summed raw ingredient weights (incl. recipe water) from IFCT 2017 with no cooking yield / moisture-loss correction, so per-100 g is approximate for the cooked dish. Serving: dataset gives 1 large piece (household unit, no grams); 275 g derived as unit_serving_energy_kcal 377.0 / energy_kcal x 100. Recipe: 250 g skinless chicken breast + 150 g tomato + tomato puree + 1.5 tbsp ghee/butter + 1.5 tbsp single cream, 2 servings; dataset serving unit is \"large piece\" (one of 2 portions of the dish incl. gravy). Chicken weighed raw.",
+      "quote": "ASC242 | Butter chicken | energy_kcal 137.0 | protein_g 10.92 | carb_g 3.74 | fat_g 8.7 | fibre_g 1.32 (per 100 g)"
+    },
+    {
+      "name": "Chicken korma",
+      "group": "Chicken",
+      "aliases": [
+        "chicken korma",
+        "murgh korma"
+      ],
+      "unit": "g",
+      "kcal": 148,
+      "proteinG": 9.8,
+      "carbsG": 5.4,
+      "fatG": 9.7,
+      "fiberG": 1.8,
+      "servings": [
+        {
+          "label": "bowl",
+          "amount": 347
+        }
+      ],
+      "source": "https://raw.githubusercontent.com/lindsayjaacks/Indian-Nutrient-Databank-INDB-/main/INDB.xlsx",
+      "sourceBasis": "INDB (Indian Nutrient Databank, 2024), INDB.xlsx, food_code BFP222: values per 100 g of recipe. INDB computes per 100 g of the summed raw ingredient weights (incl. recipe water) from IFCT 2017 with no cooking yield / moisture-loss correction, so per-100 g is approximate for the cooked dish. Serving: dataset gives 1 bowl (household unit, no grams); 347 g derived as unit_serving_energy_kcal 513.5 / energy_kcal x 100. Recipe: 120 g skinless chicken breast + 75 g curd + 80 g onion + 15 g oil + cashew, coconut, poppy seeds, 1 bowl. Chicken weighed raw.",
+      "quote": "BFP222 | Chicken korma | energy_kcal 148.0 | protein_g 9.83 | carb_g 5.43 | fat_g 9.67 | fibre_g 1.82 (per 100 g)"
+    },
+    {
+      "name": "Aloo gobi (Potato cauliflower)",
+      "group": "Veg sabji",
+      "aliases": [
+        "aloo gobi",
+        "aloo gobhi",
+        "gobi aloo",
+        "potato cauliflower sabji"
+      ],
+      "unit": "g",
+      "kcal": 106,
+      "proteinG": 1.9,
+      "carbsG": 6.0,
+      "fatG": 8.1,
+      "fiberG": 3.0,
+      "servings": [
+        {
+          "label": "bowl",
+          "amount": 176
+        }
+      ],
+      "source": "https://raw.githubusercontent.com/lindsayjaacks/Indian-Nutrient-Databank-INDB-/main/INDB.xlsx",
+      "sourceBasis": "INDB (Indian Nutrient Databank, 2024), INDB.xlsx, food_code ASC171: values per 100 g of recipe. INDB computes per 100 g of the summed raw ingredient weights (incl. recipe water) from IFCT 2017 with no cooking yield / moisture-loss correction, so per-100 g is approximate for the cooked dish. Serving: dataset gives 1 bowl (household unit, no grams); 176 g derived as unit_serving_energy_kcal 186.6 / energy_kcal x 100. Recipe: 100 g cauliflower + 50 g potato + 1 tbsp oil + spices, 1 bowl.",
+      "quote": "ASC171 | Potato cauliflower (Aloo gobhi) | energy_kcal 106.2 | protein_g 1.9 | carb_g 5.99 | fat_g 8.13 | fibre_g 3.02 (per 100 g)"
+    },
+    {
+      "name": "Bhindi fry (Okra sabzi)",
+      "group": "Veg sabji",
+      "aliases": [
+        "bhindi",
+        "bhindi masala",
+        "bhindi fry",
+        "bhindi sabzi",
+        "okra",
+        "lady finger sabji"
+      ],
+      "unit": "g",
+      "kcal": 111,
+      "proteinG": 1.8,
+      "carbsG": 4.5,
+      "fatG": 9.3,
+      "fiberG": 3.6,
+      "servings": [
+        {
+          "label": "bowl",
+          "amount": 166
+        }
+      ],
+      "source": "https://raw.githubusercontent.com/lindsayjaacks/Indian-Nutrient-Databank-INDB-/main/INDB.xlsx",
+      "sourceBasis": "INDB (Indian Nutrient Databank, 2024), INDB.xlsx, food_code BFP269: values per 100 g of recipe. INDB computes per 100 g of the summed raw ingredient weights (incl. recipe water) from IFCT 2017 with no cooking yield / moisture-loss correction, so per-100 g is approximate for the cooked dish. Serving: dataset gives 1 bowl (household unit, no grams); 166 g derived as unit_serving_energy_kcal 184.3 / energy_kcal x 100. Recipe: 120 g okra + 30 g onion + 15 g oil + spices, 1 bowl.",
+      "quote": "BFP269 | Okra/Lady's fingers fry (Bhindi sabzi/sabji/subji) | energy_kcal 110.8 | protein_g 1.83 | carb_g 4.5 | fat_g 9.27 | fibre_g 3.57 (per 100 g)"
+    },
+    {
+      "name": "Palak paneer (Spinach paneer)",
+      "group": "Veg sabji",
+      "aliases": [
+        "palak paneer",
+        "saag paneer"
+      ],
+      "unit": "g",
+      "kcal": 78,
+      "proteinG": 4.0,
+      "carbsG": 4.4,
+      "fatG": 4.8,
+      "fiberG": 1.9,
+      "servings": [
+        {
+          "label": "bowl",
+          "amount": 296
+        }
+      ],
+      "source": "https://raw.githubusercontent.com/lindsayjaacks/Indian-Nutrient-Databank-INDB-/main/INDB.xlsx",
+      "sourceBasis": "INDB (Indian Nutrient Databank, 2024), INDB.xlsx, food_code ASC215: values per 100 g of recipe. INDB computes per 100 g of the summed raw ingredient weights (incl. recipe water) from IFCT 2017 with no cooking yield / moisture-loss correction, so per-100 g is approximate for the cooked dish. Serving: dataset gives 1 bowl (household unit, no grams); 296 g derived as unit_serving_energy_kcal 229.6 / energy_kcal x 100. Recipe: 150 g spinach + 40 g paneer + 50 g tomato + 25 g onion + 0.5 tbsp oil, 1 bowl.",
+      "quote": "ASC215 | Spinach paneer (Palak paneer) | energy_kcal 77.7 | protein_g 4.03 | carb_g 4.43 | fat_g 4.76 | fibre_g 1.91 (per 100 g)"
+    },
+    {
+      "name": "Paneer in butter sauce",
+      "group": "Veg sabji",
+      "aliases": [
+        "paneer butter masala",
+        "paneer makhani",
+        "butter paneer"
+      ],
+      "unit": "g",
+      "kcal": 146,
+      "proteinG": 7.0,
+      "carbsG": 9.7,
+      "fatG": 8.8,
+      "fiberG": 1.5,
+      "servings": [
+        {
+          "label": "bowl",
+          "amount": 157
+        }
+      ],
+      "source": "https://raw.githubusercontent.com/lindsayjaacks/Indian-Nutrient-Databank-INDB-/main/INDB.xlsx",
+      "sourceBasis": "INDB (Indian Nutrient Databank, 2024), INDB.xlsx, food_code ASC222: values per 100 g of recipe. INDB computes per 100 g of the summed raw ingredient weights (incl. recipe water) from IFCT 2017 with no cooking yield / moisture-loss correction, so per-100 g is approximate for the cooked dish. Serving: dataset gives 1 bowl (household unit, no grams); 157 g derived as unit_serving_energy_kcal 228.3 / energy_kcal x 100. Recipe: 100 g paneer + 100 g tomato + 50 g onion + 3 tsp butter + 2 tsp cream + 1.5 tsp sugar, 2 bowls.",
+      "quote": "ASC222 | Paneer in butter sauce | energy_kcal 145.6 | protein_g 6.99 | carb_g 9.7 | fat_g 8.81 | fibre_g 1.5 (per 100 g)"
+    },
+    {
+      "name": "Vegetable jalfrezi",
+      "group": "Veg sabji",
+      "aliases": [
+        "veg jalfrezi",
+        "vegetable jalfrezi"
+      ],
+      "unit": "g",
+      "kcal": 68,
+      "proteinG": 1.4,
+      "carbsG": 5.4,
+      "fatG": 4.4,
+      "fiberG": 3.0,
+      "servings": [
+        {
+          "label": "bowl",
+          "amount": 101
+        }
+      ],
+      "source": "https://raw.githubusercontent.com/lindsayjaacks/Indian-Nutrient-Databank-INDB-/main/INDB.xlsx",
+      "sourceBasis": "INDB (Indian Nutrient Databank, 2024), INDB.xlsx, food_code BFP277: values per 100 g of recipe. INDB computes per 100 g of the summed raw ingredient weights (incl. recipe water) from IFCT 2017 with no cooking yield / moisture-loss correction, so per-100 g is approximate for the cooked dish. Serving: dataset gives 1 bowl (household unit, no grams); 101 g derived as unit_serving_energy_kcal 68.9 / energy_kcal x 100. Recipe: cabbage, capsicum, French beans, carrot, potato (20 g each) + 50 g tomato + 20 g onion + 2 tsp oil, 2 bowls.",
+      "quote": "BFP277 | Vegetable jalfrezi | energy_kcal 68.5 | protein_g 1.4 | carb_g 5.43 | fat_g 4.38 | fibre_g 2.97 (per 100 g)"
+    },
+    {
+      "name": "Aloo matar (Pea potato curry)",
+      "group": "Veg sabji",
+      "aliases": [
+        "aloo matar",
+        "aloo mutter",
+        "matar aloo",
+        "potato peas curry"
+      ],
+      "unit": "g",
+      "kcal": 101,
+      "proteinG": 3.5,
+      "carbsG": 9.7,
+      "fatG": 5.1,
+      "fiberG": 3.6,
+      "servings": [
+        {
+          "label": "bowl",
+          "amount": 277
+        }
+      ],
+      "source": "https://raw.githubusercontent.com/lindsayjaacks/Indian-Nutrient-Databank-INDB-/main/INDB.xlsx",
+      "sourceBasis": "INDB (Indian Nutrient Databank, 2024), INDB.xlsx, food_code ASC190: values per 100 g of recipe. INDB computes per 100 g of the summed raw ingredient weights (incl. recipe water) from IFCT 2017 with no cooking yield / moisture-loss correction, so per-100 g is approximate for the cooked dish. Serving: dataset gives 1 bowl (household unit, no grams); 277 g derived as unit_serving_energy_kcal 279.9 / energy_kcal x 100. Recipe: 100 g peas + 50 g potato + 50 g tomato + 50 g onion + 1 tbsp oil, 1 bowl.",
+      "quote": "ASC190 | Pea potato curry (Aloo matar) | energy_kcal 100.9 | protein_g 3.48 | carb_g 9.74 | fat_g 5.13 | fibre_g 3.61 (per 100 g)"
+    },
+    {
+      "name": "Baingan bharta (Brinjal bharta)",
+      "group": "Veg sabji",
+      "aliases": [
+        "baingan bharta",
+        "baingan ka bharta",
+        "brinjal bharta",
+        "bharta"
+      ],
+      "unit": "g",
+      "kcal": 65,
+      "proteinG": 1.4,
+      "carbsG": 4.4,
+      "fatG": 4.5,
+      "fiberG": 3.3,
+      "servings": [
+        {
+          "label": "bowl",
+          "amount": 326
+        }
+      ],
+      "source": "https://raw.githubusercontent.com/lindsayjaacks/Indian-Nutrient-Databank-INDB-/main/INDB.xlsx",
+      "sourceBasis": "INDB (Indian Nutrient Databank, 2024), INDB.xlsx, food_code ASC177: values per 100 g of recipe. INDB computes per 100 g of the summed raw ingredient weights (incl. recipe water) from IFCT 2017 with no cooking yield / moisture-loss correction, so per-100 g is approximate for the cooked dish. Serving: dataset gives 1 bowl (household unit, no grams); 326 g derived as unit_serving_energy_kcal 212.2 / energy_kcal x 100. Recipe: 200 g brinjal + 50 g tomato + 50 g onion + 1 tbsp oil, 1 bowl.",
+      "quote": "ASC177 | Brinjal bhartha (Baingan ka bhartha) | energy_kcal 65.1 | protein_g 1.38 | carb_g 4.4 | fat_g 4.48 | fibre_g 3.27 (per 100 g)"
+    },
+    {
+      "name": "Cabbage matar sabzi (Pattagobhi aur matar)",
+      "group": "Veg sabji",
+      "aliases": [
+        "cabbage sabji",
+        "cabbage sabzi",
+        "patta gobhi",
+        "band gobhi",
+        "cabbage peas"
+      ],
+      "unit": "g",
+      "kcal": 64,
+      "proteinG": 3.2,
+      "carbsG": 6.2,
+      "fatG": 2.6,
+      "fiberG": 4.0,
+      "servings": [
+        {
+          "label": "bowl",
+          "amount": 166
+        }
+      ],
+      "source": "https://raw.githubusercontent.com/lindsayjaacks/Indian-Nutrient-Databank-INDB-/main/INDB.xlsx",
+      "sourceBasis": "INDB (Indian Nutrient Databank, 2024), INDB.xlsx, food_code ASC173: values per 100 g of recipe. INDB computes per 100 g of the summed raw ingredient weights (incl. recipe water) from IFCT 2017 with no cooking yield / moisture-loss correction, so per-100 g is approximate for the cooked dish. Serving: dataset gives 1 bowl (household unit, no grams); 166 g derived as unit_serving_energy_kcal 106.2 / energy_kcal x 100. Recipe: 100 g cabbage + 50 g peas + 1 tsp oil, 1 bowl.",
+      "quote": "ASC173 | Cabbage and peas (Pattagobhi aur matar) | energy_kcal 63.9 | protein_g 3.24 | carb_g 6.24 | fat_g 2.64 | fibre_g 3.99 (per 100 g)"
+    },
+    {
+      "name": "Matar paneer (Pea paneer curry)",
+      "group": "Veg sabji",
+      "aliases": [
+        "matar paneer",
+        "mutter paneer",
+        "paneer matar"
+      ],
+      "unit": "g",
+      "kcal": 135,
+      "proteinG": 6.6,
+      "carbsG": 9.3,
+      "fatG": 7.8,
+      "fiberG": 3.3,
+      "servings": [
+        {
+          "label": "bowl",
+          "amount": 277
+        }
+      ],
+      "source": "https://raw.githubusercontent.com/lindsayjaacks/Indian-Nutrient-Databank-INDB-/main/INDB.xlsx",
+      "sourceBasis": "INDB (Indian Nutrient Databank, 2024), INDB.xlsx, food_code ASC191: values per 100 g of recipe. INDB computes per 100 g of the summed raw ingredient weights (incl. recipe water) from IFCT 2017 with no cooking yield / moisture-loss correction, so per-100 g is approximate for the cooked dish. Serving: dataset gives 1 bowl (household unit, no grams); 277 g derived as unit_serving_energy_kcal 373.9 / energy_kcal x 100. Recipe: 100 g peas + 50 g paneer + 50 g tomato + 50 g onion + 1 tbsp oil, 1 bowl.",
+      "quote": "ASC191 | Pea paneer curry (Matar paneer) | energy_kcal 134.8 | protein_g 6.61 | carb_g 9.29 | fat_g 7.75 | fibre_g 3.3 (per 100 g)"
+    }
+  ],
+  "notFound": [
+    {
+      "name": "Arhar (toor) dal, home-cooked",
+      "reason": "No plain arhar/toor/tuvar dal in INDB. Searched recipe names for dal fry, plain dal, tuvar, toor, tur, yellow dal, tadka, Gujarati, thin, arhar, red gram, pigeon pea, varan, amti, pappu, paruppu. Recipes using red gram (Cajanus cajan) in recipes.xlsx are all other dishes: sambar (included), arhar with spinach, rasam (x2), dhansak, panchmel dal, dal dhokli, masala vada, handvo, rasam powder."
+    },
+    {
+      "name": "Dal tadka",
+      "reason": "No INDB row; BFP178 is whole moong with tadka, not toor dal tadka."
+    },
+    {
+      "name": "Plain dosa",
+      "reason": "INDB BFP148 recipe has no batter water (381 kcal/100 g on dry rice+dal weight) and its serving unit is marked 'guessed' in the dataset; not usable."
+    },
+    {
+      "name": "Plain omelette",
+      "reason": "INDB ASC061 counts 2 tbsp oil per 2-egg omelette (272 kcal/100 g, 25.7 g fat), which likely overstates a typical omelette; excluded."
+    },
+    {
+      "name": "Masala omelette",
+      "reason": "No INDB row."
+    },
+    {
+      "name": "Tandoori chicken",
+      "reason": "INDB ASC241 is computed on raw chicken weight with no roasting moisture loss (understates per 100 g cooked) and its serving unit ('chicken', ~1441 g) does not match the 250 g recipe."
+    },
+    {
+      "name": "Chicken tikka",
+      "reason": "No INDB row."
+    },
+    {
+      "name": "Chicken malai tikka",
+      "reason": "No INDB row."
+    },
+    {
+      "name": "Chicken 65",
+      "reason": "No INDB row."
+    },
+    {
+      "name": "Chicken lollipop",
+      "reason": "No INDB row."
+    },
+    {
+      "name": "Kadai chicken",
+      "reason": "No INDB row (only Kadhai paneer)."
+    },
+    {
+      "name": "Chicken do pyaza",
+      "reason": "No INDB row (only Paneer do pyaza)."
+    },
+    {
+      "name": "Chilli chicken",
+      "reason": "INDB ASC244 counts all 50 g deep-frying oil as eaten (199 kcal/100 g, 16.6 g fat); excluded."
+    },
+    {
+      "name": "Chicken seekh kebab",
+      "reason": "No chicken seekh row; ASC243 'Chicken kebab' counts all frying oil (729 kcal/100 g, 79 g fat)."
+    },
+    {
+      "name": "Chicken biryani",
+      "reason": "No INDB row (only mutton and vegetable biryani, chicken pulao)."
+    },
+    {
+      "name": "Mix veg",
+      "reason": "No INDB mixed-vegetable sabzi row; 'Vegetable jalfrezi' (BFP277) included under its own name."
+    },
+    {
+      "name": "Aloo baingan",
+      "reason": "No INDB row."
+    },
+    {
+      "name": "Lauki sabji",
+      "reason": "Only stuffed lauki (BFP284) and chana dal with lauki (ASC153); no plain lauki sabzi."
+    },
+    {
+      "name": "Kadhi",
+      "reason": "Only ASC168 'Besan kadhi with pakodies', which counts all pakoda frying oil (403 kcal/100 g); excluded."
+    }
+  ]
+}

@@ -28,7 +28,7 @@ export type ParseFitnessLogInput = {
   loggedMeals?: (Omit<FitnessDraft['meals'][number], never> & { index: number })[];
   /** Pending edits from an earlier turn, when the user is correcting them. */
   currentEdits?: LoggedMealEdit[];
-  /** The user's saved foods that this message mentions (exact nutrition; see lib/food-match). */
+  /** Saved foods, then catalogue foods, that this message mentions (exact nutrition; see lib/food-match). */
   knownFoods?: string[];
 };
 export type LoggedMealEdit = { index: number; delete?: boolean; name?: string; kcal?: number; proteinG?: number; carbsG?: number; fatG?: number; fiberG?: number; slot?: string };
@@ -84,7 +84,7 @@ The user is correcting this earlier draft. Return the FULL revised draft (keep e
 {{{draftJson}}}
 {{/if}}
 {{#if foodsText}}
-The user's SAVED FOODS with exact nutrition (use these numbers, scaled to the amount eaten, instead of estimating; they are the user's own measured values):
+KNOWN FOODS with exact nutrition, nearest match first for each item the user named: the user's saved foods, then the app's catalogue (values from product labels and Indian food tables). For each item, use the known food that is the same food (brand, variant, size and cooked/raw state match what the user said), scaled to the amount eaten, instead of estimating or using web results; the user's saved foods win over catalogue ones. If several fit equally, use the first. If none is the same food (e.g. only a different dal or flavour is listed), ignore them for that item and use web results if given, else your own knowledge:
 {{{foodsText}}}
 {{/if}}
 {{#if webFacts}}
@@ -101,7 +101,7 @@ Rules:
 6. Do not invent anything the user didn't mention or show. Empty lists are fine.
 6b. ACCURACY, NEVER UNDER-COUNT: this is a weight-loss log, so a low estimate does real harm. Count what is usually hidden: cooking oil or ghee in Indian dishes (sabzi, dal tadka, curries, parathas: about 1 tsp ≈ 40 kcal per serving, restaurant food about double), ghee or butter on rotis, sugar and milk in chai or coffee, chutneys, raita, papad, pickles and sides. If the portion isn't given, assume a full typical Indian serving (a katori is about 150 g, a restaurant plate is larger). Restaurant, takeaway and street food: add about 30% over the home-cooked version. When unsure between two estimates, use the higher one. Never give a meal fewer kcal than protein×4 + carbs×4 + fat×9.
 7. "reply": one short friendly line, e.g. "2 rotis and dal (~450 kcal) plus a 30 min jog (~320 kcal)."
-8. If web search results are given and match an item, use their numbers for the stated quantity and mention it in "reply" (e.g. "per Yoga Bar's label"). Otherwise estimate as usual.
+8. Where each item's numbers come from, in order: (a) a matching KNOWN FOOD: use its numbers exactly, only scaled to the amount (don't add rule 6b's padding to it; home-cooked known dishes already include their oil); a serving named like "scoop (40 g)" or "1 phulka" is that amount; (b) web search results that match the item: use their numbers for the stated quantity and mention it in "reply" (e.g. "per Yoga Bar's label"); (c) otherwise estimate from your own knowledge, following rule 6b.
 9. No links, URLs or citation marks anywhere in the JSON.
 11. EDITING LOGGED MEALS: if the message refers to meals already logged (by name, by meal like "lunch" or "breakfast", or "all"/"everything"/"today's food"), put the changes in "edits" with that meal's index and ONLY the fields that change (for a new portion, scale kcal and every macro; for "cooked in ghee/oil", raise kcal and fat; to remove one, set "delete": true). Never add a logged meal again under "meals". Leave meals the message doesn't mention out of "edits". The accuracy rules above apply to edits too.
 10. Every meal gets a "slot": breakfast, morningSnack, lunch, eveningSnack or dinner. Use what the message says ("for breakfast", "evening chai", "after dinner"); otherwise, if the day being logged is today, use the time now ({{{localTime}}}: before 10:30 breakfast, 10:30–12:30 morningSnack, 12:30–15:30 lunch, 15:30–18:30 eveningSnack, later dinner); otherwise pick the most likely meal for that food.`;

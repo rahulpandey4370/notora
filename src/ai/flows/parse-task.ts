@@ -13,6 +13,7 @@ import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 import { ModelId } from '@/lib/types';
 import { callStructuredLLM } from '@/lib/ai-client';
+import { serverDefaultModel } from '@/lib/ai-providers-server';
 
 const ParseTaskInputSchema = z.object({
   naturalLanguageText: z.string().describe('The free-text task, e.g. "gym tomorrow 7am high priority".'),
@@ -63,7 +64,7 @@ const parseTaskFlow = ai.defineFlow(
     outputSchema: ParseTaskOutputSchema,
   },
   async (input, { context }) => {
-    const modelId = context?.modelId || 'gemini-2.5-flash';
+    const modelId = context?.modelId || serverDefaultModel();
 
     const output = await callStructuredLLM(
       modelId,

@@ -13,6 +13,7 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 import { ModelId } from '@/lib/types';
 import { callStructuredLLM } from '@/lib/ai-client';
+import { serverDefaultModel } from '@/lib/ai-providers-server';
 
 const SuggestTaskOrderingInputSchema = z.object({
   tasks: z
@@ -49,7 +50,7 @@ const suggestTaskOrderingFlow = ai.defineFlow(
     outputSchema: SuggestTaskOrderingOutputSchema,
   },
   async (input, { context }) => {
-    const modelId = context?.modelId || 'gemini-2.5-flash';
+    const modelId = context?.modelId || serverDefaultModel();
     let output;
 
     // Provider routing lives in the unified client — this flow just

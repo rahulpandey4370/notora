@@ -259,6 +259,8 @@ export interface AppData {
   progressPhotos?: ProgressPhoto[];
   /** The Logs page colour theme (Profile page); synced so it follows you to every device. */
   logsLook?: 'lagoon' | 'onyx' | 'coral' | 'grape';
+  /** Built-in catalogue foods (ids like "cat-…") you removed from your lists; restorable from the Profile page. */
+  hiddenFoods?: string[];
 }
 
 export interface ProgressPhoto { id: string; date: string; path: string; pose: 'front' | 'side' | 'back'; note?: string }

@@ -1,0 +1,1283 @@
+{
+ "items": [
+  {
+   "name": "Kurkure Masala Munch",
+   "brand": "Kurkure (PepsiCo India)",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "kurkure",
+    "masala munch",
+    "kurkure masala"
+   ],
+   "unit": "g",
+   "kcal": 554,
+   "proteinG": 6,
+   "carbsG": 57.5,
+   "fatG": 33.4,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "pack (75 g)",
+     "amount": 75
+    },
+    {
+     "label": "pack (103.6 g)",
+     "amount": 103.6
+    },
+    {
+     "label": "serving (label)",
+     "amount": 20
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/67372",
+   "sourceBasis": "per 100 g, Blinkit product page structured nutrition attributes (from pack label)",
+   "quote": "Energy Per 100 g: 554 kcal | Protein Per 100 g: 6 g | Total Carbohydrates Per 100 g: 57.5 g | Total Fat Per 100 g: 33.4 g"
+  },
+  {
+   "name": "Kurkure Chilli Chatka",
+   "brand": "Kurkure (PepsiCo India)",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "chilli chatka",
+    "kurkure chilli"
+   ],
+   "unit": "g",
+   "kcal": 563,
+   "proteinG": 5.6,
+   "carbsG": 56.1,
+   "fatG": 35.1,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "pack (78.9 g)",
+     "amount": 78.9
+    },
+    {
+     "label": "serving (label)",
+     "amount": 20
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/116824",
+   "sourceBasis": "per 100 g, Blinkit product page structured nutrition attributes (from pack label)",
+   "quote": "Energy Per 100 g: 563 kcal | Protein Per 100 g: 5.6 g | Total Carbohydrates Per 100 g: 56.1 g | Total Fat Per 100 g: 35.1 g"
+  },
+  {
+   "name": "Kurkure Green Chutney Style",
+   "brand": "Kurkure (PepsiCo India)",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "green chutney kurkure",
+    "kurkure green chutney"
+   ],
+   "unit": "g",
+   "kcal": 563,
+   "proteinG": 5.6,
+   "carbsG": 56.2,
+   "fatG": 35.1,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "pack (78.9 g)",
+     "amount": 78.9
+    },
+    {
+     "label": "serving (label)",
+     "amount": 20
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/140943",
+   "sourceBasis": "per 100 g, Blinkit product page structured nutrition attributes (from pack label)",
+   "quote": "Energy Per 100 g: 563 kcal | Protein Per 100 g: 5.6 g | Total Carbohydrates Per 100 g: 56.2 g | Total Fat Per 100 g: 35.1 g"
+  },
+  {
+   "name": "Kurkure Solid Masti Masala Twisteez",
+   "brand": "Kurkure (PepsiCo India)",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "solid masti",
+    "kurkure solid masti"
+   ],
+   "unit": "g",
+   "kcal": 528,
+   "proteinG": 8.6,
+   "carbsG": 58.7,
+   "fatG": 28.7,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "pack (66.6 g)",
+     "amount": 66.6
+    },
+    {
+     "label": "serving (label)",
+     "amount": 20
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/132817",
+   "sourceBasis": "per 100 g, Blinkit product page structured nutrition attributes (from pack label)",
+   "quote": "Energy Per 100 g: 528 kcal | Protein Per 100 g: 8.6 g | Total Carbohydrates Per 100 g: 58.7 g | Total Fat Per 100 g: 28.7 g"
+  },
+  {
+   "name": "Kurkure Puffcorn Yummy Cheese",
+   "brand": "Kurkure (PepsiCo India)",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "puffcorn",
+    "kurkure puffcorn"
+   ],
+   "unit": "g",
+   "kcal": 519,
+   "proteinG": 6.3,
+   "carbsG": 62.3,
+   "fatG": 27.1,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "pack (58 g)",
+     "amount": 58
+    },
+    {
+     "label": "serving (label)",
+     "amount": 20
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/367837",
+   "sourceBasis": "per 100 g, Blinkit product page structured nutrition attributes (from pack label)",
+   "quote": "Energy Per 100 g: 519 kcal | Protein Per 100 g: 6.3 g | Total Carbohydrates Per 100 g: 62.3 g | Total Fat Per 100 g: 27.1 g"
+  },
+  {
+   "name": "Kurkure Schezwan Chutney",
+   "brand": "Kurkure (PepsiCo India)",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "kurkure schezwan"
+   ],
+   "unit": "g",
+   "kcal": 557,
+   "proteinG": 5.5,
+   "carbsG": 57.8,
+   "fatG": 33.7,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "pack (17 g)",
+     "amount": 17
+    }
+   ],
+   "source": "https://world.openfoodfacts.org/product/8901491002899",
+   "sourceBasis": "per 100 g, Open Food Facts (crowd-sourced from Indian pack label, barcode 8901491002899), read via OFF API; product name on OFF: 'Kurkure Schezwan Chutney Flavour'",
+   "quote": "energy-kcal_100g 557 | proteins_100g 5.5 | carbohydrates_100g 57.8 | fat_100g 33.7"
+  },
+  {
+   "name": "Kurkure Chatpata Masala Baked Jowar Puffs",
+   "brand": "Kurkure (PepsiCo India)",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "kurkure jowar puffs",
+    "kurkure baked puffs"
+   ],
+   "unit": "g",
+   "kcal": 519,
+   "proteinG": 6.7,
+   "carbsG": 59.2,
+   "fatG": 28.4,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "pack (56.2 g)",
+     "amount": 56.2
+    },
+    {
+     "label": "serving (label)",
+     "amount": 20
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/751634",
+   "sourceBasis": "per 100 g, Blinkit product page structured nutrition attributes (from pack label)",
+   "quote": "Energy Per 100 g: 519 kcal | Protein Per 100 g: 6.7 g | Total Carbohydrates Per 100 g: 59.2 g | Total Fat Per 100 g: 28.4 g"
+  },
+  {
+   "name": "Kurkure Naughty Tomatoes",
+   "brand": "Kurkure (PepsiCo India)",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "naughty tomatoes",
+    "kurkure tomato"
+   ],
+   "unit": "g",
+   "kcal": 565,
+   "proteinG": 5.8,
+   "carbsG": 56.4,
+   "fatG": 35.1,
+   "fiberG": null,
+   "servings": [],
+   "source": "https://world.openfoodfacts.org/product/8901491103442",
+   "sourceBasis": "per 100 g, Open Food Facts (crowd-sourced from Indian pack label, barcode 8901491103442), read via OFF API; product name on OFF: 'Kurkure Naughty Tomato'",
+   "quote": "energy-kcal_100g 565 | proteins_100g 5.8 | carbohydrates_100g 56.4 | fat_100g 35.1"
+  },
+  {
+   "name": "Kurkure Playz Puff Balls Pudina Punch",
+   "brand": "Kurkure (PepsiCo India)",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "playz",
+    "kurkure puff balls"
+   ],
+   "unit": "g",
+   "kcal": 500,
+   "proteinG": 6.8,
+   "carbsG": 65.7,
+   "fatG": 23.4,
+   "fiberG": null,
+   "servings": [],
+   "source": "https://world.openfoodfacts.org/product/8901491003704",
+   "sourceBasis": "per 100 g, Open Food Facts (crowd-sourced from Indian pack label, barcode 8901491003704), read via OFF API; product name on OFF: 'Puff Balls Pudina Punch Flavour'",
+   "quote": "energy-kcal_100g 500 | proteins_100g 6.8 | carbohydrates_100g 65.7 | fat_100g 23.4"
+  },
+  {
+   "name": "Kurkure Chaat Fills Bhel Chutney Twist",
+   "brand": "Kurkure (PepsiCo India)",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "kurkure chaat fills"
+   ],
+   "unit": "g",
+   "kcal": 517,
+   "proteinG": 5.1,
+   "carbsG": 62.8,
+   "fatG": 27.3,
+   "fiberG": null,
+   "servings": [],
+   "source": "https://world.openfoodfacts.org/product/8901491002707",
+   "sourceBasis": "per 100 g, Open Food Facts (crowd-sourced from Indian pack label, barcode 8901491002707), read via OFF API; product name on OFF: 'Chaat Fills Bhel Chutney Twist'",
+   "quote": "energy-kcal_100g 517 | proteins_100g 5.1 | carbohydrates_100g 62.8 | fat_100g 27.3"
+  },
+  {
+   "name": "Lay's Classic Salted",
+   "brand": "Lay's (PepsiCo India)",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "lays classic salted",
+    "lays salted",
+    "lays yellow"
+   ],
+   "unit": "g",
+   "kcal": 553,
+   "proteinG": 6.7,
+   "carbsG": 52.6,
+   "fatG": 35.1,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "pack (51 g)",
+     "amount": 51
+    },
+    {
+     "label": "pack (75 g)",
+     "amount": 75
+    },
+    {
+     "label": "pack (80 g)",
+     "amount": 80
+    },
+    {
+     "label": "serving (label)",
+     "amount": 20
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/432776",
+   "sourceBasis": "per 100 g, Blinkit product page structured nutrition attributes (from pack label)",
+   "quote": "Energy Per 100 g: 553 kcal | Protein Per 100 g: 6.7 g | Total Carbohydrates Per 100 g: 52.6 g | Total Fat Per 100 g: 35.1 g"
+  },
+  {
+   "name": "Lay's India's Magic Masala",
+   "brand": "Lay's (PepsiCo India)",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "lays magic masala",
+    "lays blue",
+    "magic masala chips"
+   ],
+   "unit": "g",
+   "kcal": 546,
+   "proteinG": 6.9,
+   "carbsG": 54.9,
+   "fatG": 33.2,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "pack (58 g)",
+     "amount": 58
+    },
+    {
+     "label": "pack (75 g)",
+     "amount": 75
+    },
+    {
+     "label": "pack (80 g)",
+     "amount": 80
+    },
+    {
+     "label": "pack (143 g)",
+     "amount": 143
+    },
+    {
+     "label": "serving (label)",
+     "amount": 20
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/432779",
+   "sourceBasis": "per 100 g, Blinkit product page structured nutrition attributes (from pack label)",
+   "quote": "Energy Per 100 g: 546 kcal | Protein Per 100 g: 6.9 g | Total Carbohydrates Per 100 g: 54.9 g | Total Fat Per 100 g: 33.2 g"
+  },
+  {
+   "name": "Lay's American Style Cream & Onion",
+   "brand": "Lay's (PepsiCo India)",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "lays cream and onion",
+    "lays green",
+    "lays american cream onion"
+   ],
+   "unit": "g",
+   "kcal": 537,
+   "proteinG": 6.7,
+   "carbsG": 53,
+   "fatG": 33.1,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "pack (58 g)",
+     "amount": 58
+    },
+    {
+     "label": "pack (75 g)",
+     "amount": 75
+    },
+    {
+     "label": "pack (80 g)",
+     "amount": 80
+    },
+    {
+     "label": "pack (143 g)",
+     "amount": 143
+    },
+    {
+     "label": "serving (label)",
+     "amount": 20
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/578",
+   "sourceBasis": "per 100 g, Blinkit product page structured nutrition attributes (from pack label)",
+   "quote": "Energy Per 100 g: 537 kcal | Protein Per 100 g: 6.7 g | Total Carbohydrates Per 100 g: 53 g | Total Fat Per 100 g: 33.1 g"
+  },
+  {
+   "name": "Lay's Spanish Tomato Tango",
+   "brand": "Lay's (PepsiCo India)",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "lays tomato",
+    "spanish tomato tango"
+   ],
+   "unit": "g",
+   "kcal": 525,
+   "proteinG": 6.4,
+   "carbsG": 53.1,
+   "fatG": 31.9,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "pack (58 g)",
+     "amount": 58
+    },
+    {
+     "label": "pack (75 g)",
+     "amount": 75
+    },
+    {
+     "label": "pack (80 g)",
+     "amount": 80
+    },
+    {
+     "label": "serving (label)",
+     "amount": 20
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/577",
+   "sourceBasis": "per 100 g, Blinkit product page structured nutrition attributes (from pack label)",
+   "quote": "Energy Per 100 g: 525 kcal | Protein Per 100 g: 6.4 g | Total Carbohydrates Per 100 g: 53.1 g | Total Fat Per 100 g: 31.9 g"
+  },
+  {
+   "name": "Lay's Chile Limón",
+   "brand": "Lay's (PepsiCo India)",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "lays chile limon",
+    "lays chilli lemon"
+   ],
+   "unit": "g",
+   "kcal": 536,
+   "proteinG": 6.4,
+   "carbsG": 52.3,
+   "fatG": 33.5,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "pack (58 g)",
+     "amount": 58
+    },
+    {
+     "label": "serving (label)",
+     "amount": 20
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/574",
+   "sourceBasis": "per 100 g, Blinkit product page structured nutrition attributes (from pack label)",
+   "quote": "Energy Per 100 g: 536 kcal | Protein Per 100 g: 6.4 g | Total Carbohydrates Per 100 g: 52.3 g | Total Fat Per 100 g: 33.5 g"
+  },
+  {
+   "name": "Lay's West Indies Hot 'n' Sweet Chilli",
+   "brand": "Lay's (PepsiCo India)",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "lays hot n sweet chilli",
+    "lays west indies"
+   ],
+   "unit": "g",
+   "kcal": 534,
+   "proteinG": 6,
+   "carbsG": 55.1,
+   "fatG": 32,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "pack (58 g)",
+     "amount": 58
+    },
+    {
+     "label": "pack (80 g)",
+     "amount": 80
+    },
+    {
+     "label": "serving (label)",
+     "amount": 20
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/534457",
+   "sourceBasis": "per 100 g, Blinkit product page structured nutrition attributes (from pack label) Protein 6 g per label text (verification).",
+   "quote": "Energy Per 100 g: 534 kcal | Protein Per 100 g: 6.4 g | Total Carbohydrates Per 100 g: 55.1 g | Total Fat Per 100 g: 32 g"
+  },
+  {
+   "name": "Lay's Sizzlin' Hot",
+   "brand": "Lay's (PepsiCo India)",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "lays sizzling hot"
+   ],
+   "unit": "g",
+   "kcal": 540,
+   "proteinG": 6.6,
+   "carbsG": 54,
+   "fatG": 33,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "pack (52.9 g)",
+     "amount": 52.9
+    },
+    {
+     "label": "serving (label)",
+     "amount": 20
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/480925",
+   "sourceBasis": "per 100 g, Blinkit product page structured nutrition attributes (from pack label)",
+   "quote": "Energy Per 100 g: 540 kcal | Protein Per 100 g: 6.6 g | Total Carbohydrates Per 100 g: 54 g | Total Fat Per 100 g: 33 g"
+  },
+  {
+   "name": "Lay's Crispz Herb & Onion",
+   "brand": "Lay's (PepsiCo India)",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "lays crispz"
+   ],
+   "unit": "g",
+   "kcal": 525,
+   "proteinG": 4.3,
+   "carbsG": 60.5,
+   "fatG": 29.5,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "pack (50.8 g)",
+     "amount": 50.8
+    },
+    {
+     "label": "serving (label)",
+     "amount": 30
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/223819",
+   "sourceBasis": "per 100 g, Blinkit product page structured nutrition attributes (from pack label)",
+   "quote": "Energy Per 100 g: 525 kcal | Protein Per 100 g: 4.3 g | Total Carbohydrates Per 100 g: 60.5 g | Total Fat Per 100 g: 29.5 g"
+  },
+  {
+   "name": "Lay's Wafer Style Tangy Treat",
+   "brand": "Lay's (PepsiCo India)",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "lays wafer style tangy"
+   ],
+   "unit": "g",
+   "kcal": 543,
+   "proteinG": 6.5,
+   "carbsG": 53.5,
+   "fatG": 33.6,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "pack (26.5 g)",
+     "amount": 26.5
+    }
+   ],
+   "source": "https://world.openfoodfacts.org/product/8901491001755",
+   "sourceBasis": "per 100 g, Open Food Facts (crowd-sourced from Indian pack label, barcode 8901491001755), read via OFF API; product name on OFF: 'Wafer Style Tangy Treat Flavour'",
+   "quote": "energy-kcal_100g 543 | proteins_100g 6.5 | carbohydrates_100g 53.5 | fat_100g 33.6"
+  },
+  {
+   "name": "Lay's Wafer Style Sundried Chilli",
+   "brand": "Lay's (PepsiCo India)",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "lays wafer style chilli"
+   ],
+   "unit": "g",
+   "kcal": 539,
+   "proteinG": 6.7,
+   "carbsG": 52.5,
+   "fatG": 33.6,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "pack (26.5 g)",
+     "amount": 26.5
+    }
+   ],
+   "source": "https://world.openfoodfacts.org/product/8901491983259",
+   "sourceBasis": "per 100 g, Open Food Facts (crowd-sourced from Indian pack label, barcode 8901491983259), read via OFF API; product name on OFF: 'Wafer Style Sundried Chilli Flavour'",
+   "quote": "energy-kcal_100g 539 | proteins_100g 6.7 | carbohydrates_100g 52.5 | fat_100g 33.6"
+  },
+  {
+   "name": "Lay's Maxx Macho Chilli",
+   "brand": "Lay's (PepsiCo India)",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "lays maxx",
+    "lays max macho chilli"
+   ],
+   "unit": "g",
+   "kcal": 537,
+   "proteinG": 6.7,
+   "carbsG": 53.4,
+   "fatG": 33,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "pack (20 g)",
+     "amount": 20
+    }
+   ],
+   "source": "https://world.openfoodfacts.org/product/8901491983198",
+   "sourceBasis": "per 100 g, Open Food Facts (crowd-sourced from Indian pack label, barcode 8901491983198), read via OFF API; product name on OFF: 'MAXX MACHO CHILLI FLAVOUR'",
+   "quote": "energy-kcal_100g 537 | proteins_100g 6.7 | carbohydrates_100g 53.4 | fat_100g 33"
+  },
+  {
+   "name": "Lay's Korean Chilli",
+   "brand": "Lay's (PepsiCo India)",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "lays korean"
+   ],
+   "unit": "g",
+   "kcal": 538,
+   "proteinG": 6.4,
+   "carbsG": 54.4,
+   "fatG": 32.8,
+   "fiberG": null,
+   "servings": [],
+   "source": "https://world.openfoodfacts.org/product/8901491003896",
+   "sourceBasis": "per 100 g, Open Food Facts (crowd-sourced from Indian pack label, barcode 8901491003896), read via OFF API; product name on OFF: 'Lays Korean chilli'",
+   "quote": "energy-kcal_100g 538 | proteins_100g 6.4 | carbohydrates_100g 54.4 | fat_100g 32.8"
+  },
+  {
+   "name": "Lay's Mexican Salsa",
+   "brand": "Lay's (PepsiCo India)",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "lays salsa"
+   ],
+   "unit": "g",
+   "kcal": 535,
+   "proteinG": 6.5,
+   "carbsG": 53.5,
+   "fatG": 32.5,
+   "fiberG": null,
+   "servings": [],
+   "source": "https://world.openfoodfacts.org/product/8901491003919",
+   "sourceBasis": "per 100 g, Open Food Facts (crowd-sourced from Indian pack label, barcode 8901491003919), read via OFF API; product name on OFF: \"Lay's Mexican Salsa Flavour Potato Chips\"",
+   "quote": "energy-kcal_100g 535 | proteins_100g 6.5 | carbohydrates_100g 53.5 | fat_100g 32.5"
+  },
+  {
+   "name": "Lay's Gourmet Vintage Cheese & Paprika",
+   "brand": "Lay's (PepsiCo India)",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "lays gourmet cheese paprika"
+   ],
+   "unit": "g",
+   "kcal": 507,
+   "proteinG": 7.6,
+   "carbsG": 61.2,
+   "fatG": 25.8,
+   "fiberG": null,
+   "servings": [],
+   "source": "https://world.openfoodfacts.org/product/8901491002134",
+   "sourceBasis": "per 100 g, Open Food Facts (crowd-sourced from Indian pack label, barcode 8901491002134), read via OFF API; product name on OFF: 'Gourmet Vintage Cheese & Paprika Chips'",
+   "quote": "energy-kcal_100g 507 | proteins_100g 7.6 | carbohydrates_100g 61.2 | fat_100g 25.8"
+  },
+  {
+   "name": "Lay's Gourmet Lime & Cracked Pepper",
+   "brand": "Lay's (PepsiCo India)",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "lays gourmet lime pepper"
+   ],
+   "unit": "g",
+   "kcal": 506,
+   "proteinG": 7.5,
+   "carbsG": 61.2,
+   "fatG": 25.7,
+   "fiberG": null,
+   "servings": [],
+   "source": "https://world.openfoodfacts.org/product/8901491002141",
+   "sourceBasis": "per 100 g, Open Food Facts (crowd-sourced from Indian pack label, barcode 8901491002141), read via OFF API; product name on OFF: 'Gourmet limed and cracked pepper chips'",
+   "quote": "energy-kcal_100g 506 | proteins_100g 7.5 | carbohydrates_100g 61.2 | fat_100g 25.7"
+  },
+  {
+   "name": "Bingo Mad Angles Achaari Masti",
+   "brand": "Bingo! (ITC)",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "mad angles",
+    "achaari masti",
+    "mad angles achari"
+   ],
+   "unit": "g",
+   "kcal": 526,
+   "proteinG": 5.6,
+   "carbsG": 61.2,
+   "fatG": 29.5,
+   "fiberG": 2,
+   "servings": [
+    {
+     "label": "pack (56 g)",
+     "amount": 56
+    },
+    {
+     "label": "pack (100 g)",
+     "amount": 100
+    },
+    {
+     "label": "serving (label)",
+     "amount": 20
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/35373",
+   "sourceBasis": "per 100 g, Blinkit product page structured nutrition attributes (from pack label) Fibre 2 g from the label text (verification).",
+   "quote": "Energy Per 100 g: 526 kcal | Protein Per 100 g: 5.6 g | Total Carbohydrates Per 100 g: 61.2 g | Total Fat Per 100 g: 29.5 g"
+  },
+  {
+   "name": "Bingo Mad Angles Masala Madness",
+   "brand": "Bingo! (ITC)",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "mad angles masala"
+   ],
+   "unit": "g",
+   "kcal": 521,
+   "proteinG": 6.3,
+   "carbsG": 61,
+   "fatG": 28.9,
+   "fiberG": 3.0,
+   "servings": [
+    {
+     "label": "pack (56 g)",
+     "amount": 56
+    },
+    {
+     "label": "serving (label)",
+     "amount": 20
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/67346",
+   "sourceBasis": "per 100 g, Blinkit product page structured nutrition attributes (from pack label)",
+   "quote": "Energy Per 100 g: 521 kcal | Protein Per 100 g: 6.3 g | Total Carbohydrates Per 100 g: 61 g | Total Fat Per 100 g: 28.9 g | Dietary Fiber Per 100 g: 3 g"
+  },
+  {
+   "name": "Bingo Mad Angles Pizza-aaaah",
+   "brand": "Bingo! (ITC)",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "mad angles pizza"
+   ],
+   "unit": "g",
+   "kcal": 531,
+   "proteinG": 7.4,
+   "carbsG": 57.3,
+   "fatG": 31.1,
+   "fiberG": 3.0,
+   "servings": [
+    {
+     "label": "pack (56 g)",
+     "amount": 56
+    },
+    {
+     "label": "serving (label)",
+     "amount": 20
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/437996",
+   "sourceBasis": "per 100 g, Blinkit product page structured nutrition attributes (from pack label)",
+   "quote": "Energy Per 100 g: 531 kcal | Protein Per 100 g: 7.4 g | Total Carbohydrates Per 100 g: 57.3 g | Total Fat Per 100 g: 31.1 g | Dietary Fiber Per 100 g: 3 g"
+  },
+  {
+   "name": "Bingo Mad Angles Tomato Madness",
+   "brand": "Bingo! (ITC)",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "mad angles tomato"
+   ],
+   "unit": "g",
+   "kcal": 530,
+   "proteinG": 6.6,
+   "carbsG": 60.1,
+   "fatG": 29.9,
+   "fiberG": 3.9,
+   "servings": [
+    {
+     "label": "pack (56 g)",
+     "amount": 56
+    },
+    {
+     "label": "serving (label)",
+     "amount": 20
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/580",
+   "sourceBasis": "per 100 g, Blinkit product page structured nutrition attributes (from pack label)",
+   "quote": "Energy Per 100 g: 530 kcal | Protein Per 100 g: 6.6 g | Total Carbohydrates Per 100 g: 60.1 g | Total Fat Per 100 g: 29.9 g | Dietary Fiber Per 100 g: 3.9 g"
+  },
+  {
+   "name": "Bingo Mad Angles Very Peri Peri",
+   "brand": "Bingo! (ITC)",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "mad angles peri peri"
+   ],
+   "unit": "g",
+   "kcal": 529,
+   "proteinG": 5.7,
+   "carbsG": 59.8,
+   "fatG": 30.1,
+   "fiberG": 3.0,
+   "servings": [
+    {
+     "label": "pack (100 g)",
+     "amount": 100
+    },
+    {
+     "label": "serving (label)",
+     "amount": 20
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/407555",
+   "sourceBasis": "per 100 g, Blinkit product page structured nutrition attributes (from pack label)",
+   "quote": "Energy Per 100 g: 529 kcal | Protein Per 100 g: 5.7 g | Total Carbohydrates Per 100 g: 59.8 g | Total Fat Per 100 g: 30.1 g | Dietary Fiber Per 100 g: 3 g"
+  },
+  {
+   "name": "Bingo Mad Angles Red Alert",
+   "brand": "Bingo! (ITC)",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "mad angles red alert"
+   ],
+   "unit": "g",
+   "kcal": 534,
+   "proteinG": 6.9,
+   "carbsG": 56.2,
+   "fatG": 32.1,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "pack (30 g)",
+     "amount": 30
+    }
+   ],
+   "source": "https://world.openfoodfacts.org/product/8901725018696",
+   "sourceBasis": "per 100 g, Open Food Facts (crowd-sourced from Indian pack label, barcode 8901725018696), read via OFF API; product name on OFF: 'Bingo Mad Angles Red Alert'",
+   "quote": "energy-kcal_100g 534 | proteins_100g 6.9 | carbohydrates_100g 56.2 | fat_100g 32.1"
+  },
+  {
+   "name": "Bingo Mad Angles Mystery Pickle",
+   "brand": "Bingo! (ITC)",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "mad angles mystery pickle"
+   ],
+   "unit": "g",
+   "kcal": 536,
+   "proteinG": 5.9,
+   "carbsG": 58.3,
+   "fatG": 31.7,
+   "fiberG": null,
+   "servings": [],
+   "source": "https://world.openfoodfacts.org/product/8909081005619",
+   "sourceBasis": "per 100 g, Open Food Facts (crowd-sourced from Indian pack label, barcode 8909081005619), read via OFF API; product name on OFF: 'Bingo Mad Angles Mystery Pickle'",
+   "quote": "energy-kcal_100g 536 | proteins_100g 5.9 | carbohydrates_100g 58.3 | fat_100g 31.7"
+  },
+  {
+   "name": "Bingo Tedhe Medhe Chatpata Twist",
+   "brand": "Bingo! (ITC)",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "tedhe medhe chatpata"
+   ],
+   "unit": "g",
+   "kcal": 550,
+   "proteinG": 7.7,
+   "carbsG": 52.9,
+   "fatG": 35.2,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "pack (70 g)",
+     "amount": 70
+    },
+    {
+     "label": "serving (label)",
+     "amount": 20
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/542477",
+   "sourceBasis": "per 100 g, Blinkit product page structured nutrition attributes (from pack label)",
+   "quote": "Energy Per 100 g: 550 kcal | Protein Per 100 g: 7.7 g | Total Carbohydrates Per 100 g: 52.9 g | Total Fat Per 100 g: 35.2 g"
+  },
+  {
+   "name": "Bingo Original Style Chilli Sprinkled",
+   "brand": "Bingo! (ITC)",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "bingo chilli chips",
+    "bingo original style chilli"
+   ],
+   "unit": "g",
+   "kcal": 531,
+   "proteinG": 7.1,
+   "carbsG": 50.5,
+   "fatG": 33.4,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "pack (43 g)",
+     "amount": 43
+    },
+    {
+     "label": "pack (75 g)",
+     "amount": 75
+    },
+    {
+     "label": "pack (130 g)",
+     "amount": 130
+    },
+    {
+     "label": "serving (label)",
+     "amount": 20
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/481202",
+   "sourceBasis": "per 100 g, Blinkit product page structured nutrition attributes (from pack label)",
+   "quote": "Energy Per 100 g: 531 kcal | Protein Per 100 g: 7.1 g | Total Carbohydrates Per 100 g: 50.5 g | Total Fat Per 100 g: 33.4 g"
+  },
+  {
+   "name": "Bingo Original Style Salt Sprinkled",
+   "brand": "Bingo! (ITC)",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "bingo salted chips",
+    "bingo original style salted"
+   ],
+   "unit": "g",
+   "kcal": 561,
+   "proteinG": 6.9,
+   "carbsG": 54.8,
+   "fatG": 34.9,
+   "fiberG": null,
+   "servings": [],
+   "source": "https://world.openfoodfacts.org/product/8901725192426",
+   "sourceBasis": "per 100 g, Open Food Facts (crowd-sourced from Indian pack label, barcode 8901725192426), read via OFF API; product name on OFF: 'Bingo! Potato Chips Original style - Salt sprinkled'",
+   "quote": "energy-kcal_100g 561 | proteins_100g 6.9 | carbohydrates_100g 54.8 | fat_100g 34.9"
+  },
+  {
+   "name": "Bingo Original Style Chilli Charged Tomato",
+   "brand": "Bingo! (ITC)",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "bingo tomato chips"
+   ],
+   "unit": "g",
+   "kcal": 535,
+   "proteinG": 7.5,
+   "carbsG": 55.5,
+   "fatG": 32,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "pack (21.4 g)",
+     "amount": 21.4
+    }
+   ],
+   "source": "https://world.openfoodfacts.org/product/8901725013561",
+   "sourceBasis": "per 100 g, Open Food Facts (crowd-sourced from Indian pack label, barcode 8901725013561), read via OFF API; product name on OFF: 'Bingo! Original Style Chilli Charged Tomato Chips'",
+   "quote": "energy-kcal_100g 535 | proteins_100g 7.5 | carbohydrates_100g 55.5 | fat_100g 32"
+  },
+  {
+   "name": "Bingo Cream & Onion Potato Chips",
+   "brand": "Bingo! (ITC)",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "bingo cream and onion",
+    "bingo cream onion chips"
+   ],
+   "unit": "g",
+   "kcal": 534,
+   "proteinG": 7.4,
+   "carbsG": 57.2,
+   "fatG": 31.6,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "pack (48 g)",
+     "amount": 48
+    },
+    {
+     "label": "pack (87.5 g)",
+     "amount": 87.5
+    },
+    {
+     "label": "serving (label)",
+     "amount": 20
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/669601",
+   "sourceBasis": "per 100 g, Blinkit product page structured nutrition attributes (from pack label)",
+   "quote": "Energy Per 100 g: 534 kcal | Protein Per 100 g: 7.4 g | Total Carbohydrates Per 100 g: 57.2 g | Total Fat Per 100 g: 31.6 g"
+  },
+  {
+   "name": "Bingo Hot & Spicy Korean Style",
+   "brand": "Bingo! (ITC)",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "bingo korean"
+   ],
+   "unit": "g",
+   "kcal": 533,
+   "proteinG": 7.3,
+   "carbsG": 54.5,
+   "fatG": 32.4,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "pack (75 g)",
+     "amount": 75
+    },
+    {
+     "label": "pack (87.5 g)",
+     "amount": 87.5
+    },
+    {
+     "label": "serving (label)",
+     "amount": 20
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/543971",
+   "sourceBasis": "per 100 g, Blinkit product page structured nutrition attributes (from pack label)",
+   "quote": "Energy Per 100 g: 533 kcal | Protein Per 100 g: 7.3 g | Total Carbohydrates Per 100 g: 54.5 g | Total Fat Per 100 g: 32.4 g"
+  },
+  {
+   "name": "Bingo Masala Massacre",
+   "brand": "Bingo! (ITC)",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "bingo masala massacre"
+   ],
+   "unit": "g",
+   "kcal": 530,
+   "proteinG": 6.6,
+   "carbsG": 57.4,
+   "fatG": 31.3,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "pack (87.5 g)",
+     "amount": 87.5
+    },
+    {
+     "label": "serving (label)",
+     "amount": 20
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/774232",
+   "sourceBasis": "per 100 g, Blinkit product page structured nutrition attributes (from pack label)",
+   "quote": "Energy Per 100 g: 530 kcal | Protein Per 100 g: 6.6 g | Total Carbohydrates Per 100 g: 57.4 g | Total Fat Per 100 g: 31.3 g"
+  },
+  {
+   "name": "Bingo Popped Indian Spice Mix",
+   "brand": "Bingo! (ITC)",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "bingo popped masala"
+   ],
+   "unit": "g",
+   "kcal": 486,
+   "proteinG": 6.9,
+   "carbsG": 66.9,
+   "fatG": 22.1,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "pack (43 g)",
+     "amount": 43
+    },
+    {
+     "label": "serving (label)",
+     "amount": 20
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/669653",
+   "sourceBasis": "per 100 g, Blinkit product page structured nutrition attributes (from pack label)",
+   "quote": "Energy Per 100 g: 486 kcal | Protein Per 100 g: 6.9 g | Total Carbohydrates Per 100 g: 66.9 g | Total Fat Per 100 g: 22.1 g"
+  },
+  {
+   "name": "Bingo Popped Salt n Pepper",
+   "brand": "Bingo! (ITC)",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "bingo popped salt pepper"
+   ],
+   "unit": "g",
+   "kcal": 489,
+   "proteinG": 6.8,
+   "carbsG": 66.7,
+   "fatG": 22.1,
+   "fiberG": 1.0,
+   "servings": [
+    {
+     "label": "pack (43 g)",
+     "amount": 43
+    },
+    {
+     "label": "serving (label)",
+     "amount": 20
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/669637",
+   "sourceBasis": "per 100 g, Blinkit product page structured nutrition attributes (from pack label)",
+   "quote": "Energy Per 100 g: 489 kcal | Protein Per 100 g: 6.8 g | Total Carbohydrates Per 100 g: 66.7 g | Total Fat Per 100 g: 22.1 g | Dietary Fiber Per 100 g: 1 g"
+  },
+  {
+   "name": "Bingo Popped Sour Cream & Herbs",
+   "brand": "Bingo! (ITC)",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "bingo popped sour cream"
+   ],
+   "unit": "g",
+   "kcal": 491,
+   "proteinG": 6.9,
+   "carbsG": 67.4,
+   "fatG": 22,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "pack (43 g)",
+     "amount": 43
+    },
+    {
+     "label": "serving (label)",
+     "amount": 20
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/669590",
+   "sourceBasis": "per 100 g, Blinkit product page structured nutrition attributes (from pack label); label also lists dietary fibre 6 g per 100 g; fibre is included in the carbohydrate figure Verification: fibre removed (only in Blinkit attributes, not the label text).",
+   "quote": "Energy Per 100 g: 491 kcal | Protein Per 100 g: 6.9 g | Total Carbohydrates Per 100 g: 67.4 g | Total Fat Per 100 g: 22 g | Dietary Fiber Per 100 g: 6 g"
+  },
+  {
+   "name": "Bingo Cheese Nachos",
+   "brand": "Bingo! (ITC)",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "bingo nachos"
+   ],
+   "unit": "g",
+   "kcal": 501,
+   "proteinG": 6.9,
+   "carbsG": 65.3,
+   "fatG": 24.1,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "serving (label)",
+     "amount": 20
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/437997",
+   "sourceBasis": "per 100 g, Blinkit product page structured nutrition attributes (from pack label)",
+   "quote": "Energy Per 100 g: 501 kcal | Protein Per 100 g: 6.9 g | Total Carbohydrates Per 100 g: 65.3 g | Total Fat Per 100 g: 24.1 g"
+  },
+  {
+   "name": "SuperYou Multigrain Protein Chips Cheese & Tomato",
+   "brand": "SuperYou",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "superyou chips cheese tomato",
+    "superyou protein chips"
+   ],
+   "unit": "g",
+   "kcal": 422,
+   "proteinG": 25,
+   "carbsG": 62.5,
+   "fatG": 7.3,
+   "fiberG": 7.5,
+   "servings": [
+    {
+     "label": "pack (40 g)",
+     "amount": 40
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/650002",
+   "sourceBasis": "per 100 g, Blinkit product page structured nutrition attributes (from pack label); label also lists dietary fibre 7.5 g per 100 g; fibre is included in the carbohydrate figure",
+   "quote": "Energy Per 100 g: 422 kcal | Protein Per 100 g: 25 g | Total Carbohydrates Per 100 g: 62.5 g | Total Fat Per 100 g: 7.3 g | Dietary Fiber Per 100 g: 7.5 g"
+  },
+  {
+   "name": "SuperYou Multigrain Protein Chips Pudina",
+   "brand": "SuperYou",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "superyou chips pudina"
+   ],
+   "unit": "g",
+   "kcal": 410,
+   "proteinG": 25,
+   "carbsG": 62.5,
+   "fatG": 6.5,
+   "fiberG": 7.5,
+   "servings": [
+    {
+     "label": "pack (40 g)",
+     "amount": 40
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/649981",
+   "sourceBasis": "per 100 g, Blinkit product page structured nutrition attributes (from pack label); label also lists dietary fibre 7.5 g per 100 g; fibre is included in the carbohydrate figure",
+   "quote": "Energy Per 100 g: 410 kcal | Protein Per 100 g: 25 g | Total Carbohydrates Per 100 g: 62.5 g | Total Fat Per 100 g: 6.5 g | Dietary Fiber Per 100 g: 7.5 g"
+  },
+  {
+   "name": "SuperYou Multigrain Protein Chips Sour Cream & Onion",
+   "brand": "SuperYou",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "superyou chips sour cream onion"
+   ],
+   "unit": "g",
+   "kcal": 410,
+   "proteinG": 25,
+   "carbsG": 62.5,
+   "fatG": 6.5,
+   "fiberG": 7.5,
+   "servings": [
+    {
+     "label": "pack (40 g)",
+     "amount": 40
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/650010",
+   "sourceBasis": "per 100 g, Blinkit product page structured nutrition attributes (from pack label); label also lists dietary fibre 7.5 g per 100 g; fibre is included in the carbohydrate figure",
+   "quote": "Energy Per 100 g: 410 kcal | Protein Per 100 g: 25 g | Total Carbohydrates Per 100 g: 62.5 g | Total Fat Per 100 g: 6.5 g | Dietary Fiber Per 100 g: 7.5 g"
+  },
+  {
+   "name": "SuperYou Multigrain Protein Chips Super Masala",
+   "brand": "SuperYou",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "superyou chips masala"
+   ],
+   "unit": "g",
+   "kcal": 418,
+   "proteinG": 25,
+   "carbsG": 64.5,
+   "fatG": 6.5,
+   "fiberG": 7.5,
+   "servings": [
+    {
+     "label": "pack (40 g)",
+     "amount": 40
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/649989",
+   "sourceBasis": "per 100 g, Blinkit product page structured nutrition attributes (from pack label); the page's \"Nutrition Information\" (per 40 gm) also lists DIETARY FIBER: 3 g (7.5 g per 100 g); fibre is included in the carbohydrate figure",
+   "quote": "Energy Per 100 g: 418 kcal | Protein Per 100 g: 25 g | Total Carbohydrates Per 100 g: 64.5 g | Total Fat Per 100 g: 6.5 g"
+  }
+ ],
+ "notFound": [
+  {
+   "name": "Bingo Yumitos (Salted, Tomato, Chilli etc.)",
+   "reason": "No readable label found (BigBasket/JioMart blocked or JS-only, no OFF entry with nutrition). Note: Blinkit's 130 g 'Bingo Cream & Onion Potato Chips' page describes itself as Yumitos International Cream & Onion; its 87.5 g sibling is included as 'Bingo Cream & Onion Potato Chips'."
+  },
+  {
+   "name": "Bingo Hashtags (Cream & Onion, Spicy Masala)",
+   "reason": "OFF entry 8901725119843 has no nutrition; BigBasket blocked; no readable label found"
+  },
+  {
+   "name": "Bingo Tangles (Masala, Tomato)",
+   "reason": "Blinkit pages (prid 582, 583) carry no nutrition table; no OFF entry with nutrition"
+  },
+  {
+   "name": "Lay's Stax (India)",
+   "reason": "Only imported Stax cans (US formulation) seen on BigBasket listings, which are not readable; no Indian-label source"
+  },
+  {
+   "name": "Lay's Hot Chips Style Asian Fiery Chilli",
+   "reason": "Blinkit page (prid 478813) mixes another product's description and gives conflicting values (540 vs 543 kcal), so not trusted"
+  },
+  {
+   "name": "Kurkure Hyderabadi Hungama, Kurkure Multigrain",
+   "reason": "No readable current label: OFF entries lack nutrition or look discontinued; no Blinkit page found"
+  },
+  {
+   "name": "Kurkure Mast Chinese Fusion (Mast Bhel kit)",
+   "reason": "DIY bhel kit, Blinkit gives only per-serve values without a per-100 g basis; not a plain chips item"
+  },
+  {
+   "name": "SuperYou Power Puffs (Cheesy Cheese, Chilli Masala, Pizza Party, Maaad Achaari)",
+   "reason": "Out of scope (puffs, not protein chips) and Blinkit attributes mix per-pack and per-100 g values"
+  },
+  {
+   "name": "Lay's Maxx Sizzling Barbeque / Peppery Cheddar / Mexican Chipotle",
+   "reason": "Only BigBasket listings (blocked to fetch); no OFF entry with nutrition"
+  },
+  {
+   "name": "Bingo Tedhe Medhe Masala Tadka",
+   "reason": "Verification: label carbs 51.3 g do not add up to the printed 546 kcal (522); likely a listing typo, conflicting OFF entries"
+  }
+ ]
+}

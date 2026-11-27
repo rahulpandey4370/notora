@@ -1,0 +1,2332 @@
+{
+ "items": [
+  {
+   "name": "Cadbury Dairy Milk",
+   "brand": "Cadbury (Mondelez India)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "dairy milk",
+    "cdm",
+    "cadbury dairy milk chocolate"
+   ],
+   "unit": "g",
+   "kcal": 531,
+   "proteinG": 7.9,
+   "carbsG": 60.4,
+   "fatG": 29.0,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 13
+    },
+    {
+     "label": "bar",
+     "amount": 23
+    },
+    {
+     "label": "bar",
+     "amount": 46
+    },
+    {
+     "label": "family pack",
+     "amount": 112
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/313400",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026). Servings (Blinkit unit sizes): bar 13 g from the listing prid 86668; bar 23 g from the listing prid 339179; family pack 112 g from the listing prid 391812",
+   "quote": "Nutrition Information (Per 100 g) - Energy 531 kcal, Protein 7.9 g, Carbohydrate 60.4 g, Total Sugars 57.0 g, Added Sugars 47.4 g, Total Fat 29.0 g, Saturated Fat 19.6 g, Trans Fat < 0.1 g, Cholesterol 20.7 mg, Sodium 129 mg."
+  },
+  {
+   "name": "Cadbury Dairy Milk Fruit & Nut",
+   "brand": "Cadbury (Mondelez India)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "dairy milk fruit and nut",
+    "cadbury fruit n nut"
+   ],
+   "unit": "g",
+   "kcal": 520,
+   "proteinG": 8.5,
+   "carbsG": 58.8,
+   "fatG": 28.4,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 36
+    },
+    {
+     "label": "bar",
+     "amount": 75
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/18947",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026). Servings (Blinkit unit sizes): bar 36 g from the listing prid 544",
+   "quote": "Per 100 g - Energy 520 kcal, Protein 8.5 g, Carbohydrate 58.8 g, Total Sugars 54.4 g, Added Sugars 38.3 g, Total Fat 28.4 g, Saturated Fat 16.4 g, Trans Fat <0.1 g, Cholesterol 16.8 mg, Sodium 106 mg."
+  },
+  {
+   "name": "Cadbury Dairy Milk Roast Almond",
+   "brand": "Cadbury (Mondelez India)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "dairy milk roast almond",
+    "cadbury roast almond"
+   ],
+   "unit": "g",
+   "kcal": 551,
+   "proteinG": 10.4,
+   "carbsG": 53.6,
+   "fatG": 33.5,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 36
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/542",
+   "sourceBasis": "Blinkit product page nutrition text with no basis printed (read Nov 2026); read as per 100 g. Note: 551 kcal and 33.5 g fat cannot fit in the 36 g bar, so the figures are per 100 g.",
+   "quote": "Energy - 551 kcal Protein - 10.4 g Carbohydrate - 53.6 g Total Sugars - 46.9 g Added Sugars - 38.2 g Total Fat - 33.5 g Saturated Fat - 16.8 g Trans Fat - <0.1 g Cholesterol - 16.8 mg Sodium - 104 mg"
+  },
+  {
+   "name": "Cadbury Dairy Milk Crackle",
+   "brand": "Cadbury (Mondelez India)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "dairy milk crackle",
+    "cadbury crackle"
+   ],
+   "unit": "g",
+   "kcal": 516,
+   "proteinG": 7.7,
+   "carbsG": 63.6,
+   "fatG": 25.8,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 36
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/543",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026)",
+   "quote": "Nutrition information (per 100 g) - Energy 516 kcal, Protein 7.7 g, Carbohydrate 63.6 g, Total Sugars 51.6 g, Added Sugars 43.0 g, Total Fat 25.8 g, Saturated Fat 17.5 g, Trans Fat <0.1 g, Cholesterol 18.4 mg, Sodium 236 mg."
+  },
+  {
+   "name": "Cadbury Dairy Milk Crispello",
+   "brand": "Cadbury (Mondelez India)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "crispello",
+    "dairy milk crispello"
+   ],
+   "unit": "g",
+   "kcal": 522,
+   "proteinG": 5.2,
+   "carbsG": 64.5,
+   "fatG": 27.6,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 35
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/440219",
+   "sourceBasis": "per 100 g: Blinkit product page (read Nov 2026); the Nutrition Information field prints no basis, the page's description block states the same energy per 100 g",
+   "quote": "Energy 522 Kcal, Protein 5.2 g, Carbohydrate 64.5g, Total Sugars 48.7 g, Added Sugars 43.9 g, Total Fat 27.6 g, Saturated Fat 17.7 g. Trans Fat 0.2 g. Cholesterol 12.7 mg, Sodium 192 mg."
+  },
+  {
+   "name": "Cadbury Dairy Milk Milkinis",
+   "brand": "Cadbury (Mondelez India)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "milkinis",
+    "dairy milk milkinis"
+   ],
+   "unit": "g",
+   "kcal": 547,
+   "proteinG": 9.7,
+   "carbsG": 54.4,
+   "fatG": 32.4,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 34
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/706293",
+   "sourceBasis": "per 100 g: Blinkit product page (read Nov 2026); the Nutrition Information field prints no basis, the page's description block states the same energy per 100 g",
+   "quote": "Energy 547 kcal, Protein 9.7 g, Carbohydrate 54.4 g, Total Sugars 52.7 g, Added Sugars 39.0 g, Total Fat 32.4 g, Saturated Fat 20 g, Trans Fat 0.2 g, Cholesterol 24.2 mg, Sodium 170 mg."
+  },
+  {
+   "name": "Cadbury Dairy Milk Lickables (with Oreo chunks)",
+   "brand": "Cadbury (Mondelez India)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "lickables",
+    "dairy milk lickables"
+   ],
+   "unit": "g",
+   "kcal": 490,
+   "proteinG": 7,
+   "carbsG": 59.2,
+   "fatG": 25.9,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "pack",
+     "amount": 20
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/363754",
+   "sourceBasis": "Blinkit product page nutrition text with no basis printed (read Nov 2026); read as per 100 g. Note: 490 kcal cannot fit in the 20 g pack, so the figures are per 100 g; text also says \"Serving size: 20g; No. of Servings per package: 1\"",
+   "quote": "Energy 490 kcal Protein 7 g Carbohydrate 59.2 g Total Sugars 48.8 g Added Sugars 39.6 g Total Fat 25.9 g Saturated Fat 15.0 g Trans Fat 0.2 g Cholesterol 7.1 mg Sodium 222 mg Serving size: 20g; No. of Servings per package: 1"
+  },
+  {
+   "name": "Cadbury Dairy Milk Shots",
+   "brand": "Cadbury (Mondelez India)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "dairy milk shots",
+    "cadbury shots"
+   ],
+   "unit": "g",
+   "kcal": 481,
+   "proteinG": 2.1,
+   "carbsG": 76.1,
+   "fatG": 18.4,
+   "fiberG": 2.4,
+   "servings": [],
+   "source": "https://blinkit.com/prn/x/prid/524801",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026)",
+   "quote": "Nutritional Information Per 100 G Energy Kcal 481 G, Protein 2.1 G, Carbohydrate 76.1 G, (Of Which Sugars) G 72.1, Sodium 71 Mg, Fat 18.4 G, Saturated Fat 16.6 G, Trans Fat 0.2 G, Dietary Fibre 2.4 G"
+  },
+  {
+   "name": "Cadbury Dairy Milk Silk",
+   "brand": "Cadbury (Mondelez India)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "silk",
+    "dairy milk silk",
+    "cdm silk"
+   ],
+   "unit": "g",
+   "kcal": 543,
+   "proteinG": 7.6,
+   "carbsG": 58.5,
+   "fatG": 31.4,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 60
+    },
+    {
+     "label": "bar",
+     "amount": 144
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/545",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026). Servings (Blinkit unit sizes): bar 144 g from the listing prid 11022",
+   "quote": "Energy: 543 kcal, Protein: 7.6 g, Carbohydrate: 58.5 g, Total Sugars: 55.3 g, Added Sugars: 45.9 g, Total Fat: 31.4 g, Saturated Fat: 21.5 g, Trans Fat: 0.1 g, Cholesterol: 26.7 mg, Sodium: 125 mg (Per 100 g)"
+  },
+  {
+   "name": "Cadbury Dairy Milk Silk Bubbly",
+   "brand": "Cadbury (Mondelez India)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "silk bubbly",
+    "bubbly"
+   ],
+   "unit": "g",
+   "kcal": 543,
+   "proteinG": 7.6,
+   "carbsG": 58.5,
+   "fatG": 31.4,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 46
+    },
+    {
+     "label": "bar",
+     "amount": 112
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/81081",
+   "sourceBasis": "Blinkit product page nutrition text with no basis printed (read Nov 2026); read as per 100 g. Note: Basis not printed on the 112 g listing; same numbers as plain Silk (per 100 g); the 46 g listing (prid 86669) prints \"(Per 100 g) Energy: 543 kcal Protein: 7 g ...\", i.e. the same values with protein rounded to 7 g.. Servings (Blinkit unit sizes): bar 46 g from the listing prid 86669",
+   "quote": "Energy 543 kcal, Protein 7.6 g, Carbohydrate 58.5 g, Total Sugars 55.3 g, Added Sugars 45.9 g, Total Fat 31.4 g, Saturated Fat 21.5 g, Trans Fat 0.1 g, Cholesterol 27 mg, Sodium 125 mg."
+  },
+  {
+   "name": "Cadbury Dairy Milk Silk Fruit & Nut",
+   "brand": "Cadbury (Mondelez India)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "silk fruit and nut",
+    "silk fruit n nut"
+   ],
+   "unit": "g",
+   "kcal": 532,
+   "proteinG": 7.8,
+   "carbsG": 58.1,
+   "fatG": 30.4,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 51
+    },
+    {
+     "label": "bar",
+     "amount": 129
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/110016",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026). Servings (Blinkit unit sizes): bar 129 g from the listing prid 11025",
+   "quote": "Per 100 g - Energy 532 kcal, Protein 7.8 g, Carbohydrate 58.1 g, Total Sugars 50.9 g, Added Sugars 37.7 g, Total Fat 30.4 g, Saturated Fat 18.7 g, Trans Fat 0.1 g, Cholesterol 22.4 mg, Sodium 104 mg."
+  },
+  {
+   "name": "Cadbury Dairy Milk Silk Roast Almond",
+   "brand": "Cadbury (Mondelez India)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "silk roast almond"
+   ],
+   "unit": "g",
+   "kcal": 560,
+   "proteinG": 9.7,
+   "carbsG": 52.7,
+   "fatG": 35.2,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 52
+    },
+    {
+     "label": "bar",
+     "amount": 134
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/403491",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026). Servings (Blinkit unit sizes): bar 134 g from the listing prid 403492",
+   "quote": "(Per 100 g) Energy: 560 kcal Protein: 9.7 g Carbohydrate: 52.7 g Total Sugars: 46.7 g Added Sugars: 38.1 g Total Fat: 35.2 g Saturated Fat: 19.1 g Trans Fat: 0.1 g Cholesterol: 23.1 mg Sodium: 104 mg"
+  },
+  {
+   "name": "Cadbury Dairy Milk Silk Oreo",
+   "brand": "Cadbury (Mondelez India)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "silk oreo"
+   ],
+   "unit": "g",
+   "kcal": 563,
+   "proteinG": 6.0,
+   "carbsG": 56.9,
+   "fatG": 34.8,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 58.5
+    },
+    {
+     "label": "bar",
+     "amount": 124
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/353817",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026). Servings (Blinkit unit sizes): bar 124 g from the listing prid 353818",
+   "quote": "Per 100 g - Energy 563 kcal, Protein 6.0 g, Carbohydrate 56.9 g, Total Sugars 48.9 g, Added Sugars 42.7 g, Total Fat 34.8 g, Saturated Fat 22.3 g, Trans Fat 0.2 g, Cholesterol 17.4 mg, Sodium 207 mg."
+  },
+  {
+   "name": "Cadbury Dairy Milk Silk Oreo Red Velvet",
+   "brand": "Cadbury (Mondelez India)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "silk red velvet",
+    "silk oreo red velvet"
+   ],
+   "unit": "g",
+   "kcal": 562,
+   "proteinG": 6.0,
+   "carbsG": 56.2,
+   "fatG": 35.0,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 60
+    },
+    {
+     "label": "bar",
+     "amount": 130
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/402525",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026). Servings (Blinkit unit sizes): bar 60 g from the listing prid 402862",
+   "quote": "Nutrition Information (Per 100 G) *- Energy 562 Kcal, Protein 6.0 G, Carbohydrate 56.2 G, Total Sugars 47.9 G, Added Sugars 37.6 G, Total Fat 35.0 G, Saturated Fat 22.6 G, Trans Fat 0.2 G, Cholesterol 17.3 Mg, Sodium 183 Mg"
+  },
+  {
+   "name": "Cadbury Dairy Milk Silk Mousse",
+   "brand": "Cadbury (Mondelez India)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "silk mousse"
+   ],
+   "unit": "g",
+   "kcal": 553,
+   "proteinG": 8.7,
+   "carbsG": 52.4,
+   "fatG": 35.1,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 48.5
+    },
+    {
+     "label": "bar",
+     "amount": 110
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/437645",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026). Servings (Blinkit unit sizes): bar 110 g from the listing prid 437646",
+   "quote": "Per 100 g-Energy 553 kcal, Protein 8.7g, Carbohydrate 52.4 g, Total Sugars 46.1 g, Added Sugars 37.1 g, Total Fat 35.1 g, Saturated Fat 22.5 g, Trans Fat 0.2 g, Cholesterol 18.0 mg, Sodium 140 mg."
+  },
+  {
+   "name": "Cadbury Dairy Milk Silk Desserts Brownie",
+   "brand": "Cadbury (Mondelez India)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "silk brownie",
+    "silk desserts brownie"
+   ],
+   "unit": "g",
+   "kcal": 557,
+   "proteinG": 8.1,
+   "carbsG": 50.9,
+   "fatG": 36.3,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 70
+    },
+    {
+     "label": "bar",
+     "amount": 140
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/555854",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026). Servings (Blinkit unit sizes): bar 140 g from the listing prid 555855",
+   "quote": "Serving size: 20 g; No. of servings per package: 3.5*. Nutrition Information* (per 100 g)- Energy 557 kcal, Protein 8.1 g, Carbohydrate 50.9 g, Total Sugars 40.6 g, Added Sugars 33.4 g, Total Fat 36.3 g, Saturated Fat 17.8 g, Trans Fat 0.1 g, Cholesterol 23.2 mg, Sodium 141 mg."
+  },
+  {
+   "name": "Cadbury 5 Star",
+   "brand": "Cadbury (Mondelez India)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "5 star",
+    "five star",
+    "5star"
+   ],
+   "unit": "g",
+   "kcal": 444,
+   "proteinG": 3.3,
+   "carbsG": 72.9,
+   "fatG": 15.9,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 16
+    },
+    {
+     "label": "bar",
+     "amount": 22.4
+    },
+    {
+     "label": "bar",
+     "amount": 35.2
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/248000",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026). Note: 16 g bar: the 96 g kitted pack (prid 548961) states \"Serving size: 16g; No. of servings per package: 6\" with the same per-100 g values.. Servings (Blinkit unit sizes): bar 16 g from the listing prid 548961; bar 22.4 g from the listing prid 168901",
+   "quote": "Nutrition Information Per 100g* - Energy 444 kcal, Protein 3.3 g, Carbohydrate 72.9 g, Total Sugars 55.5 g, Added Sugars 52.6 g, Total Fat 15.9 g, Saturated Fat 10.1 g, Trans Fat 0.1 g, Cholesterol 4.9 mg, Sodium 170.0 mg."
+  },
+  {
+   "name": "Cadbury 5 Star 3D",
+   "brand": "Cadbury (Mondelez India)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "5 star 3d"
+   ],
+   "unit": "g",
+   "kcal": 504,
+   "proteinG": 3.4,
+   "carbsG": 64.7,
+   "fatG": 26.9,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 40
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/381861",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026)",
+   "quote": "Per 100g* - Energy 504 kcal, Protein 3.4 g, Carbohydrate 64.7 g, Total Sugars 51.9 g, Added Sugars 44.7 g, Total Fat 26.9 g, Saturated Fat 18.4 g, Trans Fat 0.1 g, Cholesterol 6.5 mg, Sodium 178 mg."
+  },
+  {
+   "name": "Cadbury 5 Star Oreo",
+   "brand": "Cadbury (Mondelez India)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "5 star oreo"
+   ],
+   "unit": "g",
+   "kcal": 523.1,
+   "proteinG": 4.5,
+   "carbsG": 62.6,
+   "fatG": 28.4,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 40
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/449053",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026)",
+   "quote": "Per 100g - Energy 523.1 kcal, Protein 4.5 g, Carbohydrate 62.6 g, Total Sugars 48.1 g, Added Sugars 42 g, Total Fat 28.4 g, Saturated Fat 20.3 g, Trans Fat 0.1 g, Cholesterol 4.5 mg, Sodium 221 mg."
+  },
+  {
+   "name": "Cadbury Perk",
+   "brand": "Cadbury (Mondelez India)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "perk",
+    "perk wafer"
+   ],
+   "unit": "g",
+   "kcal": 513,
+   "proteinG": 4.7,
+   "carbsG": 67.6,
+   "fatG": 25.2,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 20
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/281869",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026)",
+   "quote": "NUTRITION INFORMATION (Per 100 g)* - Energy 513 kcal Protein 4.7 g, Carbohydrate 67.6 g, Total Sugars 45.1 g, Added Sugars 43 g, Total Fat 25.2 g, Saturated Fat 20 g, Trans Fat 0.2 g, Cholesterol 0.5 mg, Sodium 103 mg."
+  },
+  {
+   "name": "Cadbury Perk Plus",
+   "brand": "Cadbury (Mondelez India)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "perk plus"
+   ],
+   "unit": "g",
+   "kcal": 509,
+   "proteinG": 4.9,
+   "carbsG": 68.3,
+   "fatG": 24.3,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 40
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/593695",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026)",
+   "quote": "(Per 100 g) Energy: 509 kcal Protein: 4.9 g Carbohydrate: 68.3 g Total Sugars: 44.2 g Added Sugars: 42.2 g Total Fat: 24.3 g Saturated Fat: 19.2 g Trans Fat: 0.2 g Cholesterol: 6.3 mg Sodium: 109 mg"
+  },
+  {
+   "name": "Cadbury Gems",
+   "brand": "Cadbury (Mondelez India)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "gems",
+    "cadbury gems duo"
+   ],
+   "unit": "g",
+   "kcal": 469,
+   "proteinG": 3.5,
+   "carbsG": 75.9,
+   "fatG": 17.5,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "pack",
+     "amount": 17.4
+    },
+    {
+     "label": "Duo pack",
+     "amount": 24.97
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/110655",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026). Servings (Blinkit unit sizes): pack 17.4 g from the listing prid 365339",
+   "quote": "Serving size: 24.97 g; No. of servings per package: 1* Per 100 g Energy kcal 469, Protein g 3.5, Carbohydrate g 75.9, Total Sugars g 70.8, Added Sugars g 68.2, Total Fat g 17.5, Saturated Fat g 17.1, Trans Fat g 0.2, Cholesterol mg 2.4, Sodium mg 38."
+  },
+  {
+   "name": "Cadbury Fuse",
+   "brand": "Cadbury (Mondelez India)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "fuse",
+    "fuse peanut caramel"
+   ],
+   "unit": "g",
+   "kcal": 549,
+   "proteinG": 9.5,
+   "carbsG": 51.6,
+   "fatG": 34.6,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 43
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/336631",
+   "sourceBasis": "Blinkit product page nutrition text with no basis printed (read Nov 2026); read as per 100 g. Note: 549 kcal and 34.6 g fat cannot fit in the 43 g bar, so the figures are per 100 g. Other Fuse listings differ slightly: Mini Treats (prid 409256) \"(Per 100 G) Energy 549 kcal, Protein 9.4 g, Carbohydrate 54.3 g, Total Fat 34.6 g\"; 4x23 g pack (prid 768915) \"(Per 100 g) Energy: 541.8 kcal Protein: 8 g Carbohydrates: 54.4 g Total Fat: 33.1 g\".",
+   "quote": "Energy 549 kcal, Protein 9.5 g, Carbohydrate 51.6 g, Total Sugars 49.9 g, Added Sugars 33 g, Total Fat 34.6 g, Saturated Fat 18.4 g, Trans Fat 0.1 g, Cholesterol 6 mg, Sodium 220 mg."
+  },
+  {
+   "name": "Cadbury Nutties",
+   "brand": "Cadbury (Mondelez India)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "nutties"
+   ],
+   "unit": "g",
+   "kcal": 511,
+   "proteinG": 5.0,
+   "carbsG": 67.2,
+   "fatG": 24.8,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "pack",
+     "amount": 30
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/34422",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026)",
+   "quote": "Nutrition Information (per 100 g)* - Energy 511 Kcal, Protein 5.0 g, Carbohydrate 67.2 g, Total Sugars 61.5 g, Added Sugars 57.4 g, Total Fat 24.8 g, Saturated Fat 13.9 g, Trans Fat 0.1 g, Cholesterol 18.0 mg, Sodium 117 mg."
+  },
+  {
+   "name": "Cadbury Bournville Rich Cocoa 50% Dark",
+   "brand": "Cadbury (Mondelez India)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "bournville",
+    "bournville 50",
+    "bournville rich cocoa"
+   ],
+   "unit": "g",
+   "kcal": 543,
+   "proteinG": 5.6,
+   "carbsG": 56.9,
+   "fatG": 34.3,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 30
+    },
+    {
+     "label": "bar",
+     "amount": 75
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/556",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026). Servings (Blinkit unit sizes): bar 30 g from the listing prid 1365211",
+   "quote": "Per 100 g - Energy kcal 543, Protein g 5.6, Carbohydrate g 56.9, Total Sugars g 45.1, Added Sugars g 44.1, Total Fat g 34.3, Saturated Fat g 23, Trans Fat g 0.1, Cholesterol mg 5.5, Sodium mg 15.8."
+  },
+  {
+   "name": "Cadbury Bournville Rich Cocoa 70% Dark",
+   "brand": "Cadbury (Mondelez India)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "bournville 70",
+    "bournville 70% dark"
+   ],
+   "unit": "g",
+   "kcal": 598,
+   "proteinG": 7.6,
+   "carbsG": 40.7,
+   "fatG": 47.4,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 75
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/424615",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026)",
+   "quote": "Per 100 g -Energy kcal 598, Protein 7.6 g, Carbohydrate 40.7 g, Total Sugars 24.4 g, Added Sugars 23.3 g, Total Fat 47.4 g, Saturated Fat 32.1 g, Trans Fat 0.1 g, Cholesterol 4.4 mg, Sodium 18 mg."
+  },
+  {
+   "name": "Cadbury Bournville Fruit & Nut Dark",
+   "brand": "Cadbury (Mondelez India)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "bournville fruit and nut"
+   ],
+   "unit": "g",
+   "kcal": 533,
+   "proteinG": 6.4,
+   "carbsG": 56.8,
+   "fatG": 32.8,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 30
+    },
+    {
+     "label": "bar",
+     "amount": 75
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/557",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026). Servings (Blinkit unit sizes): bar 30 g from the listing prid 1366249",
+   "quote": "Per 100 g -Energy kcal 533, Protein 6.4 g, Carbohydrate 56.8 g, Total Sugars 44.2 g, Added Sugars 37.2 g, Total Fat 32.8 g, Saturated Fat 19.9 g, Trans Fat 0.1 g, Cholesterol 4.6 mg, Sodium 16 mg."
+  },
+  {
+   "name": "Cadbury Bournville Cranberry Dark",
+   "brand": "Cadbury (Mondelez India)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "bournville cranberry"
+   ],
+   "unit": "g",
+   "kcal": 526,
+   "proteinG": 6.1,
+   "carbsG": 58.0,
+   "fatG": 31.6,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 30
+    },
+    {
+     "label": "bar",
+     "amount": 78
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/555",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026). Servings (Blinkit unit sizes): bar 30 g from the listing prid 1367334",
+   "quote": "Per 100 g -Energy kcal 526, Protein 6.1 g, Carbohydrate 58.0 g, Total Sugars 45.7 g, Added Sugars 43.7 g, Total Fat 31.6 g, Saturated Fat 19 g, Trans Fat 0.1 g, Cholesterol 4.4 mg, Sodium 13.6 mg."
+  },
+  {
+   "name": "Cadbury Bournville Rum & Raisin Dark",
+   "brand": "Cadbury (Mondelez India)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "bournville rum and raisin"
+   ],
+   "unit": "g",
+   "kcal": 506,
+   "proteinG": 5.2,
+   "carbsG": 60.3,
+   "fatG": 28.7,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 78
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/531424",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026)",
+   "quote": "Per 100 g- Energy 506 kcal, Protein 5.2 g, Carbohydrate 60.3 g, Total Sugars 49.7 g, Added Sugars 37.4 g, Total Fat 28.7 g, Saturated Fat 19.2 g, Trans Fat 0.1 g, Cholesterol 4.6 mg, Sodium 17 mg."
+  },
+  {
+   "name": "Cadbury Bournville Orange 50% Dark",
+   "brand": "Cadbury (Mondelez India)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "bournville orange"
+   ],
+   "unit": "g",
+   "kcal": 534,
+   "proteinG": 6.5,
+   "carbsG": 55.8,
+   "fatG": 33.4,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 75
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/731783",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026)",
+   "quote": "Nutritional Information (per 100 g): Energy: 534 kcal Protein: 6.5 g Total Carbohydrate: 55.8 g Total Sugars: 43 g Added Sugars: 40 g Total Fat: 33.4 g Saturated Fat: 19.8 g Trans Fat: 0.1 g Cholesterol: 4.7 mg Sodium: 16.3 mg"
+  },
+  {
+   "name": "Cadbury Bournville Intense Orange 70% Dark",
+   "brand": "Cadbury (Mondelez India)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "bournville intense orange"
+   ],
+   "unit": "g",
+   "kcal": 573,
+   "proteinG": 8.1,
+   "carbsG": 43.2,
+   "fatG": 43.2,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 75
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/732085",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026)",
+   "quote": "Approx. per 100 g: Energy: 573 kcal Protein: 8.1 g Carbohydrate: 43.2 g Total Sugars: 26.4 g Added Sugars: 22.8 g Total Fat: 43.2 g Saturated Fat: 26.7 g Trans Fat: 0.1 g Cholesterol: 3.7 mg Sodium: 18.7 mg"
+  },
+  {
+   "name": "Cadbury Temptations Rum & Raisins",
+   "brand": "Cadbury (Mondelez India)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "temptations rum and raisin",
+    "temptations"
+   ],
+   "unit": "g",
+   "kcal": 498,
+   "proteinG": 5.7,
+   "carbsG": 61.8,
+   "fatG": 26.1,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 70
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/156105",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026)",
+   "quote": "NUTRITION INFORMATION* (Per 100 g)- Energy 498 kcal, Protein 5.7 g, Carbohydrate 61.8 g, Total Sugars 53.2 g, Added Sugars 37.6 g, Total Fat 26.1 g, Saturated Fat 17.0 g, Trans Fat 0 g, Cholesterol 11.6 mg, Sodium 66 mg"
+  },
+  {
+   "name": "Cadbury Temptations Almond Treat",
+   "brand": "Cadbury (Mondelez India)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "temptations almond"
+   ],
+   "unit": "g",
+   "kcal": 555,
+   "proteinG": 9.0,
+   "carbsG": 53.4,
+   "fatG": 35.0,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 70
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/156106",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026)",
+   "quote": "Nutrition information* (per 100 g) - Energy 555 kcal, Protein 9.0 g, Carbohydrate 53.4 g, Total Sugars 45.2 g, Added Sugars 39.3 g, Total Fat 35.0 g, Saturated Fat 18.5 g, Trans Fat 0.1 g, Cholesterol 12.4 mg, Sodium 81.5 mg."
+  },
+  {
+   "name": "Cadbury Choclairs Gold",
+   "brand": "Cadbury (Mondelez India)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "choclairs",
+    "choclairs gold",
+    "eclairs"
+   ],
+   "unit": "g",
+   "kcal": 448,
+   "proteinG": 3.3,
+   "carbsG": 73.5,
+   "fatG": 15.7,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "piece",
+     "amount": 5.6
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/497419",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026). Servings (Blinkit unit sizes): piece 5.6 g derived: 140 g pack of 25 pieces (prid 497419) = 5.6 g each",
+   "quote": "Energy: 448 kcal, Protein: 3.3 g, Carbohydrate: 73.5 g, Total Sugars: 47.5 g, Added Sugars: 42.7 g, Total Fat: 15.7 g, Saturated Fat: 7.5 g, Trans Fat: 0.1 g, Cholesterol: 2 mg, Sodium: 187 mg (per 100g)"
+  },
+  {
+   "name": "Cadbury Choclairs Gold Coffee",
+   "brand": "Cadbury (Mondelez India)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "choclairs coffee"
+   ],
+   "unit": "g",
+   "kcal": 447,
+   "proteinG": 3.4,
+   "carbsG": 73.5,
+   "fatG": 15.6,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "piece",
+     "amount": 5.6
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/751281",
+   "sourceBasis": "Blinkit product page nutrition text with no basis printed (read Nov 2026); read as per 100 g. Note: Basis not printed; the plain Choclairs Gold listing (prid 497419) states near-identical values (448 kcal, 3.3 g protein, 73.5 g carbs, 15.7 g fat) \"(per 100g)\".. Servings (Blinkit unit sizes): piece 5.6 g derived: 560 g pack of 100 candies (prid 751281) = 5.6 g each",
+   "quote": "Energy: 447 kcal Protein: 3.4 g Carbohydrate: 73.5 g Total Sugars: 47.3 g Added Sugars: 42.6 g Total Fat: 15.6 g Saturated Fat: 7.5 g Trans Fat: 0.1 g Cholesterol: 2 mg Sodium: 187 mg"
+  },
+  {
+   "name": "Nestlé KitKat",
+   "brand": "Nestlé India",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "kitkat",
+    "kit kat",
+    "kitkat 4 finger",
+    "kitkat 2 finger"
+   ],
+   "unit": "g",
+   "kcal": 438,
+   "proteinG": 6.4,
+   "carbsG": 47.4,
+   "fatG": 24.8,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "finger",
+     "amount": 9.6
+    },
+    {
+     "label": "2-finger mini",
+     "amount": 12.1
+    },
+    {
+     "label": "4-finger bar",
+     "amount": 38.5
+    },
+    {
+     "label": "share & snap bar",
+     "amount": 57
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/425721",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026). Note: The 4-finger bar listing (prid 212722) prints the same values (\"Per 100 g ... Energy: 438 kcal Protein: 6 g Carbohydrates: 47.4 g ... Total Fat: 24.8 g\") and \"Serving Size: 9.6 g (1 finger ≈ 42 kcal)\".. Servings (Blinkit unit sizes): finger 9.6 g from the listing prid 212722; 2-finger mini 12.1 g derived: 181.5 g gift pack of 15 pieces (prid 701721) = 12.1 g each; 4-finger bar 38.5 g from the listing prid 212722 Verified against label photo https://images.openfoodfacts.org/images/products/890/105/801/5171/nutrition_en.14.full.jpg. (Open Food Facts pack photo, uploaded Apr 2025, FSSAI added-sugar format; Blinkit back-of-pack artwork shows the same.)",
+   "quote": "(Per 100g) Energy: 438 kcal Protein: 6.4 g Carbohydrate: 47.4 g Total Sugars: 35.1 g Added Sugar: 28.9 g Total Fat: 24.8 g Saturated Fat: 24.5 g Trans Fat: 0.04 g Sodium: 97.4 mg"
+  },
+  {
+   "name": "Nestlé KitKat Minis",
+   "brand": "Nestlé India",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "kitkat minis",
+    "kitkat mini"
+   ],
+   "unit": "g",
+   "kcal": 444,
+   "proteinG": 6.6,
+   "carbsG": 47.5,
+   "fatG": 25.3,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "mini bar",
+     "amount": 7.4
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/383615",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026). Servings (Blinkit unit sizes): mini bar 7.4 g derived: 111 g pack of 15 pieces (prid 383615) = 7.4 g each Verified against label photo https://images.openfoodfacts.org/images/products/890/105/801/1012/nutrition_en.4.full.jpg. (Open Food Facts pack photo of the 133.2 g (18 x 7.4 g) pouch, uploaded Apr 2026, MFD Mar 2026.)",
+   "quote": "(Per 100g) Energy: 444 kcal Protein: 6.6 g Carbohydrate: 47.5 g Total Sugars: 37.8 g Added Sugar: 31.3 g Total Fat: 25.3 g Saturated Fat: 24.2 g Trans Fat: 0.04 g Sodium: 78.8 mg"
+  },
+  {
+   "name": "Nestlé KitKat Chunky Caramel",
+   "brand": "Nestlé India",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "kitkat chunky",
+    "kitkat chunky caramel"
+   ],
+   "unit": "g",
+   "kcal": 384,
+   "proteinG": 3.6,
+   "carbsG": 49.4,
+   "fatG": 19.1,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 42
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/531637",
+   "sourceBasis": "Blinkit product page nutrition text with no basis printed (read Nov 2026); read as per 100 g. Note: 384 kcal cannot fit in the 42 g bar, so the figures are per 100 g. Verified against label photo https://cdn.grofers.com/da/cms-assets/cms/product/rc-upload-1771598525494-2611.jpg. (Blinkit back-of-pack artwork, current SKU barcode 6294017130902, imported from Nestlé Dubai; ingredients now include palm kernel oil and shea butter. An older pack with barcode 6294017124031, photographed Jan 2024 on Open Food Facts, printed 489 kcal, protein 5.3 g, carbohydrate 62.5 g, fat 24.2 g: superseded recipe.)",
+   "quote": "Energy: 384 kcal Protein: 3.6 g Carbohydrate: 49.4 g Total Sugars: 40.7 g Added Sugar: 35.6 g Total Fat: 19.1 g Saturated Fat: 18.0 g Trans Fat: 0.07 g Cholesterol: 9.8 mg Sodium: 64.5 mg"
+  },
+  {
+   "name": "Nestlé KitKat Delights Rich",
+   "brand": "Nestlé India",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "kitkat delights",
+    "kitkat delights rich"
+   ],
+   "unit": "g",
+   "kcal": 461,
+   "proteinG": 5.9,
+   "carbsG": 55.7,
+   "fatG": 23.8,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 50
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/380140",
+   "sourceBasis": "Blinkit product page nutrition text with no basis printed (read Nov 2026); read as per 100 g. Note: 461 kcal cannot fit in the 50 g bar, so the figures are per 100 g. The 150 g Delights Rich listing (prid 406119) states slightly different values: \"(per 100g) Energy: 466 kcal Protein: 6.4 g Carbohydrate: 55.2 g ... Total Fat: 24.5 g\". Verified against label photo https://cdn.grofers.com/da/cms-assets/cms/product/rc-upload-1779853608745-497.jpg. (Blinkit back-of-pack artwork, barcode 8901058852165, 50 g, serve 4 cubes 16.6 g, uploaded May 2026; the older 3-cube pack photographed in 2024 on Open Food Facts printed 482 kcal / 7.3 / 62.7 / 22.5 before the recipe change.)",
+   "quote": "Energy: 461 kcal Protein: 5.9 g Carbohydrate: 55.7 g Total Sugars: 42.4 g Added Sugar: 41.2 g Total Fat: 23.8 g Saturated Fat: 23.2 g Trans Fat: 0.07 g Cholesterol: 6.0 mg Sodium: 82.5 mg"
+  },
+  {
+   "name": "Nestlé KitKat Delights Dark",
+   "brand": "Nestlé India",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "kitkat delights dark",
+    "kitkat dark"
+   ],
+   "unit": "g",
+   "kcal": 455,
+   "proteinG": 4.0,
+   "carbsG": 57.8,
+   "fatG": 24.4,
+   "fiberG": 4.1,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 50
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/564750",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026) Verified against label photo https://cdn.grofers.com/da/cms-assets/cms/product/rc-upload-1779853608745-563.jpg. (Blinkit back-of-pack artwork, barcode 8901058014341, 50 g, serve 4 cubes 16.6 g, uploaded May 2026. An Open Food Facts photo of the older 3-cube (12.5 g) pack printed 395 kcal, protein 4.0 g, carbohydrate 46.0 g, fibre 4.1 g, fat 22.5 g, with a different dark-chocolate recipe: superseded.)",
+   "quote": "(Per 100g) Energy: 455 kcal Protein: 4.0 g Carbohydrate: 57.8 g Total Sugars: 40.6 g Added Sugar: 40.3 g Fiber: 4.1 g Total Fat: 24.4 g Saturated Fat: 24.1 g Trans Fat: 0.07 g Sodium: 31.2 mg"
+  },
+  {
+   "name": "Nestlé KitKat Delights Caramel",
+   "brand": "Nestlé India",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "kitkat delights caramel",
+    "kitkat caramel"
+   ],
+   "unit": "g",
+   "kcal": 462,
+   "proteinG": 5.9,
+   "carbsG": 56.1,
+   "fatG": 23.8,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 50
+    }
+   ],
+   "source": "https://world.openfoodfacts.org/product/8901058852141",
+   "sourceBasis": "per 100 g, Nutritional Information panel in an Open Food Facts pack photo of the 50 g KitKat Delights Caramel (barcode 8901058852141, uploaded Oct 2026): https://images.openfoodfacts.org/images/products/890/105/885/2141/nutrition_en.27.full.jpg. Blinkit back-of-pack artwork for the same barcode prints the same values (https://cdn.grofers.com/da/cms-assets/cms/product/rc-upload-1779853608745-508.jpg). Replaces Blinkit structured fields 441 kcal / 6.0 / 49.9 / 24.1, which no label shows (verification).",
+   "quote": "(Per 100g) Energy (kcal) 462, Protein (g) 5.9, Carbohydrate (g) 56.1, Total Sugars (g) 42.2, Added Sugars (g) 41.6, Total Fat (g) 23.8, Saturated Fat (g) (not more than) 23.1, Trans Fat (g) 0.07, Cholesterol (mg) 6.0, Sodium (mg) 82.8; If a serve is 4 cubes (16.6 g)"
+  },
+  {
+   "name": "Nestlé KitKat Wafer Pops",
+   "brand": "Nestlé India",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "kitkat pops"
+   ],
+   "unit": "g",
+   "kcal": 442,
+   "proteinG": 7.1,
+   "carbsG": 51.3,
+   "fatG": 23.2,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "pack",
+     "amount": 32
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/733484",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026) Verified against label photo https://cdn.grofers.com/da/cms-assets/cms/product/rc-upload-1771904678029-746.jpg. (Blinkit back-of-pack artwork of the 32 g pack, barcode 8901058024937.)",
+   "quote": "per 100g Serve: Energy (kcal): 442 Protein (g): 7.1 Carbohydrate (g): 51.3 Total Sugars (g): 37.6 Added Sugars (g): 34.9 Total Fat (g): 23.2 Saturated Fat (g)(not more than): 23.0 Trans Fat (g) (not more than): 0.01 Sodium (mg): 187.6"
+  },
+  {
+   "name": "Nestlé Munch Max",
+   "brand": "Nestlé India",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "munch max",
+    "munch"
+   ],
+   "unit": "g",
+   "kcal": 428,
+   "proteinG": 5.7,
+   "carbsG": 50.0,
+   "fatG": 22.8,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 38.5
+    }
+   ],
+   "source": "https://world.openfoodfacts.org/product/8901058005080",
+   "sourceBasis": "per 100 g, Nutritional Information panel in an Open Food Facts pack photo of the 38.5 g Munch Max bar (barcode 8901058005080, uploaded Nov 2024): https://images.openfoodfacts.org/images/products/890/105/800/5080/nutrition_en.5.full.jpg; a second pack photo (barcode 8901058012415, May 2024) prints identical values: https://images.openfoodfacts.org/images/products/890/105/801/2415/nutrition_en.4.full.jpg. The current Blinkit pack artwork (multipack barcode 8901058017502, serve 19.2 g) prints 428 kcal with protein 5.5 g, carbohydrate 53.5 g, fat 24.0 g, but those macros give about 452 kcal by 4/4/9, so its energy line is not consistent with its own macros; the photographed label is self-consistent and is used instead (verification). Servings (Blinkit unit sizes): bar 38.5 g from the listing prid 496297",
+   "quote": "Nutrition Information per 100g: Energy (kcal) 428, Protein (g) 5.7, Carbohydrate (g) 50.0, Total Sugars (g) 32.2, Added Sugars (g) 28.8, Total Fat (g) 22.8, Saturated Fat (g) (not more than) 22.4, Trans Fat (g) (not more than) 0.06, Sodium (mg) 86.3; If a serve is 9.6g"
+  },
+  {
+   "name": "Nestlé Munch Max Crunchies",
+   "brand": "Nestlé India",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "munch crunchies"
+   ],
+   "unit": "g",
+   "kcal": 478,
+   "proteinG": 7.1,
+   "carbsG": 53.6,
+   "fatG": 26.2,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 45
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/732832",
+   "sourceBasis": "Blinkit product page nutrition text with no basis printed (read Nov 2026); read as per 100 g. Note: 478 kcal cannot fit in the 45 g bar, so the figures are per 100 g. Verified against label photo https://images.openfoodfacts.org/images/products/890/105/802/7778/nutrition_en.9.full.jpg. (Open Food Facts pack photo, uploaded Jun 2026; serve 22.5 g = 1/2 bar.)",
+   "quote": "Energy: 478 kcal Protein: 7.1 g Total Carbohydrates: 53.6 g Total Sugars: 43.7 g Added Sugars: 39.5 g Total Fat: 26.2 g Saturated Fat: 25.8 g Trans Fat: 0.01 g Sodium: 87.2 mg"
+  },
+  {
+   "name": "Nestlé Munch Max Nuts",
+   "brand": "Nestlé India",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "munch max nuts",
+    "munch nuts double choco"
+   ],
+   "unit": "g",
+   "kcal": 451,
+   "proteinG": 8.1,
+   "carbsG": 45.6,
+   "fatG": 26.3,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 37.5
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/636149",
+   "sourceBasis": "Blinkit product page nutrition text with no basis printed (read Nov 2026); read as per 100 g. Note: 451 kcal cannot fit in the 37.5 g bar; the page description block gives near-identical figures \"(Per 100 g) Protein: 7.8 g Total Carbohydrates: 46.6 g ... Total Fat: 26.1 g ... Calories: 452 Kcal\". Verified against label photo https://images.openfoodfacts.org/images/products/890/105/802/0021/nutrition_en.10.full.jpg. (Open Food Facts pack photo, uploaded Sep 2025, serve 1/2 bar 18.7 g. Blinkit artwork of the current pack, same barcode, prints near-identical values: 452 kcal, protein 7.8 g, carbohydrate 46.6 g, fat 26.1 g.)",
+   "quote": "Energy (kcal) 451.0, Protein (g) 8.1, Carbohydrate (g) 45.6, Total Sugars (g) 29.5, Added Sugars (g) 25.5, Total Fat (g) 26.3, Saturated Fat (g) 24.1, Trans Fat (g) 0.04, Sodium (mg) 176.4"
+  },
+  {
+   "name": "Nestlé Munch Bites",
+   "brand": "Nestlé India",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "munch bites"
+   ],
+   "unit": "g",
+   "kcal": 447,
+   "proteinG": 5.6,
+   "carbsG": 53.2,
+   "fatG": 23.5,
+   "fiberG": null,
+   "servings": [],
+   "source": "https://blinkit.com/prn/x/prid/127096",
+   "sourceBasis": "Blinkit product page nutrition text with no basis printed (read Nov 2026); read as per 100 g. Note: Basis not printed in the Nutrition Information field; per 100 g is the only plausible reading (447 kcal is too little for the whole 158.4 g pack and impossible for one 9.9 g unit). The same page's description block gives different, per-100 g figures (469 kcal, protein 6 g, carbohydrates 59.3 g, fat 23.4 g); the field values match the pack-of-2/3 listings (prid 482847, 629161). Verified against label photo https://cdn.grofers.com/da/cms-assets/cms/product/5d6d7da1-9425-4233-abb2-6d8d420a42ed.jpg. (Blinkit back-of-pack artwork, barcode 8901058033212, 139.2 g pouch of 16 x 8.7 g.)",
+   "quote": "Energy: 447 kcal Protein: 5.6 g Carbohydrate: 53.2 g Total Sugars: 37.4 g Added Sugars: 33.8 g Total Fat: 23.5 g Saturated Fat: 23.2 g Trans Fat: 0.05 g Sodium: 92.2 mg"
+  },
+  {
+   "name": "Nestlé Milkybar Creamy Milky Treat",
+   "brand": "Nestlé India",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "milkybar",
+    "milky bar"
+   ],
+   "unit": "g",
+   "kcal": 524,
+   "proteinG": 11.1,
+   "carbsG": 50.1,
+   "fatG": 30.0,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "pack",
+     "amount": 42
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/400891",
+   "sourceBasis": "Blinkit product page nutrition text with no basis printed (read Nov 2026); read as per 100 g. Note: 524 kcal cannot fit in the 42 g pack, so the figures are per 100 g. Verified against label photo https://images.openfoodfacts.org/images/products/890/105/801/8639/nutrition_en.7.full.jpg. (Open Food Facts pack photo of the \"Milk is 1st in our recipe\" bar, uploaded Jun 2025; Blinkit artwork shows the same.)",
+   "quote": "Energy: 524 kcal Protein: 11.1 g Carbohydrate: 50.1 g Total Sugars: 40.9 g Added Sugars: 33.9 g Total Fat: 30.0 g Saturated Fat: 28.7 g (not more than) Trans Fat: 0.09 g (not more than) Sodium: 117.1 mg"
+  },
+  {
+   "name": "Nestlé Milkybar Butterscotch Bite",
+   "brand": "Nestlé India",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "milkybar butterscotch"
+   ],
+   "unit": "g",
+   "kcal": 495,
+   "proteinG": 8.7,
+   "carbsG": 50.6,
+   "fatG": 28.7,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 45
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/733485",
+   "sourceBasis": "Blinkit product page nutrition text with no basis printed (read Nov 2026); read as per 100 g. Note: 495 kcal cannot fit in the 45 g bar, so the figures are per 100 g. Verified against label photo https://cdn.grofers.com/da/cms-assets/cms/product/rc-upload-1771602989245-307.jpg. (Blinkit back-of-pack artwork, barcode 8901058027051, 45 g, serve 15 g.)",
+   "quote": "Energy: 495 kcal Protein: 8.7 g Carbohydrate: 50.6 g Total Sugars: 43.3 g Added Sugars: 39.0 g Total Fat: 28.7 g Saturated Fat: 28.6 g Trans Fat: 0.02 g Sodium: 135.4 mg"
+  },
+  {
+   "name": "Nestlé Milkybar Choo Strawberry",
+   "brand": "Nestlé India",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "milkybar choo"
+   ],
+   "unit": "g",
+   "kcal": 436,
+   "proteinG": 5,
+   "carbsG": 69.8,
+   "fatG": 15.1,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "piece",
+     "amount": 10
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/546854",
+   "sourceBasis": "per 100 g: Blinkit product page (read Nov 2026); the Nutrition Information field prints no basis, the page's description block states the same energy per 100 g. Servings (Blinkit unit sizes): piece 10 g derived: 80 g ShareBag of 8 pieces (prid 546854) = 10 g each Verified against label photo https://cdn.grofers.com/da/cms-assets/cms/product/rc-upload-1786077805938-668.jpg. (Blinkit back-of-pack artwork, barcode 8901058009002, 80 g = 8 x 10 g.)",
+   "quote": "Energy: 436 kcal Protein: 5.0 g Carbohydrate: 69.8 g Total Sugars: 52.0 g Added Sugars: 45.0 g Total Fat: 15.1 g Saturated Fat: 13.6 g Trans Fat: 0.08 g (not more than 0.1 g) Sodium: 93.1 mg"
+  },
+  {
+   "name": "Nestlé Classic Milk Chocolate",
+   "brand": "Nestlé India",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "nestle classic"
+   ],
+   "unit": "g",
+   "kcal": 432,
+   "proteinG": 6.4,
+   "carbsG": 44.9,
+   "fatG": 25.2,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 150
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/564722",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026) Verified against label photo https://cdn.grofers.com/da/cms-assets/cms/product/fb0d502e-2b6a-4715-83aa-87bb483497a9.jpg. (Blinkit back-of-pack artwork of the 150 g milk chocolate bar, barcode 8901058012064, serve 6 blocks 33.3 g. Not the 30 g \"cocoa based confectionery\" Classic, which is a different recipe at 515 kcal.)",
+   "quote": "Amount Per 100g Energy (kcal) : 432 Protein (g) : 6.4 Carbohydrate (g) : 44.9 Total Sugars (g) : 40.8 Added Sugars (g) : 33.9 Total Fat (g) : 25.2 Sodium (mg) : 68.4"
+  },
+  {
+   "name": "Snickers",
+   "brand": "Mars Wrigley India",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "snickers peanut",
+    "snickers bar"
+   ],
+   "unit": "g",
+   "kcal": 491,
+   "proteinG": 8.83,
+   "carbsG": 57.43,
+   "fatG": 25.1,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 40
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/560",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026)",
+   "quote": "Protein Per 100 g (g) 8.83 g Energy Per 100 g (kcal) 491 kcal Total Fat Per 100 g (g) 25.10 g Trans Fat Per 100 g (g) 0.10 g Saturated Fat Per 100 g (g) 10.18 g Sodium Per 100 g (mg) 222 mg Total Carbohydrates Per 100 g (g) 57.43 g Added Sugars Per 100 g (g) 46.72 g Cholesterol Per 100 g (g) 5.10mg Total Sugar Per 100 g (g) 51.84 g"
+  },
+  {
+   "name": "Snickers Almond",
+   "brand": "Mars Wrigley India",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "snickers almond"
+   ],
+   "unit": "g",
+   "kcal": 475,
+   "proteinG": 7,
+   "carbsG": 58.8,
+   "fatG": 24,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 40
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/429269",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026)",
+   "quote": "Energy Per 100 g (kcal): 475 Kcal Protein: 7 g Total Carbohydrates: 58.8 g Total Sugar: 53 g Added Sugars: 49.12 g Total Fat: 24 g Saturated Fat: 9.2 g Trans Fat: 0.1 g Cholesterol: 5.5 mg Sodium: 217 mg"
+  },
+  {
+   "name": "Snickers Butterscotch",
+   "brand": "Mars Wrigley India",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "snickers butterscotch"
+   ],
+   "unit": "g",
+   "kcal": 501,
+   "proteinG": 9.9,
+   "carbsG": 56.3,
+   "fatG": 26.6,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 40
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/428864",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026)",
+   "quote": "Energy Per 100 g (kcal): 501 Kcal Protein: 9.9 g Total Carbohydrates: 56.3 g Total Sugar: 47.9 g Added Sugars: 44.8 g Total Fat: 26.6 g Saturated Fat: 10.6 g Trans Fat: 0.1 g Cholesterol: 6.5 mg Sodium: 200 mg"
+  },
+  {
+   "name": "Snickers Peanut Brownie",
+   "brand": "Mars Wrigley India",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "snickers brownie"
+   ],
+   "unit": "g",
+   "kcal": 494.9,
+   "proteinG": 7.3,
+   "carbsG": 59.3,
+   "fatG": 26.1,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 45
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/589249",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026)",
+   "quote": "Energy Per 100 g (kcal): 494.9 Kcal Protein: 7.3 g Total Carbohydrates: 59.3 g Total Sugar: 50.3 g Added Sugars: 44.6 g Total Fat: 26.1 g Saturated Fat: 12.7 g Trans Fat: 0.3 g Cholesterol: 16.1 mg Sodium: 293.1 mg"
+  },
+  {
+   "name": "Snickers Miniatures",
+   "brand": "Mars Wrigley India",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "snickers mini",
+    "snickers miniature"
+   ],
+   "unit": "g",
+   "kcal": 477,
+   "proteinG": 7.24,
+   "carbsG": 61,
+   "fatG": 22.65,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "mini bar",
+     "amount": 11.5
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/503770",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026). Servings (Blinkit unit sizes): mini bar 11.5 g derived: 103.5 g pack of 9 pieces (prid 503770) = 11.5 g each",
+   "quote": "Energy Per 100 g (kcal): 477 kcal, Protein: 7.24 g, Total Carbohydrates: 61 g, Total Sugar: 55.9 g, Added Sugars: 50.3 g, Total Fat: 22.65 g, Saturated Fat: 10.2 g, Trans Fat: 0.11 g, Cholesterol: 5.58 mg, Sodium: 231 mg."
+  },
+  {
+   "name": "Mars Nougat & Caramel Bar",
+   "brand": "Mars Wrigley India",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "mars",
+    "mars bar"
+   ],
+   "unit": "g",
+   "kcal": 445.2,
+   "proteinG": 3.5,
+   "carbsG": 75.3,
+   "fatG": 14.7,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 40
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/1381168",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026)",
+   "quote": "(Per 100g) Energy: 445.2 kcal Protein: 3.5 g Carbohydrate: 75.3 g Total Sugars: 66 g Added Sugars: 62.3 g Total Fat: 14.7 g Saturated Fat: 8.6 g Trans Fat: 0.1 g Cholesterol: 4.7 mg Sodium: 241.9 mg"
+  },
+  {
+   "name": "Mars Premium Nougat & Caramel Bar",
+   "brand": "Mars Wrigley India",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "mars premium"
+   ],
+   "unit": "g",
+   "kcal": 443,
+   "proteinG": 4.5,
+   "carbsG": 71.6,
+   "fatG": 15.9,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 51
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/570",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026)",
+   "quote": "Energy Per 100 g (kcal): 443 Kcal Protein: 4.5 g Total Carbohydrates: 71.6 g Total Sugar: 61.4 g Added Sugars: 54.3 g Total Fat: 15.9 g Saturated Fat: 7.4 g Trans Fat: 0.13 g Cholesterol: 5.5 mg Sodium: 267 mg"
+  },
+  {
+   "name": "Bounty",
+   "brand": "Mars Wrigley India",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "bounty coconut"
+   ],
+   "unit": "g",
+   "kcal": 487,
+   "proteinG": 3.8,
+   "carbsG": 61.3,
+   "fatG": 25.7,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 50
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/19527",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026)",
+   "quote": "Energy Per 100 g (kcal) 487 Kcal, Protein 3.8g, Total Carbohydrates 61.3g, Total Sugar 48.1g, Added Sugars 42.3g, Total Fat 25.7g, Saturated Fat 21.2g, Trans Fat 0.09g, Cholesterol 4.2 mg, Sodium 103mg"
+  },
+  {
+   "name": "Galaxy Smooth Milk",
+   "brand": "Mars Wrigley India",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "galaxy",
+    "galaxy milk"
+   ],
+   "unit": "g",
+   "kcal": 553,
+   "proteinG": 6.4,
+   "carbsG": 60.2,
+   "fatG": 32.2,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 30
+    },
+    {
+     "label": "bar",
+     "amount": 56
+    },
+    {
+     "label": "bar",
+     "amount": 110
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/735558",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026). Servings (Blinkit unit sizes): bar 30 g from the listing prid 492467; bar 56 g from the listing prid 480029",
+   "quote": "(Per 100 g) Energy: 553 kcal Protein: 6.4 g Carbohydrate: 60.2 g Total Sugars: 56.3 g Added Sugars: 48.3 g Total Fat: 32.2 g Saturated Fat: 20.3 g Trans Fat: 0.1 g Cholesterol: 6.62 mg Sodium: 43.01 mg"
+  },
+  {
+   "name": "Galaxy Fusions 70% Dark",
+   "brand": "Mars Wrigley India",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "galaxy dark",
+    "galaxy fusions"
+   ],
+   "unit": "g",
+   "kcal": 568,
+   "proteinG": 7.5,
+   "carbsG": 30.8,
+   "fatG": 43.1,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 27.5
+    },
+    {
+     "label": "bar",
+     "amount": 56
+    },
+    {
+     "label": "bar",
+     "amount": 110
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/500398",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026). Note: Carbohydrate differs between listings: the 8-piece mini pack (prid 1422459) states \"(Per 100 g) Energy: 568 kcal Protein: 7.5 g Total Carbohydrate: 43.8 g ... Total Fat: 43.1 g\".. Servings (Blinkit unit sizes): bar 27.5 g from the listing prid 735077; bar 56 g from the listing prid 503768",
+   "quote": "Energy Per 100 g (kcal) 568 Kcal, Protein 7.5 g, Total Carbohydrates 30.8g, Total Sugar 27g, Added Sugars 26.9g, Total Fat 43.1g, Saturated Fat 25.8g, Trans Fat 0.g, Cholesterol 0mg, Sodium 6.4mg"
+  },
+  {
+   "name": "Ferrero Rocher",
+   "brand": "Ferrero India",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "rocher",
+    "ferrero"
+   ],
+   "unit": "g",
+   "kcal": 603,
+   "proteinG": 8.2,
+   "carbsG": 44.4,
+   "fatG": 42.7,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "piece",
+     "amount": 12.5
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/569",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026). Servings (Blinkit unit sizes): piece 12.5 g derived: 200 g pack of 16 pieces (prid 569) = 12.5 g each",
+   "quote": "Per 100 g: Energy 603 kcal, Protein 8.2 g, Carbohydrates 44.4 g, Total Sugars 39.9 g, Added Sugars 33.3 g, Total Fat 42.7 g, Saturated fat 14.1 g, Trans Fat 0.1 g, Cholesterol 7mg, Sodium 60 mg."
+  },
+  {
+   "name": "Ferrero Rocher Moments",
+   "brand": "Ferrero India",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "rocher moments"
+   ],
+   "unit": "g",
+   "kcal": 526,
+   "proteinG": 7.9,
+   "carbsG": 54.8,
+   "fatG": 29.8,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "piece",
+     "amount": 5.6
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/528089",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026). Servings (Blinkit unit sizes): piece 5.6 g derived: 89.6 g pack of 16 pieces (prid 528089) = 5.6 g each",
+   "quote": "Average Nutritional Value As Per 100g: Energy 526kcal, Protein 7.9g, Carbohydrates 54.8g, Total Sugars 45.5g, Added Sugars 38.8g, Total Fat 29.8g, Saturated fat 11.6g, Trans Fat 0g, Cholesterol 0.4mg, Sodium 70mg."
+  },
+  {
+   "name": "Ferrero Raffaello",
+   "brand": "Ferrero India",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "raffaello"
+   ],
+   "unit": "g",
+   "kcal": 627,
+   "proteinG": 7.4,
+   "carbsG": 38.6,
+   "fatG": 48.3,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "piece",
+     "amount": 10
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/559525",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026). Note: text: \"Serving size: 10 g (1 piece)\"",
+   "quote": "Average Nutritional Value As Per 100g: Energy 627 kcal, Protein 7.4 g, Carbohydrates 38.6 g, Total Sugars 33.6 g, Added Sugars 20.2 g, Total Fat 48.3 g, Saturated fat 29.5 g, Trans Fat 0.2 g, Cholesterol 6 mg, Sodium 105 mg."
+  },
+  {
+   "name": "Ferrero Rocher Hazelnut Dark Chocolate Bar",
+   "brand": "Ferrero India",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "rocher dark bar"
+   ],
+   "unit": "g",
+   "kcal": 599,
+   "proteinG": 6.4,
+   "carbsG": 42.2,
+   "fatG": 43.7,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "portion",
+     "amount": 18
+    },
+    {
+     "label": "bar",
+     "amount": 90
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/732082",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026). Note: label: \"Per Portion (18 g) ... 108 kcal\"; energy also given as 2489 kJ",
+   "quote": "Approx. per 100 g: Energy: 2489 kJ / 599 kcal Fat: 43.7 g – of which saturated fat: 22.4 g Carbohydrates: 42.2 g – of which sugar: 39.6 g Protein: 6.4 g Salt: 0.086 g Per Portion (18 g): Energy: 450 kJ / 108 kcal (5%) Fat: 7.9 g (11%) – Saturated fat: 4.0 g (20%) Carbohydrates: 7.6 g (3%) – Sugar: 7.1 g (8%) Protein: 1.2 g (2%) Salt: 0.016 g (0%) Reference intake based on an average adult (8, 400 "
+  },
+  {
+   "name": "Kinder Joy",
+   "brand": "Ferrero India",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "kinder joy egg"
+   ],
+   "unit": "g",
+   "kcal": 550,
+   "proteinG": 8.2,
+   "carbsG": 56.5,
+   "fatG": 32,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "piece",
+     "amount": 20
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/16779",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026). Note: text: \"Serving size: 20 g (1 piece)\"",
+   "quote": "Per 100 g: Energy 550 kcal, Protein 8.2 g, Carbohydrates 56.5 g, Total Sugars 51 g, Added Sugars 39.5 g, Total Fat 32 g, Saturated Fat 15.4 g, Trans Fat 0.3 g, Cholesterol 4 mg, Sodium 125 mg, Vitamin B12 0.90 渭g."
+  },
+  {
+   "name": "Kinder Creamy Milky & Crunchy",
+   "brand": "Ferrero India",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "kinder creamy"
+   ],
+   "unit": "g",
+   "kcal": 539,
+   "proteinG": 8.4,
+   "carbsG": 55.4,
+   "fatG": 31.3,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "piece",
+     "amount": 19
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/436984",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026). Note: text: \"Serving size: 19g (1 piece)\"",
+   "quote": "Per 100 g: Energy 539 kcal, Protein 8.4 g, Carbohydrates 55.4 g, Total Sugars 48.8 g, Added Sugars 36.3 g, Total Fat 31.3 g, Saturated Fat 14.2 g, Trans Fat 0 g, Cholesterol 0.7 mg, Sodium 134 mg, Vitamin B12 1.07 μg."
+  },
+  {
+   "name": "Kinder Schoko-Bons Crispy",
+   "brand": "Ferrero India",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "schoko bons",
+    "kinder schokobons"
+   ],
+   "unit": "g",
+   "kcal": 528,
+   "proteinG": 7.5,
+   "carbsG": 59.5,
+   "fatG": 28.5,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "piece",
+     "amount": 5.6
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/531508",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026). Note: text: \"Serving size: 5.6 g\"; 67.2 g pack of 12 pieces",
+   "quote": "Per 100 g: Energy 528 kcal, Protein 7.5 g, Carbohydrates 59.5 g, Total Sugars 50.7 g, Added Sugars 42 g, Total Fat 28.5 g, Saturated Fat 14 g, Trans Fat 0 g, Cholesterol 10 mg, Sodium 118 mg."
+  },
+  {
+   "name": "Amul Dark Chocolate (55% cocoa)",
+   "brand": "Amul (GCMMF)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "amul dark",
+    "amul dark chocolate"
+   ],
+   "unit": "g",
+   "kcal": 521,
+   "proteinG": 6.4,
+   "carbsG": 51.4,
+   "fatG": 33.1,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 35
+    },
+    {
+     "label": "bar",
+     "amount": 150
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/19501",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026). Servings (Blinkit unit sizes): bar 35 g from the listing prid 381902",
+   "quote": "(Per 100 g) Energy: 521 kcal Total Fat: 33.1 g Saturated Fat: 18.6 g Trans Fat: 0 g Cholesterol: 0 mg Carbohydrates: 51.4 g Total Sugars: 43.0 g Added Sugars: 42.5 g Protein: 6.4 g Sodium: 38 mg"
+  },
+  {
+   "name": "Amul Fruit & Nut Dark Chocolate",
+   "brand": "Amul (GCMMF)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "amul fruit and nut"
+   ],
+   "unit": "g",
+   "kcal": 499,
+   "proteinG": 7.2,
+   "carbsG": 46.7,
+   "fatG": 32.5,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 150
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/27023",
+   "sourceBasis": "per 100 g, from the Blinkit product page's description copy (this listing has no Nutrition Information field; read Nov 2026)",
+   "quote": "Nutritional Information (Per 100 g) Energy: 499 kcal Protein: 7.2 g Total Carbohydrates: 46.7 g Total Sugar: 38.3 g Added Sugar: 36.4 g Total Fat: 32.5 g Saturated Fat: 16.2 g Trans Fat: 0 g Cholesterol: 0 g Sodium: 33 mg"
+  },
+  {
+   "name": "Amul Sugar Free Dark Chocolate",
+   "brand": "Amul (GCMMF)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "amul sugar free"
+   ],
+   "unit": "g",
+   "kcal": 558,
+   "proteinG": 6,
+   "carbsG": 56.7,
+   "fatG": 33.8,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 35
+    },
+    {
+     "label": "bar",
+     "amount": 150
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/382050",
+   "sourceBasis": "per 100 g, from the Blinkit product page's description copy (this listing has no Nutrition Information field; read Nov 2026). Servings (Blinkit unit sizes): bar 150 g from the listing prid 382044",
+   "quote": "Nutritional Information Per 100 g Energy: 558 kcal Protein: 6 g Carbohydrates: 56.7 g Total Sugar: 0 g Added Sugar: 0 g Total Fat: 33.8 g Saturated Fat: 20.7 g Unsaturated Fat: 13.1 g Trans Fat: 0 g Cholesterol: 0 g Sodium: 38 mg Serving Size 10 g"
+  },
+  {
+   "name": "Amul Milky Rich White Chocolate",
+   "brand": "Amul (GCMMF)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "amul white chocolate"
+   ],
+   "unit": "g",
+   "kcal": 570,
+   "proteinG": 10.0,
+   "carbsG": 51.0,
+   "fatG": 36.2,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 150
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/767601",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026)",
+   "quote": "(Per 100 g) Energy: 570 kcal Total Fat: 36.2 g Saturated Fat: 21.9 g Trans Fat: 0.0 g Cholesterol: 0 mg Carbohydrates: 51.0 g Total Sugars: 50.7 g Added Sugars: 37.9 g Protein: 10.0 g Sodium: 112 mg"
+  },
+  {
+   "name": "Amul Chocominis",
+   "brand": "Amul (GCMMF)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "chocominis"
+   ],
+   "unit": "g",
+   "kcal": 545,
+   "proteinG": 5.5,
+   "carbsG": 60.7,
+   "fatG": 31.2,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "pack",
+     "amount": 250
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/23752",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026)",
+   "quote": "Nutritional Information* per 100g Energy: 545 kcal Total Fat: 31.2 g Saturated Fat: 27.1 g Trans Fat: 0 g Total Carbohydrate: 60.7 g Added Sugar: 51.1 g Protein: 5.5 g"
+  },
+  {
+   "name": "Hershey's Cookies 'n' Creme",
+   "brand": "Hershey's (Hershey India)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "hersheys cookies n creme"
+   ],
+   "unit": "g",
+   "kcal": 522,
+   "proteinG": 5.5,
+   "carbsG": 65,
+   "fatG": 26.7,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 38
+    },
+    {
+     "label": "bar",
+     "amount": 90
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/403536",
+   "sourceBasis": "per 100 g, from the Blinkit product page's description copy (this listing has no Nutrition Information field; read Nov 2026). Servings (Blinkit unit sizes): bar 90 g from the listing prid 403537",
+   "quote": "Nutritional Information (Per 100 g) Energy: 522 kcal Protein: 5.5 g Total Carbohydrates: 65 g Total Sugar: 48 g Added Sugars: 41.4 g Total Fat: 26.7 g Saturated Fat: 16 g Trans Fat: 0.2 g Cholesterol: 4 mg Sodium: 136 mg"
+  },
+  {
+   "name": "Hershey's Kisses Milk Chocolate",
+   "brand": "Hershey's (Hershey India)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "kisses",
+    "hersheys kisses"
+   ],
+   "unit": "g",
+   "kcal": 534,
+   "proteinG": 8,
+   "carbsG": 58,
+   "fatG": 30,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "pack",
+     "amount": 36
+    },
+    {
+     "label": "pack",
+     "amount": 108
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/402563",
+   "sourceBasis": "per 100 g, from the Blinkit product page's description copy (this listing has no Nutrition Information field; read Nov 2026). Servings (Blinkit unit sizes): pack 108 g from the listing prid 415757",
+   "quote": "Nutritional Information (Per 100 g) Protein: 8 g Total Carbohydrates: 58 g Total Sugar: 54 g Added Sugars: 45 g Total Fat: 30 g Saturated Fat: 18 g Trans Fat: 0.3 g Sodium: 110 mg Calories: 534 kcal"
+  },
+  {
+   "name": "Hershey's Kisses Special Dark n Almonds",
+   "brand": "Hershey's (Hershey India)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "kisses special dark"
+   ],
+   "unit": "g",
+   "kcal": 570,
+   "proteinG": 7.5,
+   "carbsG": 52,
+   "fatG": 37,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "pack",
+     "amount": 100.8
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/524422",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026)",
+   "quote": "Average Nutritional Value As Per 100g - Energy 570kcal, Protein 7.5g, Carbohydrate 52g, Total Sugars 40g, Added Sugars 37.4g, Total Fat 37g, Saturated Fat 19g, Trans Fat 0.14g, Cholesterol 4mg, Sodium 45mg."
+  },
+  {
+   "name": "Hershey's Dark Chocolate Bar",
+   "brand": "Hershey's (Hershey India)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "hersheys dark"
+   ],
+   "unit": "g",
+   "kcal": 556,
+   "proteinG": 6.3,
+   "carbsG": 56,
+   "fatG": 36.7,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 90
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/524423",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026)",
+   "quote": "Average Nutritional Value As Per 100g - Energy 556kcal, Protein 6.3g, Carbohydrate 56g, Total Sugars 45.8g, Added Sugars 42g, Total Fat 36.7g, Saturated Fat 22g, Trans Fat 0.2g, Cholesterol 9.7mg, Sodium 44mg."
+  },
+  {
+   "name": "Hershey's Exotic Dark Californian Almonds",
+   "brand": "Hershey's (Hershey India)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "hersheys exotic dark almond"
+   ],
+   "unit": "g",
+   "kcal": 564,
+   "proteinG": 8.5,
+   "carbsG": 50.8,
+   "fatG": 36.3,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 90
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/521433",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026)",
+   "quote": "Average Nutritional Value As Per 100g - Energy - 564Kcal, Protein - 8.50g, Carbohydrate - 50.8g, (of which Sugar) 36.5g, Fat- 36.3g."
+  },
+  {
+   "name": "Lindt Excellence 70% Cocoa",
+   "brand": "Lindt (Lindt & Sprüngli, imported)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "lindt 70"
+   ],
+   "unit": "g",
+   "kcal": 566,
+   "proteinG": 9.5,
+   "carbsG": 34,
+   "fatG": 41,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 100
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/35592",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026)",
+   "quote": "per 100g: Energy (kJ) 2350 Energy (Kcal) 566 Fat(g) 41 - of which saturates(g) 24 Carbohydrate(g) 34 - of which sugars(g) 29 Protein(g) 9.5 Salt(g) 0.1 May contain nuts, milk soya and sesame seeds"
+  },
+  {
+   "name": "Lindt Excellence 85% Cocoa",
+   "brand": "Lindt (Lindt & Sprüngli, imported)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "lindt 85"
+   ],
+   "unit": "g",
+   "kcal": 584,
+   "proteinG": 12.5,
+   "carbsG": 19,
+   "fatG": 46,
+   "fiberG": 16.3,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 100
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/472126",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026)",
+   "quote": "per 100 g: Energy: 584 kcal/2413 kJ Protein: 12.5 g Carbohydrate: 19 g - of which Total Sugar: 11 g Total Fat: 46 g - of which Saturated Fat: 28 g - of which Trans Fat: 0 g Dietary Fibre: 16.3 g Cholesterol: 2 mg Sodium: 10 mg"
+  },
+  {
+   "name": "Lindt Excellence 90% Cocoa",
+   "brand": "Lindt (Lindt & Sprüngli, imported)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "lindt 90"
+   ],
+   "unit": "g",
+   "kcal": 592,
+   "proteinG": 10,
+   "carbsG": 14,
+   "fatG": 55,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 100
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/80932",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026)",
+   "quote": "per 100g: Energy (kJ) 2483 Energy (Kcal) 592 Fat(g) 55 - of which saturates(g) 30 Carbohydrate(g) 14 - of which sugars(g) 7 Protein(g) 10 Salt(g) 0.03"
+  },
+  {
+   "name": "Lindt Excellence 99% Cocoa",
+   "brand": "Lindt (Lindt & Sprüngli, imported)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "lindt 99"
+   ],
+   "unit": "g",
+   "kcal": 590,
+   "proteinG": 15,
+   "carbsG": 8,
+   "fatG": 51,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 50
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/12084",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026)",
+   "quote": "per 100g: Energy (kJ) 2433 Energy (Kcal) 590 Fat(g) 51 - of which saturates(g) 31 Carbohydrate(g) 8 - of which sugars(g) 1 Protein(g) 15 Salt(g) 0.06"
+  },
+  {
+   "name": "Lindt Excellence Caramel Sea Salt",
+   "brand": "Lindt (Lindt & Sprüngli, imported)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "lindt caramel sea salt"
+   ],
+   "unit": "g",
+   "kcal": 507,
+   "proteinG": 4.6,
+   "carbsG": 55,
+   "fatG": 28,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 100
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/108925",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026)",
+   "quote": "per 100g: Energy (kJ) 2117 Energy (Kcal) 507 Fat(g) 28 - of which saturates(g) 17 Carbohydrate(g) 55 - of which sugars(g) 54 Protein(g) 4.6 Salt(g) 0.37"
+  },
+  {
+   "name": "Lindt Excellence Mint Intense",
+   "brand": "Lindt (Lindt & Sprüngli, imported)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "lindt mint"
+   ],
+   "unit": "g",
+   "kcal": 529,
+   "proteinG": 5,
+   "carbsG": 51,
+   "fatG": 32,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 100
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/163987",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026)",
+   "quote": "per 100g: Energy (kJ) 2202 Energy (Kcal) 529 Fat(g) 32 - of which saturates(g) 19 Carbohydrate(g) 51 - of which sugars(g) 49 Protein(g) 5 Salt(g) 0.09"
+  },
+  {
+   "name": "Lindt Excellence Orange Intense",
+   "brand": "Lindt (Lindt & Sprüngli, imported)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "lindt orange"
+   ],
+   "unit": "g",
+   "kcal": 525,
+   "proteinG": 6.2,
+   "carbsG": 51,
+   "fatG": 32,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 100
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/35594",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026)",
+   "quote": "Nutrition Information per 100g: Energy (kJ) 2189 Energy (Kcal) 525 Fat(g) 32 - of which saturates(g) 17 Carbohydrate(g) 51 - of which sugars(g) 48 Protein(g) 6.2 Salt(g) 0.09"
+  },
+  {
+   "name": "Lindt Excellence A Touch of Sea Salt",
+   "brand": "Lindt (Lindt & Sprüngli, imported)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "lindt sea salt"
+   ],
+   "unit": "g",
+   "kcal": 529,
+   "proteinG": 6.2,
+   "carbsG": 50,
+   "fatG": 32,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 100
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/80933",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026)",
+   "quote": "per 100g: Energy (kJ) 2205 Energy (Kcal) 529 Fat(g) 32 - of which saturates(g) 29 Carbohydrate(g) 50 - of which sugars(g) 48 Protein(g) 6.2 Salt(g) 0.31"
+  },
+  {
+   "name": "Lindt Lindor Milk",
+   "brand": "Lindt (Lindt & Sprüngli, imported)",
+   "group": "Chocolates & sweets",
+   "aliases": [
+    "lindor",
+    "lindt lindor"
+   ],
+   "unit": "g",
+   "kcal": 622,
+   "proteinG": 5,
+   "carbsG": 43,
+   "fatG": 47,
+   "fiberG": null,
+   "servings": [],
+   "source": "https://blinkit.com/prn/x/prid/352148",
+   "sourceBasis": "per 100 g, Nutrition Information text on the Blinkit product page (read Nov 2026)",
+   "quote": "Nutrition Facts: Nutrition Information per 100g: Energy (kJ) 2584 Energy (Kcal) 622 Fat(g) 47 - of which saturates(g) 35 Carbohydrate(g) 43 - of which sugars(g) 42 Protein(g) 5 Salt(g) 0.23"
+  }
+ ],
+ "notFound": [
+  {
+   "name": "Cadbury Dairy Milk Silk Hazelnut",
+   "reason": "Blinkit listing (prid 396629) shows only Blinkit's structured nutrient fields (Energy 566 kcal, Protein 8.7 g, Carbs 51.4 g, Fat 36.8 g) with no label text; those fields disagree with the label text on about a third of listings checked, and no other readable label was found (BigBasket 403, brand sites JS-only)"
+  },
+  {
+   "name": "Cadbury Dairy Milk Silk Ganache",
+   "reason": "Blinkit listing (prid 525880) shows only Blinkit's structured nutrient fields (Energy 567 kcal, Protein 6.7 g, Carbs 54.6 g, Fat 36.5 g) with no label text; those fields disagree with the label text on about a third of listings checked, and no other readable label was found (BigBasket 403, brand sites JS-only)"
+  },
+  {
+   "name": "Nestlé Munch Nuts",
+   "reason": "Blinkit listing (prid 379432) shows only Blinkit's structured nutrient fields (Energy 476 kcal, Protein 10 g, Carbs 52.5 g, Fat 25.1 g) with no label text; those fields disagree with the label text on about a third of listings checked, and no other readable label was found (BigBasket 403, brand sites JS-only)"
+  },
+  {
+   "name": "Nestlé Crunch Milk Chocolate",
+   "reason": "Blinkit listing (prid 492307) shows only Blinkit's structured nutrient fields (Energy 513 kcal, Protein 6 g, Carbs 62.4 g, Fat 25.8 g) with no label text; those fields disagree with the label text on about a third of listings checked, and no other readable label was found (BigBasket 403, brand sites JS-only)"
+  },
+  {
+   "name": "Kinder Bueno",
+   "reason": "Blinkit listing (prid 675830) shows only Blinkit's structured nutrient fields (Energy 572 kcal, Protein 8.6 g, Carbs 49.5 g, Fat 37.3 g) with no label text; those fields disagree with the label text on about a third of listings checked, and no other readable label was found (BigBasket 403, brand sites JS-only)"
+  },
+  {
+   "name": "Amul Milk Chocolate",
+   "reason": "Blinkit listing (prid 207555) shows only Blinkit's structured nutrient fields (Energy 562 kcal, Protein 9 g, Carbs 53 g, Fat 34.7 g) with no label text; those fields disagree with the label text on about a third of listings checked, and no other readable label was found (BigBasket 403, brand sites JS-only)"
+  },
+  {
+   "name": "Amul Smooth & Creamy Milk Chocolate",
+   "reason": "Blinkit listing (prid 114262) shows only Blinkit's structured nutrient fields (Energy 548 kcal, Protein 9.8 g, Carbs 51.5 g, Fat 34.7 g) with no label text; those fields disagree with the label text on about a third of listings checked, and no other readable label was found (BigBasket 403, brand sites JS-only)"
+  },
+  {
+   "name": "Amul Belgian Smooth & Creamy Milk Chocolate",
+   "reason": "Blinkit listing (prid 425620) shows only Blinkit's structured nutrient fields (Energy 551 kcal, Protein 8.7 g, Carbs 51.2 g, Fat 35.2 g) with no label text; those fields disagree with the label text on about a third of listings checked, and no other readable label was found (BigBasket 403, brand sites JS-only)"
+  },
+  {
+   "name": "Amul Bitter Dark Chocolate",
+   "reason": "Blinkit listing (prid 45524) shows only Blinkit's structured nutrient fields (Energy 538 kcal, Protein 9.6 g, Carbs 37.4 g, Fat 39.8 g) with no label text; those fields disagree with the label text on about a third of listings checked, and no other readable label was found (BigBasket 403, brand sites JS-only)"
+  },
+  {
+   "name": "Amul 90% Bitter Dark Chocolate",
+   "reason": "Blinkit listing (prid 400095) shows only Blinkit's structured nutrient fields (Energy 523 kcal, Protein 12.8 g, Carbs 32.8 g, Fat 39.5 g) with no label text; those fields disagree with the label text on about a third of listings checked, and no other readable label was found (BigBasket 403, brand sites JS-only)"
+  },
+  {
+   "name": "Amul 99% Cacao Dark Chocolate",
+   "reason": "Blinkit listing (prid 425618) shows only Blinkit's structured nutrient fields (Energy 522 kcal, Protein 14.7 g, Carbs 28.4 g, Fat 40.8 g) with no label text; those fields disagree with the label text on about a third of listings checked, and no other readable label was found (BigBasket 403, brand sites JS-only)"
+  },
+  {
+   "name": "Amul Tropical Orange Dark Chocolate",
+   "reason": "Blinkit listing (prid 48209) shows only Blinkit's structured nutrient fields (Energy 533 kcal, Protein 5.7 g, Carbs 61.1 g, Fat 29.5 g) with no label text; those fields disagree with the label text on about a third of listings checked, and no other readable label was found (BigBasket 403, brand sites JS-only)"
+  },
+  {
+   "name": "Amul Almondbar",
+   "reason": "Blinkit listing (prid 669056) shows only Blinkit's structured nutrient fields (Energy 451 kcal, Protein 6 g, Carbs 64.9 g, Fat 18.3 g) with no label text; those fields disagree with the label text on about a third of listings checked, and no other readable label was found (BigBasket 403, brand sites JS-only)"
+  },
+  {
+   "name": "Hershey's Creamy Milk Chocolate Bar",
+   "reason": "Blinkit listing (prid 403538) shows only Blinkit's structured nutrient fields (Energy 553 kcal, Protein 8.8 g, Carbs 53.4 g, Fat 32 g) with no label text; those fields disagree with the label text on about a third of listings checked, and no other readable label was found (BigBasket 403, brand sites JS-only)"
+  },
+  {
+   "name": "Hershey's Whole Almonds Milk Chocolate Bar",
+   "reason": "Blinkit listing (prid 403535) shows only Blinkit's structured nutrient fields (Energy 567 kcal, Protein 11 g, Carbs 46 g, Fat 35.3 g) with no label text; those fields disagree with the label text on about a third of listings checked, and no other readable label was found (BigBasket 403, brand sites JS-only)"
+  },
+  {
+   "name": "Noice Ganache Chocolate Cookies (80 g)",
+   "reason": "Swiggy Instamart product pages are behind an AWS WAF bot challenge (curl and WebFetch get an empty or error page) and swiggy.com is blocked by org policy in the browser pane; Noice is sold only on Instamart, and Open Food Facts has no entry with nutrition"
+  },
+  {
+   "name": "Noice Chocochip Cookies (80 g)",
+   "reason": "Swiggy Instamart product pages are behind an AWS WAF bot challenge (curl and WebFetch get an empty or error page) and swiggy.com is blocked by org policy in the browser pane; Noice is sold only on Instamart, and Open Food Facts has no entry with nutrition"
+  },
+  {
+   "name": "Noice Chewy New York Cookies (80 g)",
+   "reason": "Swiggy Instamart product pages are behind an AWS WAF bot challenge (curl and WebFetch get an empty or error page) and swiggy.com is blocked by org policy in the browser pane; Noice is sold only on Instamart, and Open Food Facts has no entry with nutrition"
+  },
+  {
+   "name": "Noice Jam Filled Biscuits (100 g)",
+   "reason": "Swiggy Instamart product pages are behind an AWS WAF bot challenge (curl and WebFetch get an empty or error page) and swiggy.com is blocked by org policy in the browser pane; Noice is sold only on Instamart, and Open Food Facts has no entry with nutrition"
+  },
+  {
+   "name": "Noice Ginger Cookies (70 g)",
+   "reason": "Swiggy Instamart product pages are behind an AWS WAF bot challenge (curl and WebFetch get an empty or error page) and swiggy.com is blocked by org policy in the browser pane; Noice is sold only on Instamart, and Open Food Facts has no entry with nutrition"
+  },
+  {
+   "name": "Noice Handmade Coconut Cookies",
+   "reason": "Swiggy Instamart product pages are behind an AWS WAF bot challenge (curl and WebFetch get an empty or error page) and swiggy.com is blocked by org policy in the browser pane; Noice is sold only on Instamart, and Open Food Facts has no entry with nutrition"
+  },
+  {
+   "name": "Noice Ragi Crackle Chips Masala (100 g)",
+   "reason": "Swiggy Instamart product pages are behind an AWS WAF bot challenge (curl and WebFetch get an empty or error page) and swiggy.com is blocked by org policy in the browser pane; Noice is sold only on Instamart, and Open Food Facts has no entry with nutrition"
+  },
+  {
+   "name": "Noice Kerala Nendran / Calicut Banana Chips",
+   "reason": "Swiggy Instamart product pages are behind an AWS WAF bot challenge (curl and WebFetch get an empty or error page) and swiggy.com is blocked by org policy in the browser pane; Noice is sold only on Instamart, and Open Food Facts has no entry with nutrition"
+  },
+  {
+   "name": "Noice Jaggery Peanut Chikki",
+   "reason": "Swiggy Instamart product pages are behind an AWS WAF bot challenge (curl and WebFetch get an empty or error page) and swiggy.com is blocked by org policy in the browser pane; Noice is sold only on Instamart, and Open Food Facts has no entry with nutrition"
+  },
+  {
+   "name": "Noice Special Masala Roasted Makhana (50 g)",
+   "reason": "Swiggy Instamart product pages are behind an AWS WAF bot challenge (curl and WebFetch get an empty or error page) and swiggy.com is blocked by org policy in the browser pane; Noice is sold only on Instamart, and Open Food Facts has no entry with nutrition"
+  },
+  {
+   "name": "Noice Ghee Roasted Makhana Salt & Pepper (50 g)",
+   "reason": "Swiggy Instamart product pages are behind an AWS WAF bot challenge (curl and WebFetch get an empty or error page) and swiggy.com is blocked by org policy in the browser pane; Noice is sold only on Instamart, and Open Food Facts has no entry with nutrition"
+  },
+  {
+   "name": "Noice Cheese Melt Makhana",
+   "reason": "Swiggy Instamart product pages are behind an AWS WAF bot challenge (curl and WebFetch get an empty or error page) and swiggy.com is blocked by org policy in the browser pane; Noice is sold only on Instamart, and Open Food Facts has no entry with nutrition"
+  },
+  {
+   "name": "Noice Chocolate Chip Whey Protein Bar",
+   "reason": "Swiggy Instamart product pages are behind an AWS WAF bot challenge (curl and WebFetch get an empty or error page) and swiggy.com is blocked by org policy in the browser pane; Noice is sold only on Instamart, and Open Food Facts has no entry with nutrition"
+  },
+  {
+   "name": "Noice Coconut Almond Whey Protein Bar (40 g)",
+   "reason": "Swiggy Instamart product pages are behind an AWS WAF bot challenge (curl and WebFetch get an empty or error page) and swiggy.com is blocked by org policy in the browser pane; Noice is sold only on Instamart, and Open Food Facts has no entry with nutrition"
+  },
+  {
+   "name": "Noice Blueberry Burst Fudge Whey Protein Bar (40 g)",
+   "reason": "Swiggy Instamart product pages are behind an AWS WAF bot challenge (curl and WebFetch get an empty or error page) and swiggy.com is blocked by org policy in the browser pane; Noice is sold only on Instamart, and Open Food Facts has no entry with nutrition"
+  },
+  {
+   "name": "Noice Gol Mathri",
+   "reason": "Swiggy Instamart product pages are behind an AWS WAF bot challenge (curl and WebFetch get an empty or error page) and swiggy.com is blocked by org policy in the browser pane; Noice is sold only on Instamart, and Open Food Facts has no entry with nutrition"
+  },
+  {
+   "name": "Noice Homestyle Madras Mixture",
+   "reason": "Swiggy Instamart product pages are behind an AWS WAF bot challenge (curl and WebFetch get an empty or error page) and swiggy.com is blocked by org policy in the browser pane; Noice is sold only on Instamart, and Open Food Facts has no entry with nutrition"
+  },
+  {
+   "name": "Noice Masala Khakhra",
+   "reason": "Swiggy Instamart product pages are behind an AWS WAF bot challenge (curl and WebFetch get an empty or error page) and swiggy.com is blocked by org policy in the browser pane; Noice is sold only on Instamart, and Open Food Facts has no entry with nutrition"
+  },
+  {
+   "name": "Noice Mini Bhakarwadi",
+   "reason": "Swiggy Instamart product pages are behind an AWS WAF bot challenge (curl and WebFetch get an empty or error page) and swiggy.com is blocked by org policy in the browser pane; Noice is sold only on Instamart, and Open Food Facts has no entry with nutrition"
+  },
+  {
+   "name": "Noice Chocolate Caramel Bark",
+   "reason": "Swiggy Instamart product pages are behind an AWS WAF bot challenge (curl and WebFetch get an empty or error page) and swiggy.com is blocked by org policy in the browser pane; Noice is sold only on Instamart, and Open Food Facts has no entry with nutrition"
+  },
+  {
+   "name": "Noice Pesarattu / Moong Chilla Batter",
+   "reason": "Swiggy Instamart product pages are behind an AWS WAF bot challenge (curl and WebFetch get an empty or error page) and swiggy.com is blocked by org policy in the browser pane; Noice is sold only on Instamart, and Open Food Facts has no entry with nutrition"
+  },
+  {
+   "name": "Noice Lime Kombucha",
+   "reason": "Open Food Facts entry 00727442 exists but has no nutrition values; Instamart page not readable (AWS WAF challenge)"
+  },
+  {
+   "name": "Nestlé Bar-One",
+   "reason": "Blinkit listings (prid 11090, 19945, 301352 Bar-One Charge) carry no nutrition text or fields; nestle.in returns 403; no other readable label found"
+  },
+  {
+   "name": "Nestlé Polo",
+   "reason": "no Blinkit listing found; not searched further"
+  },
+  {
+   "name": "Nestlé Munch (regular / King Size)",
+   "reason": "Blinkit King Size listing (prid 483033) has no nutrition; only Munch Max/Nuts/Bites/Brownie variants have labels"
+  },
+  {
+   "name": "Nestlé KitKat Dessert Delight (Brownie Kubes, Strawberry, Choco Fudge)",
+   "reason": "Blinkit listings have no label text (Brownie Kubes has only structured fields); left out"
+  },
+  {
+   "name": "Cadbury Dairy Milk Bites (Almond / Hazelnut)",
+   "reason": "Almond and Hazelnut listings print identical label text (554 kcal) while the Almond structured fields say 551 kcal/10.5 g protein; can't tell which belongs to which"
+  },
+  {
+   "name": "Cadbury Celebrations",
+   "reason": "assorted gift pack; listings give separate per-100 g values per included bar, no single value"
+  },
+  {
+   "name": "Ferrero Rocher Hazelnut Milk Chocolate Bar",
+   "reason": "Blinkit text (prid 742604) gives 2554 kJ / 614 kcal with no basis, and the figures could be per 90 g bar or per 100 g"
+  },
+  {
+   "name": "Nutella B-ready",
+   "reason": "not found on Blinkit; not searched further"
+  },
+  {
+   "name": "Snickers Berry Whip",
+   "reason": "Blinkit listing values identical to plain Snickers to two decimals: likely a copied listing"
+  },
+  {
+   "name": "Noice Nutty Chocolate",
+   "reason": "Verification: single crowd-sourced Open Food Facts entry with no label photo"
+  },
+  {
+   "name": "Noice Millet Nippattu",
+   "reason": "Verification: single crowd-sourced Open Food Facts entry with no label photo"
+  },
+  {
+   "name": "Nestlé Munch Brownie Max",
+   "reason": "Verification: Blinkit values conflict (label text vs attributes) and no label photo found"
+  }
+ ]
+}

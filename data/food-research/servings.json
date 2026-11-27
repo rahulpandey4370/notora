@@ -1,0 +1,1252 @@
+{
+ "servings": {
+  "Sweet corn": [
+   {
+    "label": "cob (medium, kernels)",
+    "amount": 102,
+    "source": "https://fdc.nal.usda.gov/food-details/169998/nutrients",
+    "quote": "Corn, sweet, yellow, raw (FDC 169998): 1 ear, medium (6-3/4\" to 7-1/2\" long) yields = 102 g (no refuse stated for this measure; taken as edible portion since USDA computes per-measure nutrients from per-100 g edible values)"
+   },
+   {
+    "label": "cob (large, kernels)",
+    "amount": 143,
+    "source": "https://fdc.nal.usda.gov/food-details/169998/nutrients",
+    "quote": "Corn, sweet, yellow, raw (FDC 169998): 1 ear, large (7-3/4\" to 9\" long) yields = 143 g"
+   },
+   {
+    "label": "cup (kernels)",
+    "amount": 145,
+    "source": "https://fdc.nal.usda.gov/food-details/169998/nutrients",
+    "quote": "Corn, sweet, yellow, raw (FDC 169998): 1 cup = 145 g"
+   }
+  ],
+  "Beet greens": [
+   {
+    "label": "cup",
+    "amount": 38,
+    "source": "https://fdc.nal.usda.gov/food-details/170375/nutrients",
+    "quote": "Beet greens, raw (FDC 170375): 1 cup = 38 g"
+   },
+   {
+    "label": "leaf",
+    "amount": 32,
+    "source": "https://fdc.nal.usda.gov/food-details/170375/nutrients",
+    "quote": "Beet greens, raw (FDC 170375): 1 leaf = 32 g"
+   }
+  ],
+  "Cabbage": [
+   {
+    "label": "cup (shredded)",
+    "amount": 70,
+    "source": "https://fdc.nal.usda.gov/food-details/169975/nutrients",
+    "quote": "Cabbage, raw (FDC 169975): 1 cup, shredded = 70 g"
+   },
+   {
+    "label": "cup (chopped)",
+    "amount": 89,
+    "source": "https://fdc.nal.usda.gov/food-details/169975/nutrients",
+    "quote": "Cabbage, raw (FDC 169975): 1 cup, chopped = 89 g"
+   },
+   {
+    "label": "leaf (medium)",
+    "amount": 23,
+    "source": "https://fdc.nal.usda.gov/food-details/169975/nutrients",
+    "quote": "Cabbage, raw (FDC 169975): 1 leaf, medium = 23 g"
+   }
+  ],
+  "Lettuce": [
+   {
+    "label": "cup (shredded, leaf lettuce)",
+    "amount": 36,
+    "source": "https://fdc.nal.usda.gov/food-details/169249/nutrients",
+    "quote": "Lettuce, green leaf, raw (FDC 169249): 1 cup shredded = 36 g"
+   },
+   {
+    "label": "leaf (outer, leaf lettuce)",
+    "amount": 24,
+    "source": "https://fdc.nal.usda.gov/food-details/169249/nutrients",
+    "quote": "Lettuce, green leaf, raw (FDC 169249): 1 leaf outer = 24 g"
+   },
+   {
+    "label": "cup (shredded, iceberg)",
+    "amount": 72,
+    "source": "https://fdc.nal.usda.gov/food-details/169248/nutrients",
+    "quote": "Lettuce, iceberg (includes crisphead types), raw (FDC 169248): 1 cup shredded = 72 g"
+   }
+  ],
+  "Spinach": [
+   {
+    "label": "cup",
+    "amount": 30,
+    "source": "https://fdc.nal.usda.gov/food-details/168462/nutrients",
+    "quote": "Spinach, raw (FDC 168462): 1 cup = 30 g"
+   },
+   {
+    "label": "leaf",
+    "amount": 10,
+    "source": "https://fdc.nal.usda.gov/food-details/168462/nutrients",
+    "quote": "Spinach, raw (FDC 168462): 1 leaf = 10 g"
+   },
+   {
+    "label": "bunch",
+    "amount": 340,
+    "source": "https://fdc.nal.usda.gov/food-details/168462/nutrients",
+    "quote": "Spinach, raw (FDC 168462): 1 bunch = 340 g"
+   }
+  ],
+  "Ash gourd": [
+   {
+    "label": "cup (cubes)",
+    "amount": 132,
+    "source": "https://fdc.nal.usda.gov/food-details/170069/nutrients",
+    "quote": "Waxgourd, (chinese preserving melon), raw, Benincasa hispida (FDC 170069): 1 cup, cubes = 132 g"
+   }
+  ],
+  "Bitter gourd": [
+   {
+    "label": "bitter gourd (1 pod)",
+    "amount": 124,
+    "source": "https://fdc.nal.usda.gov/food-details/168393/nutrients",
+    "quote": "Balsam-pear (bitter gourd), pods, raw, Momordica charantia (FDC 168393): 1 balsam-pear = 124 g (no refuse stated for this measure; taken as edible portion since USDA computes per-measure nutrients from per-100 g edible values)"
+   },
+   {
+    "label": "cup (1/2-inch pieces)",
+    "amount": 93,
+    "source": "https://fdc.nal.usda.gov/food-details/168393/nutrients",
+    "quote": "Balsam-pear (bitter gourd), pods, raw (FDC 168393): 1 cup (1/2\" pieces) = 93 g"
+   }
+  ],
+  "Bottle gourd": [
+   {
+    "label": "cup (1-inch pieces)",
+    "amount": 116,
+    "source": "https://fdc.nal.usda.gov/food-details/169232/nutrients",
+    "quote": "Gourd, white-flowered (calabash), raw, Lagenaria siceraria (FDC 169232): 0.5 cup (1\" pieces) = 58 g, so 1 cup = 116 g (doubled)"
+   },
+   {
+    "label": "bottle gourd (whole)",
+    "amount": 771,
+    "source": "https://fdc.nal.usda.gov/food-details/169232/nutrients",
+    "quote": "Gourd, white-flowered (calabash), raw (FDC 169232): 1 gourd = 771 g (no refuse stated for this measure; taken as edible portion since USDA computes per-measure nutrients from per-100 g edible values)"
+   }
+  ],
+  "Brinjal": [
+   {
+    "label": "cup (cubes)",
+    "amount": 82,
+    "source": "https://fdc.nal.usda.gov/food-details/169228/nutrients",
+    "quote": "Eggplant, raw (FDC 169228): 1 cup, cubes = 82 g"
+   },
+   {
+    "label": "brinjal (large globe, ~1.25 lb, unpeeled)",
+    "amount": 548,
+    "source": "https://fdc.nal.usda.gov/food-details/169228/nutrients",
+    "quote": "Eggplant, raw (FDC 169228): 1 eggplant, unpeeled (approx 1-1/4 lb) = 548 g"
+   }
+  ],
+  "Capsicum, green": [
+   {
+    "label": "capsicum (medium)",
+    "amount": 119,
+    "source": "https://fdc.nal.usda.gov/food-details/170427/nutrients",
+    "quote": "Peppers, sweet, green, raw (FDC 170427): 1 medium (approx 2-3/4\" long, 2-1/2\" dia) = 119 g"
+   },
+   {
+    "label": "capsicum (small)",
+    "amount": 74,
+    "source": "https://fdc.nal.usda.gov/food-details/170427/nutrients",
+    "quote": "Peppers, sweet, green, raw (FDC 170427): 1 small = 74 g"
+   },
+   {
+    "label": "capsicum (large)",
+    "amount": 164,
+    "source": "https://fdc.nal.usda.gov/food-details/170427/nutrients",
+    "quote": "Peppers, sweet, green, raw (FDC 170427): 1 large (approx 3-3/4\" long, 3\" dia) = 164 g"
+   }
+  ],
+  "Capsicum, red": [
+   {
+    "label": "capsicum (medium)",
+    "amount": 119,
+    "source": "https://fdc.nal.usda.gov/food-details/170108/nutrients",
+    "quote": "Peppers, sweet, red, raw (FDC 170108): 1 medium (approx 2-3/4\" long, 2-1/2\" dia) = 119 g"
+   },
+   {
+    "label": "capsicum (small)",
+    "amount": 74,
+    "source": "https://fdc.nal.usda.gov/food-details/170108/nutrients",
+    "quote": "Peppers, sweet, red, raw (FDC 170108): 1 small = 74 g"
+   },
+   {
+    "label": "capsicum (large)",
+    "amount": 164,
+    "source": "https://fdc.nal.usda.gov/food-details/170108/nutrients",
+    "quote": "Peppers, sweet, red, raw (FDC 170108): 1 large (approx 3-3/4\" long, 3\" dia) = 164 g"
+   }
+  ],
+  "Capsicum, yellow": [
+   {
+    "label": "capsicum (large)",
+    "amount": 186,
+    "source": "https://fdc.nal.usda.gov/food-details/169383/nutrients",
+    "quote": "Peppers, sweet, yellow, raw (FDC 169383): 1 pepper, large (3-3/4\" long, 3\" dia) = 186 g"
+   }
+  ],
+  "Cauliflower": [
+   {
+    "label": "floret",
+    "amount": 13,
+    "source": "https://fdc.nal.usda.gov/food-details/169986/nutrients",
+    "quote": "Cauliflower, raw (FDC 169986): 1 floweret = 13 g"
+   },
+   {
+    "label": "cup (chopped)",
+    "amount": 107,
+    "source": "https://fdc.nal.usda.gov/food-details/169986/nutrients",
+    "quote": "Cauliflower, raw (FDC 169986): 1 cup chopped (1/2\" pieces) = 107 g"
+   },
+   {
+    "label": "head (medium, 5-6 inch)",
+    "amount": 588,
+    "source": "https://fdc.nal.usda.gov/food-details/169986/nutrients",
+    "quote": "Cauliflower, raw (FDC 169986): 1 head medium (5-6\" dia.) = 588 g"
+   }
+  ],
+  "Cucumber": [
+   {
+    "label": "cucumber (large, 8 inch)",
+    "amount": 301,
+    "source": "https://fdc.nal.usda.gov/food-details/168409/nutrients",
+    "quote": "Cucumber, with peel, raw (FDC 168409): 1 cucumber (8-1/4\") = 301 g"
+   },
+   {
+    "label": "cup (slices)",
+    "amount": 104,
+    "source": "https://fdc.nal.usda.gov/food-details/168409/nutrients",
+    "quote": "Cucumber, with peel, raw (FDC 168409): 0.5 cup slices = 52 g, so 1 cup = 104 g (doubled)"
+   }
+  ],
+  "Drumstick": [
+   {
+    "label": "drumstick (1 pod, 15 inch)",
+    "amount": 11,
+    "source": "https://fdc.nal.usda.gov/food-details/170483/nutrients",
+    "quote": "Drumstick pods, raw, Moringa oleifera (FDC 170483): 1 pod (15-1/3\" long) = 11 g (no refuse stated for this measure; taken as edible portion since USDA computes per-measure nutrients from per-100 g edible values)"
+   },
+   {
+    "label": "cup (slices)",
+    "amount": 100,
+    "source": "https://fdc.nal.usda.gov/food-details/170483/nutrients",
+    "quote": "Drumstick pods, raw (FDC 170483): 1 cup slices = 100 g"
+   }
+  ],
+  "French beans": [
+   {
+    "label": "bean (4 inch)",
+    "amount": 5.5,
+    "source": "https://fdc.nal.usda.gov/food-details/169961/nutrients",
+    "quote": "Beans, snap, green, raw (FDC 169961): 10 beans (4\" long) = 55 g, i.e. 5.5 g per bean"
+   },
+   {
+    "label": "cup (1/2-inch pieces)",
+    "amount": 100,
+    "source": "https://fdc.nal.usda.gov/food-details/169961/nutrients",
+    "quote": "Beans, snap, green, raw (FDC 169961): 1 cup 1/2\" pieces = 100 g"
+   }
+  ],
+  "Ladies finger (okra)": [
+   {
+    "label": "okra (1 pod, 3 inch)",
+    "amount": 11.9,
+    "source": "https://fdc.nal.usda.gov/food-details/169260/nutrients",
+    "quote": "Okra, raw (FDC 169260): 8 pods (3\" long) = 95 g, i.e. 11.9 g per pod"
+   },
+   {
+    "label": "cup",
+    "amount": 100,
+    "source": "https://fdc.nal.usda.gov/food-details/169260/nutrients",
+    "quote": "Okra, raw (FDC 169260): 1 cup = 100 g"
+   }
+  ],
+  "Peas, fresh": [
+   {
+    "label": "cup",
+    "amount": 145,
+    "source": "https://fdc.nal.usda.gov/food-details/170419/nutrients",
+    "quote": "Peas, green, raw (FDC 170419): 1 cup = 145 g"
+   }
+  ],
+  "Pumpkin": [
+   {
+    "label": "cup (1-inch cubes)",
+    "amount": 116,
+    "source": "https://fdc.nal.usda.gov/food-details/168448/nutrients",
+    "quote": "Pumpkin, raw (FDC 168448): 1 cup (1\" cubes) = 116 g"
+   }
+  ],
+  "Tomato": [
+   {
+    "label": "tomato (medium)",
+    "amount": 123,
+    "source": "https://fdc.nal.usda.gov/food-details/170457/nutrients",
+    "quote": "Tomatoes, red, ripe, raw, year round average (FDC 170457): 1 medium whole (2-3/5\" dia) = 123 g"
+   },
+   {
+    "label": "tomato (small)",
+    "amount": 91,
+    "source": "https://fdc.nal.usda.gov/food-details/170457/nutrients",
+    "quote": "Tomatoes, red, ripe, raw, year round average (FDC 170457): 1 small whole (2-2/5\" dia) = 91 g"
+   },
+   {
+    "label": "tomato (large)",
+    "amount": 182,
+    "source": "https://fdc.nal.usda.gov/food-details/170457/nutrients",
+    "quote": "Tomatoes, red, ripe, raw, year round average (FDC 170457): 1 large whole (3\" dia) = 182 g"
+   }
+  ],
+  "Zucchini": [
+   {
+    "label": "zucchini (medium)",
+    "amount": 196,
+    "source": "https://fdc.nal.usda.gov/food-details/169291/nutrients",
+    "quote": "Squash, summer, zucchini, includes skin, raw (FDC 169291): 1 medium = 196 g"
+   },
+   {
+    "label": "zucchini (small)",
+    "amount": 118,
+    "source": "https://fdc.nal.usda.gov/food-details/169291/nutrients",
+    "quote": "Squash, summer, zucchini, includes skin, raw (FDC 169291): 1 small = 118 g"
+   },
+   {
+    "label": "zucchini (large)",
+    "amount": 323,
+    "source": "https://fdc.nal.usda.gov/food-details/169291/nutrients",
+    "quote": "Squash, summer, zucchini, includes skin, raw (FDC 169291): 1 large = 323 g"
+   }
+  ],
+  "Apple": [
+   {
+    "label": "apple (medium)",
+    "amount": 182,
+    "source": "https://fdc.nal.usda.gov/food-details/171688/nutrients",
+    "quote": "Apples, raw, with skin (FDC 171688): 1 medium (3\" dia) = 182 g (no refuse stated for this measure; taken as edible portion since USDA computes per-measure nutrients from per-100 g edible values)"
+   },
+   {
+    "label": "apple (small)",
+    "amount": 149,
+    "source": "https://fdc.nal.usda.gov/food-details/171688/nutrients",
+    "quote": "Apples, raw, with skin (FDC 171688): 1 small (2-3/4\" dia) = 149 g"
+   },
+   {
+    "label": "apple (large)",
+    "amount": 223,
+    "source": "https://fdc.nal.usda.gov/food-details/171688/nutrients",
+    "quote": "Apples, raw, with skin (FDC 171688): 1 large (3-1/4\" dia) = 223 g"
+   }
+  ],
+  "Apple, green": [
+   {
+    "label": "apple (medium)",
+    "amount": 167,
+    "source": "https://fdc.nal.usda.gov/food-details/168203/nutrients",
+    "quote": "Apples, raw, granny smith, with skin (FDC 168203): 1 medium = 167 g (no refuse stated for this measure; taken as edible portion since USDA computes per-measure nutrients from per-100 g edible values)"
+   },
+   {
+    "label": "apple (small)",
+    "amount": 144,
+    "source": "https://fdc.nal.usda.gov/food-details/168203/nutrients",
+    "quote": "Apples, raw, granny smith, with skin (FDC 168203): 1 small = 144 g"
+   },
+   {
+    "label": "apple (large)",
+    "amount": 206,
+    "source": "https://fdc.nal.usda.gov/food-details/168203/nutrients",
+    "quote": "Apples, raw, granny smith, with skin (FDC 168203): 1 large = 206 g"
+   }
+  ],
+  "Avocado": [
+   {
+    "label": "avocado (whole, flesh)",
+    "amount": 201,
+    "source": "https://fdc.nal.usda.gov/food-details/171705/nutrients",
+    "quote": "Avocados, raw, all commercial varieties (FDC 171705): 1 avocado, NS as to Florida or California = 201 g (no refuse stated for this measure; taken as edible portion since USDA computes per-measure nutrients from per-100 g edible values)"
+   },
+   {
+    "label": "cup (cubes)",
+    "amount": 150,
+    "source": "https://fdc.nal.usda.gov/food-details/171705/nutrients",
+    "quote": "Avocados, raw, all commercial varieties (FDC 171705): 1 cup, cubes = 150 g"
+   }
+  ],
+  "Banana (robusta)": [
+   {
+    "label": "banana (medium)",
+    "amount": 118,
+    "source": "https://fdc.nal.usda.gov/food-details/173944/nutrients",
+    "quote": "Bananas, raw (FDC 173944, Musa acuminata): 1 medium (7\" to 7-7/8\" long) = 118 g (no refuse stated for this measure; taken as edible portion since USDA computes per-measure nutrients from per-100 g edible values)"
+   },
+   {
+    "label": "banana (small)",
+    "amount": 101,
+    "source": "https://fdc.nal.usda.gov/food-details/173944/nutrients",
+    "quote": "Bananas, raw (FDC 173944): 1 small (6\" to 6-7/8\" long) = 101 g"
+   },
+   {
+    "label": "banana (large)",
+    "amount": 136,
+    "source": "https://fdc.nal.usda.gov/food-details/173944/nutrients",
+    "quote": "Bananas, raw (FDC 173944): 1 large (8\" to 8-7/8\" long) = 136 g"
+   }
+  ],
+  "Cherries": [
+   {
+    "label": "cherry",
+    "amount": 8.2,
+    "source": "https://fdc.nal.usda.gov/food-details/171719/nutrients",
+    "quote": "Cherries, sweet, raw (FDC 171719): 1 cherry = 8.2 g (no refuse stated for this measure; taken as edible portion since USDA computes per-measure nutrients from per-100 g edible values)"
+   },
+   {
+    "label": "cup (pitted)",
+    "amount": 154,
+    "source": "https://fdc.nal.usda.gov/food-details/171719/nutrients",
+    "quote": "Cherries, sweet, raw (FDC 171719): 1 cup, without pits = 154 g"
+   }
+  ],
+  "Custard apple": [
+   {
+    "label": "custard apple (1 fruit, ~2.9 inch)",
+    "amount": 155,
+    "source": "https://fdc.nal.usda.gov/food-details/168175/nutrients",
+    "quote": "Sugar-apples, (sweetsop), raw, Annona squamosa = sitaphal (FDC 168175): 1 fruit (2-7/8\" dia) = 155 g (no refuse stated for this measure; taken as edible portion since USDA computes per-measure nutrients from per-100 g edible values)"
+   },
+   {
+    "label": "cup (pulp)",
+    "amount": 250,
+    "source": "https://fdc.nal.usda.gov/food-details/168175/nutrients",
+    "quote": "Sugar-apples, (sweetsop), raw (FDC 168175): 1 cup, pulp = 250 g"
+   }
+  ],
+  "Dates, dry (dark)": [
+   {
+    "label": "date (pitted)",
+    "amount": 8,
+    "source": "https://fdc.nal.usda.gov/food-details/2709203/nutrients",
+    "quote": "USDA FNDDS 'Date' (FDC 2709203): 1 date = 8 g"
+   },
+   {
+    "label": "date (small, deglet noor, pitted)",
+    "amount": 7.1,
+    "source": "https://fdc.nal.usda.gov/food-details/171726/nutrients",
+    "quote": "Dates, deglet noor (FDC 171726): 1 date, pitted = 7.1 g"
+   },
+   {
+    "label": "date (large, medjool, pitted)",
+    "amount": 24,
+    "source": "https://fdc.nal.usda.gov/food-details/168191/nutrients",
+    "quote": "Dates, medjool (FDC 168191): 1 date, pitted = 24 g"
+   }
+  ],
+  "Fig, fresh": [
+   {
+    "label": "fig (medium)",
+    "amount": 50,
+    "source": "https://fdc.nal.usda.gov/food-details/173021/nutrients",
+    "quote": "Figs, raw (FDC 173021): 1 medium (2-1/4\" dia) = 50 g"
+   },
+   {
+    "label": "fig (small)",
+    "amount": 40,
+    "source": "https://fdc.nal.usda.gov/food-details/173021/nutrients",
+    "quote": "Figs, raw (FDC 173021): 1 small (1-1/2\" dia) = 40 g"
+   },
+   {
+    "label": "fig (large)",
+    "amount": 64,
+    "source": "https://fdc.nal.usda.gov/food-details/173021/nutrients",
+    "quote": "Figs, raw (FDC 173021): 1 large (2-1/2\" dia) = 64 g"
+   }
+  ],
+  "Grapes, green seedless": [
+   {
+    "label": "grape",
+    "amount": 4.9,
+    "source": "https://fdc.nal.usda.gov/food-details/174683/nutrients",
+    "quote": "Grapes, red or green (European type, such as Thompson seedless), raw (FDC 174683): 10 grapes = 49 g, i.e. 4.9 g per grape"
+   },
+   {
+    "label": "cup",
+    "amount": 151,
+    "source": "https://fdc.nal.usda.gov/food-details/174683/nutrients",
+    "quote": "Grapes, red or green (European type, such as Thompson seedless), raw (FDC 174683): 1 cup = 151 g"
+   }
+  ],
+  "Grapes, black seedless": [
+   {
+    "label": "grape",
+    "amount": 4.9,
+    "source": "https://fdc.nal.usda.gov/food-details/174683/nutrients",
+    "quote": "Grapes, red or green (European type, such as Thompson seedless), raw (FDC 174683): 10 grapes = 49 g, i.e. 4.9 g per grape"
+   },
+   {
+    "label": "cup",
+    "amount": 151,
+    "source": "https://fdc.nal.usda.gov/food-details/174683/nutrients",
+    "quote": "Grapes, red or green (European type, such as Thompson seedless), raw (FDC 174683): 1 cup = 151 g"
+   }
+  ],
+  "Guava, white": [
+   {
+    "label": "guava (1 fruit)",
+    "amount": 55,
+    "source": "https://fdc.nal.usda.gov/food-details/173044/nutrients",
+    "quote": "Guavas, common, raw, Psidium guajava (FDC 173044): 1 fruit, without refuse = 55 g"
+   },
+   {
+    "label": "cup",
+    "amount": 165,
+    "source": "https://fdc.nal.usda.gov/food-details/173044/nutrients",
+    "quote": "Guavas, common, raw (FDC 173044): 1 cup = 165 g"
+   }
+  ],
+  "Guava, pink": [
+   {
+    "label": "guava (1 fruit)",
+    "amount": 55,
+    "source": "https://fdc.nal.usda.gov/food-details/173044/nutrients",
+    "quote": "Guavas, common, raw, Psidium guajava (FDC 173044): 1 fruit, without refuse = 55 g"
+   },
+   {
+    "label": "cup",
+    "amount": 165,
+    "source": "https://fdc.nal.usda.gov/food-details/173044/nutrients",
+    "quote": "Guavas, common, raw (FDC 173044): 1 cup = 165 g"
+   }
+  ],
+  "Jackfruit, ripe": [
+   {
+    "label": "cup (sliced)",
+    "amount": 165,
+    "source": "https://fdc.nal.usda.gov/food-details/174687/nutrients",
+    "quote": "Jackfruit, raw, Artocarpus heterophyllus (FDC 174687): 1 cup, sliced = 165 g"
+   }
+  ],
+  "Jamun": [
+   {
+    "label": "jamun",
+    "amount": 3,
+    "source": "https://fdc.nal.usda.gov/food-details/168150/nutrients",
+    "quote": "Java-plum, (jambolan), raw, Syzygium cumini (FDC 168150): 3 fruit = 9 g, i.e. 3 g per fruit (no refuse stated for this measure; taken as edible portion since USDA computes per-measure nutrients from per-100 g edible values)"
+   },
+   {
+    "label": "cup",
+    "amount": 135,
+    "source": "https://fdc.nal.usda.gov/food-details/168150/nutrients",
+    "quote": "Java-plum, (jambolan), raw (FDC 168150): 1 cup = 135 g"
+   }
+  ],
+  "Litchi": [
+   {
+    "label": "litchi",
+    "amount": 9.6,
+    "source": "https://fdc.nal.usda.gov/food-details/169086/nutrients",
+    "quote": "Litchis, raw (FDC 169086): 1 fruit without refuse = 9.6 g"
+   },
+   {
+    "label": "cup",
+    "amount": 190,
+    "source": "https://fdc.nal.usda.gov/food-details/169086/nutrients",
+    "quote": "Litchis, raw (FDC 169086): 1 cup = 190 g"
+   }
+  ],
+  "Muskmelon": [
+   {
+    "label": "cup (cubes)",
+    "amount": 160,
+    "source": "https://fdc.nal.usda.gov/food-details/169092/nutrients",
+    "quote": "Melons, cantaloupe, raw, Cucumis melo (FDC 169092): 1 cup, cubes = 160 g"
+   },
+   {
+    "label": "wedge (1/8 of medium melon)",
+    "amount": 69,
+    "source": "https://fdc.nal.usda.gov/food-details/169092/nutrients",
+    "quote": "Melons, cantaloupe, raw (FDC 169092): 1 wedge, medium (1/8 of medium melon, about 5\" dia) = 69 g (no refuse stated for this measure; taken as edible portion since USDA computes per-measure nutrients from per-100 g edible values)"
+   }
+  ],
+  "Orange": [
+   {
+    "label": "orange (medium)",
+    "amount": 131,
+    "source": "https://fdc.nal.usda.gov/food-details/169097/nutrients",
+    "quote": "Oranges, raw, all commercial varieties (FDC 169097): 1 fruit (2-5/8\" dia) = 131 g (no refuse stated for this measure; taken as edible portion since USDA computes per-measure nutrients from per-100 g edible values)"
+   },
+   {
+    "label": "orange (small)",
+    "amount": 96,
+    "source": "https://fdc.nal.usda.gov/food-details/169097/nutrients",
+    "quote": "Oranges, raw, all commercial varieties (FDC 169097): 1 small (2-3/8\" dia) = 96 g"
+   },
+   {
+    "label": "orange (large)",
+    "amount": 184,
+    "source": "https://fdc.nal.usda.gov/food-details/169097/nutrients",
+    "quote": "Oranges, raw, all commercial varieties (FDC 169097): 1 large (3-1/16\" dia) = 184 g"
+   }
+  ],
+  "Papaya, ripe": [
+   {
+    "label": "cup (1-inch pieces)",
+    "amount": 145,
+    "source": "https://fdc.nal.usda.gov/food-details/169926/nutrients",
+    "quote": "Papayas, raw (FDC 169926): 1 cup 1\" pieces = 145 g"
+   },
+   {
+    "label": "papaya (small)",
+    "amount": 157,
+    "source": "https://fdc.nal.usda.gov/food-details/169926/nutrients",
+    "quote": "Papayas, raw (FDC 169926): 1 fruit, small = 157 g (no refuse stated for this measure; taken as edible portion since USDA computes per-measure nutrients from per-100 g edible values)"
+   },
+   {
+    "label": "papaya (large)",
+    "amount": 781,
+    "source": "https://fdc.nal.usda.gov/food-details/169926/nutrients",
+    "quote": "Papayas, raw (FDC 169926): 1 fruit, large = 781 g"
+   }
+  ],
+  "Peach": [
+   {
+    "label": "peach (medium)",
+    "amount": 150,
+    "source": "https://fdc.nal.usda.gov/food-details/169928/nutrients",
+    "quote": "Peaches, yellow, raw (FDC 169928): 1 medium (2-2/3\" dia) = 150 g (no refuse stated for this measure; taken as edible portion since USDA computes per-measure nutrients from per-100 g edible values)"
+   },
+   {
+    "label": "peach (small)",
+    "amount": 130,
+    "source": "https://fdc.nal.usda.gov/food-details/169928/nutrients",
+    "quote": "Peaches, yellow, raw (FDC 169928): 1 small (2-1/2\" dia) = 130 g"
+   },
+   {
+    "label": "peach (large)",
+    "amount": 175,
+    "source": "https://fdc.nal.usda.gov/food-details/169928/nutrients",
+    "quote": "Peaches, yellow, raw (FDC 169928): 1 large (2-3/4\" dia) = 175 g"
+   }
+  ],
+  "Pear": [
+   {
+    "label": "pear (medium)",
+    "amount": 178,
+    "source": "https://fdc.nal.usda.gov/food-details/169118/nutrients",
+    "quote": "Pears, raw (FDC 169118): 1 medium = 178 g (no refuse stated for this measure; taken as edible portion since USDA computes per-measure nutrients from per-100 g edible values)"
+   },
+   {
+    "label": "pear (small)",
+    "amount": 148,
+    "source": "https://fdc.nal.usda.gov/food-details/169118/nutrients",
+    "quote": "Pears, raw (FDC 169118): 1 small = 148 g"
+   },
+   {
+    "label": "pear (large)",
+    "amount": 230,
+    "source": "https://fdc.nal.usda.gov/food-details/169118/nutrients",
+    "quote": "Pears, raw (FDC 169118): 1 large = 230 g"
+   }
+  ],
+  "Pineapple": [
+   {
+    "label": "cup (chunks)",
+    "amount": 165,
+    "source": "https://fdc.nal.usda.gov/food-details/169124/nutrients",
+    "quote": "Pineapple, raw, all varieties (FDC 169124): 1 cup, chunks = 165 g"
+   },
+   {
+    "label": "slice (3.5 inch dia, 3/4 inch thick)",
+    "amount": 84,
+    "source": "https://fdc.nal.usda.gov/food-details/169124/nutrients",
+    "quote": "Pineapple, raw, all varieties (FDC 169124): 1 slice (3-1/2\" dia x 3/4\" thick) = 84 g"
+   }
+  ],
+  "Plum": [
+   {
+    "label": "plum",
+    "amount": 66,
+    "source": "https://fdc.nal.usda.gov/food-details/169949/nutrients",
+    "quote": "Plums, raw (FDC 169949): 1 fruit (2-1/8\" dia) = 66 g (no refuse stated for this measure; taken as edible portion since USDA computes per-measure nutrients from per-100 g edible values)"
+   },
+   {
+    "label": "cup (sliced)",
+    "amount": 165,
+    "source": "https://fdc.nal.usda.gov/food-details/169949/nutrients",
+    "quote": "Plums, raw (FDC 169949): 1 cup, sliced = 165 g"
+   }
+  ],
+  "Pomegranate": [
+   {
+    "label": "cup (arils)",
+    "amount": 174,
+    "source": "https://fdc.nal.usda.gov/food-details/169134/nutrients",
+    "quote": "Pomegranates, raw (FDC 169134): 0.5 cup arils (seed/juice sacs) = 87 g, so 1 cup = 174 g (doubled)"
+   },
+   {
+    "label": "pomegranate (4 inch, arils)",
+    "amount": 282,
+    "source": "https://fdc.nal.usda.gov/food-details/169134/nutrients",
+    "quote": "Pomegranates, raw (FDC 169134): 1 pomegranate (4\" dia) = 282 g (no refuse stated for this measure; taken as edible portion since USDA computes per-measure nutrients from per-100 g edible values)"
+   }
+  ],
+  "Raisins, black": [
+   {
+    "label": "tbsp",
+    "amount": 9.1,
+    "source": "https://fdc.nal.usda.gov/food-details/168165/nutrients",
+    "quote": "Raisins, dark, seedless (FDC 168165): 1 cup (not packed) = 145 g; derived 1 tbsp = 145 / 16 = 9.1 g"
+   },
+   {
+    "label": "raisin",
+    "amount": 0.52,
+    "source": "https://fdc.nal.usda.gov/food-details/168165/nutrients",
+    "quote": "Raisins, dark, seedless (FDC 168165): 50 raisins = 26 g, i.e. 0.52 g per raisin"
+   },
+   {
+    "label": "cup",
+    "amount": 145,
+    "source": "https://fdc.nal.usda.gov/food-details/168165/nutrients",
+    "quote": "Raisins, dark, seedless (FDC 168165): 1 cup (not packed) = 145 g"
+   }
+  ],
+  "Raisins, golden": [
+   {
+    "label": "tbsp",
+    "amount": 9.1,
+    "source": "https://fdc.nal.usda.gov/food-details/168164/nutrients",
+    "quote": "Raisins, golden, seedless (FDC 168164): 1 cup (not packed) = 145 g; derived 1 tbsp = 145 / 16 = 9.1 g"
+   },
+   {
+    "label": "cup",
+    "amount": 145,
+    "source": "https://fdc.nal.usda.gov/food-details/168164/nutrients",
+    "quote": "Raisins, golden, seedless (FDC 168164): 1 cup (not packed) = 145 g"
+   }
+  ],
+  "Chikoo (sapota)": [
+   {
+    "label": "chikoo",
+    "amount": 170,
+    "source": "https://fdc.nal.usda.gov/food-details/167759/nutrients",
+    "quote": "Sapodilla, raw, Manilkara zapota (FDC 167759): 1 sapodilla = 170 g (no refuse stated for this measure; taken as edible portion since USDA computes per-measure nutrients from per-100 g edible values)"
+   },
+   {
+    "label": "cup (pulp)",
+    "amount": 241,
+    "source": "https://fdc.nal.usda.gov/food-details/167759/nutrients",
+    "quote": "Sapodilla, raw (FDC 167759): 1 cup, pulp = 241 g"
+   }
+  ],
+  "Strawberry": [
+   {
+    "label": "strawberry (medium)",
+    "amount": 12,
+    "source": "https://fdc.nal.usda.gov/food-details/167762/nutrients",
+    "quote": "Strawberries, raw (FDC 167762): 1 medium (1-1/4\" dia) = 12 g"
+   },
+   {
+    "label": "strawberry (small)",
+    "amount": 7,
+    "source": "https://fdc.nal.usda.gov/food-details/167762/nutrients",
+    "quote": "Strawberries, raw (FDC 167762): 1 small (1\" dia) = 7 g"
+   },
+   {
+    "label": "strawberry (large)",
+    "amount": 18,
+    "source": "https://fdc.nal.usda.gov/food-details/167762/nutrients",
+    "quote": "Strawberries, raw (FDC 167762): 1 large (1-3/8\" dia) = 18 g"
+   }
+  ],
+  "Watermelon, sugar baby": [
+   {
+    "label": "cup (diced)",
+    "amount": 152,
+    "source": "https://fdc.nal.usda.gov/food-details/167765/nutrients",
+    "quote": "Watermelon, raw (FDC 167765): 1 cup, diced = 152 g (wedge weight not used: USDA wedge is 1/16 of a 15\" long melon, not a sugar baby)"
+   }
+  ],
+  "Watermelon": [
+   {
+    "label": "cup (diced)",
+    "amount": 152,
+    "source": "https://fdc.nal.usda.gov/food-details/167765/nutrients",
+    "quote": "Watermelon, raw (FDC 167765): 1 cup, diced = 152 g"
+   },
+   {
+    "label": "wedge (1/16 of large melon)",
+    "amount": 286,
+    "source": "https://fdc.nal.usda.gov/food-details/167765/nutrients",
+    "quote": "Watermelon, raw (FDC 167765): 1 wedge (approx 1/16 of melon, melon 15\" long x 7-1/2\" dia) = 286 g (no refuse stated for this measure; taken as edible portion since USDA computes per-measure nutrients from per-100 g edible values)"
+   }
+  ],
+  "Beetroot": [
+   {
+    "label": "beetroot (2 inch dia)",
+    "amount": 82,
+    "source": "https://fdc.nal.usda.gov/food-details/169145/nutrients",
+    "quote": "Beets, raw (FDC 169145): 1 beet (2\" dia) = 82 g"
+   },
+   {
+    "label": "cup",
+    "amount": 136,
+    "source": "https://fdc.nal.usda.gov/food-details/169145/nutrients",
+    "quote": "Beets, raw (FDC 169145): 1 cup = 136 g"
+   }
+  ],
+  "Carrot": [
+   {
+    "label": "carrot (medium)",
+    "amount": 61,
+    "source": "https://fdc.nal.usda.gov/food-details/170393/nutrients",
+    "quote": "Carrots, raw (FDC 170393): 1 medium = 61 g"
+   },
+   {
+    "label": "carrot (small, 5.5 inch)",
+    "amount": 50,
+    "source": "https://fdc.nal.usda.gov/food-details/170393/nutrients",
+    "quote": "Carrots, raw (FDC 170393): 1 small (5-1/2\" long) = 50 g"
+   },
+   {
+    "label": "carrot (large, 7-8 inch)",
+    "amount": 72,
+    "source": "https://fdc.nal.usda.gov/food-details/170393/nutrients",
+    "quote": "Carrots, raw (FDC 170393): 1 large (7-1/4\" to 8-1/2\" long) = 72 g"
+   }
+  ],
+  "Potato": [
+   {
+    "label": "potato (medium, 2.25-3.25 inch)",
+    "amount": 213,
+    "source": "https://fdc.nal.usda.gov/food-details/170026/nutrients",
+    "quote": "Potatoes, flesh and skin, raw (FDC 170026): 1 potato medium (2-1/4\" to 3-1/4\" dia) = 213 g"
+   },
+   {
+    "label": "potato (small, 1.75-2.5 inch)",
+    "amount": 170,
+    "source": "https://fdc.nal.usda.gov/food-details/170026/nutrients",
+    "quote": "Potatoes, flesh and skin, raw (FDC 170026): 1 potato small (1-3/4\" to 2-1/2\" dia) = 170 g"
+   },
+   {
+    "label": "potato (large, 3-4.25 inch)",
+    "amount": 369,
+    "source": "https://fdc.nal.usda.gov/food-details/170026/nutrients",
+    "quote": "Potatoes, flesh and skin, raw (FDC 170026): 1 potato large (3\" to 4-1/4\" dia) = 369 g"
+   }
+  ],
+  "Radish": [
+   {
+    "label": "radish (7 inch, white)",
+    "amount": 338,
+    "source": "https://fdc.nal.usda.gov/food-details/168451/nutrients",
+    "quote": "Radishes, oriental, raw, Raphanus sativus (Longipinratus Group), i.e. long white radish (mooli) (FDC 168451): 1 radish (7\" long) = 338 g"
+   },
+   {
+    "label": "cup (slices)",
+    "amount": 116,
+    "source": "https://fdc.nal.usda.gov/food-details/168451/nutrients",
+    "quote": "Radishes, oriental, raw (FDC 168451): 1 cup slices = 116 g"
+   }
+  ],
+  "Sweet potato": [
+   {
+    "label": "sweet potato (5 inch)",
+    "amount": 130,
+    "source": "https://fdc.nal.usda.gov/food-details/168482/nutrients",
+    "quote": "Sweet potato, raw, unprepared (FDC 168482): 1 sweetpotato, 5\" long = 130 g"
+   },
+   {
+    "label": "cup (cubes)",
+    "amount": 133,
+    "source": "https://fdc.nal.usda.gov/food-details/168482/nutrients",
+    "quote": "Sweet potato, raw, unprepared (FDC 168482): 1 cup, cubes = 133 g"
+   }
+  ],
+  "Coriander leaves": [
+   {
+    "label": "sprig",
+    "amount": 2.2,
+    "source": "https://fdc.nal.usda.gov/food-details/169997/nutrients",
+    "quote": "Coriander (cilantro) leaves, raw (FDC 169997): 9 sprigs = 20 g, i.e. 2.2 g per sprig"
+   },
+   {
+    "label": "cup",
+    "amount": 16,
+    "source": "https://fdc.nal.usda.gov/food-details/169997/nutrients",
+    "quote": "Coriander (cilantro) leaves, raw (FDC 169997): 0.25 cup = 4 g, so 1 cup = 16 g (x4)"
+   }
+  ],
+  "Garlic": [
+   {
+    "label": "clove",
+    "amount": 3,
+    "source": "https://fdc.nal.usda.gov/food-details/169230/nutrients",
+    "quote": "Garlic, raw (FDC 169230): 1 clove = 3 g"
+   },
+   {
+    "label": "tsp",
+    "amount": 2.8,
+    "source": "https://fdc.nal.usda.gov/food-details/169230/nutrients",
+    "quote": "Garlic, raw (FDC 169230): 1 tsp = 2.8 g"
+   }
+  ],
+  "Ginger": [
+   {
+    "label": "tsp",
+    "amount": 2,
+    "source": "https://fdc.nal.usda.gov/food-details/169231/nutrients",
+    "quote": "Ginger root, raw (FDC 169231): 1 tsp = 2 g"
+   },
+   {
+    "label": "slice (1 inch dia)",
+    "amount": 2.2,
+    "source": "https://fdc.nal.usda.gov/food-details/169231/nutrients",
+    "quote": "Ginger root, raw (FDC 169231): 5 slices (1\" dia) = 11 g, i.e. 2.2 g per slice"
+   }
+  ],
+  "Mint leaves": [
+   {
+    "label": "tbsp",
+    "amount": 5.7,
+    "source": "https://fdc.nal.usda.gov/food-details/173475/nutrients",
+    "quote": "Spearmint, fresh, Mentha spicata (FDC 173475): 2 tbsp = 11.4 g, i.e. 5.7 g per tbsp"
+   }
+  ],
+  "Onion": [
+   {
+    "label": "onion (medium)",
+    "amount": 110,
+    "source": "https://fdc.nal.usda.gov/food-details/170000/nutrients",
+    "quote": "Onions, raw (FDC 170000): 1 medium (2-1/2\" dia) = 110 g"
+   },
+   {
+    "label": "onion (small)",
+    "amount": 70,
+    "source": "https://fdc.nal.usda.gov/food-details/170000/nutrients",
+    "quote": "Onions, raw (FDC 170000): 1 small = 70 g"
+   },
+   {
+    "label": "onion (large)",
+    "amount": 150,
+    "source": "https://fdc.nal.usda.gov/food-details/170000/nutrients",
+    "quote": "Onions, raw (FDC 170000): 1 large = 150 g"
+   }
+  ],
+  "Jaggery": [
+   {
+    "label": "tbsp (powder)",
+    "amount": 15,
+    "source": "https://fdc.nal.usda.gov/food-details/2440133/nutrients",
+    "quote": "USDA FDC Branded 'UDUPI, JAGGERY POWDER' (Deep Foods Inc., FDC 2440133), label serving: 1 Tbsp = 15 g"
+   },
+   {
+    "label": "tsp (powder)",
+    "amount": 5,
+    "source": "https://fdc.nal.usda.gov/food-details/2440133/nutrients",
+    "quote": "USDA FDC Branded 'UDUPI, JAGGERY POWDER' (FDC 2440133): 1 Tbsp = 15 g; derived 1 tsp = 15 / 3 = 5 g (another branded label, PURE INDIAN FOODS organic jaggery FDC 2173961, lists 1 tsp = 7 g)"
+   }
+  ],
+  "Button mushroom": [
+   {
+    "label": "mushroom (medium)",
+    "amount": 18,
+    "source": "https://fdc.nal.usda.gov/food-details/169251/nutrients",
+    "quote": "Mushrooms, white, raw (FDC 169251): 1 medium = 18 g"
+   },
+   {
+    "label": "mushroom (small)",
+    "amount": 10,
+    "source": "https://fdc.nal.usda.gov/food-details/169251/nutrients",
+    "quote": "Mushrooms, white, raw (FDC 169251): 1 small = 10 g"
+   },
+   {
+    "label": "mushroom (large)",
+    "amount": 23,
+    "source": "https://fdc.nal.usda.gov/food-details/169251/nutrients",
+    "quote": "Mushrooms, white, raw (FDC 169251): 1 large = 23 g"
+   }
+  ],
+  "Coconut water": [
+   {
+    "label": "cup",
+    "amount": 240,
+    "source": "https://fdc.nal.usda.gov/food-details/170174/nutrients",
+    "quote": "Nuts, coconut water (liquid from coconuts) (FDC 170174): 1 cup = 240 g (amount entered as 240 ml assuming ~1 g/ml; USDA gives grams)"
+   }
+  ],
+  "Egg white, raw": [
+   {
+    "label": "egg white (1 large egg)",
+    "amount": 33,
+    "source": "https://fdc.nal.usda.gov/food-details/172183/nutrients",
+    "quote": "Egg, white, raw, fresh (FDC 172183): 1 large = 33 g"
+   }
+  ],
+  "Egg yolk, raw": [
+   {
+    "label": "egg yolk (1 large egg)",
+    "amount": 17,
+    "source": "https://fdc.nal.usda.gov/food-details/172184/nutrients",
+    "quote": "Egg, yolk, raw, fresh (FDC 172184): 1 large = 17 g"
+   }
+  ],
+  "Egg white, boiled": [
+   {
+    "label": "egg white (1 egg)",
+    "amount": 33,
+    "source": "https://fdc.nal.usda.gov/food-details/2707170/nutrients",
+    "quote": "USDA FNDDS 'Egg, white, cooked, no added fat' (FDC 2707170): 1 egg white = 33 g"
+   }
+  ],
+  "Egg yolk, boiled": [
+   {
+    "label": "egg yolk (1 egg)",
+    "amount": 17,
+    "source": "https://fdc.nal.usda.gov/food-details/2707174/nutrients",
+    "quote": "USDA FNDDS 'Egg, yolk only, cooked, no added fat' (FDC 2707174): 1 egg = 17 g"
+   }
+  ],
+  "Omelette (IFCT)": [
+   {
+    "label": "omelette (2 eggs)",
+    "amount": 110,
+    "source": "https://fdc.nal.usda.gov/food-details/2707200/nutrients",
+    "quote": "USDA FNDDS 'Egg omelet or scrambled egg, made with oil' (FDC 2707200): 1 egg = 55 g, so 2-egg omelette = 110 g (also listed as 'Quantity not specified' = 110 g)"
+   },
+   {
+    "label": "omelette (1 egg)",
+    "amount": 55,
+    "source": "https://fdc.nal.usda.gov/food-details/2707200/nutrients",
+    "quote": "USDA FNDDS 'Egg omelet or scrambled egg, made with oil' (FDC 2707200): 1 egg = 55 g"
+   }
+  ],
+  "Chicken leg, raw (skinless)": [
+   {
+    "label": "leg (drumstick, meat only)",
+    "amount": 88,
+    "source": "https://fdc.nal.usda.gov/food-details/173619/nutrients",
+    "quote": "Chicken, broilers or fryers, leg, meat only, raw (FDC 173619): 1 drumstick bone and skin removed = 88 g"
+   },
+   {
+    "label": "leg (whole, meat only, incl. back portion)",
+    "amount": 265,
+    "source": "https://fdc.nal.usda.gov/food-details/173619/nutrients",
+    "quote": "Chicken, broilers or fryers, leg, meat only, raw (FDC 173619): 1 leg, bone and skin removed (Sum of drumstick+thigh+back meat only) = 265 g"
+   }
+  ],
+  "Chicken thigh, raw (skinless)": [
+   {
+    "label": "thigh (meat only)",
+    "amount": 147,
+    "source": "https://fdc.nal.usda.gov/food-details/173619/nutrients",
+    "quote": "Chicken, broilers or fryers, leg, meat only, raw (FDC 173619): 1 thigh bone and skin removed = 147 g (FDC 173627 'dark meat, thigh, meat only, raw' lists 1 thigh without skin = 149 g)"
+   }
+  ],
+  "Chicken breast, raw (skinless)": [
+   {
+    "label": "breast (1 boneless piece, US size)",
+    "amount": 272,
+    "source": "https://fdc.nal.usda.gov/food-details/171077/nutrients",
+    "quote": "Chicken, broiler or fryers, breast, skinless, boneless, meat only, raw (FDC 171077): 1 piece = 272 g"
+   }
+  ],
+  "Chicken wing, raw (skinless)": [
+   {
+    "label": "wing (meat only)",
+    "amount": 29,
+    "source": "https://fdc.nal.usda.gov/food-details/173632/nutrients",
+    "quote": "Chicken, broilers or fryers, wing, meat only, raw (FDC 173632): 1 wing, bone and skin removed = 29 g"
+   }
+  ],
+  "Chicken liver, raw": [
+   {
+    "label": "liver",
+    "amount": 44,
+    "source": "https://fdc.nal.usda.gov/food-details/171060/nutrients",
+    "quote": "Chicken, liver, all classes, raw (FDC 171060): 1 liver = 44 g"
+   }
+  ],
+  "Ghee": [
+   {
+    "label": "tsp",
+    "amount": 4.7,
+    "source": "https://fdc.nal.usda.gov/food-details/2710168/nutrients",
+    "quote": "USDA FNDDS 'Ghee, clarified butter' (FDC 2710168): 1 tablespoon = 14 g; derived 1 tsp = 14 / 3 = 4.7 g"
+   },
+   {
+    "label": "tbsp",
+    "amount": 14,
+    "source": "https://fdc.nal.usda.gov/food-details/2710168/nutrients",
+    "quote": "USDA FNDDS 'Ghee, clarified butter' (FDC 2710168): 1 tablespoon = 14 g (SR 'Butter oil, anhydrous' FDC 173412 lists 1 tbsp = 12.8 g)"
+   }
+  ],
+  "Sugar": [
+   {
+    "label": "tsp",
+    "amount": 4.2,
+    "source": "https://fdc.nal.usda.gov/food-details/169655/nutrients",
+    "quote": "Sugars, granulated (FDC 169655): 1 tsp = 4.2 g"
+   },
+   {
+    "label": "tbsp",
+    "amount": 12.6,
+    "source": "https://fdc.nal.usda.gov/food-details/169655/nutrients",
+    "quote": "Sugars, granulated (FDC 169655): 1 tsp = 4.2 g; derived 1 tbsp = 3 x 4.2 = 12.6 g (1 cup = 200 g gives 12.5 g)"
+   },
+   {
+    "label": "cube",
+    "amount": 2.3,
+    "source": "https://fdc.nal.usda.gov/food-details/169655/nutrients",
+    "quote": "Sugars, granulated (FDC 169655): 1 serving 1 cube = 2.3 g"
+   }
+  ],
+  "Mustard oil": [
+   {
+    "label": "tsp",
+    "amount": 4.5,
+    "source": "https://fdc.nal.usda.gov/food-details/172337/nutrients",
+    "quote": "Oil, mustard (FDC 172337): 1 tsp = 4.5 g"
+   },
+   {
+    "label": "tbsp",
+    "amount": 14,
+    "source": "https://fdc.nal.usda.gov/food-details/172337/nutrients",
+    "quote": "Oil, mustard (FDC 172337): 1 tbsp = 14 g"
+   }
+  ],
+  "Groundnut oil": [
+   {
+    "label": "tsp",
+    "amount": 4.5,
+    "source": "https://fdc.nal.usda.gov/food-details/171410/nutrients",
+    "quote": "Oil, peanut, salad or cooking (FDC 171410): 1 tsp = 4.5 g"
+   },
+   {
+    "label": "tbsp",
+    "amount": 13.5,
+    "source": "https://fdc.nal.usda.gov/food-details/171410/nutrients",
+    "quote": "Oil, peanut, salad or cooking (FDC 171410): 1 tbsp = 13.5 g"
+   }
+  ],
+  "Sunflower oil": [
+   {
+    "label": "tsp",
+    "amount": 4.5,
+    "source": "https://fdc.nal.usda.gov/food-details/171025/nutrients",
+    "quote": "Oil, sunflower, linoleic, (approx. 65%) (FDC 171025): 1 tsp = 4.5 g"
+   },
+   {
+    "label": "tbsp",
+    "amount": 13.6,
+    "source": "https://fdc.nal.usda.gov/food-details/171025/nutrients",
+    "quote": "Oil, sunflower, linoleic, (approx. 65%) (FDC 171025): 1 tbsp = 13.6 g"
+   }
+  ],
+  "Rice bran oil": [
+   {
+    "label": "tsp",
+    "amount": 4.5,
+    "source": "https://fdc.nal.usda.gov/food-details/171013/nutrients",
+    "quote": "Oil, rice bran (FDC 171013): 1 tsp = 4.5 g"
+   },
+   {
+    "label": "tbsp",
+    "amount": 13.6,
+    "source": "https://fdc.nal.usda.gov/food-details/171013/nutrients",
+    "quote": "Oil, rice bran (FDC 171013): 1 tbsp = 13.6 g"
+   }
+  ],
+  "Coconut oil": [
+   {
+    "label": "tsp",
+    "amount": 4.5,
+    "source": "https://fdc.nal.usda.gov/food-details/171412/nutrients",
+    "quote": "Oil, coconut (FDC 171412): 1 tsp = 4.5 g"
+   },
+   {
+    "label": "tbsp",
+    "amount": 13.6,
+    "source": "https://fdc.nal.usda.gov/food-details/171412/nutrients",
+    "quote": "Oil, coconut (FDC 171412): 1 tbsp = 13.6 g"
+   }
+  ]
+ },
+ "notFound": [
+  {
+   "name": "Fenugreek leaves",
+   "reason": "USDA FDC has only fenugreek seed (spice); no Indian cup or bunch weight for fresh methi leaves found; Indian sources checked: ICMR-NIN DGI 2024 booklet (no piece weights; full DGI 2024 PDF returned 404), INDB not checked for piece weights"
+  },
+  {
+   "name": "Cluster beans",
+   "reason": "No USDA FDC entry for guar/cluster beans; no Indian piece or cup weight found; Indian sources checked: ICMR-NIN DGI 2024 booklet (no piece weights; full DGI 2024 PDF returned 404), INDB not checked for piece weights"
+  },
+  {
+   "name": "Baby corn",
+   "reason": "No raw baby corn entry in USDA FDC (SR Legacy/FNDDS/Foundation); no Indian source with piece weight found; Indian sources checked: ICMR-NIN DGI 2024 booklet (no piece weights; full DGI 2024 PDF returned 404), INDB not checked for piece weights"
+  },
+  {
+   "name": "Parwal",
+   "reason": "No USDA FDC entry for pointed gourd (Trichosanthes dioica); no Indian piece weight found; Indian sources checked: ICMR-NIN DGI 2024 booklet (no piece weights; full DGI 2024 PDF returned 404), INDB not checked for piece weights"
+  },
+  {
+   "name": "Ridge gourd",
+   "reason": "USDA 'Gourd, dishcloth (towelgourd), raw' (FDC 168414) is Luffa aegyptiaca (sponge gourd), not ridge gourd (Luffa acutangula); no ridge-gourd portion weight in USDA or Indian sources found; Indian sources checked: ICMR-NIN DGI 2024 booklet (no piece weights; full DGI 2024 PDF returned 404), INDB not checked for piece weights"
+  },
+  {
+   "name": "Tinda",
+   "reason": "No USDA FDC entry for Indian round gourd (Praecitrullus fistulosus); no Indian piece weight found; Indian sources checked: ICMR-NIN DGI 2024 booklet (no piece weights; full DGI 2024 PDF returned 404), INDB not checked for piece weights"
+  },
+  {
+   "name": "Apple, Kashmiri",
+   "reason": "Indian variety; no Indian source with a typical Kashmiri apple weight found (not borrowing USDA varieties); Indian sources checked: ICMR-NIN DGI 2024 booklet (no piece weights; full DGI 2024 PDF returned 404), INDB not checked for piece weights"
+  },
+  {
+   "name": "Banana, poovan (small)",
+   "reason": "Indian variety; no Indian source with a typical poovan banana weight found; Indian sources checked: ICMR-NIN DGI 2024 booklet (no piece weights; full DGI 2024 PDF returned 404), INDB not checked for piece weights"
+  },
+  {
+   "name": "Banana, red",
+   "reason": "Indian variety; not in USDA FDC; no Indian source with a typical red banana weight found; Indian sources checked: ICMR-NIN DGI 2024 booklet (no piece weights; full DGI 2024 PDF returned 404), INDB not checked for piece weights"
+  },
+  {
+   "name": "Amla (Indian gooseberry)",
+   "reason": "USDA 'Gooseberries, raw' is Ribes (European gooseberry), not Phyllanthus emblica; no Indian amla piece weight found; Indian sources checked: ICMR-NIN DGI 2024 booklet (no piece weights; full DGI 2024 PDF returned 404), INDB not checked for piece weights"
+  },
+  {
+   "name": "Sweet lime (mosambi)",
+   "reason": "Not in USDA FDC (Citrus limetta); no Indian piece weight found; Indian sources checked: ICMR-NIN DGI 2024 booklet (no piece weights; full DGI 2024 PDF returned 404), INDB not checked for piece weights"
+  },
+  {
+   "name": "Mango, banganapalli",
+   "reason": "Indian variety; no Indian portion weight found. Horticulture papers report fruit weights per harvest-maturity treatment, not a typical edible serving. (USDA generic 'Mangos, raw' FDC 169910: 1 fruit without refuse = 336 g, 1 cup pieces = 165 g, is a different variety mix and was not borrowed); Indian sources checked: ICMR-NIN DGI 2024 booklet (no piece weights; full DGI 2024 PDF returned 404), INDB not checked for piece weights"
+  },
+  {
+   "name": "Mango, kesar",
+   "reason": "Indian variety; no Indian portion weight found. Horticulture papers report fruit weights per harvest-maturity treatment, not a typical edible serving. (USDA generic 'Mangos, raw' FDC 169910: 1 fruit without refuse = 336 g, 1 cup pieces = 165 g, is a different variety mix and was not borrowed); Indian sources checked: ICMR-NIN DGI 2024 booklet (no piece weights; full DGI 2024 PDF returned 404), INDB not checked for piece weights"
+  },
+  {
+   "name": "Mango, totapuri",
+   "reason": "Indian variety; no Indian portion weight found. Horticulture papers report fruit weights per harvest-maturity treatment, not a typical edible serving. (USDA generic 'Mangos, raw' FDC 169910: 1 fruit without refuse = 336 g, 1 cup pieces = 165 g, is a different variety mix and was not borrowed); Indian sources checked: ICMR-NIN DGI 2024 booklet (no piece weights; full DGI 2024 PDF returned 404), INDB not checked for piece weights"
+  },
+  {
+   "name": "Yam (suran)",
+   "reason": "USDA 'Yam, raw' is Dioscorea, not elephant foot yam (Amorphophallus); no Indian portion weight found; Indian sources checked: ICMR-NIN DGI 2024 booklet (no piece weights; full DGI 2024 PDF returned 404), INDB not checked for piece weights"
+  },
+  {
+   "name": "Green chilli",
+   "reason": "USDA 'Peppers, hot chili, green, raw' (FDC 170497) gives 1 pepper = 45 g, a large US chili, not an Indian hari mirch; no Indian source with a green chilli piece weight found; Indian sources checked: ICMR-NIN DGI 2024 booklet (no piece weights; full DGI 2024 PDF returned 404), INDB not checked for piece weights"
+  },
+  {
+   "name": "Country egg (desi), boiled",
+   "reason": "Indian desi egg size differs from USDA large egg; no Indian source with a desi egg weight found; Indian sources checked: ICMR-NIN DGI 2024 booklet (no piece weights; full DGI 2024 PDF returned 404), INDB not checked for piece weights"
+  },
+  {
+   "name": "Chicken gizzard, raw",
+   "reason": "USDA 'Chicken, gizzard, all classes, raw' (FDC 171456) lists only 4 oz and 1 lb; no per-gizzard weight in USDA or Indian sources found; Indian sources checked: ICMR-NIN DGI 2024 booklet (no piece weights; full DGI 2024 PDF returned 404), INDB not checked for piece weights"
+  }
+ ]
+}

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { format } from 'date-fns';
 import { Camera, Check, Dumbbell, Footprints, Globe, Loader2, Mic, Send, Square, Star, Utensils, X } from 'lucide-react';
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet';
@@ -14,6 +14,7 @@ import { AutoTextarea } from './AutoTextarea';
 import { describeFood, foodsFor, matchText, perBasis, type Food } from '@/lib/food-match';
 import { FoodEditor, FoodsPanel } from './FoodsPanel';
 import type { FoodsApi } from './useFoods';
+import { matchable } from '@/lib/food-catalog';
 
 const FORM_KEY = 'fit-log-form'; // remembers which tab the user last chose: '0' AI, '1' form, 'foods'
 type View = 'ai' | 'foods' | 'form';
@@ -138,6 +139,19 @@ export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, o
     catch (e: any) { setMsgs(m => [...m, { role: 'ai', text: e.message, error: true }]); }
   };
 
+  // How often each saved/catalogue food was logged: on a tie ("milk"), your usual one is logged.
+  const usage = useMemo(() => {
+    const n = new Map<string, number>();
+    for (const d of Object.values(data.fitnessDays ?? {})) for (const m of d.meals) if (m.foodId) n.set(m.foodId, (n.get(m.foodId) ?? 0) + 1);
+    return n;
+  }, [data.fitnessDays]);
+  // Foods for the AI, nearest first: what the message names, then the saved/catalogue foods behind meals already
+  // logged today or in the draft, so an edit ("lunch was 2 bowls", "make the lays 2 packs") rescales exact numbers.
+  const knownFor = (said: string) => {
+    const byId = new Map([...foods.foods, ...foods.catalog].map(f => [f.id, f]));
+    const behind = [...logged, ...(draft?.meals ?? [])].flatMap(m => (m.foodId && byId.get(m.foodId) ? [byId.get(m.foodId)!] : []));
+    return [...new Set([...foodsFor(said, foods.foods, matchable(foods.catalog)), ...behind])].slice(0, 20).map(describeFood);
+  };
   const send = async () => {
     if (busy) return;
     stop();
@@ -146,13 +160,13 @@ export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, o
     const image = photo ?? undefined;
     setMsgs(m => [...m, { role: 'user', text: said, image }]);
     setText(''); setInterim(''); setPhoto(null); setSaved(false);
-    // Only saved foods in the message ("150g rice, 2 rotis"): log from My Foods, no AI call. Still a draft until Save.
+    // Only known foods (My Foods, then the built-in catalogue) in the message ("150g rice, 2 rotis"): log from My Foods, no AI call. Still a draft until Save.
     // Not while a draft or edits are open: "make it 3 rotis" is a correction for the AI.
-    const local = !image && said && !hasItems ? matchText(said, foods.foods, nowSlot) : null;
+    const local = !image && said && !hasItems ? matchText(said, foods.foods, nowSlot, matchable(foods.catalog), usage) : null;
     if (local?.kind === 'all') {
       setDraft(d => ({ ...(d ?? EMPTY(day)), date: d?.date ?? day, meals: [...(d?.meals ?? []), ...local.meals] }));
       setVer(v => v + 1);
-      setMsgs(m => [...m, { role: 'ai', text: `From My Foods, no AI used: ${local.meals.map(x => `${x.name} (${x.kcal} kcal)`).join(', ')}. Check, then Save.` }]);
+      setMsgs(m => [...m, { role: 'ai', text: `From your foods, no AI used: ${local.meals.map(x => `${x.name} (${x.kcal} kcal)`).join(', ')}. Check, then Save.` }]);
       return;
     }
     if (aiDisabled) {
@@ -176,7 +190,7 @@ export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, o
         localTime: format(new Date(), 'HH:mm'),
         loggedMeals: logged.map((m, index) => ({ index, name: m.name, kcal: m.kcal, proteinG: m.proteinG, carbsG: m.carbsG, fatG: m.fatG, fiberG: m.fiberG, slot: m.slot })),
         currentEdits: edits.length ? edits : undefined,
-        knownFoods: said ? foodsFor(said, foods.foods).map(describeFood) : undefined,
+        knownFoods: said ? knownFor(said) : undefined,
       }, selectedModel);
       if (req !== reqRef.current) return;
       const { reply, web, edits: changed, ...next } = r;
@@ -225,7 +239,7 @@ export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, o
         <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-2 px-5 pb-2 pt-5 pr-12">
           <div className="min-w-[13rem] flex-1">
             <SheetTitle className="fit-display text-2xl text-[var(--f-ink)]">Log <em>it</em></SheetTitle>
-            <SheetDescription className="f-muted text-sm">{view === 'form' ? 'Fill in the numbers yourself. No AI.' : view === 'foods' ? 'Your saved foods, scaled to what you ate. No AI.' : 'Meals, workouts or numbers — type, speak, or send a photo.'}</SheetDescription>
+            <SheetDescription className="f-muted text-sm">{view === 'form' ? 'Fill in the numbers yourself. No AI.' : view === 'foods' ? 'Your foods and 1,400+ built-in ones, scaled to what you ate. No AI.' : 'Meals, workouts or numbers — type, speak, or send a photo.'}</SheetDescription>
           </div>
           <div className="flex shrink-0 gap-1" role="group" aria-label="How to log">
             <button type="button" className="f-chip !px-2.5" data-on={view === 'ai'} aria-pressed={view === 'ai'} onClick={() => choose('ai')}>AI</button>

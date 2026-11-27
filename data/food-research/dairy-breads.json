@@ -1,0 +1,884 @@
+{
+ "items": [
+  {
+   "name": "Amul Fresh Malai Paneer",
+   "brand": "Amul (GCMMF)",
+   "group": "Dairy",
+   "aliases": [
+    "paneer",
+    "amul paneer",
+    "amul malai paneer",
+    "malai paneer",
+    "amul fresh paneer",
+    "cottage cheese"
+   ],
+   "unit": "g",
+   "kcal": 312,
+   "proteinG": 20.0,
+   "carbsG": 4.0,
+   "fatG": 24.0,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "serving",
+     "amount": 50
+    },
+    {
+     "label": "100 g pack",
+     "amount": 100
+    },
+    {
+     "label": "200 g pack",
+     "amount": 200
+    },
+    {
+     "label": "1 kg pack",
+     "amount": 1000
+    }
+   ],
+   "source": "https://world.openfoodfacts.org/product/8901262180115",
+   "sourceBasis": "per 100 g, printed nutrition panel (photo of pack on the Open Food Facts page, 200 g pouch); same panel on the label photo of OFF 8901262180146 'Amul Malai Paneer' 1 kg (20 servings of 50 g) and on Blinkit's Amul Fresh Malai Paneer (prid 329500, 200 g) and Amul Fresh Paneer (prid 34134, 100 g) listings",
+   "quote": "4 servings per container. Serving size 50 g. Amount per 100 g: Energy 312 kcal, Total Fat 24.0 g, Carbohydrate 4.0 g, Total Sugars 4.0 g, Protein 20.0 g"
+  },
+  {
+   "name": "Amul Sterilised Malai Paneer (Diced, tin)",
+   "brand": "Amul (GCMMF)",
+   "group": "Dairy",
+   "aliases": [
+    "amul tin paneer",
+    "sterilised paneer",
+    "canned paneer",
+    "diced paneer"
+   ],
+   "unit": "g",
+   "kcal": 246,
+   "proteinG": 12.5,
+   "carbsG": 4.0,
+   "fatG": 20.0,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "425 g tin",
+     "amount": 425
+    }
+   ],
+   "source": "https://blinkit.com/prn/amul-sterilised-malai-paneer-diced/prid/767515",
+   "sourceBasis": "per 100 g, nutrition information text on the Blinkit listing (425 g tin)",
+   "quote": "(Per 100 g) Energy: 246 kcal, Total Fat: 20.0 g, Carbohydrates: 4.0 g, Total Sugar: 4.0 g, Protein: 12.5 g"
+  },
+  {
+   "name": "Nandini Toned Milk",
+   "brand": "Nandini (KMF)",
+   "group": "Dairy",
+   "aliases": [
+    "nandini milk",
+    "toned milk",
+    "nandini blue packet",
+    "milk"
+   ],
+   "unit": "ml",
+   "kcal": 60,
+   "proteinG": 3.1,
+   "carbsG": 4.8,
+   "fatG": 3.1,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "500 ml pouch",
+     "amount": 500
+    }
+   ],
+   "source": "https://blinkit.com/prn/nandini-toned-fresh-milk-polypack/prid/37083",
+   "sourceBasis": "per 100 ml, nutrition information text on the Blinkit listing for the 500 ml pasteurised polypack",
+   "quote": "Nutritional Information Per 100 ml: Energy: 60 kcal, Carbohydrate: 4.8 g, of which Sugar (Lactose): 4.8 g, Protein: 3.1 g, Fat: 3.1 g, Saturated Fat: 2.0 g"
+  },
+  {
+   "name": "Nandini Slim Skimmed Milk",
+   "brand": "Nandini (KMF)",
+   "group": "Dairy",
+   "aliases": [
+    "slim milk",
+    "nandini slim",
+    "skimmed milk",
+    "skim milk",
+    "double toned milk",
+    "nandini skimmed milk"
+   ],
+   "unit": "ml",
+   "kcal": 39,
+   "proteinG": 3.5,
+   "carbsG": 5.1,
+   "fatG": 0.5,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "500 ml pack",
+     "amount": 500
+    },
+    {
+     "label": "1 L pack",
+     "amount": 1000
+    }
+   ],
+   "source": "https://world.openfoodfacts.org/product/8906036672995",
+   "sourceBasis": "per 100 ml, printed nutrition panel (photo of the UHT Tetra Pak on the Open Food Facts page for 'Slim UHT Sterilised Skimmed Milk', 500 ml); cross-checked with Blinkit 'Nandini Slim Skimmed Milk' 1 L (prid 115774): 39 kcal, carbs 5.1 g, fat 0.5 g agree, Blinkit lists protein 3 g",
+   "quote": "Nutritional Information per 100 ml: Energy, kcal 39 | Carbohydrate, g 5.1 | of which sugar (Lactose), g 5.1 | Protein, g 3.5 | Fat, g 0.5 | Saturated Fat, g 0.33"
+  },
+  {
+   "name": "Nandini Curd",
+   "brand": "Nandini (KMF)",
+   "group": "Dairy",
+   "aliases": [
+    "dahi",
+    "curd",
+    "nandini dahi",
+    "nandini pouch curd",
+    "yogurt"
+   ],
+   "unit": "g",
+   "kcal": 60,
+   "proteinG": 3.7,
+   "carbsG": 4.4,
+   "fatG": 3.1,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "200 g pouch",
+     "amount": 200
+    },
+    {
+     "label": "400 g pouch",
+     "amount": 400
+    },
+    {
+     "label": "500 g pouch",
+     "amount": 500
+    }
+   ],
+   "source": "https://blinkit.com/prn/nandini-curd/prid/259923",
+   "sourceBasis": "per 100 g, Blinkit structured nutrition fields for 'Nandini Pouch Curd' (500 g; 400 g listing prid 588266 identical); matches the Open Food Facts entry 8906036670205 (60 kcal, 3.7 P, 4.4 C, 3.1 F)",
+   "quote": "Protein Per 100 g 3.7 g | Total Carbohydrates Per 100 g 4.4 g | Total Fat Per 100 g 3.1 g | Energy Per 100 g 60 kcal"
+  },
+  {
+   "name": "Nandini Premium Probiotic Curd",
+   "brand": "Nandini (KMF)",
+   "group": "Dairy",
+   "aliases": [
+    "probiotic curd",
+    "probiotic dahi",
+    "nandini probiotic"
+   ],
+   "unit": "g",
+   "kcal": 66,
+   "proteinG": 4.0,
+   "carbsG": 5.3,
+   "fatG": 3.0,
+   "fiberG": null,
+   "source": "https://blinkit.com/prn/nandini-premium-probiotic-curd/prid/601682",
+   "sourceBasis": "per 100 g, Blinkit structured nutrition fields only (no label text on the page); sold as a 400 ml pouch (gram weight not stated on a label, so no serving given)",
+   "quote": "Protein Per 100 g 4 g | Total Carbohydrates Per 100 g 5.3 g | Total Fat Per 100 g 3 g | Energy Per 100 g 66 kcal"
+  },
+  {
+   "name": "Milky Mist Greek Yogurt, Natural",
+   "brand": "Milky Mist",
+   "group": "Dairy",
+   "aliases": [
+    "greek yogurt",
+    "greek yoghurt",
+    "milky mist greek",
+    "plain greek yogurt",
+    "hung curd"
+   ],
+   "unit": "g",
+   "kcal": 77.8,
+   "proteinG": 8.0,
+   "carbsG": 6.5,
+   "fatG": 2.2,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "100 g cup",
+     "amount": 100
+    },
+    {
+     "label": "225 g tub",
+     "amount": 225
+    }
+   ],
+   "source": "https://blinkit.com/prn/milky-mist-greek-yogurt-natural/prid/729826",
+   "sourceBasis": "per 100 g, nutrition table text on the Blinkit listing for the 225 g tub (serving 100 g). Note: the 100 g cup listing (prid 523632) quotes a different panel: 73.8 kcal, protein 7 g, carbs 6.5 g, fat 2.2 g",
+   "quote": "Amount per 100 g: Energy (kcal) 77.8 | Protein (g) 8.0 | Carbohydrate (g) 6.5 | Total Sugars (g) 6.5 | Added Sugars (g) 0.0 | Total Fat (g) 2.2"
+  },
+  {
+   "name": "Milky Mist Greek Yogurt, Blueberry",
+   "brand": "Milky Mist",
+   "group": "Dairy",
+   "aliases": [
+    "blueberry greek yogurt",
+    "milky mist blueberry",
+    "greek yogurt blueberry"
+   ],
+   "unit": "g",
+   "kcal": 101.6,
+   "proteinG": 7.0,
+   "carbsG": 13.9,
+   "fatG": 2.0,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "100 g cup",
+     "amount": 100
+    },
+    {
+     "label": "225 g tub",
+     "amount": 225
+    }
+   ],
+   "source": "https://blinkit.com/prn/milky-mist-high-protein-yogurt-blueberry/prid/729827",
+   "sourceBasis": "per 100 g, nutrition text on the Blinkit listing (225 g tub); identical values on the 100 g cup listing (prid 716067)",
+   "quote": "Amount per 100g*: Energy (kcal): 101.6, Protein (g): 7.0, Carbohydrate (g): 13.9, Total Sugar (g): 13.9, Added Sugar (g): 7.2, Total Fat (g): 2.0"
+  },
+  {
+   "name": "Milky Mist Greek Yogurt, Mango",
+   "brand": "Milky Mist",
+   "group": "Dairy",
+   "aliases": [
+    "mango greek yogurt",
+    "milky mist mango",
+    "greek yogurt mango"
+   ],
+   "unit": "g",
+   "kcal": 115,
+   "proteinG": 7.0,
+   "carbsG": 17.8,
+   "fatG": 1.8,
+   "fiberG": 0.2,
+   "servings": [
+    {
+     "label": "100 g cup",
+     "amount": 100
+    }
+   ],
+   "source": "https://blinkit.com/prn/milky-mist-mango-greek-yogurt/prid/766538",
+   "sourceBasis": "per 100 g, nutrition text on the Blinkit listing (100 g cup)",
+   "quote": "Energy (kcal): 115.0 Protein (g): 7.0 Carbohydrate (g): 17.8 Total Sugars (g): 17.6 Added Sugars (g): 6.0 Dietary Fiber (g): 0.2 Total Fat (g): 1.8"
+  },
+  {
+   "name": "Amul Buttermilk",
+   "brand": "Amul (GCMMF)",
+   "group": "Dairy",
+   "aliases": [
+    "chaas",
+    "chaach",
+    "buttermilk",
+    "amul chaas",
+    "plain buttermilk",
+    "amul unsalted buttermilk"
+   ],
+   "unit": "ml",
+   "kcal": 23,
+   "proteinG": 1.3,
+   "carbsG": 2.5,
+   "fatG": 0.7,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "cup (100 ml)",
+     "amount": 100
+    },
+    {
+     "label": "400 ml pouch",
+     "amount": 400
+    }
+   ],
+   "source": "https://world.openfoodfacts.org/product/8901262200004",
+   "sourceBasis": "per 100 ml, printed nutrition panel (photo of the 400 ml pouch on the Open Food Facts page; serving 100 ml, 4 servings). Same values on OFF 8901262201995 (310 ml) and Blinkit 'Amul Unsalted Buttermilk' 400 ml (prid 159837)",
+   "quote": "Serving size 100 mL. Amount per 100 mL: Energy (kcal) 23, Total Fat (g) 0.7, Carbohydrate (g) 2.5, Total Sugars (g) 2.5, Protein (g) 1.3. Net Content: 400 mL"
+  },
+  {
+   "name": "Amul Masti Spiced Buttermilk",
+   "brand": "Amul (GCMMF)",
+   "group": "Dairy",
+   "aliases": [
+    "chaas",
+    "masala chaas",
+    "amul masti",
+    "spiced buttermilk",
+    "masti chaas",
+    "amul masti buttermilk"
+   ],
+   "unit": "ml",
+   "kcal": 28.5,
+   "proteinG": 1.5,
+   "carbsG": 1.8,
+   "fatG": 1.5,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "200 ml pack",
+     "amount": 200
+    }
+   ],
+   "source": "https://world.openfoodfacts.org/product/8901262200196",
+   "sourceBasis": "printed nutrition panel per pack (200 mL, 1 serving per container), photo on the Open Food Facts page; converted to per 100 ml by halving. Other panels seen: Blinkit 200 ml listing (prid 19507) text 29.3 kcal / 1.7 P / 2.3 C / 1.5 F per 100; export 1 L carton (OFF 8901262200233) 80 kcal / 4 P / 6 C / 4 F per 250 mL",
+   "quote": "Serving size 200 mL. Amount per pack: Energy (kcal) 57, Total Fat (g) 3.0, Carbohydrate (g) 3.6, Total Sugars (g) 3.6, Protein (g) 3.0"
+  },
+  {
+   "name": "Amul Butter (salted)",
+   "brand": "Amul (GCMMF)",
+   "group": "Dairy",
+   "aliases": [
+    "butter",
+    "amul butter",
+    "salted butter",
+    "makhan",
+    "pasteurised butter"
+   ],
+   "unit": "g",
+   "kcal": 724,
+   "proteinG": 1.0,
+   "carbsG": 0.0,
+   "fatG": 80.0,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "serving (10 g)",
+     "amount": 10
+    },
+    {
+     "label": "100 g pack",
+     "amount": 100
+    },
+    {
+     "label": "200 g pack",
+     "amount": 200
+    },
+    {
+     "label": "500 g pack",
+     "amount": 500
+    }
+   ],
+   "source": "https://world.openfoodfacts.org/product/8901262010320",
+   "sourceBasis": "per 100 g, printed nutrition panel (photo of the 200 g pack on the Open Food Facts page: 20 servings, serving size 10 g); same 724/80/1.0 on OFF 8901262010016, 8901262010023 and 4901960000016. Pack sizes 100/200 g from OFF, 500 g from Blinkit prid 160 (which lists 722 kcal, protein 0.5 g)",
+   "quote": "20 servings per container. Serving size 10 g. Amount per 100 g: Energy (kcal) 724, Total Fat (g) 80.0, Saturated Fat (g) 48.0, Carbohydrate (g) 0.0, Protein (g) 1.0"
+  },
+  {
+   "name": "Amul Cheese Slices",
+   "brand": "Amul (GCMMF)",
+   "group": "Dairy",
+   "aliases": [
+    "cheese slice",
+    "amul cheese",
+    "cheese slices",
+    "processed cheese slice"
+   ],
+   "unit": "g",
+   "kcal": 311,
+   "proteinG": 20.0,
+   "carbsG": 1.5,
+   "fatG": 25.0,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "slice",
+     "amount": 20
+    },
+    {
+     "label": "100 g pack (5 slices)",
+     "amount": 100
+    },
+    {
+     "label": "200 g pack (10 slices)",
+     "amount": 200
+    }
+   ],
+   "source": "https://blinkit.com/prn/amul-cheese-slices/prid/168",
+   "sourceBasis": "per 100 g, nutrition information text on the Blinkit listing (200 g, 10 slices; serving size 20 g); same panel on the 100 g listing (prid 125240, 5 slices) and Open Food Facts 2000000136641",
+   "quote": "(Per 100 g) Serving Size: 20 g Servings Per Container: 10 Energy: 311 kcal Total Fat: 25.0 g Carbohydrate: 1.5 g Total Sugars: 1.5 g Protein: 20.0 g"
+  },
+  {
+   "name": "Britannia The Laughing Cow Daily Cheese Slices",
+   "brand": "Britannia (Britannia Bel Foods)",
+   "group": "Dairy",
+   "aliases": [
+    "laughing cow daily",
+    "britannia daily cheese slices"
+   ],
+   "unit": "g",
+   "kcal": 283.3,
+   "proteinG": 13.9,
+   "carbsG": 3.3,
+   "fatG": 23.9,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "slice",
+     "amount": 18
+    },
+    {
+     "label": "180 g pack (10 slices)",
+     "amount": 180
+    }
+   ],
+   "source": "https://blinkit.com/prn/britannia-laughing-cow-daily-cheese-slices/prid/758694",
+   "sourceBasis": "label values per slice (18 g) from the Blinkit listing's nutrition text, converted to per 100 g (x 100/18)",
+   "quote": "Each slice (18 g) of this cheese provides – Energy: 51 kcal Protein: 2.5 g Carbohydrate: 0.6 g Total Fat: 4.3 g"
+  },
+  {
+   "name": "Britannia The Laughing Cow Cheese Slices",
+   "brand": "Britannia (Britannia Bel Foods)",
+   "group": "Dairy",
+   "aliases": [
+    "britannia cheese slices",
+    "laughing cow cheese slices",
+    "britannia cheese",
+    "cheese slice"
+   ],
+   "unit": "g",
+   "kcal": 315,
+   "proteinG": 17.2,
+   "carbsG": 4.3,
+   "fatG": 25.5,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "slice",
+     "amount": 18
+    },
+    {
+     "label": "400 g pack (20 slices)",
+     "amount": 400
+    }
+   ],
+   "source": "https://blinkit.com/prn/britannia-cheese-slices-buy-2-get-1-free/prid/491892",
+   "sourceBasis": "per 100 g, Blinkit structured nutrition fields (400 g packs, 20 slices); protein 17.2 g per 100 g and the 18 g (approx. 1 slice) serving are confirmed on Britannia's own page https://www.britannia.co.in/blogs/how-much-protein-is-in-cheese-a-look-at-britannia-the-laughing-cow-cheese-range",
+   "quote": "Protein Per 100 g 17.2 g | Total Carbohydrates Per 100 g 4.3 g | Total Fat Per 100 g 25.5 g | Energy Per 100 g 315 kcal | No. of Slices 20 Slices"
+  },
+  {
+   "name": "Go Cheese Slices",
+   "brand": "Go (Parag Milk Foods)",
+   "group": "Dairy",
+   "aliases": [
+    "go cheese",
+    "go cheese slice",
+    "cheese slice",
+    "gowardhan cheese slices"
+   ],
+   "unit": "g",
+   "kcal": 280,
+   "proteinG": 14.0,
+   "carbsG": 2.0,
+   "fatG": 24.0,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "slice",
+     "amount": 20
+    },
+    {
+     "label": "200 g pack (10 slices)",
+     "amount": 200
+    }
+   ],
+   "source": "https://blinkit.com/prn/go-cheese-slices/prid/25531",
+   "sourceBasis": "per 100 g, Blinkit structured nutrition fields (200 g, 10 slices); matches Open Food Facts 8906001020196 (Go Cheese Slices 200 g, serving 20 g: 280 kcal, 14 P, 2 C, 24 F). The 476 g / 28-slice listing (prid 3493) shows 288 kcal, 14.1 P, 1.8 C, 24.1 F",
+   "quote": "Protein Per 100 g 14 g | Total Carbohydrates Per 100 g 2 g | Total Fat Per 100 g 24 g | Energy Per 100 g 280 kcal | No. of Slices 10 Slices"
+  },
+  {
+   "name": "D'lecta Processed Cheese Slices",
+   "brand": "D'lecta",
+   "group": "Dairy",
+   "aliases": [
+    "dlecta cheese",
+    "dlecta cheese slices",
+    "diecta cheese slices",
+    "d lecta cheese",
+    "cheese slice"
+   ],
+   "unit": "g",
+   "kcal": 310,
+   "proteinG": 16.0,
+   "carbsG": 4.0,
+   "fatG": 25.5,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "slice",
+     "amount": 20
+    },
+    {
+     "label": "400 g pack (20 slices)",
+     "amount": 400
+    }
+   ],
+   "source": "https://blinkit.com/prn/dlecta-cheese-slices/prid/103406",
+   "sourceBasis": "nutrition information text on the Blinkit 400 g listing; the text prints no basis, per 100 g is inferred from the listing's per-100 g structured fields (310 kcal, 16 P, 4 C, 25 F) and the macro arithmetic. Slice weight 20 g derived from 400 g / 20 slices. The 200 g listing (prid 324303) shows different structured values: 280 kcal, 16.5 P, 4 C, 22 F",
+   "quote": "Energy 310 Protein(g) 16 Carbohydrate(g) 4 Total Sugar (g) 4.0 Added Sugar 0 Total Fat (g) 25.5 Saturated Fat(g) 16"
+  },
+  {
+   "name": "Avvatar Alpha Whey, Belgian Chocolate",
+   "brand": "Avvatar (Parag Milk Foods)",
+   "group": "Protein supplements",
+   "aliases": [
+    "avvatar alpha whey",
+    "avatar alpha whey",
+    "alpha whey",
+    "avvatar whey",
+    "whey",
+    "whey protein",
+    "protein powder"
+   ],
+   "unit": "g",
+   "kcal": 368.3,
+   "proteinG": 62.5,
+   "carbsG": 20.0,
+   "fatG": 4.3,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "scoop (40 g)",
+     "amount": 40
+    }
+   ],
+   "source": "https://world.openfoodfacts.org/product/8906001025146",
+   "sourceBasis": "per serving label values (1 rounded scoop = 40.0 g, 50 servings per container) read from the nutrition-panel photo on the Open Food Facts page, converted to per 100 g (x 2.5). OFF's typed fields for this product are wrong (fibre 100 g, sodium 175 g) and were not used",
+   "quote": "Serving Size 1 Rounded Scoop (40.0 g). Amount per serving: Energy 147.3 kcal, Total Fat 1.70 g, Carbohydrates 8.00 g, Total Sugars 8.00 g, Protein 25.0 g"
+  },
+  {
+   "name": "Protein Chef Double Protein Bread",
+   "brand": "Protein Chef",
+   "group": "Breads",
+   "aliases": [
+    "protein bread",
+    "protein chef bread",
+    "double protein bread",
+    "high protein bread"
+   ],
+   "unit": "g",
+   "kcal": 214,
+   "proteinG": 23.7,
+   "carbsG": 32.2,
+   "fatG": 1.5,
+   "fiberG": 11.5,
+   "servings": [
+    {
+     "label": "270 g loaf",
+     "amount": 270
+    }
+   ],
+   "source": "https://blinkit.com/prn/protein-chef-high-protein-multigrain-bread/prid/530684",
+   "sourceBasis": "per 100 g, nutrition information text on the Blinkit listing titled 'Protein Chef Double Protein Bread (64g Protein per Loaf)', 270 g loaf. Slice weight not stated on the page",
+   "quote": "Energy: 214 kcal, Protein: 23.7g, Carbohydrate: 32.2g, Total Sugars: 3.8g, Added Sugars: 0.7g, Dietary Fibre: 11.5g, Total Fat: 1.5g",
+   "energyNote": "4P+4C+9F = 237 vs printed 214 kcal; the gap matches 11.5 g fibre being counted inside carbohydrate at ~2 kcal/g"
+  },
+  {
+   "name": "The Health Factory Zero Maida Whole Wheat Bread",
+   "brand": "The Health Factory (Nutri Being)",
+   "group": "Breads",
+   "aliases": [
+    "health factory bread",
+    "whole wheat bread",
+    "zero maida bread",
+    "atta bread",
+    "brown bread"
+   ],
+   "unit": "g",
+   "kcal": 241.49,
+   "proteinG": 13.47,
+   "carbsG": 43.91,
+   "fatG": 1.33,
+   "fiberG": 6.31,
+   "servings": [
+    {
+     "label": "slice",
+     "amount": 25
+    },
+    {
+     "label": "serving (2 slices)",
+     "amount": 50
+    },
+    {
+     "label": "250 g loaf",
+     "amount": 250
+    },
+    {
+     "label": "350 g loaf",
+     "amount": 350
+    }
+   ],
+   "source": "https://world.openfoodfacts.org/product/8908009059154",
+   "sourceBasis": "per 100 g, printed nutrition panel (photo of the 250 g loaf on the Open Food Facts page; serving 50 g = 2 slices, 5 servings). Blinkit's 350 g loaf listing (prid 530069) gives 241.40 kcal, 13.41 P, 43.97 C, 1.32 F, 6.31 fibre with a 54 g serving",
+   "quote": "Serving size: 50g (2 slices). Per 100g: Energy (Kcal) 241.49 | Protein (g) 13.47 | Carbohydrate (g) 43.91 | Dietary Fibre (g) 6.31 | Total Fat (g) 1.33"
+  },
+  {
+   "name": "The Health Factory Zero Maida Protein Bread",
+   "brand": "The Health Factory",
+   "group": "Breads",
+   "aliases": [
+    "health factory protein bread",
+    "zero maida protein bread",
+    "protein bread"
+   ],
+   "unit": "g",
+   "kcal": 241.99,
+   "proteinG": 15.24,
+   "carbsG": 41.5,
+   "fatG": 1.67,
+   "fiberG": 4.87,
+   "servings": [
+    {
+     "label": "250 g loaf",
+     "amount": 250
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/537659",
+   "sourceBasis": "per 100 g, nutrition table text on the Blinkit listing 'The Health Factory Zero Maida Protein Bread' (250 g loaf, '38g Protein per loaf'). Slice weight not stated",
+   "quote": "Typical Values Per 100g Energy (Kcal) 241.99 Protein (g) 15.24 Carbohydrate (g) 41.50 Dietary Fibre (g) 4.87 Total Fat (g) 1.67"
+  },
+  {
+   "name": "The Health Factory Zero Maida Super Protein Bread",
+   "brand": "The Health Factory",
+   "group": "Breads",
+   "aliases": [
+    "health factory super protein bread",
+    "super protein bread",
+    "high protein bread"
+   ],
+   "unit": "g",
+   "kcal": 285.66,
+   "proteinG": 20.8,
+   "carbsG": 40.22,
+   "fatG": 4.62,
+   "fiberG": 6.19,
+   "servings": [
+    {
+     "label": "250 g loaf",
+     "amount": 250
+    }
+   ],
+   "source": "https://blinkit.com/prn/the-health-factory-super-protein-bread/prid/727338",
+   "sourceBasis": "per 100 g, nutrition table text on the Blinkit listing (250 g loaf, '51g of high quality complete protein'). Slice weight not stated",
+   "quote": "Typical Values Per 100g Energy (Kcal) 285.66 Protein (g) 20.80 Carbohydrate (g) 40.22 Dietary Fibre (g) 6.19 Total Fat (g) 4.62"
+  },
+  {
+   "name": "The Health Factory Zero Maida Milk Bread",
+   "brand": "The Health Factory",
+   "group": "Breads",
+   "aliases": [
+    "health factory milk bread",
+    "zero maida milk bread",
+    "milk bread"
+   ],
+   "unit": "g",
+   "kcal": 255.41,
+   "proteinG": 11.12,
+   "carbsG": 45.51,
+   "fatG": 3.21,
+   "fiberG": 6.18,
+   "servings": [
+    {
+     "label": "250 g loaf",
+     "amount": 250
+    }
+   ],
+   "source": "https://blinkit.com/prn/the-health-factory-zero-maida-milk-bread-pack-of-2/prid/580752",
+   "sourceBasis": "per 100 g, nutrition table text on the Blinkit listing (pack of 2 x 250 g loaves). Slice weight not stated",
+   "quote": "Typical Values Per 100g Energy (Kcal) 255.41 Protein (g) 11.12 Carbohydrate (g) 45.51 Dietary Fibre (g) 6.18 Total Fat (g) 3.21"
+  },
+  {
+   "name": "Sugar",
+   "brand": "Generic (USDA FDC SR Legacy 169655)",
+   "group": "Staples",
+   "aliases": [
+    "sugar",
+    "cheeni",
+    "chini",
+    "white sugar",
+    "granulated sugar",
+    "shakkar"
+   ],
+   "unit": "g",
+   "kcal": 387,
+   "proteinG": 0.0,
+   "carbsG": 100.0,
+   "fatG": 0.0,
+   "fiberG": 0.0,
+   "servings": [
+    {
+     "label": "tsp",
+     "amount": 4.2
+    },
+    {
+     "label": "cube",
+     "amount": 2.3
+    },
+    {
+     "label": "packet",
+     "amount": 2.8
+    },
+    {
+     "label": "cup",
+     "amount": 200
+    }
+   ],
+   "source": "https://fdc.nal.usda.gov/food-details/169655/nutrients",
+   "sourceBasis": "per 100 g, USDA FoodData Central SR Legacy 'Sugars, granulated' (FDC 169655), read from the record JSON at https://fdc.nal.usda.gov/portal-data/external/169655; portions from the record's food measures",
+   "quote": "Energy 387 kcal | Protein 0.0 g | Total lipid (fat) 0.0 g | Carbohydrate, by difference 100 g | Fiber, total dietary 0.0 g | Sucrose 99.8 g",
+   "energyNote": "387 kcal is USDA's specific Atwater factor for sucrose (3.87 kcal/g), not 4 kcal/g"
+  },
+  {
+   "name": "Amul Pure Ghee",
+   "brand": "Amul (GCMMF)",
+   "group": "Staples",
+   "aliases": [
+    "ghee",
+    "amul ghee",
+    "desi ghee",
+    "pure ghee"
+   ],
+   "unit": "g",
+   "kcal": 897,
+   "proteinG": 0.0,
+   "carbsG": 0.0,
+   "fatG": 99.7,
+   "fiberG": null,
+   "source": "https://blinkit.com/prn/amul-pure-ghee/prid/36",
+   "sourceBasis": "per 100 g, Blinkit structured nutrition fields only (no label text on the page; same values on prid 27119). Identical to the Amul Cow Ghee printed panel (897 kcal, 99.7 g fat)",
+   "quote": "Protein Per 100 g 0 g | Total Carbohydrates Per 100 g 0 g | Total Fat Per 100 g 99.7 g | Saturated Fat Per 100 g 60 g | Energy Per 100 g 897 kcal"
+  },
+  {
+   "name": "Amul Cow Ghee",
+   "brand": "Amul (GCMMF)",
+   "group": "Staples",
+   "aliases": [
+    "cow ghee",
+    "amul cow ghee",
+    "desi ghee"
+   ],
+   "unit": "g",
+   "kcal": 897,
+   "proteinG": 0.0,
+   "carbsG": 0.0,
+   "fatG": 99.7,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "serving (13.5 g)",
+     "amount": 13.5
+    }
+   ],
+   "source": "https://world.openfoodfacts.org/product/8901262030878",
+   "sourceBasis": "per 100 g, printed nutrition panel (photo of the 1 L pack on the Open Food Facts page: 67 servings, serving size 13.5 g); same values on Blinkit (prid 197187, 318064)",
+   "quote": "67 servings per container. Serving size 13.5 g. Amount per 100 g: Energy (kcal) 897, Total Fat (g) 99.7, Saturated Fat (g) 60.0, Carbohydrate (g) 0.0, Protein (g) 0.0"
+  },
+  {
+   "name": "Saffola Gold Corn & Rice Bran Blended Oil",
+   "brand": "Saffola (Marico)",
+   "group": "Staples",
+   "aliases": [
+    "saffola gold",
+    "saffola oil",
+    "blended oil",
+    "cooking oil",
+    "refined oil",
+    "rice bran oil"
+   ],
+   "unit": "g",
+   "kcal": 900,
+   "proteinG": 0.0,
+   "carbsG": 0.0,
+   "fatG": 100.0,
+   "fiberG": null,
+   "source": "https://blinkit.com/prn/saffola-gold-power-of-3-refined-blended-cooking-oil/prid/488303",
+   "sourceBasis": "per 100 g, Blinkit structured nutrition fields only (listing unit 910 g / 1 ltr; no label text on the page)",
+   "quote": "Total Fat Per 100 g 100 g | Saturated Fat Per 100 g 22.3 g | Monounsaturated Fat Per 100 g 42 g | Polyunsaturated Fat Per 100 g 35.6 g | Energy Per 100 g 900 kcal"
+  },
+  {
+   "name": "Fortune Premium Kachi Ghani Pure Mustard Oil",
+   "brand": "Fortune (AWL Agri Business)",
+   "group": "Staples",
+   "aliases": [
+    "mustard oil",
+    "sarson ka tel",
+    "fortune mustard oil",
+    "kachi ghani",
+    "sarso tel"
+   ],
+   "unit": "g",
+   "kcal": 900,
+   "proteinG": 0.0,
+   "carbsG": 0.0,
+   "fatG": 100.0,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "910 g pack",
+     "amount": 910
+    }
+   ],
+   "source": "https://blinkit.com/prn/fortune-premium-kachi-ghani-pure-mustard-oil/prid/50",
+   "sourceBasis": "per 100 g, nutrition information text on the Blinkit listing (910 g = 1 L pack)",
+   "quote": "(Per 100 g) Energy: 900 kcal Protein: 0 g Carbohydrates: 0 g Total Fat: 100 g Saturated Fat: 7 g Monounsaturated Fatty Acids: 65 g Polyunsaturated Fatty Acids: 28 g"
+  },
+  {
+   "name": "Patanjali Kachi Ghani Mustard Oil",
+   "brand": "Patanjali",
+   "group": "Staples",
+   "aliases": [
+    "patanjali mustard oil",
+    "mustard oil",
+    "sarson ka tel",
+    "kachi ghani"
+   ],
+   "unit": "g",
+   "kcal": 898.2,
+   "proteinG": 0.0,
+   "carbsG": 0.0,
+   "fatG": 99.8,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "serving (30 g)",
+     "amount": 30
+    }
+   ],
+   "source": "https://world.openfoodfacts.org/product/8904422700963",
+   "sourceBasis": "per 100 g, printed nutrition panel (photo of the 1 litre bottle on the Open Food Facts page; label serving size 30 g, 30 servings per pack); matches Blinkit prid 11299",
+   "quote": "Serving Size: 30 g. Per 100 g: Energy 898.2 kcal | Protein 0 g | Carbohydrate 0 g | Total Fat 99.8 g | Saturated Fat Not More than 5.54 g"
+  }
+ ],
+ "notFound": [
+  {
+   "name": "Amul Malai Paneer (prid 191, pre-diced pouch)",
+   "reason": "Only Blinkit structured fields (289 kcal, 14 g protein, 2 g carbs, 25 g fat), which conflict with every other Amul malai paneer source (20 g protein); OFF 8901262180016 has 314/20/4.5/25 with no label photo. Not used. The 1 kg 'Amul Malai Paneer' label photo (OFF 8901262180146) shows 312/20/4/24, the same panel as Amul Fresh Malai Paneer, which carries the 'amul malai paneer' alias"
+  },
+  {
+   "name": "Amul low-fat paneer",
+   "reason": "no Amul low-fat paneer listing or label found"
+  },
+  {
+   "name": "Avvatar Alpha Whey, other flavours (Malai Kulfi, Cold Coffee, Caramel Creme, Chocolate Hazelnut, Mango Rush, Badam Milk, Cafe Mocha)",
+   "reason": "no label text or label photo found (Blinkit has no Alpha product page; Flipkart/HealthKart/Hyugalife/Nutrabay pages carry no nutrition table; avvatarindia.com unreachable). Blinkit 'Avvatar Whey Protein' pages are a different product line"
+  },
+  {
+   "name": "Britannia Slimz Low Fat Cheese Slices",
+   "reason": "Blinkit prid 24135 has no nutrition data; no other label source found"
+  },
+  {
+   "name": "Amul / Go / D'lecta light or low-fat cheese slices",
+   "reason": "no such variant found on Blinkit or Open Food Facts"
+  },
+  {
+   "name": "Milky Mist Greek Yogurt, Honey & Fig",
+   "reason": "seen only in a search listing; no label text read"
+  },
+  {
+   "name": "Engine Kachi Ghani Mustard Oil",
+   "reason": "Blinkit structured fields only and internally inconsistent (893 kcal with 100 g fat); skipped"
+  },
+  {
+   "name": "Slice weights for Protein Chef bread and Health Factory protein / super protein / milk breads",
+   "reason": "no page read states a slice weight (only the Health Factory whole wheat label does: 50 g = 2 slices)"
+  }
+ ]
+}

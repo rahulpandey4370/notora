@@ -12,6 +12,7 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 import { ModelId } from '@/lib/types';
 import { callStructuredLLM } from '@/lib/ai-client';
+import { serverDefaultModel } from '@/lib/ai-providers-server';
 
 const CustomTransformStickyNoteInputSchema = z.object({
   content: z.string().describe('The original content of the sticky note.'),
@@ -48,7 +49,7 @@ const customTransformStickyNoteFlow = ai.defineFlow(
     outputSchema: CustomTransformStickyNoteOutputSchema,
   },
   async (input, { context }) => {
-    const modelId = context?.modelId || 'gemini-2.5-flash';
+    const modelId = context?.modelId || serverDefaultModel();
     let output;
 
     // Provider routing lives in the unified client — this flow just

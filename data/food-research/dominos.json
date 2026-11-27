@@ -1,0 +1,2947 @@
+{
+ "items": [
+  {
+   "name": "Domino's Achari Do Pyaza, Medium, 100% Wheat Thin Crust (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "achari do pyaza pizza",
+    "domino's achari do pyaza",
+    "dominos achari do pyaza"
+   ],
+   "unit": "serving",
+   "kcal": 411.28,
+   "proteinG": 16.12,
+   "carbsG": 33.62,
+   "fatG": 21.97,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Achari Do Pyaza / 100% Wheat Thin Crust-Medium (serves 2): Energy|411.28|Kcal, Protein|16.12|g, Sodium|743.0|mg, Total_Carbohydrate|33.62|g, Total_Fat|21.97|g, Total_Saturated_Fat|10.25|g, Total_Sugar|3.22|g, Total_Trans-fat|0.11|g"
+  },
+  {
+   "name": "Domino's Achari Do Pyaza, Regular, 100% Wheat Thin Crust (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "achari do pyaza pizza",
+    "domino's achari do pyaza",
+    "dominos achari do pyaza"
+   ],
+   "unit": "serving",
+   "kcal": 487.32,
+   "proteinG": 17.18,
+   "carbsG": 50.56,
+   "fatG": 23.92,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Achari Do Pyaza / 100% Wheat Thin Crust-Regular (serves 1): Energy|487.32|Kcal, Protein|17.18|g, Sodium|773.5|mg, Total_Carbohydrate|50.56|g, Total_Fat|23.92|g, Total_Saturated_Fat|10.96|g, Total_Sugar|4.15|g, Total_Trans-fat|0.11|g"
+  },
+  {
+   "name": "Domino's Achari Do Pyaza, Regular, Cheese Burst (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "achari do pyaza pizza",
+    "domino's achari do pyaza",
+    "dominos achari do pyaza"
+   ],
+   "unit": "serving",
+   "kcal": 949.95,
+   "proteinG": 32.06,
+   "carbsG": 107.77,
+   "fatG": 42.66,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Achari Do Pyaza / Cheese Burst-Regular (serves 1): Energy|949.95|Kcal, Protein|32.06|g, Sodium|2055.4|mg, Total_Carbohydrate|107.77|g, Total_Fat|42.66|g, Total_Saturated_Fat|22.96|g, Total_Sugar|5.26|g, Total_Trans-fat|0.55|g"
+  },
+  {
+   "name": "Domino's Achari Do Pyaza, Medium, Fresh Pan (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "achari do pyaza pizza",
+    "domino's achari do pyaza",
+    "dominos achari do pyaza"
+   ],
+   "unit": "serving",
+   "kcal": 675.89,
+   "proteinG": 24.59,
+   "carbsG": 75.39,
+   "fatG": 30.13,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Achari Do Pyaza / Fresh Pan Pizza-Medium (serves 2): Energy|675.89|Kcal, Protein|24.59|g, Sodium|1428.0|mg, Total_Carbohydrate|75.39|g, Total_Fat|30.13|g, Total_Saturated_Fat|14.58|g, Total_Sugar|2.32|g, Total_Trans-fat|0.27|g"
+  },
+  {
+   "name": "Domino's Achari Do Pyaza, Regular, Fresh Pan (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "achari do pyaza pizza",
+    "domino's achari do pyaza",
+    "dominos achari do pyaza"
+   ],
+   "unit": "serving",
+   "kcal": 791.98,
+   "proteinG": 27.4,
+   "carbsG": 90.93,
+   "fatG": 34.64,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Achari Do Pyaza / Fresh Pan Pizza-Regular (serves 1): Energy|791.98|Kcal, Protein|27.4|g, Sodium|1681.2|mg, Total_Carbohydrate|90.93|g, Total_Fat|34.64|g, Total_Saturated_Fat|16.46|g, Total_Sugar|2.7|g, Total_Trans-fat|0.31|g"
+  },
+  {
+   "name": "Domino's Achari Do Pyaza, Large, New Hand Tossed (1 serving = 1/4 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "achari do pyaza pizza",
+    "domino's achari do pyaza",
+    "dominos achari do pyaza"
+   ],
+   "unit": "serving",
+   "kcal": 564.12,
+   "proteinG": 19.21,
+   "carbsG": 67.96,
+   "fatG": 23.37,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 4 (Large = 'Serves 4'), and values fall as size grows, so they are read as per serve: whole Large pizza = this x 4 (inferred from the serves field, not a printed label).",
+   "quote": "Achari Do Pyaza / New Hand Tossed-Large (serves 4): Energy|564.12|Kcal, Protein|19.21|g, Sodium|1160.0|mg, Total_Carbohydrate|67.96|g, Total_Fat|23.37|g, Total_Saturated_Fat|11.32|g, Total_Sugar|2.12|g, Total_Trans-fat|0.18|g"
+  },
+  {
+   "name": "Domino's Achari Do Pyaza, Medium, New Hand Tossed (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "achari do pyaza pizza",
+    "domino's achari do pyaza",
+    "dominos achari do pyaza"
+   ],
+   "unit": "serving",
+   "kcal": 644.77,
+   "proteinG": 21.96,
+   "carbsG": 75.02,
+   "fatG": 28.0,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Achari Do Pyaza / New Hand Tossed-Medium (serves 2): Energy|644.77|Kcal, Protein|21.96|g, Sodium|1358.0|mg, Total_Carbohydrate|75.02|g, Total_Fat|28.0|g, Total_Saturated_Fat|13.21|g, Total_Sugar|2.32|g, Total_Trans-fat|0.24|g"
+  },
+  {
+   "name": "Domino's Achari Do Pyaza, Regular, New Hand Tossed (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "achari do pyaza pizza",
+    "domino's achari do pyaza",
+    "dominos achari do pyaza"
+   ],
+   "unit": "serving",
+   "kcal": 735.15,
+   "proteinG": 24.14,
+   "carbsG": 89.0,
+   "fatG": 30.66,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Achari Do Pyaza / New Hand Tossed-Regular (serves 1): Energy|735.15|Kcal, Protein|24.14|g, Sodium|1520.8|mg, Total_Carbohydrate|89.0|g, Total_Fat|30.66|g, Total_Saturated_Fat|14.6|g, Total_Sugar|2.09|g, Total_Trans-fat|0.28|g"
+  },
+  {
+   "name": "Domino's Cheese n Corn, Medium, 100% Wheat Thin Crust (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "cheese n corn pizza",
+    "domino's cheese n corn",
+    "dominos cheese n corn"
+   ],
+   "unit": "serving",
+   "kcal": 366.67,
+   "proteinG": 15.72,
+   "carbsG": 34.68,
+   "fatG": 16.79,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Cheese n Corn / 100% Wheat Thin Crust-Medium (serves 2): Energy|366.67|Kcal, Protein|15.72|g, Sodium|564.0|mg, Total_Carbohydrate|34.68|g, Total_Fat|16.79|g, Total_Saturated_Fat|9.27|g, Total_Sugar|4.29|g, Total_Trans-fat|0.13|g"
+  },
+  {
+   "name": "Domino's Cheese n Corn, Regular, 100% Wheat Thin Crust (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "cheese n corn pizza",
+    "domino's cheese n corn",
+    "dominos cheese n corn"
+   ],
+   "unit": "serving",
+   "kcal": 461.42,
+   "proteinG": 17.15,
+   "carbsG": 53.86,
+   "fatG": 19.64,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Cheese n Corn / 100% Wheat Thin Crust-Regular (serves 1): Energy|461.42|Kcal, Protein|17.15|g, Sodium|589.0|mg, Total_Carbohydrate|53.86|g, Total_Fat|19.64|g, Total_Saturated_Fat|10.15|g, Total_Sugar|6.1|g, Total_Trans-fat|0.14|g"
+  },
+  {
+   "name": "Domino's Cheese n Corn, Regular, Cheese Burst (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "cheese n corn pizza",
+    "domino's cheese n corn",
+    "dominos cheese n corn"
+   ],
+   "unit": "serving",
+   "kcal": 920.84,
+   "proteinG": 31.94,
+   "carbsG": 110.59,
+   "fatG": 38.27,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Cheese n Corn / Cheese Burst-Regular (serves 1): Energy|920.84|Kcal, Protein|31.94|g, Sodium|1813.4|mg, Total_Carbohydrate|110.59|g, Total_Fat|38.27|g, Total_Saturated_Fat|22.14|g, Total_Sugar|7.14|g, Total_Trans-fat|0.57|g"
+  },
+  {
+   "name": "Domino's Cheese n Corn, Medium, Fresh Pan (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "cheese n corn pizza",
+    "domino's cheese n corn",
+    "dominos cheese n corn"
+   ],
+   "unit": "serving",
+   "kcal": 631.28,
+   "proteinG": 24.19,
+   "carbsG": 76.45,
+   "fatG": 24.94,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Cheese n Corn / Fresh Pan Pizza-Medium (serves 2): Energy|631.28|Kcal, Protein|24.19|g, Sodium|1218.5|mg, Total_Carbohydrate|76.45|g, Total_Fat|24.94|g, Total_Saturated_Fat|13.61|g, Total_Sugar|3.4|g, Total_Trans-fat|0.29|g"
+  },
+  {
+   "name": "Domino's Cheese n Corn, Regular, Fresh Pan (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "cheese n corn pizza",
+    "domino's cheese n corn",
+    "dominos cheese n corn"
+   ],
+   "unit": "serving",
+   "kcal": 744.11,
+   "proteinG": 27.04,
+   "carbsG": 92.71,
+   "fatG": 28.76,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Cheese n Corn / Fresh Pan Pizza-Regular (serves 1): Energy|744.11|Kcal, Protein|27.04|g, Sodium|1445.2|mg, Total_Carbohydrate|92.71|g, Total_Fat|28.76|g, Total_Saturated_Fat|15.33|g, Total_Sugar|4.04|g, Total_Trans-fat|0.33|g"
+  },
+  {
+   "name": "Domino's Cheese n Corn, Large, New Hand Tossed (1 serving = 1/4 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "cheese n corn pizza",
+    "domino's cheese n corn",
+    "dominos cheese n corn"
+   ],
+   "unit": "serving",
+   "kcal": 521.97,
+   "proteinG": 18.86,
+   "carbsG": 71.6,
+   "fatG": 18.56,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 4 (Large = 'Serves 4'), and values fall as size grows, so they are read as per serve: whole Large pizza = this x 4 (inferred from the serves field, not a printed label).",
+   "quote": "Cheese n Corn / New Hand Tossed-Large (serves 4): Energy|521.97|Kcal, Protein|18.86|g, Sodium|984.25|mg, Total_Carbohydrate|71.6|g, Total_Fat|18.56|g, Total_Saturated_Fat|10.41|g, Total_Sugar|2.98|g, Total_Trans-fat|0.2|g"
+  },
+  {
+   "name": "Domino's Cheese n Corn, Medium, New Hand Tossed (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "cheese n corn pizza",
+    "domino's cheese n corn",
+    "dominos cheese n corn"
+   ],
+   "unit": "serving",
+   "kcal": 600.15,
+   "proteinG": 21.56,
+   "carbsG": 76.07,
+   "fatG": 22.82,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Cheese n Corn / New Hand Tossed-Medium (serves 2): Energy|600.15|Kcal, Protein|21.56|g, Sodium|1148.5|mg, Total_Carbohydrate|76.07|g, Total_Fat|22.82|g, Total_Saturated_Fat|12.23|g, Total_Sugar|3.4|g, Total_Trans-fat|0.26|g"
+  },
+  {
+   "name": "Domino's Cheese n Corn, Regular, New Hand Tossed (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "cheese n corn pizza",
+    "domino's cheese n corn",
+    "dominos cheese n corn"
+   ],
+   "unit": "serving",
+   "kcal": 709.25,
+   "proteinG": 24.1,
+   "carbsG": 92.29,
+   "fatG": 26.38,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Cheese n Corn / New Hand Tossed-Regular (serves 1): Energy|709.25|Kcal, Protein|24.1|g, Sodium|1366.8|mg, Total_Carbohydrate|92.29|g, Total_Fat|26.38|g, Total_Saturated_Fat|13.79|g, Total_Sugar|4.04|g, Total_Trans-fat|0.3|g"
+  },
+  {
+   "name": "Domino's Chicken Dominator, Medium, 100% Wheat Thin Crust (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "chicken dominator pizza",
+    "domino's chicken dominator",
+    "dominos chicken dominator"
+   ],
+   "unit": "serving",
+   "kcal": 494.09,
+   "proteinG": 32.15,
+   "carbsG": 35.95,
+   "fatG": 23.01,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Chicken Dominator / 100% Wheat Thin Crust-Medium (serves 2): Energy|494.09|Kcal, Protein|32.15|g, Sodium|1214.0|mg, Total_Carbohydrate|35.95|g, Total_Fat|23.01|g, Total_Saturated_Fat|11.0|g, Total_Sugar|4.24|g, Total_Trans-fat|0.13|g"
+  },
+  {
+   "name": "Domino's Chicken Dominator, Regular, 100% Wheat Thin Crust (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "chicken dominator pizza",
+    "domino's chicken dominator",
+    "dominos chicken dominator"
+   ],
+   "unit": "serving",
+   "kcal": 552.99,
+   "proteinG": 29.34,
+   "carbsG": 52.94,
+   "fatG": 24.79,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Chicken Dominator / 100% Wheat Thin Crust-Regular (serves 1): Energy|552.99|Kcal, Protein|29.34|g, Sodium|1379.0|mg, Total_Carbohydrate|52.94|g, Total_Fat|24.79|g, Total_Saturated_Fat|11.51|g, Total_Sugar|5.59|g, Total_Trans-fat|0.14|g"
+  },
+  {
+   "name": "Domino's Chicken Dominator, Regular, Cheese Burst (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "chicken dominator pizza",
+    "domino's chicken dominator",
+    "dominos chicken dominator"
+   ],
+   "unit": "serving",
+   "kcal": 1027.78,
+   "proteinG": 45.92,
+   "carbsG": 110.33,
+   "fatG": 43.99,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Chicken Dominator / Cheese Burst-Regular (serves 1): Energy|1027.78|Kcal, Protein|45.92|g, Sodium|2530.6|mg, Total_Carbohydrate|110.33|g, Total_Fat|43.99|g, Total_Saturated_Fat|23.74|g, Total_Sugar|6.61|g, Total_Trans-fat|0.57|g"
+  },
+  {
+   "name": "Domino's Chicken Dominator, Medium, Fresh Pan (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "chicken dominator pizza",
+    "domino's chicken dominator",
+    "dominos chicken dominator"
+   ],
+   "unit": "serving",
+   "kcal": 758.71,
+   "proteinG": 39.0,
+   "carbsG": 77.72,
+   "fatG": 31.17,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Chicken Dominator / Fresh Pan Pizza-Medium (serves 2): Energy|758.71|Kcal, Protein|39.0|g, Sodium|2033.5|mg, Total_Carbohydrate|77.72|g, Total_Fat|31.17|g, Total_Saturated_Fat|15.34|g, Total_Sugar|3.35|g, Total_Trans-fat|0.29|g"
+  },
+  {
+   "name": "Domino's Chicken Dominator, Regular, Fresh Pan (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "chicken dominator pizza",
+    "domino's chicken dominator",
+    "dominos chicken dominator"
+   ],
+   "unit": "serving",
+   "kcal": 851.05,
+   "proteinG": 41.02,
+   "carbsG": 92.45,
+   "fatG": 34.49,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Chicken Dominator / Fresh Pan Pizza-Regular (serves 1): Energy|851.05|Kcal, Protein|41.02|g, Sodium|2162.4|mg, Total_Carbohydrate|92.45|g, Total_Fat|34.49|g, Total_Saturated_Fat|16.92|g, Total_Sugar|3.51|g, Total_Trans-fat|0.33|g"
+  },
+  {
+   "name": "Domino's Chicken Dominator, Large, New Hand Tossed (1 serving = 1/4 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "chicken dominator pizza",
+    "domino's chicken dominator",
+    "dominos chicken dominator"
+   ],
+   "unit": "serving",
+   "kcal": 620.51,
+   "proteinG": 31.78,
+   "carbsG": 69.51,
+   "fatG": 23.36,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 4 (Large = 'Serves 4'), and values fall as size grows, so they are read as per serve: whole Large pizza = this x 4 (inferred from the serves field, not a printed label).",
+   "quote": "Chicken Dominator / New Hand Tossed-Large (serves 4): Energy|620.51|Kcal, Protein|31.78|g, Sodium|1623.0|mg, Total_Carbohydrate|69.51|g, Total_Fat|23.36|g, Total_Saturated_Fat|11.76|g, Total_Sugar|2.85|g, Total_Trans-fat|0.2|g"
+  },
+  {
+   "name": "Domino's Chicken Dominator, Medium, New Hand Tossed (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "chicken dominator pizza",
+    "domino's chicken dominator",
+    "dominos chicken dominator"
+   ],
+   "unit": "serving",
+   "kcal": 727.58,
+   "proteinG": 36.0,
+   "carbsG": 77.34,
+   "fatG": 29.04,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Chicken Dominator / New Hand Tossed-Medium (serves 2): Energy|727.58|Kcal, Protein|36.0|g, Sodium|1963.5|mg, Total_Carbohydrate|77.34|g, Total_Fat|29.04|g, Total_Saturated_Fat|13.96|g, Total_Sugar|3.35|g, Total_Trans-fat|0.26|g"
+  },
+  {
+   "name": "Domino's Chicken Dominator, Regular, New Hand Tossed (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "chicken dominator pizza",
+    "domino's chicken dominator",
+    "dominos chicken dominator"
+   ],
+   "unit": "serving",
+   "kcal": 800.83,
+   "proteinG": 37.99,
+   "carbsG": 91.38,
+   "fatG": 31.53,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Chicken Dominator / New Hand Tossed-Regular (serves 1): Energy|800.83|Kcal, Protein|37.99|g, Sodium|1991.8|mg, Total_Carbohydrate|91.38|g, Total_Fat|31.53|g, Total_Saturated_Fat|15.15|g, Total_Sugar|3.53|g, Total_Trans-fat|0.3|g"
+  },
+  {
+   "name": "Domino's Chicken Fiesta, Medium, 100% Wheat Thin Crust (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "chicken fiesta pizza",
+    "domino's chicken fiesta",
+    "dominos chicken fiesta"
+   ],
+   "unit": "serving",
+   "kcal": 399.51,
+   "proteinG": 23.38,
+   "carbsG": 33.04,
+   "fatG": 17.59,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Chicken Fiesta / 100% Wheat Thin Crust-Medium (serves 2): Energy|399.51|Kcal, Protein|23.38|g, Sodium|860.0|mg, Total_Carbohydrate|33.04|g, Total_Fat|17.59|g, Total_Saturated_Fat|9.5|g, Total_Sugar|3.33|g, Total_Trans-fat|0.13|g"
+  },
+  {
+   "name": "Domino's Chicken Fiesta, Regular, 100% Wheat Thin Crust (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "chicken fiesta pizza",
+    "domino's chicken fiesta",
+    "dominos chicken fiesta"
+   ],
+   "unit": "serving",
+   "kcal": 482.17,
+   "proteinG": 23.45,
+   "carbsG": 51.02,
+   "fatG": 20.24,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Chicken Fiesta / 100% Wheat Thin Crust-Regular (serves 1): Energy|482.17|Kcal, Protein|23.45|g, Sodium|893.0|mg, Total_Carbohydrate|51.02|g, Total_Fat|20.24|g, Total_Saturated_Fat|10.34|g, Total_Sugar|4.7|g, Total_Trans-fat|0.14|g"
+  },
+  {
+   "name": "Domino's Chicken Fiesta, Regular, Cheese Burst (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "chicken fiesta pizza",
+    "domino's chicken fiesta",
+    "dominos chicken fiesta"
+   ],
+   "unit": "serving",
+   "kcal": 945.08,
+   "proteinG": 38.96,
+   "carbsG": 107.83,
+   "fatG": 38.9,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Chicken Fiesta / Cheese Burst-Regular (serves 1): Energy|945.08|Kcal, Protein|38.96|g, Sodium|2122.4|mg, Total_Carbohydrate|107.83|g, Total_Fat|38.9|g, Total_Saturated_Fat|22.35|g, Total_Sugar|5.76|g, Total_Trans-fat|0.57|g"
+  },
+  {
+   "name": "Domino's Chicken Fiesta, Medium, Fresh Pan (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "chicken fiesta pizza",
+    "domino's chicken fiesta",
+    "dominos chicken fiesta"
+   ],
+   "unit": "serving",
+   "kcal": 664.13,
+   "proteinG": 31.84,
+   "carbsG": 74.81,
+   "fatG": 25.75,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Chicken Fiesta / Fresh Pan Pizza-Medium (serves 2): Energy|664.13|Kcal, Protein|31.84|g, Sodium|1547.5|mg, Total_Carbohydrate|74.81|g, Total_Fat|25.75|g, Total_Saturated_Fat|13.84|g, Total_Sugar|2.44|g, Total_Trans-fat|0.29|g"
+  },
+  {
+   "name": "Domino's Chicken Fiesta, Regular, Fresh Pan (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "chicken fiesta pizza",
+    "domino's chicken fiesta",
+    "dominos chicken fiesta"
+   ],
+   "unit": "serving",
+   "kcal": 764.86,
+   "proteinG": 33.34,
+   "carbsG": 89.87,
+   "fatG": 29.36,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Chicken Fiesta / Fresh Pan Pizza-Regular (serves 1): Energy|764.86|Kcal, Protein|33.34|g, Sodium|1716.4|mg, Total_Carbohydrate|89.87|g, Total_Fat|29.36|g, Total_Saturated_Fat|15.52|g, Total_Sugar|2.64|g, Total_Trans-fat|0.33|g"
+  },
+  {
+   "name": "Domino's Chicken Fiesta, Large, New Hand Tossed (1 serving = 1/4 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "chicken fiesta pizza",
+    "domino's chicken fiesta",
+    "dominos chicken fiesta"
+   ],
+   "unit": "serving",
+   "kcal": 546.39,
+   "proteinG": 24.74,
+   "carbsG": 67.25,
+   "fatG": 19.18,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 4 (Large = 'Serves 4'), and values fall as size grows, so they are read as per serve: whole Large pizza = this x 4 (inferred from the serves field, not a printed label).",
+   "quote": "Chicken Fiesta / New Hand Tossed-Large (serves 4): Energy|546.39|Kcal, Protein|24.74|g, Sodium|1236.0|mg, Total_Carbohydrate|67.25|g, Total_Fat|19.18|g, Total_Saturated_Fat|10.59|g, Total_Sugar|2.15|g, Total_Trans-fat|0.2|g"
+  },
+  {
+   "name": "Domino's Chicken Fiesta, Medium, New Hand Tossed (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "chicken fiesta pizza",
+    "domino's chicken fiesta",
+    "dominos chicken fiesta"
+   ],
+   "unit": "serving",
+   "kcal": 633.0,
+   "proteinG": 29.22,
+   "carbsG": 74.43,
+   "fatG": 23.62,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Chicken Fiesta / New Hand Tossed-Medium (serves 2): Energy|633.0|Kcal, Protein|29.22|g, Sodium|1477.5|mg, Total_Carbohydrate|74.43|g, Total_Fat|23.62|g, Total_Saturated_Fat|12.46|g, Total_Sugar|2.44|g, Total_Trans-fat|0.26|g"
+  },
+  {
+   "name": "Domino's Chicken Fiesta, Regular, New Hand Tossed (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "chicken fiesta pizza",
+    "domino's chicken fiesta",
+    "dominos chicken fiesta"
+   ],
+   "unit": "serving",
+   "kcal": 730.0,
+   "proteinG": 30.4,
+   "carbsG": 89.45,
+   "fatG": 26.98,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Chicken Fiesta / New Hand Tossed-Regular (serves 1): Energy|730.0|Kcal, Protein|30.4|g, Sodium|1638.0|mg, Total_Carbohydrate|89.45|g, Total_Fat|26.98|g, Total_Saturated_Fat|13.98|g, Total_Sugar|2.64|g, Total_Trans-fat|0.3|g"
+  },
+  {
+   "name": "Domino's Chicken Golden Delight, Medium, 100% Wheat Thin Crust (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "chicken golden delight pizza",
+    "domino's chicken golden delight",
+    "dominos chicken golden delight"
+   ],
+   "unit": "serving",
+   "kcal": 454.84,
+   "proteinG": 25.57,
+   "carbsG": 35.4,
+   "fatG": 21.79,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Chicken Golden Delight / 100% Wheat Thin Crust-Medium (serves 2): Energy|454.84|Kcal, Protein|25.57|g, Sodium|839.0|mg, Total_Carbohydrate|35.4|g, Total_Fat|21.79|g, Total_Saturated_Fat|12.28|g, Total_Sugar|3.76|g, Total_Trans-fat|0.18|g"
+  },
+  {
+   "name": "Domino's Chicken Golden Delight, Regular, 100% Wheat Thin Crust (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "chicken golden delight pizza",
+    "domino's chicken golden delight",
+    "dominos chicken golden delight"
+   ],
+   "unit": "serving",
+   "kcal": 485.31,
+   "proteinG": 21.67,
+   "carbsG": 52.85,
+   "fatG": 20.63,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Chicken Golden Delight / 100% Wheat Thin Crust-Regular (serves 1): Energy|485.31|Kcal, Protein|21.67|g, Sodium|965.0|mg, Total_Carbohydrate|52.85|g, Total_Fat|20.63|g, Total_Saturated_Fat|10.64|g, Total_Sugar|5.26|g, Total_Trans-fat|0.14|g"
+  },
+  {
+   "name": "Domino's Chicken Golden Delight, Regular, Cheese Burst (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "chicken golden delight pizza",
+    "domino's chicken golden delight",
+    "dominos chicken golden delight"
+   ],
+   "unit": "serving",
+   "kcal": 1006.98,
+   "proteinG": 41.71,
+   "carbsG": 110.33,
+   "fatG": 43.52,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Chicken Golden Delight / Cheese Burst-Regular (serves 1): Energy|1006.98|Kcal, Protein|41.71|g, Sodium|2203.4|mg, Total_Carbohydrate|110.33|g, Total_Fat|43.52|g, Total_Saturated_Fat|25.38|g, Total_Sugar|6.3|g, Total_Trans-fat|0.62|g"
+  },
+  {
+   "name": "Domino's Chicken Golden Delight, Medium, Fresh Pan (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "chicken golden delight pizza",
+    "domino's chicken golden delight",
+    "dominos chicken golden delight"
+   ],
+   "unit": "serving",
+   "kcal": 719.46,
+   "proteinG": 40.62,
+   "carbsG": 77.16,
+   "fatG": 29.94,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Chicken Golden Delight / Fresh Pan Pizza-Medium (serves 2): Energy|719.46|Kcal, Protein|40.62|g, Sodium|1619.5|mg, Total_Carbohydrate|77.16|g, Total_Fat|29.94|g, Total_Saturated_Fat|16.62|g, Total_Sugar|2.87|g, Total_Trans-fat|0.33|g"
+  },
+  {
+   "name": "Domino's Chicken Golden Delight, Regular, Fresh Pan (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "chicken golden delight pizza",
+    "domino's chicken golden delight",
+    "dominos chicken golden delight"
+   ],
+   "unit": "serving",
+   "kcal": 830.25,
+   "proteinG": 36.81,
+   "carbsG": 92.46,
+   "fatG": 34.01,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Chicken Golden Delight / Fresh Pan Pizza-Regular (serves 1): Energy|830.25|Kcal, Protein|36.81|g, Sodium|1835.2|mg, Total_Carbohydrate|92.46|g, Total_Fat|34.01|g, Total_Saturated_Fat|18.57|g, Total_Sugar|3.2|g, Total_Trans-fat|0.38|g"
+  },
+  {
+   "name": "Domino's Chicken Golden Delight, Large, New Hand Tossed (1 serving = 1/4 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "chicken golden delight pizza",
+    "domino's chicken golden delight",
+    "dominos chicken golden delight"
+   ],
+   "unit": "serving",
+   "kcal": 598.21,
+   "proteinG": 27.25,
+   "carbsG": 69.39,
+   "fatG": 22.92,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 4 (Large = 'Serves 4'), and values fall as size grows, so they are read as per serve: whole Large pizza = this x 4 (inferred from the serves field, not a printed label).",
+   "quote": "Chicken Golden Delight / New Hand Tossed-Large (serves 4): Energy|598.21|Kcal, Protein|27.25|g, Sodium|1321.25|mg, Total_Carbohydrate|69.39|g, Total_Fat|22.92|g, Total_Saturated_Fat|13.05|g, Total_Sugar|2.56|g, Total_Trans-fat|0.24|g"
+  },
+  {
+   "name": "Domino's Chicken Golden Delight, Medium, New Hand Tossed (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "chicken golden delight pizza",
+    "domino's chicken golden delight",
+    "dominos chicken golden delight"
+   ],
+   "unit": "serving",
+   "kcal": 688.33,
+   "proteinG": 29.0,
+   "carbsG": 76.79,
+   "fatG": 27.82,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Chicken Golden Delight / New Hand Tossed-Medium (serves 2): Energy|688.33|Kcal, Protein|29.0|g, Sodium|1549.5|mg, Total_Carbohydrate|76.79|g, Total_Fat|27.82|g, Total_Saturated_Fat|15.24|g, Total_Sugar|2.87|g, Total_Trans-fat|0.31|g"
+  },
+  {
+   "name": "Domino's Chicken Golden Delight, Regular, New Hand Tossed (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "chicken golden delight pizza",
+    "domino's chicken golden delight",
+    "dominos chicken golden delight"
+   ],
+   "unit": "serving",
+   "kcal": 733.14,
+   "proteinG": 31.41,
+   "carbsG": 91.29,
+   "fatG": 27.38,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Chicken Golden Delight / New Hand Tossed-Regular (serves 1): Energy|733.14|Kcal, Protein|31.41|g, Sodium|1616.8|mg, Total_Carbohydrate|91.29|g, Total_Fat|27.38|g, Total_Saturated_Fat|14.28|g, Total_Sugar|3.2|g, Total_Trans-fat|0.3|g"
+  },
+  {
+   "name": "Domino's Chicken Pepperoni, Medium, 100% Wheat Thin Crust (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "chicken pepperoni pizza",
+    "domino's chicken pepperoni",
+    "dominos chicken pepperoni"
+   ],
+   "unit": "serving",
+   "kcal": 427.84,
+   "proteinG": 25.56,
+   "carbsG": 33.07,
+   "fatG": 23.16,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Chicken Pepperoni / 100% Wheat Thin Crust-Medium (serves 2): Energy|427.84|Kcal, Protein|25.56|g, Sodium|915.0|mg, Total_Carbohydrate|33.07|g, Total_Fat|23.16|g, Total_Saturated_Fat|12.73|g, Total_Sugar|3.24|g, Total_Trans-fat|0.18|g"
+  },
+  {
+   "name": "Domino's Chicken Pepperoni, Regular, 100% Wheat Thin Crust (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "chicken pepperoni pizza",
+    "domino's chicken pepperoni",
+    "dominos chicken pepperoni"
+   ],
+   "unit": "serving",
+   "kcal": 504.86,
+   "proteinG": 25.34,
+   "carbsG": 50.83,
+   "fatG": 24.95,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Chicken Pepperoni / 100% Wheat Thin Crust-Regular (serves 1): Energy|504.86|Kcal, Protein|25.34|g, Sodium|945.2|mg, Total_Carbohydrate|50.83|g, Total_Fat|24.95|g, Total_Saturated_Fat|13.09|g, Total_Sugar|4.63|g, Total_Trans-fat|0.17|g"
+  },
+  {
+   "name": "Domino's Chicken Pepperoni, Regular, Cheese Burst (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "chicken pepperoni pizza",
+    "domino's chicken pepperoni",
+    "dominos chicken pepperoni"
+   ],
+   "unit": "serving",
+   "kcal": 979.22,
+   "proteinG": 41.39,
+   "carbsG": 107.74,
+   "fatG": 44.6,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Chicken Pepperoni / Cheese Burst-Regular (serves 1): Energy|979.22|Kcal, Protein|41.39|g, Sodium|2173.4|mg, Total_Carbohydrate|107.74|g, Total_Fat|44.6|g, Total_Saturated_Fat|25.74|g, Total_Sugar|5.67|g, Total_Trans-fat|0.62|g"
+  },
+  {
+   "name": "Domino's Chicken Pepperoni, Medium, Fresh Pan (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "chicken pepperoni pizza",
+    "domino's chicken pepperoni",
+    "dominos chicken pepperoni"
+   ],
+   "unit": "serving",
+   "kcal": 692.45,
+   "proteinG": 34.03,
+   "carbsG": 74.84,
+   "fatG": 31.31,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Chicken Pepperoni / Fresh Pan Pizza-Medium (serves 2): Energy|692.45|Kcal, Protein|34.03|g, Sodium|1599.7|mg, Total_Carbohydrate|74.84|g, Total_Fat|31.31|g, Total_Saturated_Fat|17.07|g, Total_Sugar|2.35|g, Total_Trans-fat|0.33|g"
+  },
+  {
+   "name": "Domino's Chicken Pepperoni, Regular, Fresh Pan (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "chicken pepperoni pizza",
+    "domino's chicken pepperoni",
+    "dominos chicken pepperoni"
+   ],
+   "unit": "serving",
+   "kcal": 802.49,
+   "proteinG": 36.49,
+   "carbsG": 89.87,
+   "fatG": 35.1,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Chicken Pepperoni / Fresh Pan Pizza-Regular (serves 1): Energy|802.49|Kcal, Protein|36.49|g, Sodium|1805.2|mg, Total_Carbohydrate|89.87|g, Total_Fat|35.1|g, Total_Saturated_Fat|18.93|g, Total_Sugar|2.57|g, Total_Trans-fat|0.38|g"
+  },
+  {
+   "name": "Domino's Chicken Pepperoni, Large, New Hand Tossed (1 serving = 1/4 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "chicken pepperoni pizza",
+    "domino's chicken pepperoni",
+    "dominos chicken pepperoni"
+   ],
+   "unit": "serving",
+   "kcal": 576.74,
+   "proteinG": 27.57,
+   "carbsG": 67.41,
+   "fatG": 24.2,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 4 (Large = 'Serves 4'), and values fall as size grows, so they are read as per serve: whole Large pizza = this x 4 (inferred from the serves field, not a printed label).",
+   "quote": "Chicken Pepperoni / New Hand Tossed-Large (serves 4): Energy|576.74|Kcal, Protein|27.57|g, Sodium|1320.65|mg, Total_Carbohydrate|67.41|g, Total_Fat|24.2|g, Total_Saturated_Fat|13.47|g, Total_Sugar|2.09|g, Total_Trans-fat|0.24|g"
+  },
+  {
+   "name": "Domino's Chicken Pepperoni, Medium, New Hand Tossed (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "chicken pepperoni pizza",
+    "domino's chicken pepperoni",
+    "dominos chicken pepperoni"
+   ],
+   "unit": "serving",
+   "kcal": 661.33,
+   "proteinG": 31.4,
+   "carbsG": 74.46,
+   "fatG": 29.19,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Chicken Pepperoni / New Hand Tossed-Medium (serves 2): Energy|661.33|Kcal, Protein|31.4|g, Sodium|1529.7|mg, Total_Carbohydrate|74.46|g, Total_Fat|29.19|g, Total_Saturated_Fat|15.69|g, Total_Sugar|2.35|g, Total_Trans-fat|0.31|g"
+  },
+  {
+   "name": "Domino's Chicken Pepperoni, Regular, New Hand Tossed (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "chicken pepperoni pizza",
+    "domino's chicken pepperoni",
+    "dominos chicken pepperoni"
+   ],
+   "unit": "serving",
+   "kcal": 752.69,
+   "proteinG": 32.29,
+   "carbsG": 89.27,
+   "fatG": 31.7,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Chicken Pepperoni / New Hand Tossed-Regular (serves 1): Energy|752.69|Kcal, Protein|32.29|g, Sodium|1693.2|mg, Total_Carbohydrate|89.27|g, Total_Fat|31.7|g, Total_Saturated_Fat|16.73|g, Total_Sugar|2.57|g, Total_Trans-fat|0.34|g"
+  },
+  {
+   "name": "Domino's Chicken Sausage, Medium, 100% Wheat Thin Crust (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "chicken sausage pizza",
+    "domino's chicken sausage",
+    "dominos chicken sausage"
+   ],
+   "unit": "serving",
+   "kcal": 421.66,
+   "proteinG": 20.15,
+   "carbsG": 34.58,
+   "fatG": 20.98,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Chicken Sausage / 100% Wheat Thin Crust-Medium (serves 2): Energy|421.66|Kcal, Protein|20.15|g, Sodium|764.0|mg, Total_Carbohydrate|34.58|g, Total_Fat|20.98|g, Total_Saturated_Fat|10.69|g, Total_Sugar|3.52|g, Total_Trans-fat|0.13|g"
+  },
+  {
+   "name": "Domino's Chicken Sausage, Regular, 100% Wheat Thin Crust (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "chicken sausage pizza",
+    "domino's chicken sausage",
+    "dominos chicken sausage"
+   ],
+   "unit": "serving",
+   "kcal": 519.04,
+   "proteinG": 22.02,
+   "carbsG": 52.91,
+   "fatG": 24.3,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Chicken Sausage / 100% Wheat Thin Crust-Regular (serves 1): Energy|519.04|Kcal, Protein|22.02|g, Sodium|814.0|mg, Total_Carbohydrate|52.91|g, Total_Fat|24.3|g, Total_Saturated_Fat|11.74|g, Total_Sugar|4.94|g, Total_Trans-fat|0.14|g"
+  },
+  {
+   "name": "Domino's Chicken Sausage, Regular, Cheese Burst (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "chicken sausage pizza",
+    "domino's chicken sausage",
+    "dominos chicken sausage"
+   ],
+   "unit": "serving",
+   "kcal": 978.46,
+   "proteinG": 36.81,
+   "carbsG": 109.65,
+   "fatG": 42.93,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Chicken Sausage / Cheese Burst-Regular (serves 1): Energy|978.46|Kcal, Protein|36.81|g, Sodium|2038.4|mg, Total_Carbohydrate|109.65|g, Total_Fat|42.93|g, Total_Saturated_Fat|23.74|g, Total_Sugar|5.98|g, Total_Trans-fat|0.57|g"
+  },
+  {
+   "name": "Domino's Chicken Sausage, Regular, Classic Hand Tossed (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "chicken sausage pizza",
+    "domino's chicken sausage",
+    "dominos chicken sausage"
+   ],
+   "unit": "serving",
+   "kcal": 585.86,
+   "proteinG": 19.7,
+   "carbsG": 82.79,
+   "fatG": 18.93,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Chicken Sausage / Classic Hand Tossed-Regular (serves None): Energy|585.86|Kcal, Protein|19.7|g, Sodium|885.0|mg, Total_Carbohydrate|82.79|g, Total_Fat|18.93|g, Total_Saturated_Fat|3.89|g, Total_Sugar|3.25|g, Total_Trans-fat|0.02|g"
+  },
+  {
+   "name": "Domino's Chicken Sausage, Medium, Fresh Pan (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "chicken sausage pizza",
+    "domino's chicken sausage",
+    "dominos chicken sausage"
+   ],
+   "unit": "serving",
+   "kcal": 686.27,
+   "proteinG": 28.61,
+   "carbsG": 76.35,
+   "fatG": 29.14,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Chicken Sausage / Fresh Pan Pizza-Medium (serves 2): Energy|686.27|Kcal, Protein|28.61|g, Sodium|1418.5|mg, Total_Carbohydrate|76.35|g, Total_Fat|29.14|g, Total_Saturated_Fat|15.02|g, Total_Sugar|2.62|g, Total_Trans-fat|0.29|g"
+  },
+  {
+   "name": "Domino's Chicken Sausage, Large, New Hand Tossed (1 serving = 1/4 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "chicken sausage pizza",
+    "domino's chicken sausage",
+    "dominos chicken sausage"
+   ],
+   "unit": "serving",
+   "kcal": 568.27,
+   "proteinG": 22.59,
+   "carbsG": 68.62,
+   "fatG": 22.1,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 4 (Large = 'Serves 4'), and values fall as size grows, so they are read as per serve: whole Large pizza = this x 4 (inferred from the serves field, not a printed label).",
+   "quote": "Chicken Sausage / New Hand Tossed-Large (serves 4): Energy|568.27|Kcal, Protein|22.59|g, Sodium|1153.0|mg, Total_Carbohydrate|68.62|g, Total_Fat|22.1|g, Total_Saturated_Fat|11.6|g, Total_Sugar|2.32|g, Total_Trans-fat|0.2|g"
+  },
+  {
+   "name": "Domino's Chicken Sausage, Medium, New Hand Tossed (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "chicken sausage pizza",
+    "domino's chicken sausage",
+    "dominos chicken sausage"
+   ],
+   "unit": "serving",
+   "kcal": 655.15,
+   "proteinG": 25.99,
+   "carbsG": 75.97,
+   "fatG": 27.02,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Chicken Sausage / New Hand Tossed-Medium (serves 2): Energy|655.15|Kcal, Protein|25.99|g, Sodium|1348.5|mg, Total_Carbohydrate|75.97|g, Total_Fat|27.02|g, Total_Saturated_Fat|13.65|g, Total_Sugar|2.62|g, Total_Trans-fat|0.26|g"
+  },
+  {
+   "name": "Domino's Chicken Sausage, Regular, New Hand Tossed (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "chicken sausage pizza",
+    "domino's chicken sausage",
+    "dominos chicken sausage"
+   ],
+   "unit": "serving",
+   "kcal": 766.87,
+   "proteinG": 28.97,
+   "carbsG": 91.35,
+   "fatG": 31.05,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Chicken Sausage / New Hand Tossed-Regular (serves 1): Energy|766.87|Kcal, Protein|28.97|g, Sodium|1591.8|mg, Total_Carbohydrate|91.35|g, Total_Fat|31.05|g, Total_Saturated_Fat|15.38|g, Total_Sugar|2.88|g, Total_Trans-fat|0.3|g"
+  },
+  {
+   "name": "Domino's Double Cheese Margherita, Medium, 100% Wheat Thin Crust (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's double cheese margherita",
+    "dominos double cheese margherita",
+    "double cheese margherita pizza"
+   ],
+   "unit": "serving",
+   "kcal": 382.34,
+   "proteinG": 17.97,
+   "carbsG": 32.03,
+   "fatG": 18.71,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Double Cheese Margherita / 100% Wheat Thin Crust-Medium (serves 2): Energy|382.34|Kcal, Protein|17.97|g, Sodium|634.0|mg, Total_Carbohydrate|32.03|g, Total_Fat|18.71|g, Total_Saturated_Fat|10.64|g, Total_Sugar|3.24|g, Total_Trans-fat|0.16|g"
+  },
+  {
+   "name": "Domino's Double Cheese Margherita, Regular, 100% Wheat Thin Crust (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's double cheese margherita",
+    "dominos double cheese margherita",
+    "double cheese margherita pizza"
+   ],
+   "unit": "serving",
+   "kcal": 487.1,
+   "proteinG": 20.61,
+   "carbsG": 50.2,
+   "fatG": 22.59,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Double Cheese Margherita / 100% Wheat Thin Crust-Regular (serves 1): Energy|487.1|Kcal, Protein|20.61|g, Sodium|695.4|mg, Total_Carbohydrate|50.2|g, Total_Fat|22.59|g, Total_Saturated_Fat|12.24|g, Total_Sugar|4.63|g, Total_Trans-fat|0.17|g"
+  },
+  {
+   "name": "Domino's Double Cheese Margherita, Regular, Cheese Burst (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's double cheese margherita",
+    "dominos double cheese margherita",
+    "double cheese margherita pizza"
+   ],
+   "unit": "serving",
+   "kcal": 946.52,
+   "proteinG": 35.4,
+   "carbsG": 106.93,
+   "fatG": 41.22,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Double Cheese Margherita / Cheese Burst-Regular (serves 1): Energy|946.52|Kcal, Protein|35.4|g, Sodium|1919.8|mg, Total_Carbohydrate|106.93|g, Total_Fat|41.22|g, Total_Saturated_Fat|24.23|g, Total_Sugar|5.67|g, Total_Trans-fat|0.61|g"
+  },
+  {
+   "name": "Domino's Double Cheese Margherita, Medium, Fresh Pan (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's double cheese margherita",
+    "dominos double cheese margherita",
+    "double cheese margherita pizza"
+   ],
+   "unit": "serving",
+   "kcal": 650.69,
+   "proteinG": 26.75,
+   "carbsG": 73.84,
+   "fatG": 27.12,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Double Cheese Margherita / Fresh Pan Pizza-Medium (serves 2): Energy|650.69|Kcal, Protein|26.75|g, Sodium|1296.9|mg, Total_Carbohydrate|73.84|g, Total_Fat|27.12|g, Total_Saturated_Fat|15.15|g, Total_Sugar|2.35|g, Total_Trans-fat|0.32|g"
+  },
+  {
+   "name": "Domino's Double Cheese Margherita, Regular, Fresh Pan (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's double cheese margherita",
+    "dominos double cheese margherita",
+    "double cheese margherita pizza"
+   ],
+   "unit": "serving",
+   "kcal": 767.3,
+   "proteinG": 30.29,
+   "carbsG": 89.02,
+   "fatG": 31.54,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Double Cheese Margherita / Fresh Pan Pizza-Regular (serves 1): Energy|767.3|Kcal, Protein|30.29|g, Sodium|1546.0|mg, Total_Carbohydrate|89.02|g, Total_Fat|31.54|g, Total_Saturated_Fat|17.31|g, Total_Sugar|2.57|g, Total_Trans-fat|0.37|g"
+  },
+  {
+   "name": "Domino's Double Cheese Margherita, Large, New Hand Tossed (1 serving = 1/4 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's double cheese margherita",
+    "dominos double cheese margherita",
+    "double cheese margherita pizza"
+   ],
+   "unit": "serving",
+   "kcal": 536.85,
+   "proteinG": 20.91,
+   "carbsG": 66.49,
+   "fatG": 20.3,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 4 (Large = 'Serves 4'), and values fall as size grows, so they are read as per serve: whole Large pizza = this x 4 (inferred from the serves field, not a printed label).",
+   "quote": "Double Cheese Margherita / New Hand Tossed-Large (serves 4): Energy|536.85|Kcal, Protein|20.91|g, Sodium|1047.25|mg, Total_Carbohydrate|66.49|g, Total_Fat|20.3|g, Total_Saturated_Fat|11.65|g, Total_Sugar|2.09|g, Total_Trans-fat|0.22|g"
+  },
+  {
+   "name": "Domino's Farmhouse, Medium, 100% Wheat Thin Crust (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's farmhouse",
+    "dominos farmhouse",
+    "farmhouse pizza"
+   ],
+   "unit": "serving",
+   "kcal": 385.4,
+   "proteinG": 16.73,
+   "carbsG": 34.85,
+   "fatG": 18.23,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Farmhouse / 100% Wheat Thin Crust-Medium (serves 2): Energy|385.4|Kcal, Protein|16.73|g, Sodium|726.4|mg, Total_Carbohydrate|34.85|g, Total_Fat|18.23|g, Total_Saturated_Fat|9.56|g, Total_Sugar|3.91|g, Total_Trans-fat|0.15|g"
+  },
+  {
+   "name": "Domino's Farmhouse, Regular, 100% Wheat Thin Crust (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's farmhouse",
+    "dominos farmhouse",
+    "farmhouse pizza"
+   ],
+   "unit": "serving",
+   "kcal": 479.47,
+   "proteinG": 18.22,
+   "carbsG": 53.33,
+   "fatG": 21.27,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Farmhouse / 100% Wheat Thin Crust-Regular (serves 1): Energy|479.47|Kcal, Protein|18.22|g, Sodium|785.0|mg, Total_Carbohydrate|53.33|g, Total_Fat|21.27|g, Total_Saturated_Fat|10.49|g, Total_Sugar|5.44|g, Total_Trans-fat|0.15|g"
+  },
+  {
+   "name": "Domino's Farmhouse, Regular, Cheese Burst (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's farmhouse",
+    "dominos farmhouse",
+    "farmhouse pizza"
+   ],
+   "unit": "serving",
+   "kcal": 938.89,
+   "proteinG": 33.01,
+   "carbsG": 110.06,
+   "fatG": 39.9,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Farmhouse / Cheese Burst-Regular (serves 1): Energy|938.89|Kcal, Protein|33.01|g, Sodium|2009.4|mg, Total_Carbohydrate|110.06|g, Total_Fat|39.9|g, Total_Saturated_Fat|22.48|g, Total_Sugar|6.47|g, Total_Trans-fat|0.59|g"
+  },
+  {
+   "name": "Domino's Farmhouse, Medium, Fresh Pan (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's farmhouse",
+    "dominos farmhouse",
+    "farmhouse pizza"
+   ],
+   "unit": "serving",
+   "kcal": 650.01,
+   "proteinG": 25.2,
+   "carbsG": 76.62,
+   "fatG": 26.38,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Farmhouse / Fresh Pan Pizza-Medium (serves 2): Energy|650.01|Kcal, Protein|25.2|g, Sodium|1380.9|mg, Total_Carbohydrate|76.62|g, Total_Fat|26.38|g, Total_Saturated_Fat|13.9|g, Total_Sugar|3.01|g, Total_Trans-fat|0.3|g"
+  },
+  {
+   "name": "Domino's Farmhouse, Regular, Fresh Pan (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's farmhouse",
+    "dominos farmhouse",
+    "farmhouse pizza"
+   ],
+   "unit": "serving",
+   "kcal": 762.16,
+   "proteinG": 28.11,
+   "carbsG": 92.18,
+   "fatG": 30.4,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Farmhouse / Fresh Pan Pizza-Regular (serves 1): Energy|762.16|Kcal, Protein|28.11|g, Sodium|1641.2|mg, Total_Carbohydrate|92.18|g, Total_Fat|30.4|g, Total_Saturated_Fat|15.67|g, Total_Sugar|3.38|g, Total_Trans-fat|0.35|g"
+  },
+  {
+   "name": "Domino's Farmhouse, Large, New Hand Tossed (1 serving = 1/4 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's farmhouse",
+    "dominos farmhouse",
+    "farmhouse pizza"
+   ],
+   "unit": "serving",
+   "kcal": 539.49,
+   "proteinG": 19.78,
+   "carbsG": 69.02,
+   "fatG": 19.86,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 4 (Large = 'Serves 4'), and values fall as size grows, so they are read as per serve: whole Large pizza = this x 4 (inferred from the serves field, not a printed label).",
+   "quote": "Farmhouse / New Hand Tossed-Large (serves 4): Energy|539.49|Kcal, Protein|19.78|g, Sodium|1129.85|mg, Total_Carbohydrate|69.02|g, Total_Fat|19.86|g, Total_Saturated_Fat|10.67|g, Total_Sugar|2.69|g, Total_Trans-fat|0.21|g"
+  },
+  {
+   "name": "Domino's Farmhouse, Medium, New Hand Tossed (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's farmhouse",
+    "dominos farmhouse",
+    "farmhouse pizza"
+   ],
+   "unit": "serving",
+   "kcal": 618.88,
+   "proteinG": 22.57,
+   "carbsG": 76.24,
+   "fatG": 24.26,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Farmhouse / New Hand Tossed-Medium (serves 2): Energy|618.88|Kcal, Protein|22.57|g, Sodium|1310.9|mg, Total_Carbohydrate|76.24|g, Total_Fat|24.26|g, Total_Saturated_Fat|12.52|g, Total_Sugar|3.01|g, Total_Trans-fat|0.28|g"
+  },
+  {
+   "name": "Domino's Farmhouse, Regular, New Hand Tossed (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's farmhouse",
+    "dominos farmhouse",
+    "farmhouse pizza"
+   ],
+   "unit": "serving",
+   "kcal": 727.3,
+   "proteinG": 25.17,
+   "carbsG": 91.76,
+   "fatG": 28.02,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Farmhouse / New Hand Tossed-Regular (serves 1): Energy|727.3|Kcal, Protein|25.17|g, Sodium|1562.8|mg, Total_Carbohydrate|91.76|g, Total_Fat|28.02|g, Total_Saturated_Fat|14.13|g, Total_Sugar|3.38|g, Total_Trans-fat|0.32|g"
+  },
+  {
+   "name": "Domino's Fresh Veggie, Medium, 100% Wheat Thin Crust (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's fresh veggie",
+    "dominos fresh veggie",
+    "fresh veggie pizza"
+   ],
+   "unit": "serving",
+   "kcal": 364.04,
+   "proteinG": 16.33,
+   "carbsG": 33.13,
+   "fatG": 16.77,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Fresh Veggie / 100% Wheat Thin Crust-Medium (serves 2): Energy|364.04|Kcal, Protein|16.33|g, Sodium|564.0|mg, Total_Carbohydrate|33.13|g, Total_Fat|16.77|g, Total_Saturated_Fat|9.27|g, Total_Sugar|3.24|g, Total_Trans-fat|0.13|g"
+  },
+  {
+   "name": "Domino's Fresh Veggie, Regular, 100% Wheat Thin Crust (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's fresh veggie",
+    "dominos fresh veggie",
+    "fresh veggie pizza"
+   ],
+   "unit": "serving",
+   "kcal": 453.66,
+   "proteinG": 17.68,
+   "carbsG": 51.22,
+   "fatG": 19.55,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Fresh Veggie / 100% Wheat Thin Crust-Regular (serves 1): Energy|453.66|Kcal, Protein|17.68|g, Sodium|589.0|mg, Total_Carbohydrate|51.22|g, Total_Fat|19.55|g, Total_Saturated_Fat|10.15|g, Total_Sugar|4.63|g, Total_Trans-fat|0.14|g"
+  },
+  {
+   "name": "Domino's Fresh Veggie, Regular, Cheese Burst (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's fresh veggie",
+    "dominos fresh veggie",
+    "fresh veggie pizza"
+   ],
+   "unit": "serving",
+   "kcal": 913.08,
+   "proteinG": 32.47,
+   "carbsG": 107.95,
+   "fatG": 38.18,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Fresh Veggie / Cheese Burst-Regular (serves 1): Energy|913.08|Kcal, Protein|32.47|g, Sodium|1813.4|mg, Total_Carbohydrate|107.95|g, Total_Fat|38.18|g, Total_Saturated_Fat|22.14|g, Total_Sugar|5.67|g, Total_Trans-fat|0.57|g"
+  },
+  {
+   "name": "Domino's Fresh Veggie, Medium, Fresh Pan (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's fresh veggie",
+    "dominos fresh veggie",
+    "fresh veggie pizza"
+   ],
+   "unit": "serving",
+   "kcal": 628.65,
+   "proteinG": 24.79,
+   "carbsG": 74.9,
+   "fatG": 24.92,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Fresh Veggie / Fresh Pan Pizza-Medium (serves 2): Energy|628.65|Kcal, Protein|24.79|g, Sodium|1218.5|mg, Total_Carbohydrate|74.9|g, Total_Fat|24.92|g, Total_Saturated_Fat|13.61|g, Total_Sugar|2.35|g, Total_Trans-fat|0.29|g"
+  },
+  {
+   "name": "Domino's Fresh Veggie, Regular, Fresh Pan (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's fresh veggie",
+    "dominos fresh veggie",
+    "fresh veggie pizza"
+   ],
+   "unit": "serving",
+   "kcal": 736.35,
+   "proteinG": 27.57,
+   "carbsG": 90.08,
+   "fatG": 28.68,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Fresh Veggie / Fresh Pan Pizza-Regular (serves 1): Energy|736.35|Kcal, Protein|27.57|g, Sodium|1445.2|mg, Total_Carbohydrate|90.08|g, Total_Fat|28.68|g, Total_Saturated_Fat|15.33|g, Total_Sugar|2.57|g, Total_Trans-fat|0.33|g"
+  },
+  {
+   "name": "Domino's Fresh Veggie, Large, New Hand Tossed (1 serving = 1/4 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's fresh veggie",
+    "dominos fresh veggie",
+    "fresh veggie pizza"
+   ],
+   "unit": "serving",
+   "kcal": 519.76,
+   "proteinG": 19.38,
+   "carbsG": 67.0,
+   "fatG": 18.54,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 4 (Large = 'Serves 4'), and values fall as size grows, so they are read as per serve: whole Large pizza = this x 4 (inferred from the serves field, not a printed label).",
+   "quote": "Fresh Veggie / New Hand Tossed-Large (serves 4): Energy|519.76|Kcal, Protein|19.38|g, Sodium|984.25|mg, Total_Carbohydrate|67.0|g, Total_Fat|18.54|g, Total_Saturated_Fat|10.41|g, Total_Sugar|2.09|g, Total_Trans-fat|0.2|g"
+  },
+  {
+   "name": "Domino's Fresh Veggie, Medium, New Hand Tossed (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's fresh veggie",
+    "dominos fresh veggie",
+    "fresh veggie pizza"
+   ],
+   "unit": "serving",
+   "kcal": 597.53,
+   "proteinG": 22.17,
+   "carbsG": 74.53,
+   "fatG": 22.8,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Fresh Veggie / New Hand Tossed-Medium (serves 2): Energy|597.53|Kcal, Protein|22.17|g, Sodium|1218.5|mg, Total_Carbohydrate|74.53|g, Total_Fat|22.8|g, Total_Saturated_Fat|12.23|g, Total_Sugar|2.35|g, Total_Trans-fat|0.26|g"
+  },
+  {
+   "name": "Domino's Fresh Veggie, Regular, New Hand Tossed (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's fresh veggie",
+    "dominos fresh veggie",
+    "fresh veggie pizza"
+   ],
+   "unit": "serving",
+   "kcal": 701.49,
+   "proteinG": 24.63,
+   "carbsG": 89.66,
+   "fatG": 26.3,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Fresh Veggie / New Hand Tossed-Regular (serves 1): Energy|701.49|Kcal, Protein|24.63|g, Sodium|1366.8|mg, Total_Carbohydrate|89.66|g, Total_Fat|26.3|g, Total_Saturated_Fat|13.79|g, Total_Sugar|2.57|g, Total_Trans-fat|0.3|g"
+  },
+  {
+   "name": "Domino's Indi Chicken Tikka, Medium, 100% Wheat Thin Crust (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's indi chicken tikka",
+    "dominos indi chicken tikka",
+    "indi chicken tikka pizza"
+   ],
+   "unit": "serving",
+   "kcal": 503.1,
+   "proteinG": 23.41,
+   "carbsG": 35.64,
+   "fatG": 28.38,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Indi Chicken Tikka / 100% Wheat Thin Crust-Medium (serves 2): Energy|503.1|Kcal, Protein|23.41|g, Sodium|1386.5|mg, Total_Carbohydrate|35.64|g, Total_Fat|28.38|g, Total_Saturated_Fat|11.43|g, Total_Sugar|4.83|g, Total_Trans-fat|0.1|g"
+  },
+  {
+   "name": "Domino's Indi Chicken Tikka, Regular, 100% Wheat Thin Crust (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's indi chicken tikka",
+    "dominos indi chicken tikka",
+    "indi chicken tikka pizza"
+   ],
+   "unit": "serving",
+   "kcal": 611.59,
+   "proteinG": 25.88,
+   "carbsG": 54.54,
+   "fatG": 32.45,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Indi Chicken Tikka / 100% Wheat Thin Crust-Regular (serves 1): Energy|611.59|Kcal, Protein|25.88|g, Sodium|1562.0|mg, Total_Carbohydrate|54.54|g, Total_Fat|32.45|g, Total_Saturated_Fat|12.57|g, Total_Sugar|6.68|g, Total_Trans-fat|0.1|g"
+  },
+  {
+   "name": "Domino's Indi Chicken Tikka, Regular, Cheese Burst (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's indi chicken tikka",
+    "dominos indi chicken tikka",
+    "indi chicken tikka pizza"
+   ],
+   "unit": "serving",
+   "kcal": 1071.01,
+   "proteinG": 40.67,
+   "carbsG": 111.27,
+   "fatG": 51.08,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Indi Chicken Tikka / Cheese Burst-Regular (serves 1): Energy|1071.01|Kcal, Protein|40.67|g, Sodium|2786.4|mg, Total_Carbohydrate|111.27|g, Total_Fat|51.08|g, Total_Saturated_Fat|24.56|g, Total_Sugar|7.71|g, Total_Trans-fat|0.53|g"
+  },
+  {
+   "name": "Domino's Indi Chicken Tikka, Medium, Fresh Pan (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's indi chicken tikka",
+    "dominos indi chicken tikka",
+    "indi chicken tikka pizza"
+   ],
+   "unit": "serving",
+   "kcal": 767.71,
+   "proteinG": 31.88,
+   "carbsG": 77.4,
+   "fatG": 36.54,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Indi Chicken Tikka / Fresh Pan Pizza-Medium (serves 2): Energy|767.71|Kcal, Protein|31.88|g, Sodium|2041.0|mg, Total_Carbohydrate|77.4|g, Total_Fat|36.54|g, Total_Saturated_Fat|15.77|g, Total_Sugar|3.93|g, Total_Trans-fat|0.25|g"
+  },
+  {
+   "name": "Domino's Indi Chicken Tikka, Regular, Fresh Pan (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's indi chicken tikka",
+    "dominos indi chicken tikka",
+    "indi chicken tikka pizza"
+   ],
+   "unit": "serving",
+   "kcal": 894.28,
+   "proteinG": 35.77,
+   "carbsG": 93.39,
+   "fatG": 41.58,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Indi Chicken Tikka / Fresh Pan Pizza-Regular (serves 1): Energy|894.28|Kcal, Protein|35.77|g, Sodium|2418.2|mg, Total_Carbohydrate|93.39|g, Total_Fat|41.58|g, Total_Saturated_Fat|17.75|g, Total_Sugar|4.62|g, Total_Trans-fat|0.29|g"
+  },
+  {
+   "name": "Domino's Indi Chicken Tikka, Large, New Hand Tossed (1 serving = 1/4 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's indi chicken tikka",
+    "dominos indi chicken tikka",
+    "indi chicken tikka pizza"
+   ],
+   "unit": "serving",
+   "kcal": 640.43,
+   "proteinG": 25.71,
+   "carbsG": 69.69,
+   "fatG": 28.5,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 4 (Large = 'Serves 4'), and values fall as size grows, so they are read as per serve: whole Large pizza = this x 4 (inferred from the serves field, not a printed label).",
+   "quote": "Indi Chicken Tikka / New Hand Tossed-Large (serves 4): Energy|640.43|Kcal, Protein|25.71|g, Sodium|1718.5|mg, Total_Carbohydrate|69.69|g, Total_Fat|28.5|g, Total_Saturated_Fat|12.27|g, Total_Sugar|3.54|g, Total_Trans-fat|0.17|g"
+  },
+  {
+   "name": "Domino's Indi Chicken Tikka, Medium, New Hand Tossed (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's indi chicken tikka",
+    "dominos indi chicken tikka",
+    "indi chicken tikka pizza"
+   ],
+   "unit": "serving",
+   "kcal": 736.59,
+   "proteinG": 29.25,
+   "carbsG": 77.03,
+   "fatG": 34.41,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Indi Chicken Tikka / New Hand Tossed-Medium (serves 2): Energy|736.59|Kcal, Protein|29.25|g, Sodium|1971.0|mg, Total_Carbohydrate|77.03|g, Total_Fat|34.41|g, Total_Saturated_Fat|14.39|g, Total_Sugar|3.93|g, Total_Trans-fat|0.22|g"
+  },
+  {
+   "name": "Domino's Indi Chicken Tikka, Regular, New Hand Tossed (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's indi chicken tikka",
+    "dominos indi chicken tikka",
+    "indi chicken tikka pizza"
+   ],
+   "unit": "serving",
+   "kcal": 859.42,
+   "proteinG": 32.83,
+   "carbsG": 92.97,
+   "fatG": 39.2,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Indi Chicken Tikka / New Hand Tossed-Regular (serves 1): Energy|859.42|Kcal, Protein|32.83|g, Sodium|2339.8|mg, Total_Carbohydrate|92.97|g, Total_Fat|39.2|g, Total_Saturated_Fat|16.21|g, Total_Sugar|4.62|g, Total_Trans-fat|0.26|g"
+  },
+  {
+   "name": "Domino's Indi Tandoori Paneer, Medium, 100% Wheat Thin Crust (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's indi tandoori paneer",
+    "dominos indi tandoori paneer",
+    "indi tandoori paneer pizza"
+   ],
+   "unit": "serving",
+   "kcal": 572.82,
+   "proteinG": 20.54,
+   "carbsG": 38.8,
+   "fatG": 35.69,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Indi Tandoori Paneer / 100% Wheat Thin Crust-Medium (serves 2): Energy|572.82|Kcal, Protein|20.54|g, Sodium|1576.5|mg, Total_Carbohydrate|38.8|g, Total_Fat|35.69|g, Total_Saturated_Fat|15.09|g, Total_Sugar|4.67|g, Total_Trans-fat|0.1|g"
+  },
+  {
+   "name": "Domino's Indi Tandoori Paneer, Regular, 100% Wheat Thin Crust (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's indi tandoori paneer",
+    "dominos indi tandoori paneer",
+    "indi tandoori paneer pizza"
+   ],
+   "unit": "serving",
+   "kcal": 704.63,
+   "proteinG": 23.12,
+   "carbsG": 58.63,
+   "fatG": 41.83,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Indi Tandoori Paneer / 100% Wheat Thin Crust-Regular (serves 1): Energy|704.63|Kcal, Protein|23.12|g, Sodium|1822.0|mg, Total_Carbohydrate|58.63|g, Total_Fat|41.83|g, Total_Saturated_Fat|17.23|g, Total_Sugar|6.54|g, Total_Trans-fat|0.1|g"
+  },
+  {
+   "name": "Domino's Indi Tandoori Paneer, Regular, Cheese Burst (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's indi tandoori paneer",
+    "dominos indi tandoori paneer",
+    "indi tandoori paneer pizza"
+   ],
+   "unit": "serving",
+   "kcal": 1169.8,
+   "proteinG": 41.91,
+   "carbsG": 111.36,
+   "fatG": 61.21,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Indi Tandoori Paneer / Cheese Burst-Regular (serves 1): Energy|1169.8|Kcal, Protein|41.91|g, Sodium|2554.0|mg, Total_Carbohydrate|111.36|g, Total_Fat|61.21|g, Total_Saturated_Fat|32.22|g, Total_Sugar|7.07|g, Total_Trans-fat|0.53|g"
+  },
+  {
+   "name": "Domino's Indi Tandoori Paneer, Medium, Fresh Pan (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's indi tandoori paneer",
+    "dominos indi tandoori paneer",
+    "indi tandoori paneer pizza"
+   ],
+   "unit": "serving",
+   "kcal": 837.44,
+   "proteinG": 29.0,
+   "carbsG": 80.56,
+   "fatG": 43.84,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Indi Tandoori Paneer / Fresh Pan Pizza-Medium (serves 2): Energy|837.44|Kcal, Protein|29.0|g, Sodium|2231.0|mg, Total_Carbohydrate|80.56|g, Total_Fat|43.84|g, Total_Saturated_Fat|19.43|g, Total_Sugar|3.77|g, Total_Trans-fat|0.25|g"
+  },
+  {
+   "name": "Domino's Indi Tandoori Paneer, Regular, Fresh Pan (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's indi tandoori paneer",
+    "dominos indi tandoori paneer",
+    "indi tandoori paneer pizza"
+   ],
+   "unit": "serving",
+   "kcal": 993.07,
+   "proteinG": 37.01,
+   "carbsG": 93.48,
+   "fatG": 51.7,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Indi Tandoori Paneer / Fresh Pan Pizza-Regular (serves 1): Energy|993.07|Kcal, Protein|37.01|g, Sodium|2178.2|mg, Total_Carbohydrate|93.48|g, Total_Fat|51.7|g, Total_Saturated_Fat|25.41|g, Total_Sugar|3.98|g, Total_Trans-fat|0.29|g"
+  },
+  {
+   "name": "Domino's Indi Tandoori Paneer, Large, New Hand Tossed (1 serving = 1/4 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's indi tandoori paneer",
+    "dominos indi tandoori paneer",
+    "indi tandoori paneer pizza"
+   ],
+   "unit": "serving",
+   "kcal": 700.8,
+   "proteinG": 23.08,
+   "carbsG": 72.47,
+   "fatG": 34.86,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 4 (Large = 'Serves 4'), and values fall as size grows, so they are read as per serve: whole Large pizza = this x 4 (inferred from the serves field, not a printed label).",
+   "quote": "Indi Tandoori Paneer / New Hand Tossed-Large (serves 4): Energy|700.8|Kcal, Protein|23.08|g, Sodium|1718.5|mg, Total_Carbohydrate|72.47|g, Total_Fat|34.86|g, Total_Saturated_Fat|15.47|g, Total_Sugar|3.39|g, Total_Trans-fat|0.17|g"
+  },
+  {
+   "name": "Domino's Indi Tandoori Paneer, Medium, New Hand Tossed (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's indi tandoori paneer",
+    "dominos indi tandoori paneer",
+    "indi tandoori paneer pizza"
+   ],
+   "unit": "serving",
+   "kcal": 806.31,
+   "proteinG": 26.38,
+   "carbsG": 80.19,
+   "fatG": 41.72,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Indi Tandoori Paneer / New Hand Tossed-Medium (serves 2): Energy|806.31|Kcal, Protein|26.38|g, Sodium|2161.0|mg, Total_Carbohydrate|80.19|g, Total_Fat|41.72|g, Total_Saturated_Fat|18.06|g, Total_Sugar|3.77|g, Total_Trans-fat|0.22|g"
+  },
+  {
+   "name": "Domino's Indi Tandoori Paneer, Regular, New Hand Tossed (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's indi tandoori paneer",
+    "dominos indi tandoori paneer",
+    "indi tandoori paneer pizza"
+   ],
+   "unit": "serving",
+   "kcal": 952.46,
+   "proteinG": 30.07,
+   "carbsG": 97.06,
+   "fatG": 48.58,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Indi Tandoori Paneer / New Hand Tossed-Regular (serves 1): Energy|952.46|Kcal, Protein|30.07|g, Sodium|2599.8|mg, Total_Carbohydrate|97.06|g, Total_Fat|48.58|g, Total_Saturated_Fat|20.87|g, Total_Sugar|4.48|g, Total_Trans-fat|0.26|g"
+  },
+  {
+   "name": "Domino's Margherita, Medium, 100% Wheat Thin Crust (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's margherita",
+    "dominos margherita",
+    "margherita pizza"
+   ],
+   "unit": "serving",
+   "kcal": 351.22,
+   "proteinG": 15.35,
+   "carbsG": 31.66,
+   "fatG": 16.59,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Margherita / 100% Wheat Thin Crust-Medium (serves 2): Energy|351.22|Kcal, Protein|15.35|g, Sodium|564.0|mg, Total_Carbohydrate|31.66|g, Total_Fat|16.59|g, Total_Saturated_Fat|9.27|g, Total_Sugar|3.24|g, Total_Trans-fat|0.13|g"
+  },
+  {
+   "name": "Domino's Margherita, Regular, 100% Wheat Thin Crust (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's margherita",
+    "dominos margherita",
+    "margherita pizza"
+   ],
+   "unit": "serving",
+   "kcal": 439.79,
+   "proteinG": 16.62,
+   "carbsG": 49.62,
+   "fatG": 19.36,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Margherita / 100% Wheat Thin Crust-Regular (serves 1): Energy|439.79|Kcal, Protein|16.62|g, Sodium|589.0|mg, Total_Carbohydrate|49.62|g, Total_Fat|19.36|g, Total_Saturated_Fat|10.15|g, Total_Sugar|4.63|g, Total_Trans-fat|0.14|g"
+  },
+  {
+   "name": "Domino's Margherita, Regular, Cheese Burst (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's margherita",
+    "dominos margherita",
+    "margherita pizza"
+   ],
+   "unit": "serving",
+   "kcal": 899.21,
+   "proteinG": 31.41,
+   "carbsG": 106.36,
+   "fatG": 37.99,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Margherita / Cheese Burst-Regular (serves 1): Energy|899.21|Kcal, Protein|31.41|g, Sodium|1813.4|mg, Total_Carbohydrate|106.36|g, Total_Fat|37.99|g, Total_Saturated_Fat|22.14|g, Total_Sugar|5.67|g, Total_Trans-fat|0.57|g"
+  },
+  {
+   "name": "Domino's Margherita, Regular, Fresh Pan (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's margherita",
+    "dominos margherita",
+    "margherita pizza"
+   ],
+   "unit": "serving",
+   "kcal": 722.48,
+   "proteinG": 26.51,
+   "carbsG": 88.48,
+   "fatG": 28.48,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Margherita / Fresh Pan Pizza-Regular (serves 1): Energy|722.48|Kcal, Protein|26.51|g, Sodium|1445.2|mg, Total_Carbohydrate|88.48|g, Total_Fat|28.48|g, Total_Saturated_Fat|15.33|g, Total_Sugar|2.57|g, Total_Trans-fat|0.33|g"
+  },
+  {
+   "name": "Domino's Margherita, Large, New Hand Tossed (1 serving = 1/4 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's margherita",
+    "dominos margherita",
+    "margherita pizza"
+   ],
+   "unit": "serving",
+   "kcal": 508.83,
+   "proteinG": 18.54,
+   "carbsG": 66.16,
+   "fatG": 18.39,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 4 (Large = 'Serves 4'), and values fall as size grows, so they are read as per serve: whole Large pizza = this x 4 (inferred from the serves field, not a printed label).",
+   "quote": "Margherita / New Hand Tossed-Large (serves 4): Energy|508.83|Kcal, Protein|18.54|g, Sodium|984.25|mg, Total_Carbohydrate|66.16|g, Total_Fat|18.39|g, Total_Saturated_Fat|10.41|g, Total_Sugar|2.09|g, Total_Trans-fat|0.2|g"
+  },
+  {
+   "name": "Domino's Margherita, Medium, New Hand Tossed (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's margherita",
+    "dominos margherita",
+    "margherita pizza"
+   ],
+   "unit": "serving",
+   "kcal": 584.71,
+   "proteinG": 21.19,
+   "carbsG": 73.05,
+   "fatG": 22.62,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Margherita / New Hand Tossed-Medium (serves 2): Energy|584.71|Kcal, Protein|21.19|g, Sodium|1148.5|mg, Total_Carbohydrate|73.05|g, Total_Fat|22.62|g, Total_Saturated_Fat|12.23|g, Total_Sugar|2.35|g, Total_Trans-fat|0.26|g"
+  },
+  {
+   "name": "Domino's Margherita, Regular, New Hand Tossed (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's margherita",
+    "dominos margherita",
+    "margherita pizza"
+   ],
+   "unit": "serving",
+   "kcal": 687.62,
+   "proteinG": 23.57,
+   "carbsG": 88.06,
+   "fatG": 26.1,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Margherita / New Hand Tossed-Regular (serves 1): Energy|687.62|Kcal, Protein|23.57|g, Sodium|1366.8|mg, Total_Carbohydrate|88.06|g, Total_Fat|26.1|g, Total_Saturated_Fat|13.79|g, Total_Sugar|2.57|g, Total_Trans-fat|0.3|g"
+  },
+  {
+   "name": "Domino's Mexican Green Wave, Medium, 100% Wheat Thin Crust (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's mexican green wave",
+    "dominos mexican green wave",
+    "mexican green wave pizza"
+   ],
+   "unit": "serving",
+   "kcal": 368.75,
+   "proteinG": 16.34,
+   "carbsG": 34.23,
+   "fatG": 16.84,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Mexican Green Wave / 100% Wheat Thin Crust-Medium (serves 2): Energy|368.75|Kcal, Protein|16.34|g, Sodium|816.0|mg, Total_Carbohydrate|34.23|g, Total_Fat|16.84|g, Total_Saturated_Fat|9.27|g, Total_Sugar|3.32|g, Total_Trans-fat|0.13|g"
+  },
+  {
+   "name": "Domino's Mexican Green Wave, Regular, 100% Wheat Thin Crust (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's mexican green wave",
+    "dominos mexican green wave",
+    "mexican green wave pizza"
+   ],
+   "unit": "serving",
+   "kcal": 458.85,
+   "proteinG": 17.71,
+   "carbsG": 52.4,
+   "fatG": 19.63,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Mexican Green Wave / 100% Wheat Thin Crust-Regular (serves 1): Energy|458.85|Kcal, Protein|17.71|g, Sodium|841.0|mg, Total_Carbohydrate|52.4|g, Total_Fat|19.63|g, Total_Saturated_Fat|10.15|g, Total_Sugar|4.71|g, Total_Trans-fat|0.14|g"
+  },
+  {
+   "name": "Domino's Mexican Green Wave, Regular, Cheese Burst (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's mexican green wave",
+    "dominos mexican green wave",
+    "mexican green wave pizza"
+   ],
+   "unit": "serving",
+   "kcal": 918.27,
+   "proteinG": 32.5,
+   "carbsG": 109.13,
+   "fatG": 38.26,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Mexican Green Wave / Cheese Burst-Regular (serves 1): Energy|918.27|Kcal, Protein|32.5|g, Sodium|2065.4|mg, Total_Carbohydrate|109.13|g, Total_Fat|38.26|g, Total_Saturated_Fat|22.15|g, Total_Sugar|5.75|g, Total_Trans-fat|0.57|g"
+  },
+  {
+   "name": "Domino's Mexican Green Wave, Medium, Fresh Pan (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's mexican green wave",
+    "dominos mexican green wave",
+    "mexican green wave pizza"
+   ],
+   "unit": "serving",
+   "kcal": 633.37,
+   "proteinG": 24.81,
+   "carbsG": 76.0,
+   "fatG": 25.0,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Mexican Green Wave / Fresh Pan Pizza-Medium (serves 2): Energy|633.37|Kcal, Protein|24.81|g, Sodium|1470.5|mg, Total_Carbohydrate|76.0|g, Total_Fat|25.0|g, Total_Saturated_Fat|13.61|g, Total_Sugar|2.43|g, Total_Trans-fat|0.29|g"
+  },
+  {
+   "name": "Domino's Mexican Green Wave, Regular, Fresh Pan (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's mexican green wave",
+    "dominos mexican green wave",
+    "mexican green wave pizza"
+   ],
+   "unit": "serving",
+   "kcal": 741.54,
+   "proteinG": 27.6,
+   "carbsG": 91.26,
+   "fatG": 28.76,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Mexican Green Wave / Fresh Pan Pizza-Regular (serves 1): Energy|741.54|Kcal, Protein|27.6|g, Sodium|1697.2|mg, Total_Carbohydrate|91.26|g, Total_Fat|28.76|g, Total_Saturated_Fat|15.33|g, Total_Sugar|2.65|g, Total_Trans-fat|0.33|g"
+  },
+  {
+   "name": "Domino's Mexican Green Wave, Large, New Hand Tossed (1 serving = 1/4 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's mexican green wave",
+    "dominos mexican green wave",
+    "mexican green wave pizza"
+   ],
+   "unit": "serving",
+   "kcal": 524.65,
+   "proteinG": 19.43,
+   "carbsG": 68.47,
+   "fatG": 18.62,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 4 (Large = 'Serves 4'), and values fall as size grows, so they are read as per serve: whole Large pizza = this x 4 (inferred from the serves field, not a printed label).",
+   "quote": "Mexican Green Wave / New Hand Tossed-Large (serves 4): Energy|524.65|Kcal, Protein|19.43|g, Sodium|1196.25|mg, Total_Carbohydrate|68.47|g, Total_Fat|18.62|g, Total_Saturated_Fat|10.41|g, Total_Sugar|2.16|g, Total_Trans-fat|0.2|g"
+  },
+  {
+   "name": "Domino's Mexican Green Wave, Medium, New Hand Tossed (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's mexican green wave",
+    "dominos mexican green wave",
+    "mexican green wave pizza"
+   ],
+   "unit": "serving",
+   "kcal": 602.24,
+   "proteinG": 22.18,
+   "carbsG": 75.63,
+   "fatG": 22.87,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Mexican Green Wave / New Hand Tossed-Medium (serves 2): Energy|602.24|Kcal, Protein|22.18|g, Sodium|1400.5|mg, Total_Carbohydrate|75.63|g, Total_Fat|22.87|g, Total_Saturated_Fat|12.23|g, Total_Sugar|2.43|g, Total_Trans-fat|0.26|g"
+  },
+  {
+   "name": "Domino's Mexican Green Wave, Regular, New Hand Tossed (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's mexican green wave",
+    "dominos mexican green wave",
+    "mexican green wave pizza"
+   ],
+   "unit": "serving",
+   "kcal": 706.68,
+   "proteinG": 24.66,
+   "carbsG": 90.84,
+   "fatG": 26.38,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Mexican Green Wave / New Hand Tossed-Regular (serves 1): Energy|706.68|Kcal, Protein|24.66|g, Sodium|1618.8|mg, Total_Carbohydrate|90.84|g, Total_Fat|26.38|g, Total_Saturated_Fat|13.79|g, Total_Sugar|2.65|g, Total_Trans-fat|0.3|g"
+  },
+  {
+   "name": "Domino's Onion, Regular, Classic Hand Tossed (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's onion",
+    "dominos onion",
+    "onion pizza"
+   ],
+   "unit": "serving",
+   "kcal": 546.97,
+   "proteinG": 17.12,
+   "carbsG": 81.56,
+   "fatG": 16.23,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Onion / Classic Hand Tossed-Regular (serves None): Energy|546.97|Kcal, Protein|17.12|g, Sodium|760.0|mg, Total_Carbohydrate|81.56|g, Total_Fat|16.23|g, Total_Saturated_Fat|3.01|g, Total_Sugar|3.08|g, Total_Trans-fat|0.02|g"
+  },
+  {
+   "name": "Domino's Onion, Regular, Fresh Pan (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's onion",
+    "dominos onion",
+    "onion pizza"
+   ],
+   "unit": "serving",
+   "kcal": 683.81,
+   "proteinG": 17.5,
+   "carbsG": 91.11,
+   "fatG": 26.98,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Onion / Fresh Pan Pizza-Regular (serves None): Energy|683.81|Kcal, Protein|17.5|g, Sodium|861.6|mg, Total_Carbohydrate|91.11|g, Total_Fat|26.98|g, Total_Saturated_Fat|11.34|g, Total_Sugar|3.71|g, Total_Trans-fat|0.08|g"
+  },
+  {
+   "name": "Domino's Peppy Paneer, Medium, 100% Wheat Thin Crust (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's peppy paneer",
+    "dominos peppy paneer",
+    "peppy paneer pizza"
+   ],
+   "unit": "serving",
+   "kcal": 487.63,
+   "proteinG": 23.84,
+   "carbsG": 33.73,
+   "fatG": 27.0,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Peppy Paneer / 100% Wheat Thin Crust-Medium (serves 2): Energy|487.63|Kcal, Protein|23.84|g, Sodium|816.0|mg, Total_Carbohydrate|33.73|g, Total_Fat|27.0|g, Total_Saturated_Fat|16.08|g, Total_Sugar|3.25|g, Total_Trans-fat|0.13|g"
+  },
+  {
+   "name": "Domino's Peppy Paneer, Regular, 100% Wheat Thin Crust (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's peppy paneer",
+    "dominos peppy paneer",
+    "peppy paneer pizza"
+   ],
+   "unit": "serving",
+   "kcal": 609.3,
+   "proteinG": 27.05,
+   "carbsG": 52.3,
+   "fatG": 32.32,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Peppy Paneer / 100% Wheat Thin Crust-Regular (serves 1): Energy|609.3|Kcal, Protein|27.05|g, Sodium|1159.0|mg, Total_Carbohydrate|52.3|g, Total_Fat|32.32|g, Total_Saturated_Fat|18.68|g, Total_Sugar|4.84|g, Total_Trans-fat|0.14|g"
+  },
+  {
+   "name": "Domino's Peppy Paneer, Regular, Cheese Burst (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's peppy paneer",
+    "dominos peppy paneer",
+    "peppy paneer pizza"
+   ],
+   "unit": "serving",
+   "kcal": 1068.73,
+   "proteinG": 41.84,
+   "carbsG": 109.03,
+   "fatG": 50.95,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Peppy Paneer / Cheese Burst-Regular (serves 1): Energy|1068.73|Kcal, Protein|41.84|g, Sodium|2383.4|mg, Total_Carbohydrate|109.03|g, Total_Fat|50.95|g, Total_Saturated_Fat|30.68|g, Total_Sugar|5.87|g, Total_Trans-fat|0.57|g"
+  },
+  {
+   "name": "Domino's Peppy Paneer, Medium, Fresh Pan (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's peppy paneer",
+    "dominos peppy paneer",
+    "peppy paneer pizza"
+   ],
+   "unit": "serving",
+   "kcal": 752.52,
+   "proteinG": 32.21,
+   "carbsG": 75.69,
+   "fatG": 35.15,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Peppy Paneer / Fresh Pan Pizza-Medium (serves 2): Energy|752.52|Kcal, Protein|32.21|g, Sodium|1770.5|mg, Total_Carbohydrate|75.69|g, Total_Fat|35.15|g, Total_Saturated_Fat|20.44|g, Total_Sugar|2.52|g, Total_Trans-fat|0.29|g"
+  },
+  {
+   "name": "Domino's Peppy Paneer, Regular, Fresh Pan (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's peppy paneer",
+    "dominos peppy paneer",
+    "peppy paneer pizza"
+   ],
+   "unit": "serving",
+   "kcal": 892.0,
+   "proteinG": 36.95,
+   "carbsG": 91.15,
+   "fatG": 41.45,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Peppy Paneer / Fresh Pan Pizza-Regular (serves 1): Energy|892.0|Kcal, Protein|36.95|g, Sodium|2015.2|mg, Total_Carbohydrate|91.15|g, Total_Fat|41.45|g, Total_Saturated_Fat|23.86|g, Total_Sugar|2.78|g, Total_Trans-fat|0.33|g"
+  },
+  {
+   "name": "Domino's Peppy Paneer, Large, New Hand Tossed (1 serving = 1/4 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's peppy paneer",
+    "dominos peppy paneer",
+    "peppy paneer pizza"
+   ],
+   "unit": "serving",
+   "kcal": 628.45,
+   "proteinG": 25.89,
+   "carbsG": 68.15,
+   "fatG": 27.49,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 4 (Large = 'Serves 4'), and values fall as size grows, so they are read as per serve: whole Large pizza = this x 4 (inferred from the serves field, not a printed label).",
+   "quote": "Peppy Paneer / New Hand Tossed-Large (serves 4): Energy|628.45|Kcal, Protein|25.89|g, Sodium|1459.0|mg, Total_Carbohydrate|68.15|g, Total_Fat|27.49|g, Total_Saturated_Fat|16.38|g, Total_Sugar|2.24|g, Total_Trans-fat|0.2|g"
+  },
+  {
+   "name": "Domino's Peppy Paneer, Medium, New Hand Tossed (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's peppy paneer",
+    "dominos peppy paneer",
+    "peppy paneer pizza"
+   ],
+   "unit": "serving",
+   "kcal": 721.39,
+   "proteinG": 29.58,
+   "carbsG": 75.32,
+   "fatG": 33.03,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Peppy Paneer / New Hand Tossed-Medium (serves 2): Energy|721.39|Kcal, Protein|29.58|g, Sodium|1700.5|mg, Total_Carbohydrate|75.32|g, Total_Fat|33.03|g, Total_Saturated_Fat|19.06|g, Total_Sugar|2.52|g, Total_Trans-fat|0.26|g"
+  },
+  {
+   "name": "Domino's Peppy Paneer, Regular, New Hand Tossed (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's peppy paneer",
+    "dominos peppy paneer",
+    "peppy paneer pizza"
+   ],
+   "unit": "serving",
+   "kcal": 857.14,
+   "proteinG": 34.01,
+   "carbsG": 90.73,
+   "fatG": 39.07,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Peppy Paneer / New Hand Tossed-Regular (serves 1): Energy|857.14|Kcal, Protein|34.01|g, Sodium|1936.8|mg, Total_Carbohydrate|90.73|g, Total_Fat|39.07|g, Total_Saturated_Fat|22.32|g, Total_Sugar|2.78|g, Total_Trans-fat|0.3|g"
+  },
+  {
+   "name": "Domino's Veg Extravaganza, Medium, 100% Wheat Thin Crust (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's veg extravaganza",
+    "dominos veg extravaganza",
+    "veg extravaganza pizza"
+   ],
+   "unit": "serving",
+   "kcal": 465.15,
+   "proteinG": 21.8,
+   "carbsG": 37.85,
+   "fatG": 23.52,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Veg Extravaganza / 100% Wheat Thin Crust-Medium (serves 2): Energy|465.15|Kcal, Protein|21.8|g, Sodium|1080.0|mg, Total_Carbohydrate|37.85|g, Total_Fat|23.52|g, Total_Saturated_Fat|12.27|g, Total_Sugar|4.46|g, Total_Trans-fat|0.2|g"
+  },
+  {
+   "name": "Domino's Veg Extravaganza, Regular, 100% Wheat Thin Crust (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's veg extravaganza",
+    "dominos veg extravaganza",
+    "veg extravaganza pizza"
+   ],
+   "unit": "serving",
+   "kcal": 540.69,
+   "proteinG": 21.7,
+   "carbsG": 56.25,
+   "fatG": 25.25,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Veg Extravaganza / 100% Wheat Thin Crust-Regular (serves 1): Energy|540.69|Kcal, Protein|21.7|g, Sodium|1109.0|mg, Total_Carbohydrate|56.25|g, Total_Fat|25.25|g, Total_Saturated_Fat|12.37|g, Total_Sugar|6.09|g, Total_Trans-fat|0.19|g"
+  },
+  {
+   "name": "Domino's Veg Extravaganza, Regular, Cheese Burst (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's veg extravaganza",
+    "dominos veg extravaganza",
+    "veg extravaganza pizza"
+   ],
+   "unit": "serving",
+   "kcal": 1025.01,
+   "proteinG": 38.59,
+   "carbsG": 113.28,
+   "fatG": 45.58,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Veg Extravaganza / Cheese Burst-Regular (serves 1): Energy|1025.01|Kcal, Protein|38.59|g, Sodium|2389.4|mg, Total_Carbohydrate|113.28|g, Total_Fat|45.58|g, Total_Saturated_Fat|25.47|g, Total_Sugar|7.12|g, Total_Trans-fat|0.65|g"
+  },
+  {
+   "name": "Domino's Veg Extravaganza, Medium, Fresh Pan (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's veg extravaganza",
+    "dominos veg extravaganza",
+    "veg extravaganza pizza"
+   ],
+   "unit": "serving",
+   "kcal": 728.36,
+   "proteinG": 30.22,
+   "carbsG": 79.46,
+   "fatG": 31.61,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Veg Extravaganza / Fresh Pan Pizza-Medium (serves 2): Energy|728.36|Kcal, Protein|30.22|g, Sodium|1746.9|mg, Total_Carbohydrate|79.46|g, Total_Fat|31.61|g, Total_Saturated_Fat|16.6|g, Total_Sugar|3.56|g, Total_Trans-fat|0.36|g"
+  },
+  {
+   "name": "Domino's Veg Extravaganza, Regular, Fresh Pan (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's veg extravaganza",
+    "dominos veg extravaganza",
+    "veg extravaganza pizza"
+   ],
+   "unit": "serving",
+   "kcal": 848.28,
+   "proteinG": 33.7,
+   "carbsG": 95.4,
+   "fatG": 36.08,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Veg Extravaganza / Fresh Pan Pizza-Regular (serves 1): Energy|848.28|Kcal, Protein|33.7|g, Sodium|2021.2|mg, Total_Carbohydrate|95.4|g, Total_Fat|36.08|g, Total_Saturated_Fat|18.65|g, Total_Sugar|4.03|g, Total_Trans-fat|0.41|g"
+  },
+  {
+   "name": "Domino's Veg Extravaganza, Large, New Hand Tossed (1 serving = 1/4 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's veg extravaganza",
+    "dominos veg extravaganza",
+    "veg extravaganza pizza"
+   ],
+   "unit": "serving",
+   "kcal": 607.19,
+   "proteinG": 24.24,
+   "carbsG": 71.47,
+   "fatG": 24.33,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 4 (Large = 'Serves 4'), and values fall as size grows, so they are read as per serve: whole Large pizza = this x 4 (inferred from the serves field, not a printed label).",
+   "quote": "Veg Extravaganza / New Hand Tossed-Large (serves 4): Energy|607.19|Kcal, Protein|24.24|g, Sodium|1421.85|mg, Total_Carbohydrate|71.47|g, Total_Fat|24.33|g, Total_Saturated_Fat|13.04|g, Total_Sugar|3.17|g, Total_Trans-fat|0.26|g"
+  },
+  {
+   "name": "Domino's Veg Extravaganza, Medium, New Hand Tossed (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's veg extravaganza",
+    "dominos veg extravaganza",
+    "veg extravaganza pizza"
+   ],
+   "unit": "serving",
+   "kcal": 697.23,
+   "proteinG": 27.6,
+   "carbsG": 79.09,
+   "fatG": 29.49,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Veg Extravaganza / New Hand Tossed-Medium (serves 2): Energy|697.23|Kcal, Protein|27.6|g, Sodium|1676.9|mg, Total_Carbohydrate|79.09|g, Total_Fat|29.49|g, Total_Saturated_Fat|15.23|g, Total_Sugar|3.56|g, Total_Trans-fat|0.33|g"
+  },
+  {
+   "name": "Domino's Veg Extravaganza, Regular, New Hand Tossed (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's veg extravaganza",
+    "dominos veg extravaganza",
+    "veg extravaganza pizza"
+   ],
+   "unit": "serving",
+   "kcal": 788.52,
+   "proteinG": 28.66,
+   "carbsG": 94.68,
+   "fatG": 32.0,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Veg Extravaganza / New Hand Tossed-Regular (serves 1): Energy|788.52|Kcal, Protein|28.66|g, Sodium|1886.8|mg, Total_Carbohydrate|94.68|g, Total_Fat|32.0|g, Total_Saturated_Fat|16.01|g, Total_Sugar|4.03|g, Total_Trans-fat|0.36|g"
+  },
+  {
+   "name": "Domino's Veggie Paradise, Medium, 100% Wheat Thin Crust (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's veggie paradise",
+    "dominos veggie paradise",
+    "veggie paradise pizza"
+   ],
+   "unit": "serving",
+   "kcal": 376.98,
+   "proteinG": 15.85,
+   "carbsG": 34.16,
+   "fatG": 18.1,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Veggie Paradise / 100% Wheat Thin Crust-Medium (serves 2): Energy|376.98|Kcal, Protein|15.85|g, Sodium|884.0|mg, Total_Carbohydrate|34.16|g, Total_Fat|18.1|g, Total_Saturated_Fat|9.52|g, Total_Sugar|3.89|g, Total_Trans-fat|0.13|g"
+  },
+  {
+   "name": "Domino's Veggie Paradise, Regular, 100% Wheat Thin Crust (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's veggie paradise",
+    "dominos veggie paradise",
+    "veggie paradise pizza"
+   ],
+   "unit": "serving",
+   "kcal": 467.51,
+   "proteinG": 17.19,
+   "carbsG": 52.48,
+   "fatG": 20.89,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Veggie Paradise / 100% Wheat Thin Crust-Regular (serves 1): Energy|467.51|Kcal, Protein|17.19|g, Sodium|909.0|mg, Total_Carbohydrate|52.48|g, Total_Fat|20.89|g, Total_Saturated_Fat|10.39|g, Total_Sugar|5.39|g, Total_Trans-fat|0.15|g"
+  },
+  {
+   "name": "Domino's Veggie Paradise, Regular, Cheese Burst (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's veggie paradise",
+    "dominos veggie paradise",
+    "veggie paradise pizza"
+   ],
+   "unit": "serving",
+   "kcal": 926.93,
+   "proteinG": 31.98,
+   "carbsG": 109.21,
+   "fatG": 39.52,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Veggie Paradise / Cheese Burst-Regular (serves 1): Energy|926.93|Kcal, Protein|31.98|g, Sodium|2133.4|mg, Total_Carbohydrate|109.21|g, Total_Fat|39.52|g, Total_Saturated_Fat|22.39|g, Total_Sugar|6.43|g, Total_Trans-fat|0.58|g"
+  },
+  {
+   "name": "Domino's Veggie Paradise, Medium, Fresh Pan (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's veggie paradise",
+    "dominos veggie paradise",
+    "veggie paradise pizza"
+   ],
+   "unit": "serving",
+   "kcal": 641.6,
+   "proteinG": 24.32,
+   "carbsG": 75.93,
+   "fatG": 26.25,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Veggie Paradise / Fresh Pan Pizza-Medium (serves 2): Energy|641.6|Kcal, Protein|24.32|g, Sodium|1538.5|mg, Total_Carbohydrate|75.93|g, Total_Fat|26.25|g, Total_Saturated_Fat|13.85|g, Total_Sugar|3.0|g, Total_Trans-fat|0.3|g"
+  },
+  {
+   "name": "Domino's Veggie Paradise, Regular, Fresh Pan (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's veggie paradise",
+    "dominos veggie paradise",
+    "veggie paradise pizza"
+   ],
+   "unit": "serving",
+   "kcal": 750.2,
+   "proteinG": 27.08,
+   "carbsG": 91.33,
+   "fatG": 30.02,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Veggie Paradise / Fresh Pan Pizza-Regular (serves 1): Energy|750.2|Kcal, Protein|27.08|g, Sodium|1765.2|mg, Total_Carbohydrate|91.33|g, Total_Fat|30.02|g, Total_Saturated_Fat|15.58|g, Total_Sugar|3.33|g, Total_Trans-fat|0.34|g"
+  },
+  {
+   "name": "Domino's Veggie Paradise, Large, New Hand Tossed (1 serving = 1/4 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's veggie paradise",
+    "dominos veggie paradise",
+    "veggie paradise pizza"
+   ],
+   "unit": "serving",
+   "kcal": 529.83,
+   "proteinG": 18.98,
+   "carbsG": 68.32,
+   "fatG": 19.54,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 4 (Large = 'Serves 4'), and values fall as size grows, so they are read as per serve: whole Large pizza = this x 4 (inferred from the serves field, not a printed label).",
+   "quote": "Veggie Paradise / New Hand Tossed-Large (serves 4): Energy|529.83|Kcal, Protein|18.98|g, Sodium|1224.25|mg, Total_Carbohydrate|68.32|g, Total_Fat|19.54|g, Total_Saturated_Fat|10.59|g, Total_Sugar|2.66|g, Total_Trans-fat|0.21|g"
+  },
+  {
+   "name": "Domino's Veggie Paradise, Medium, New Hand Tossed (1 serving = 1/2 pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's veggie paradise",
+    "dominos veggie paradise",
+    "veggie paradise pizza"
+   ],
+   "unit": "serving",
+   "kcal": 610.47,
+   "proteinG": 21.69,
+   "carbsG": 75.55,
+   "fatG": 24.13,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 2 (Medium = 'Serves 2'), and values fall as size grows, so they are read as per serve: whole Medium pizza = this x 2 (inferred from the serves field, not a printed label).",
+   "quote": "Veggie Paradise / New Hand Tossed-Medium (serves 2): Energy|610.47|Kcal, Protein|21.69|g, Sodium|1468.5|mg, Total_Carbohydrate|75.55|g, Total_Fat|24.13|g, Total_Saturated_Fat|12.48|g, Total_Sugar|3.0|g, Total_Trans-fat|0.27|g"
+  },
+  {
+   "name": "Domino's Veggie Paradise, Regular, New Hand Tossed (whole pizza)",
+   "brand": "Domino's Pizza India (Jubilant FoodWorks)",
+   "group": "Domino's",
+   "aliases": [
+    "domino's veggie paradise",
+    "dominos veggie paradise",
+    "veggie paradise pizza"
+   ],
+   "unit": "serving",
+   "kcal": 715.34,
+   "proteinG": 24.14,
+   "carbsG": 90.91,
+   "fatG": 27.64,
+   "fiberG": null,
+   "source": "https://www.dominos.co.in/menu",
+   "sourceBasis": "Nutrition values Domino's India publishes per menu variant (size + crust) in the product data of dominos.co.in/menu. No unit is printed; the variant's own 'serves' field is 1 (Regular = 'Serves 1'), and values fall as size grows, so they are read as per serve: Regular serves 1, i.e. the whole Regular pizza.",
+   "quote": "Veggie Paradise / New Hand Tossed-Regular (serves 1): Energy|715.34|Kcal, Protein|24.14|g, Sodium|1686.8|mg, Total_Carbohydrate|90.91|g, Total_Fat|27.64|g, Total_Saturated_Fat|14.04|g, Total_Sugar|3.33|g, Total_Trans-fat|0.31|g"
+  }
+ ],
+ "notFound": [
+  {
+   "name": "Domino's 2in1 Cheese Burst - Corn N Cheese",
+   "reason": "dominos.co.in/menu gives this product the exact same nutrition values as other unrelated pizzas (copied placeholder data), so they are not trustworthy"
+  },
+  {
+   "name": "Domino's 2in1 Cheese Burst - Double Chicken",
+   "reason": "dominos.co.in/menu gives this product the exact same nutrition values as other unrelated pizzas (copied placeholder data), so they are not trustworthy"
+  },
+  {
+   "name": "Domino's 2in1 Cheese Burst - Farmhouse",
+   "reason": "dominos.co.in/menu gives this product the exact same nutrition values as other unrelated pizzas (copied placeholder data), so they are not trustworthy"
+  },
+  {
+   "name": "Domino's 2in1 Cheese Burst - Margherita",
+   "reason": "dominos.co.in/menu gives this product the exact same nutrition values as other unrelated pizzas (copied placeholder data), so they are not trustworthy"
+  },
+  {
+   "name": "Domino's 2in1 Cheese Burst - Pepper BBQ Chicken",
+   "reason": "dominos.co.in/menu gives this product the exact same nutrition values as other unrelated pizzas (copied placeholder data), so they are not trustworthy"
+  },
+  {
+   "name": "Domino's 2in1 Cheese Burst - Peppy Paneer",
+   "reason": "dominos.co.in/menu gives this product the exact same nutrition values as other unrelated pizzas (copied placeholder data), so they are not trustworthy"
+  },
+  {
+   "name": "Domino's Big Big 6in1 Cheeseburst - Non Veg",
+   "reason": "dominos.co.in/menu gives this product the exact same nutrition values as other unrelated pizzas (copied placeholder data), so they are not trustworthy"
+  },
+  {
+   "name": "Domino's Big Big 6in1 Cheeseburst - Veg",
+   "reason": "dominos.co.in/menu gives this product the exact same nutrition values as other unrelated pizzas (copied placeholder data), so they are not trustworthy"
+  },
+  {
+   "name": "Domino's Big Big 6in1 Lavaburst - Non Veg",
+   "reason": "dominos.co.in/menu gives this product the exact same nutrition values as other unrelated pizzas (copied placeholder data), so they are not trustworthy"
+  },
+  {
+   "name": "Domino's Big Big 6in1 Lavaburst - Veg",
+   "reason": "dominos.co.in/menu gives this product the exact same nutrition values as other unrelated pizzas (copied placeholder data), so they are not trustworthy"
+  },
+  {
+   "name": "Domino's Big Big 6in1 Pizza - Non Veg",
+   "reason": "dominos.co.in/menu gives this product the exact same nutrition values as other unrelated pizzas (copied placeholder data), so they are not trustworthy"
+  },
+  {
+   "name": "Domino's Big Big 6in1 Pizza - Veg",
+   "reason": "dominos.co.in/menu gives this product the exact same nutrition values as other unrelated pizzas (copied placeholder data), so they are not trustworthy"
+  },
+  {
+   "name": "Domino's Burger Pizza - Classic Non Veg",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Burger Pizza - Classic Veg",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Burger Pizza - Premium Veg",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Capsicum & Red Paprika with Videshi Hot Sauce",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Cheese Lava Chicken Golden Delight",
+   "reason": "dominos.co.in/menu gives this product the exact same nutrition values as other unrelated pizzas (copied placeholder data), so they are not trustworthy"
+  },
+  {
+   "name": "Domino's Cheese Lava Farmhouse",
+   "reason": "dominos.co.in/menu gives this product the exact same nutrition values as other unrelated pizzas (copied placeholder data), so they are not trustworthy"
+  },
+  {
+   "name": "Domino's Cheese Lava Pepper BBQ Chicken",
+   "reason": "dominos.co.in/menu gives this product the exact same nutrition values as other unrelated pizzas (copied placeholder data), so they are not trustworthy"
+  },
+  {
+   "name": "Domino's Cheese Lava Peppy Paneer",
+   "reason": "dominos.co.in/menu gives this product the exact same nutrition values as other unrelated pizzas (copied placeholder data), so they are not trustworthy"
+  },
+  {
+   "name": "Domino's Cheese Lava Spiced Double Chicken",
+   "reason": "dominos.co.in/menu gives this product the exact same nutrition values as other unrelated pizzas (copied placeholder data), so they are not trustworthy"
+  },
+  {
+   "name": "Domino's Cheese Lava Veg Paradise",
+   "reason": "dominos.co.in/menu gives this product the exact same nutrition values as other unrelated pizzas (copied placeholder data), so they are not trustworthy"
+  },
+  {
+   "name": "Domino's Cheese Overload",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Cheese Volcano BBQ Chicken",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Cheese Volcano Double Chicken",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Cheese Volcano Farmhouse",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Cheese Volcano Peppy Paneer",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Cheese Volcano Veg Paradise",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Cheesy Dip",
+   "reason": "values given with no serving size (Peri Peri Dip and Cream and Onion Dip share identical values), basis unknowable"
+  },
+  {
+   "name": "Domino's Chicken Kebab Rolls",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Chicken Keema & Onion with Desi Makhani Sauce",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Chicken Parcel",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Chicken Pepperoni Stuffed GB",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Chicken Pops (40gm)",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Choco Bomb",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Choco Lava Cake",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Choco Mousse",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Classic",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Classic Stuffed Garlic Bread",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Cream and Onion Dip",
+   "reason": "values given with no serving size (Peri Peri Dip and Cream and Onion Dip share identical values), basis unknowable"
+  },
+  {
+   "name": "Domino's Dominoid - Italian Truffle Chicken",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Dominoid - Italian Truffle Veg",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Dominoid - Korean Heat Chicken",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Dominoid - Korean Heat Veg",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Dominoid - Lebanese Shawarma Chicken",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Dominoid - Lebanese Shawarma Veg",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Dominoid - Margherita",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Dominoid - Mexican Sizzle Chicken",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Dominoid - Mexican Sizzle Veg",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Double Chicken Kebab Rolls",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Fiery Corn & Jalapeno Garlic Bread",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Fiery Paneer Tikka Garlic Bread",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Fiery Pepperoni Garlic Bread",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Garlic Breadsticks",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Golden Corn",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Grilled Wings Lemon Pepper",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Grilled Wings Signature Garlic",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Grilled wings Southern Spice",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Korean Corn & Jalapeno Garlic Bread",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Korean Paneer Tikka Garlic Bread",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Korean Pepperoni Garlic Bread",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Loaded Saucy Chicken Parcel - Tandoori",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Loaded Saucy Paneer Parcel - Tandoori",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Loaded Saucy Veg Taco - Tandoori",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Loaded Saucy Veg Taco - Tandoori (Single)",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's MM OAG Loaded Chicken Parcel",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's MM OAG Loaded Paneer Parcel",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Makhani Corn & Jalapeno Garlic Bread",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Makhani Paneer Tikka Garlic Bread",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Makhani Pepperoni Garlic Bread",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Non Veg Loaded",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Non Veg Supreme",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Paneer & Capsicum with Videshi Hot Sauce",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Paneer Spice Supreme",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Paneer Tikka Stuffed GB",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Paneer, Onion & Capsicum with Desi Makhani Sauce",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Pepper Barbecue Chicken",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Peri Peri Dip",
+   "reason": "values given with no serving size (Peri Peri Dip and Cream and Onion Dip share identical values), basis unknowable"
+  },
+  {
+   "name": "Domino's Red Velvet Lava Cake",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Spiced Double Chicken",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Spiced Double Chicken Pizza",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Spicy Tandoori Meltz",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Taco Mexicana Non Veg",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Taco Mexicana Veg",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Taco Mexicana-Veg (Single)",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Tandoori Loaded Chicken Taco",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's The 5 Chicken Feast Cheese Burst",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's The 5 Chicken Feast Pizza",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Veg Loaded",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Veg Parcel",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Veggie Bites",
+   "reason": "no nutrition values in Domino's India's menu data on dominos.co.in/menu (no official PDF found either)"
+  },
+  {
+   "name": "Domino's Double Cheese Margherita, Regular & Medium, New Hand Tossed",
+   "reason": "values identical to the 2in1 Cheese Burst placeholders / Margherita Fresh Pan Medium; looks copied, excluded"
+  },
+  {
+   "name": "Domino's Margherita, Medium, Fresh Pan",
+   "reason": "all values identical to Double Cheese Margherita Medium New Hand Tossed; looks copied, excluded"
+  },
+  {
+   "name": "Domino's Chicken Sausage, Regular, Fresh Pan",
+   "reason": "dominos.co.in/menu lists two different value sets (722.7 and 801.73 kcal) for this variant"
+  }
+ ]
+}

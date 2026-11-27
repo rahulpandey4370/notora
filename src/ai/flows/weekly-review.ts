@@ -16,6 +16,7 @@ import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 import { ModelId } from '@/lib/types';
 import { callStructuredLLM } from '@/lib/ai-client';
+import { serverDefaultModel } from '@/lib/ai-providers-server';
 
 const TaskStatSchema = z.object({
   title: z.string(),
@@ -110,7 +111,7 @@ const weeklyReviewFlow = ai.defineFlow(
     outputSchema: WeeklyReviewOutputSchema,
   },
   async (input, { context }) => {
-    const modelId = context?.modelId || 'gemini-2.5-flash';
+    const modelId = context?.modelId || serverDefaultModel();
 
     const output = await callStructuredLLM(
       modelId,

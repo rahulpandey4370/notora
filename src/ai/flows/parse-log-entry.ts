@@ -15,6 +15,7 @@ import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 import { ModelId } from '@/lib/types';
 import { callStructuredLLM } from '@/lib/ai-client';
+import { serverDefaultModel } from '@/lib/ai-providers-server';
 
 const TrackerRefSchema = z.object({
   id: z.string(),
@@ -78,7 +79,7 @@ const parseLogEntryFlow = ai.defineFlow(
     outputSchema: ParseLogEntryOutputSchema,
   },
   async (input, { context }) => {
-    const modelId = context?.modelId || 'gemini-2.5-flash';
+    const modelId = context?.modelId || serverDefaultModel();
 
     const output = await callStructuredLLM(
       modelId,

@@ -1,0 +1,1008 @@
+{
+ "items": [
+  {
+   "name": "Thums Up",
+   "brand": "Thums Up (Coca-Cola India)",
+   "group": "Drinks",
+   "aliases": [
+    "thumsup",
+    "thums up",
+    "thumbs up",
+    "cola"
+   ],
+   "unit": "ml",
+   "kcal": 42,
+   "proteinG": 0,
+   "carbsG": 10.6,
+   "fatG": 0,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "can (300 ml)",
+     "amount": 300
+    },
+    {
+     "label": "bottle (200 ml)",
+     "amount": 200
+    },
+    {
+     "label": "bottle (250 ml)",
+     "amount": 250
+    },
+    {
+     "label": "bottle (750 ml)",
+     "amount": 750
+    },
+    {
+     "label": "bottle (1.75 L)",
+     "amount": 1750
+    },
+    {
+     "label": "bottle (2.25 L)",
+     "amount": 2250
+    }
+   ],
+   "source": "https://www.coca-cola.com/in/en/brands/thums-up/products-thums-up",
+   "sourceBasis": "per 100 ml, nutrition table on Coca-Cola India official product page (Indian formulation); sizes from the same page",
+   "quote": "Per 100ml: Energy 42Kcal | Carbohydrate 10.6g | Total Sugars 10.4g | Added Sugars 10.4g | Total Fat 0g | Protein 0g | Sodium 0.81mg"
+  },
+  {
+   "name": "Coca-Cola",
+   "brand": "Coca-Cola India",
+   "group": "Drinks",
+   "aliases": [
+    "coke",
+    "coca cola",
+    "cola"
+   ],
+   "unit": "ml",
+   "kcal": 44,
+   "proteinG": 0,
+   "carbsG": 10.9,
+   "fatG": 0,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "can (300 ml)",
+     "amount": 300
+    },
+    {
+     "label": "can (330 ml)",
+     "amount": 330
+    },
+    {
+     "label": "can (180 ml)",
+     "amount": 180
+    },
+    {
+     "label": "bottle (250 ml)",
+     "amount": 250
+    },
+    {
+     "label": "bottle (600 ml)",
+     "amount": 600
+    },
+    {
+     "label": "bottle (750 ml)",
+     "amount": 750
+    },
+    {
+     "label": "bottle (1.25 L)",
+     "amount": 1250
+    },
+    {
+     "label": "bottle (2 L)",
+     "amount": 2000
+    }
+   ],
+   "source": "https://www.coca-cola.com/in/en/brands/coca-cola/products-coca-cola",
+   "sourceBasis": "per 100 ml, nutrition table on Coca-Cola India official product page (Indian formulation); sizes from the same page",
+   "quote": "Per 100ml: Energy 44kcal | Carbohydrates 10.9g | Total sugars 10.6g | Added sugars 10.6g | Total Fat 0g | Protein 0g | Sodium 8.5mg"
+  },
+  {
+   "name": "Fanta Orange",
+   "brand": "Fanta (Coca-Cola India)",
+   "group": "Drinks",
+   "aliases": [
+    "fanta",
+    "orange soda"
+   ],
+   "unit": "ml",
+   "kcal": 56,
+   "proteinG": 0,
+   "carbsG": 14,
+   "fatG": 0,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "can (300 ml)",
+     "amount": 300
+    },
+    {
+     "label": "can (330 ml)",
+     "amount": 330
+    },
+    {
+     "label": "can (180 ml)",
+     "amount": 180
+    },
+    {
+     "label": "bottle (250 ml)",
+     "amount": 250
+    },
+    {
+     "label": "bottle (600 ml)",
+     "amount": 600
+    },
+    {
+     "label": "bottle (750 ml)",
+     "amount": 750
+    },
+    {
+     "label": "bottle (1.25 L)",
+     "amount": 1250
+    },
+    {
+     "label": "bottle (2 L)",
+     "amount": 2000
+    }
+   ],
+   "source": "https://www.coca-cola.com/in/en/brands/fanta/product-fanta",
+   "sourceBasis": "per 100 ml, nutrition table on Coca-Cola India official product page (Indian formulation); sizes from the same page",
+   "quote": "Per 100ml: Energy 56kcal | Total Carbohydrates 14g | Total Sugars 13.7g | Added sugars 13.7g | Total Fat 0g | Sodium 22.3mg | Protein 0g"
+  },
+  {
+   "name": "Sprite",
+   "brand": "Sprite (Coca-Cola India)",
+   "group": "Drinks",
+   "aliases": [
+    "sprite",
+    "lemon lime soda"
+   ],
+   "unit": "ml",
+   "kcal": 49,
+   "proteinG": 0,
+   "carbsG": 12.2,
+   "fatG": 0,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "can (300 ml)",
+     "amount": 300
+    },
+    {
+     "label": "can (330 ml)",
+     "amount": 330
+    },
+    {
+     "label": "can (200 ml)",
+     "amount": 200
+    },
+    {
+     "label": "bottle (250 ml)",
+     "amount": 250
+    },
+    {
+     "label": "bottle (500 ml)",
+     "amount": 500
+    },
+    {
+     "label": "bottle (750 ml)",
+     "amount": 750
+    },
+    {
+     "label": "bottle (1.25 L)",
+     "amount": 1250
+    },
+    {
+     "label": "bottle (2.25 L)",
+     "amount": 2250
+    }
+   ],
+   "source": "https://www.coca-cola.com/in/en/brands/sprite/products",
+   "sourceBasis": "per 100 ml, nutrition table on Coca-Cola India official product page (Indian formulation); sizes from the same page",
+   "quote": "Per 100ml: Energy 49 kcal | Carbohydrate 12.2 g | Total Sugars 11.7 g | Added Sugars 11.7 g | Total Fat 0g | Protein 0 g | Sodium 10.1 mg"
+  },
+  {
+   "name": "Coca-Cola Zero Sugar",
+   "brand": "Coca-Cola India",
+   "group": "Drinks",
+   "aliases": [
+    "coke zero",
+    "coca cola zero",
+    "zero sugar coke"
+   ],
+   "unit": "ml",
+   "kcal": 0,
+   "proteinG": 0,
+   "carbsG": 0,
+   "fatG": 0,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "can (300 ml)",
+     "amount": 300
+    },
+    {
+     "label": "can (330 ml)",
+     "amount": 330
+    },
+    {
+     "label": "can (180 ml)",
+     "amount": 180
+    },
+    {
+     "label": "can (350 ml)",
+     "amount": 350
+    },
+    {
+     "label": "bottle (250 ml)",
+     "amount": 250
+    },
+    {
+     "label": "bottle (600 ml)",
+     "amount": 600
+    },
+    {
+     "label": "bottle (750 ml)",
+     "amount": 750
+    }
+   ],
+   "source": "https://www.coca-cola.com/in/en/brands/coca-cola/products-coca-cola-zero-sugar",
+   "sourceBasis": "per 100 ml, nutrition table on Coca-Cola India official product page (Indian formulation); sizes from the same page",
+   "quote": "Coca-Cola Zero, Per 100ml: Energy 0kcal | Carbohydrates 0g | Total sugars 0g | Added sugars 0g | Total Fat 0g | Protein 0g | Sodium 7.5mg"
+  },
+  {
+   "name": "Diet Coke",
+   "brand": "Coca-Cola India",
+   "group": "Drinks",
+   "aliases": [
+    "diet coke",
+    "coke diet",
+    "diet coca cola"
+   ],
+   "unit": "ml",
+   "kcal": 0,
+   "proteinG": 0,
+   "carbsG": 0,
+   "fatG": 0,
+   "fiberG": null,
+   "servings": [],
+   "source": "https://www.coca-cola.com/in/en/brands/coca-cola/products-diet-coke",
+   "sourceBasis": "per 100 ml, nutrition table on Coca-Cola India official product page; page lists no pack sizes",
+   "quote": "Diet Coke, Per 100ml: Energy 0kcal | Carbohydrate 0g | Total sugars 0g | Added sugars 0g | Total Fat 0g | Protein 0g | Sodium 8.3mg"
+  },
+  {
+   "name": "Sprite Zero",
+   "brand": "Sprite (Coca-Cola India)",
+   "group": "Drinks",
+   "aliases": [
+    "sprite zero",
+    "zero sugar sprite"
+   ],
+   "unit": "ml",
+   "kcal": 0,
+   "proteinG": 0,
+   "carbsG": 0,
+   "fatG": 0,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "can (300 ml)",
+     "amount": 300
+    },
+    {
+     "label": "can (200 ml)",
+     "amount": 200
+    },
+    {
+     "label": "bottle (250 ml)",
+     "amount": 250
+    },
+    {
+     "label": "bottle (400 ml)",
+     "amount": 400
+    },
+    {
+     "label": "bottle (500 ml)",
+     "amount": 500
+    },
+    {
+     "label": "bottle (750 ml)",
+     "amount": 750
+    }
+   ],
+   "source": "https://www.coca-cola.com/in/en/brands/sprite/products",
+   "sourceBasis": "per 100 ml, nutrition table on Coca-Cola India official product page (Indian formulation); sizes from the same page",
+   "quote": "Sprite Zero, Per 100ml: Energy 0 kcal | Carbohydrate 0 g | Total Sugars 0 g | Added Sugars 0 g | Total Fat 0g | Protein 0g | Sodium 7.8 mg"
+  },
+  {
+   "name": "Thums Up XForce (No Sugar)",
+   "brand": "Thums Up (Coca-Cola India)",
+   "group": "Drinks",
+   "aliases": [
+    "thums up x force",
+    "thumsup xforce",
+    "thums up zero",
+    "thums up no sugar"
+   ],
+   "unit": "ml",
+   "kcal": 0,
+   "proteinG": 0,
+   "carbsG": 0,
+   "fatG": 0,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "can (300 ml)",
+     "amount": 300
+    },
+    {
+     "label": "bottle (500 ml)",
+     "amount": 500
+    }
+   ],
+   "source": "https://www.coca-cola.com/in/en/brands/thums-up/products-thums-up-xforce",
+   "sourceBasis": "per 100 ml, nutrition table on Coca-Cola India official product page (Indian formulation); sizes from the same page",
+   "quote": "Per 100ml: Energy 0 kcal | Carbohydrates 0 g | Total Sugars 0 g | Added Sugars 0 g | Total Fat 0 g | Protein 0 g | Sodium 3.3 mg"
+  },
+  {
+   "name": "Charged by Thums Up",
+   "brand": "Thums Up (Coca-Cola India)",
+   "group": "Drinks",
+   "aliases": [
+    "charged",
+    "thums up charged",
+    "thumsup charged"
+   ],
+   "unit": "ml",
+   "kcal": 30,
+   "proteinG": 0,
+   "carbsG": 7.4,
+   "fatG": 0,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "can (300 ml)",
+     "amount": 300
+    },
+    {
+     "label": "bottle (250 ml)",
+     "amount": 250
+    }
+   ],
+   "source": "https://www.coca-cola.com/in/en/brands/charged-by-thums-up",
+   "sourceBasis": "per 100 ml, nutrition table on Coca-Cola India official product page (Indian formulation); sizes from the same page (contains sugar plus sucralose; high caffeine)",
+   "quote": "PER 100ml: ENERGY 30 kcal | CARBOHYDRATE 7.4 g | TOTAL SUGARS 7.3 g | ADDED SUGARS 7 g | TOTAL FAT 0 g | PROTEIN 0 g | SODIUM 8.8 mg"
+  },
+  {
+   "name": "7UP",
+   "brand": "7UP (PepsiCo India)",
+   "group": "Drinks",
+   "aliases": [
+    "7up",
+    "seven up",
+    "7 up"
+   ],
+   "unit": "ml",
+   "kcal": 47,
+   "proteinG": 0,
+   "carbsG": 11.7,
+   "fatG": 0,
+   "fiberG": 0,
+   "servings": [
+    {
+     "label": "bottle (750 ml)",
+     "amount": 750
+    },
+    {
+     "label": "can (330 ml)",
+     "amount": 330
+    }
+   ],
+   "source": "https://blinkit.com/prn/7up-soft-drink/prid/278",
+   "sourceBasis": "per 100 ml, Blinkit listing nutrition fields for the 750 ml PET (manufacturer Varun Beverages, country of origin India). The 330 ml India-made can listing (blinkit prid 624189) shows identical values. No PepsiCo India brand page with a table found.",
+   "quote": "Energy Per 100 g => 47 kcal | Protein 0 g | Total Carbohydrates 11.7 g | Total Sugar 11.7 g | Total Fat 0 g | Dietary Fiber 0 g | Sodium 18 mg (Unit 750 ml)"
+  },
+  {
+   "name": "Maggi 2-Minute Masala Noodles",
+   "brand": "Maggi (Nestlé India)",
+   "group": "Instant noodles",
+   "aliases": [
+    "maggi",
+    "maggi masala",
+    "2 minute maggi",
+    "maggi noodles"
+   ],
+   "unit": "g",
+   "kcal": 384,
+   "proteinG": 8.2,
+   "carbsG": 59.6,
+   "fatG": 12.5,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "pack",
+     "amount": 70
+    }
+   ],
+   "source": "https://www.maggi.in/en/product/maggi-2-minute-noodles/",
+   "sourceBasis": "per 100 g dry product as packed, maggi.in nutrition table; identical values on Blinkit (prid 171258), which gives Serve Size 70 g and 280 g = 4 x 70 g packs. maggi.in itself states \"Per serve (75g)\". Fibre not stated.",
+   "quote": "per 100g: Energy (kcal) 384 | Protein (g) 8.2 | Carbohydrate (g) 59.6 | Total Sugars 1.8 | Total Fat (g) 12.5 | Sodium (mg) 1000.0"
+  },
+  {
+   "name": "Maggi Special Masala Noodles",
+   "brand": "Maggi (Nestlé India)",
+   "group": "Instant noodles",
+   "aliases": [
+    "maggi special masala",
+    "special masala maggi"
+   ],
+   "unit": "g",
+   "kcal": 409,
+   "proteinG": 9.6,
+   "carbsG": 60.3,
+   "fatG": 14.4,
+   "fiberG": 2.3,
+   "servings": [
+    {
+     "label": "pack",
+     "amount": 70
+    }
+   ],
+   "source": "https://www.maggi.in/en/product/maggi-2-minute-special-masala-instant-noodles/",
+   "sourceBasis": "per 100 g dry product, maggi.in nutrition table; Open Food Facts 8901058901580 shows the same 409/9.6/60.3/14.4. Pack weight 70 g from Blinkit (prid 394361, Unit 70 g). Blinkit page itself carries conflicting figures.",
+   "quote": "per 100g: Energy (kcal) 409 | Protein (g) 9.6 | Carbohydrate (g) 60.3 | Fibre (g) 2.3 | Total fat (g) 14.4 | Sodium (mg) 1072"
+  },
+  {
+   "name": "Maggi Chicken Noodles",
+   "brand": "Maggi (Nestlé India)",
+   "group": "Instant noodles",
+   "aliases": [
+    "maggi chicken",
+    "chicken maggi"
+   ],
+   "unit": "g",
+   "kcal": 402,
+   "proteinG": 7.8,
+   "carbsG": 66.1,
+   "fatG": 11.8,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "pack",
+     "amount": 71
+    }
+   ],
+   "source": "https://blinkit.com/prn/maggi-chicken-instant-noodles/prid/169815",
+   "sourceBasis": "per 100 g dry product, Blinkit \"Nutrition Information\" text (newer label with Added Sugars row; Serve Size 71 g); Open Food Facts 8901058006124 gives the same ~401/7.75/66.1/11.8. maggi.in shows an older table (434 kcal, 15.6 g fat).",
+   "quote": "Protein 7.8 g | Total Carbohydrates 66.1 g | Total Sugar 1.1 g | Added Sugars 1.0g | Total Fat 11.8 g | Sodium 999.9 mg | Energy (Kcal) 402 kcal"
+  },
+  {
+   "name": "Maggi Nutri-licious Atta Masala Noodles (Veg Atta)",
+   "brand": "Maggi (Nestlé India)",
+   "group": "Instant noodles",
+   "aliases": [
+    "maggi atta",
+    "atta maggi",
+    "atta noodles",
+    "maggi nutrilicious atta"
+   ],
+   "unit": "g",
+   "kcal": 325,
+   "proteinG": 7.7,
+   "carbsG": 57.2,
+   "fatG": 9.2,
+   "fiberG": 4.4,
+   "servings": [
+    {
+     "label": "pack",
+     "amount": 72.5
+    }
+   ],
+   "source": "https://www.maggi.in/en/product/maggi-nutri-licious-atta-masala-noodles/",
+   "sourceBasis": "per 100 g dry product, maggi.in nutrition table; Blinkit 290 g pack (prid 179771) shows identical values with Serve Size 72.5 g.",
+   "quote": "per 100g: Energy (kcal) 325 | Protein (g) 7.7 | Carbohydrate (g) 57.2 | Fibre (g) 4.4 | Total fat (g) 9.2 | Sodium (mg) 1141.8"
+  },
+  {
+   "name": "Maggi Nutri-licious Masala Oats Noodles with Millet",
+   "brand": "Maggi (Nestlé India)",
+   "group": "Instant noodles",
+   "aliases": [
+    "maggi oats",
+    "oats maggi",
+    "oats noodles"
+   ],
+   "unit": "g",
+   "kcal": 332,
+   "proteinG": 11,
+   "carbsG": 47.1,
+   "fatG": 12.3,
+   "fiberG": 5,
+   "servings": [],
+   "source": "https://blinkit.com/prn/maggi-nutri-licious-masala-oats-noodles/prid/179774",
+   "sourceBasis": "per 100 g, Blinkit structured \"Per 100 g\" fields for the \"with Millet Magic\" 294 g pack (no text table on page). Pack/serve weight inconsistent on page (Unit 294 g, Serve Size 74.5 g), so no serving given. maggi.in still shows an older oats table (445 kcal).",
+   "quote": "Energy Per 100 g 332 kcal | Protein 11 g | Total Carbohydrates 47.1 g | Total Sugar 3.9 g | Total Fat 12.3 g | Dietary Fiber 5 g"
+  },
+  {
+   "name": "Maggi Veggie Masala Noodles",
+   "brand": "Maggi (Nestlé India)",
+   "group": "Instant noodles",
+   "aliases": [
+    "maggi veggie masala",
+    "veggie maggi"
+   ],
+   "unit": "g",
+   "kcal": 379,
+   "proteinG": 8,
+   "carbsG": 57.7,
+   "fatG": 13.5,
+   "fiberG": 2.8,
+   "servings": [
+    {
+     "label": "pack",
+     "amount": 62
+    }
+   ],
+   "source": "https://www.maggi.in/en/product/maggi-veggie-masala-noodles/",
+   "sourceBasis": "per 100 g dry product, maggi.in nutrition table; pack weight 62 g from Open Food Facts 8901058000450 (same 379/8/57.7/13.5 values).",
+   "quote": "per 100g: Energy (kcal) 379 | Protein (g) 8 | Carbohydrate (g) 57.7 | Fibre (g) 2.8 | Total fat (g) 13.5 | Sodium (mg) 1137.1"
+  },
+  {
+   "name": "Maggi Vegetable Spinach Atta Noodles",
+   "brand": "Maggi (Nestlé India)",
+   "group": "Instant noodles",
+   "aliases": [
+    "maggi spinach atta",
+    "spinach maggi"
+   ],
+   "unit": "g",
+   "kcal": 427,
+   "proteinG": 10.6,
+   "carbsG": 63.5,
+   "fatG": 14.2,
+   "fiberG": 6,
+   "servings": [],
+   "source": "https://www.maggi.in/en/product/maggi-vegetable-spinach-atta-noodles/",
+   "sourceBasis": "per 100 g dry product, maggi.in nutrition table (older label format; no second source found). Pack weight not stated.",
+   "quote": "per 100g: Energy (kcal) 427 | Protein (g) 10.6 | Carbohydrate (g) 63.5 | Fibre (g) 6.0 | Total fat (g) 14.2 | Sodium (mg) 1105.0"
+  },
+  {
+   "name": "Maggi Cuppa Mania Masala Cup Noodles",
+   "brand": "Maggi (Nestlé India)",
+   "group": "Instant noodles",
+   "aliases": [
+    "maggi cuppa",
+    "cuppa mania",
+    "maggi cup noodles",
+    "cuppa masala"
+   ],
+   "unit": "g",
+   "kcal": 387,
+   "proteinG": 7.1,
+   "carbsG": 52.5,
+   "fatG": 17.2,
+   "fiberG": 2.9,
+   "servings": [
+    {
+     "label": "cup",
+     "amount": 70.5
+    }
+   ],
+   "source": "https://blinkit.com/prn/maggi-masala-cuppa-noodles/prid/311097",
+   "sourceBasis": "per 100 g dry product, Blinkit nutrition text/fields (Unit and Serve Size 70.5 g); Open Food Facts 8901058006025 gives the same 387/7.09/52.5/17.2/2.98.",
+   "quote": "Energy Per 100 g 387 kcal | Protein 7.1 g | Total Carbohydrates 52.5 g | Total Sugar 3.2 g | Total Fat 17.2 g | Dietary Fiber 2.9 g"
+  },
+  {
+   "name": "Maggi Cuppa Chilly Chow Cup Noodles",
+   "brand": "Maggi (Nestlé India)",
+   "group": "Instant noodles",
+   "aliases": [
+    "maggi chilly chow",
+    "cuppa chilli chow"
+   ],
+   "unit": "g",
+   "kcal": 388,
+   "proteinG": 7.5,
+   "carbsG": 53.1,
+   "fatG": 16.5,
+   "fiberG": 1.4,
+   "servings": [
+    {
+     "label": "cup",
+     "amount": 70
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/355335",
+   "sourceBasis": "per 100 g dry product, Blinkit \"Nutrition Information\" text (fibre from the structured field); Unit/Serve Size 70 g. Single source.",
+   "quote": "Protein 7.5 g | Total Carbohydrates 53.1 g | Total Sugar 2.5 g | Total Fat 16.5 g | Energy per 100g (Kcal) 388 Kcal | Dietary Fiber 1.4 g"
+  },
+  {
+   "name": "Maggi Korean Spicy Cheesy Cup Noodles",
+   "brand": "Maggi (Nestlé India)",
+   "group": "Instant noodles",
+   "aliases": [
+    "maggi korean cheesy",
+    "spicy cheesy cup noodles"
+   ],
+   "unit": "g",
+   "kcal": 345,
+   "proteinG": 6.8,
+   "carbsG": 47.5,
+   "fatG": 14.1,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "cup",
+     "amount": 71.5
+    }
+   ],
+   "source": "https://blinkit.com/prn/maggi-korean-spicy-cheesy-cuppa-noodles/prid/542863",
+   "sourceBasis": "per 100 g, Blinkit \"Nutrition Information\" text; Unit/Serve Size 71.5 g. Fibre not stated.",
+   "quote": "Protein 6.8 g | Total Carbohydrates 47.5 g | Total Sugar 3.8 g | Total Fat 14.1 g | Sodium 804.6 mg | Calories per 100g (Kcal) 345 Kcal"
+  },
+  {
+   "name": "Maggi Korean BBQ Veg Noodles",
+   "brand": "Maggi (Nestlé India)",
+   "group": "Instant noodles",
+   "aliases": [
+    "maggi korean bbq",
+    "korean maggi"
+   ],
+   "unit": "g",
+   "kcal": 321,
+   "proteinG": 8.2,
+   "carbsG": 41.6,
+   "fatG": 13.5,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "pack",
+     "amount": 90
+    }
+   ],
+   "source": "https://blinkit.com/prn/maggi-korean-bbq-veg-instant-noodles/prid/542866",
+   "sourceBasis": "per 100 g, Blinkit \"Nutrition Information\" text; Unit/Serve Size 90 g. Open Food Facts 8901058003734 (90 g) gives the same 321/8.2/41.6/13.6. Fibre not stated.",
+   "quote": "Energy (kcal) 321 Protein (g) 8.2 Carbohydrate (g) 41.6 -Total Sugars (g) 3.2 Total Fat (g) 13.5 Sodium (mg) 915.7"
+  },
+  {
+   "name": "Maggi Korean BBQ Chicken Noodles",
+   "brand": "Maggi (Nestlé India)",
+   "group": "Instant noodles",
+   "aliases": [
+    "maggi korean bbq chicken"
+   ],
+   "unit": "g",
+   "kcal": 336,
+   "proteinG": 9,
+   "carbsG": 44.8,
+   "fatG": 13.4,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "pack",
+     "amount": 90
+    }
+   ],
+   "source": "https://blinkit.com/prn/maggi-korean-bbq-chicken-noodles/prid/542869",
+   "sourceBasis": "per 100 g, Blinkit \"Nutrition Information\" text; Unit/Serve Size 90 g. Single source. Fibre not stated.",
+   "quote": "Protein 9 g | Total Carbohydrates 44.8 g | Total Sugar 2.4 g | Total Fat 13.4 g | Sodium 858.7 mg | Energy per 100g (Kcal) 336 Kcal"
+  },
+  {
+   "name": "Maggi Hot & Sweet Tomato Chilli Sauce",
+   "brand": "Maggi (Nestlé India)",
+   "group": "Sauces & spreads",
+   "aliases": [
+    "hot and sweet",
+    "hot & sweet",
+    "maggi hot and sweet",
+    "maggi chilli sauce"
+   ],
+   "unit": "g",
+   "kcal": 135,
+   "proteinG": 0.4,
+   "carbsG": 33.8,
+   "fatG": 0,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "tbsp",
+     "amount": 9
+    }
+   ],
+   "source": "https://blinkit.com/prn/maggi-hot-sweet-tomato-chilli-ketchup-1-kg/prid/59656",
+   "sourceBasis": "per 100 g, Blinkit \"Nutrition Information\" text (newer label with Added Sugars row); 200 g listing (prid 66337) shows the same 135 kcal / 33.8 g. Serve Size 9 g = 1 tbsp on the listing. maggi.in shows an older table (154 kcal, 38 g carbs). Fibre not in this table.",
+   "quote": "Protein 0.4 g | Total Carbohydrates 33.8 g | Total Sugar 33.3 g | Added Sugars 32.0 g | Total Fat 0.0 g | Sodium 807.7 mg | Calories per 100g (Kcal) 135 kcal"
+  },
+  {
+   "name": "Kissan Fresh Tomato Ketchup",
+   "brand": "Kissan (Hindustan Unilever)",
+   "group": "Sauces & spreads",
+   "aliases": [
+    "kissan",
+    "kissan ketchup",
+    "tomato ketchup"
+   ],
+   "unit": "g",
+   "kcal": 129,
+   "proteinG": 0.6,
+   "carbsG": 31.6,
+   "fatG": 0.03,
+   "fiberG": 1,
+   "servings": [
+    {
+     "label": "tbsp",
+     "amount": 15
+    }
+   ],
+   "source": "https://blinkit.com/prn/kissan-fresh-tomato-ketchup/prid/764301",
+   "sourceBasis": "per 100 g, Blinkit \"Nutrition Information\" text for the 415 g pack (Serve Size 15 g = 1 tbsp). 1 kg listing (prid 21563) is close: 133 kcal, 31 g carbs; Open Food Facts 8901030667756 ~133 kcal.",
+   "quote": "(Per 100 g) Energy: 129 Kcal Protein: 0.6 g Carbohydrate: 31.6 g Total Sugars: 29.8 g Added Sugars: 26 g Dietary Fibre: 1 g Total Fat: 0.03 g"
+  },
+  {
+   "name": "SuperYou Chocolate Protein Wafer Bar",
+   "brand": "SuperYou",
+   "group": "Protein bars",
+   "aliases": [
+    "superyou bar",
+    "superyou chocolate",
+    "superyou wafer",
+    "protein wafer"
+   ],
+   "unit": "g",
+   "kcal": 475,
+   "proteinG": 25,
+   "carbsG": 50.0,
+   "fatG": 25.9,
+   "fiberG": 7.6,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 40
+    }
+   ],
+   "source": "https://superyou.in/cdn/shop/files/NITable_1.jpg?v=1771216701",
+   "sourceBasis": "nutrition-information image on superyou.in/products/chocolate-protein-wafer, printed per 40 g serve; converted to per 100 g (x2.5). Blinkit listing (prid 581442) gives a slightly different per-100 g table: 453 kcal, 24.25 g fat, 50.75 g carbs, 7.6 g fibre. carbsG = label total carbohydrate 50 g (includes fibre and polyols).",
+   "quote": "Per 40 gm serve: Energy 190 KCal | Protein 10 g | Total Sugar 3.54 g | Carbohydrate 20 g | Polyols 10 g | Dietary Fiber 3.04 g | Total Fat 10.36 g",
+   "energyNote": "Contains polyols (maltitol, ~25 g/100 g) counted at ~2.4 kcal/g, and fibre, so label kcal is below 4P+4C+9F."
+  },
+  {
+   "name": "SuperYou Cookies & Cream Protein Wafer Bar",
+   "brand": "SuperYou",
+   "group": "Protein bars",
+   "aliases": [
+    "superyou cookies and cream",
+    "superyou bar"
+   ],
+   "unit": "g",
+   "kcal": 451,
+   "proteinG": 25,
+   "carbsG": 51.0,
+   "fatG": 24,
+   "fiberG": 7.5,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 40
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/730064",
+   "sourceBasis": "per 100 g, Blinkit \"Nutrition Information\" text; bar 40 g (Box Contents / Serve Size). carbsG = label total carbohydrate 51 g (includes fibre and polyols).",
+   "quote": "(Per 100 g) Energy: 451.0 kcal - Protein: 25.0 g - Total Carbohydrates: 51.0 g - Polyols: 25.0 g - Dietary Fibre: 7.5 g - Total Fat: 24.0 g",
+   "energyNote": "Contains polyols (maltitol, ~25 g/100 g) counted at ~2.4 kcal/g, and fibre, so label kcal is below 4P+4C+9F."
+  },
+  {
+   "name": "SuperYou Cheese Protein Wafer Bar",
+   "brand": "SuperYou",
+   "group": "Protein bars",
+   "aliases": [
+    "superyou cheese",
+    "superyou bar"
+   ],
+   "unit": "g",
+   "kcal": 449,
+   "proteinG": 25,
+   "carbsG": 51.25,
+   "fatG": 23.75,
+   "fiberG": 7.6,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 40
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/588993",
+   "sourceBasis": "per 100 g, Blinkit \"Nutrition Information\" text (448.75 kcal rounded); bar 40 g (Unit 2 x 40 g). carbsG = label total carbohydrate 51.25 g (includes fibre and polyols).",
+   "quote": "(Per 100 g) Energy: 448.75 kcal Protein: 25 g Carbohydrate: 51.25 g Polyols: 25 g Dietary Fibre: 7.6 g Total Fat: 23.75 g",
+   "energyNote": "Contains polyols (maltitol, ~25 g/100 g) counted at ~2.4 kcal/g, and fibre, so label kcal is below 4P+4C+9F."
+  },
+  {
+   "name": "SuperYou Coffee Protein Wafer Bar",
+   "brand": "SuperYou",
+   "group": "Protein bars",
+   "aliases": [
+    "superyou coffee",
+    "superyou bar"
+   ],
+   "unit": "g",
+   "kcal": 444,
+   "proteinG": 25,
+   "carbsG": 51.8,
+   "fatG": 23.3,
+   "fiberG": 7.5,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 40
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/624551",
+   "sourceBasis": "per 100 g, Blinkit \"Nutrition Information\" text (444.3 kcal rounded); bar 40 g (Unit 40 g). carbsG = label total carbohydrate 51.8 g (includes fibre and polyols).",
+   "quote": "(Per 100 g) - Energy: 444.3 kcal - Protein: 25.0 g - Total Carbohydrates: 51.8 g - Polyols: 25.0 g - Dietary Fibre: 7.5 g - Total Fat: 23.3 g",
+   "energyNote": "Contains polyols (maltitol, ~25 g/100 g) counted at ~2.4 kcal/g, and fibre, so label kcal is below 4P+4C+9F."
+  },
+  {
+   "name": "SuperYou Orange Cream Protein Wafer Bar",
+   "brand": "SuperYou",
+   "group": "Protein bars",
+   "aliases": [
+    "superyou orange",
+    "superyou bar"
+   ],
+   "unit": "g",
+   "kcal": 475,
+   "proteinG": 25,
+   "carbsG": 50.0,
+   "fatG": 25.5,
+   "fiberG": 8.1,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 40
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/730063",
+   "sourceBasis": "Blinkit \"Nutrition Information\" text is per 40 g bar (Box Contents: bar - 40g); converted to per 100 g (x2.5). carbsG = label total carbohydrate 50 g (includes fibre and polyols).",
+   "quote": "Energy - 190 Kcal, Protein - 10 gm, Carbohydrate - 20 gm, Polyols - 10 gm, Dietary Fibers - 3.24 gm, Total Fat 10.19 gm",
+   "energyNote": "Contains polyols (maltitol, ~25 g/100 g) counted at ~2.4 kcal/g, and fibre, so label kcal is below 4P+4C+9F."
+  },
+  {
+   "name": "SuperYou Mini Mango Protein Wafer Bar",
+   "brand": "SuperYou",
+   "group": "Protein bars",
+   "aliases": [
+    "superyou mini",
+    "superyou mango"
+   ],
+   "unit": "g",
+   "kcal": 475,
+   "proteinG": 25,
+   "carbsG": 50.0,
+   "fatG": 25,
+   "fiberG": 8.1,
+   "servings": [
+    {
+     "label": "mini bar",
+     "amount": 20
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/708073",
+   "sourceBasis": "Blinkit \"Nutrition Information\" text is per 20 g mini bar (Box Contents: 20 g x 10); converted to per 100 g (x5). carbsG = label total carbohydrate 50 g (includes fibre and polyols).",
+   "quote": "Energy - 95 Kcal, Protein - 5 gm, Carbohydrate - 10 gm, Polyols - 5 gm, Dietary Fibers - 1.62 gm, Total Fat 5gm",
+   "energyNote": "Contains polyols (maltitol, ~25 g/100 g) counted at ~2.4 kcal/g, and fibre, so label kcal is below 4P+4C+9F."
+  },
+  {
+   "name": "SuperYou Mini Cookies & Cream Protein Wafer Bar",
+   "brand": "SuperYou",
+   "group": "Protein bars",
+   "aliases": [
+    "superyou mini",
+    "superyou mini cookies and cream"
+   ],
+   "unit": "g",
+   "kcal": 475,
+   "proteinG": 25,
+   "carbsG": 50.0,
+   "fatG": 25.5,
+   "fiberG": 8.1,
+   "servings": [
+    {
+     "label": "mini bar",
+     "amount": 20
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/708957",
+   "sourceBasis": "Blinkit \"Nutrition Information\" text is per 20 g mini bar (Unit 10 x 20 g); converted to per 100 g (x5). The page's structured per-100 g fields (238 kcal, 12.5 g protein) are wrong and were ignored. carbsG = label total carbohydrate 50 g (includes fibre and polyols).",
+   "quote": "Energy - 95 Kcal, Protein - 5 gm, Carbohydrate - 10 gm, Polyols - 5 gm, Dietary Fibers - 1.62 gm, Total Fat 5.09gm",
+   "energyNote": "Contains polyols (maltitol, ~25 g/100 g) counted at ~2.4 kcal/g, and fibre, so label kcal is below 4P+4C+9F."
+  },
+  {
+   "name": "SuperYou Mini Choco Hazelnut Protein Wafer Bar",
+   "brand": "SuperYou",
+   "group": "Protein bars",
+   "aliases": [
+    "superyou mini",
+    "superyou hazelnut"
+   ],
+   "unit": "g",
+   "kcal": 455,
+   "proteinG": 25,
+   "carbsG": 45.0,
+   "fatG": 25,
+   "fiberG": 8.1,
+   "servings": [
+    {
+     "label": "mini bar",
+     "amount": 20
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/708261",
+   "sourceBasis": "Blinkit \"Nutrition Information\" text is per 20 g mini bar (Unit 10 x 20 g); converted to per 100 g (x5). carbsG = label total carbohydrate 45 g (includes fibre and polyols).",
+   "quote": "Energy - 91 Kcal, Protein - 5 gm, Carbohydrate - 9 gm, Polyols - 5 gm, Dietary Fibers - 1.62 gm, Total Fat 5gm",
+   "energyNote": "Contains polyols (maltitol, ~25 g/100 g) counted at ~2.4 kcal/g, and fibre, so label kcal is below 4P+4C+9F."
+  },
+  {
+   "name": "SuperYou 20g Mega Protein Wafer Bar (Nutty Chocolate Multigrain)",
+   "brand": "SuperYou",
+   "group": "Protein bars",
+   "aliases": [
+    "superyou mega",
+    "superyou 20g protein bar"
+   ],
+   "unit": "g",
+   "kcal": 468,
+   "proteinG": 33.3,
+   "carbsG": 41.7,
+   "fatG": 25,
+   "fiberG": 8,
+   "servings": [
+    {
+     "label": "bar",
+     "amount": 60
+    }
+   ],
+   "source": "https://blinkit.com/prn/x/prid/767748",
+   "sourceBasis": "Blinkit text is headed \"(Per 100 g)\" but the values are per 60 g bar (page: Serve Size 1 bar / 60 g, Calorie Content 281 kcal, Protein Per 100 g 33.3 g); converted to per 100 g (x100/60). carbsG = label total carbohydrate 41.7 g (includes fibre and polyols).",
+   "quote": "Energy: 281 kcal Protein: 20 g Carbohydrate: 25 g Polyols: 12 g Dietary Fibre: 4.8 g Total Fat: 15.00 g (Serve Size 60 g, 1 bar)",
+   "energyNote": "Contains polyols (maltitol, ~25 g/100 g) counted at ~2.4 kcal/g, and fibre, so label kcal is below 4P+4C+9F."
+  }
+ ],
+ "notFound": [
+  {
+   "name": "Maggi 2-Minute Noodles No Onion No Garlic",
+   "reason": "maggi.in product page and Blinkit listings (prid 374963, 353230) show no nutrition table"
+  },
+  {
+   "name": "Maggi Hot Heads (Barbeque Pepper / Chilli Chicken)",
+   "reason": "Blinkit listings (prid 309625, 309626) carry no nutrition values; not on maggi.in"
+  },
+  {
+   "name": "Maggi Nutri-licious Oats Masala Noodles (original 73.5 g, no millet)",
+   "reason": "sources conflict: maggi.in 445 kcal/63.5 g carbs vs Open Food Facts 8901058904697 337 kcal/40.1 g carbs; Blinkit 73.5 g listing (prid 179775) has no values. Only the 'with Millet' pack is included"
+  },
+  {
+   "name": "7UP Zero Sugar (Indian)",
+   "reason": "only imported US/UK 7UP Zero cans found on Blinkit (prid 676418, 95422); no India-made label"
+  },
+  {
+   "name": "Thums Up Zero / other zero-sugar Thums Up",
+   "reason": "Coca-Cola India lists only Thums Up XForce (included) as the no-sugar Thums Up"
+  },
+  {
+   "name": "SuperYou Strawberry Creme Protein Wafer Bar",
+   "reason": "superyou.in has the label only as an image and rate-limited/blocked fetching (429/403); the Blinkit combo listing (prid 672318) has no table for this flavour"
+  },
+  {
+   "name": "SuperYou Choco Peanut Butter Protein Wafer Bar",
+   "reason": "same as Strawberry Creme: superyou.in blocked, no single-flavour text table found on Blinkit"
+  },
+  {
+   "name": "SuperYou 20g Mega Protein Wafer Kesar Pista Badam / Cranberry Crunch",
+   "reason": "superyou.in blocked; no Blinkit listing with a table found"
+  },
+  {
+   "name": "Maggi Rich Tomato Ketchup",
+   "reason": "Verification: Blinkit label text 76 kcal/100 g conflicts with maggi.in 139 kcal/100 g; no label photo to settle it"
+  }
+ ]
+}

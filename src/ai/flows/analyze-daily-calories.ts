@@ -11,6 +11,7 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 import { callStructuredLLM } from '@/lib/ai-client';
+import { serverDefaultModel } from '@/lib/ai-providers-server';
 import { ModelId } from '@/lib/types';
 
 // Note: The TaskSchema is passed in but should NOT be used for calorie calculations.
@@ -118,7 +119,7 @@ const analyzeDailyCaloriesFlow = ai.defineFlow(
     outputSchema: AnalyzeDailyCaloriesOutputSchema,
   },
   async (input, { context }) => {
-    const modelId = context?.modelId || 'gemini-2.5-flash';
+    const modelId = context?.modelId || serverDefaultModel();
     let output;
 
     // Provider routing lives in the unified client — this flow just

@@ -1,4 +1,4 @@
-import { PROVIDER_ORDER, type AIProvider } from './model-catalog';
+import { defaultModelKey, PROVIDER_ORDER, type AIProvider } from './model-catalog';
 
 /**
  * Which AI providers the model picker should offer — resolved on the SERVER.
@@ -40,3 +40,6 @@ export function resolveEnabledProviders(): AIProvider[] {
   // Never hand back an empty picker; fall back to the previous default.
   return detected.length ? detected : ['google', 'azure'];
 }
+
+/** The model a flow uses when the caller didn't pick one: the app's default (GPT-6 Luna when OpenAI is enabled). */
+export const serverDefaultModel = () => defaultModelKey(resolveEnabledProviders());

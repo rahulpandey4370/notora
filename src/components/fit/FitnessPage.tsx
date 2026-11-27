@@ -64,7 +64,7 @@ export function FitnessPage({ data, onDataChange, showcase = false }: { data: Ap
   const [openTracker, setOpenTracker] = useState<string | null>(null);
   useFitLook(data, onDataChange); // applies your saved Logs look; you change it on the Profile page
   const [item, setItem] = useState<ItemRef | null>(null);
-  const foods = useFoods(showcase);
+  const foods = useFoods(showcase, data, onDataChange);
 
   // Your real burn (intake vs trend weight) → a per-day correction for the hero and the week chart.
   const scale = useMemo(() => realScale(realBurn(data, today)), [data, today]);

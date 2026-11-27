@@ -13,6 +13,7 @@ import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 import { ModelId } from '@/lib/types';
 import { callStructuredLLM } from '@/lib/ai-client';
+import { serverDefaultModel } from '@/lib/ai-providers-server';
 
 const NextActionsInputSchema = z.object({
   surface: z.string().describe('Which empty surface this is for: "tasks", "logs", "journal" or "dashboard".'),
@@ -71,7 +72,7 @@ const nextActionsFlow = ai.defineFlow(
     outputSchema: NextActionsOutputSchema,
   },
   async (input, { context }) => {
-    const modelId = context?.modelId || 'gemini-2.5-flash';
+    const modelId = context?.modelId || serverDefaultModel();
     const output = await callStructuredLLM(
       modelId, promptTemplate, input, NextActionsOutputSchema, 'nextActionsPrompt', NextActionsInputSchema,
     );

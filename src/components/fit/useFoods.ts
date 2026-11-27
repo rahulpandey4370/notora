@@ -1,7 +1,9 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import type { Food } from '@/lib/food-match';
+import type { AppData } from '@/lib/types';
 import { deleteFood, listFoods, saveFood } from '@/lib/foods';
+import { loadCatalog, type CatalogFood } from '@/lib/food-catalog';
 
 const DEMO: Food[] = [
   { id: 'demo-rice', name: 'Steamed white rice', aliases: ['rice', 'chawal'], unit: 'g', kcal: 130, proteinG: 2.7, carbsG: 28, fatG: 0.3, fiberG: 0.4, servings: [{ label: 'katori', amount: 150 }] },
@@ -13,13 +15,21 @@ const DEMO: Food[] = [
 
 export type FoodsApi = {
   status: 'loading' | 'ready' | 'missing' | 'error'; foods: Food[]; error?: string;
+  /** The built-in catalogue (All foods) minus the ones you removed; empty until its file has loaded. Read-only. */
+  catalog: CatalogFood[];
+  /** Built-in foods you removed, with hide/restore. No-ops without onDataChange. */
+  hidden: CatalogFood[];
+  hide: (id: string) => void;
+  unhide: (id: string) => void;
   save: (f: Omit<Food, 'id'> & { id?: string }) => Promise<{ ok: boolean; error?: string; food?: Food }>;
   remove: (id: string) => Promise<void>;
 };
 
 /** My Foods for the Logs page: Supabase for a signed-in user, a fixed in-memory list in the showcase. */
-export function useFoods(showcase: boolean): FoodsApi {
+export function useFoods(showcase: boolean, data?: AppData, onDataChange?: (d: AppData) => void): FoodsApi {
   const [state, setState] = useState<Pick<FoodsApi, 'status' | 'foods' | 'error'>>({ status: 'loading', foods: [] });
+  const [catalog, setCatalog] = useState<CatalogFood[]>([]);
+  useEffect(() => { loadCatalog().then(setCatalog).catch(() => undefined); }, []);
 
   useEffect(() => {
     if (showcase) { setState({ status: 'ready', foods: DEMO }); return; }
@@ -48,5 +58,14 @@ export function useFoods(showcase: boolean): FoodsApi {
     if (!showcase) await deleteFood(id).catch(() => undefined);
   }, [showcase]);
 
-  return { ...state, save, remove };
+  const hiddenIds = data?.hiddenFoods;
+  const [shown, hidden] = useMemo(() => {
+    const h = new Set(hiddenIds ?? []);
+    return [catalog.filter(f => !h.has(f.id)), catalog.filter(f => h.has(f.id))];
+  }, [catalog, hiddenIds]);
+  const setHidden = (ids: string[]) => { if (data && onDataChange) onDataChange({ ...data, hiddenFoods: ids }); };
+  const hide = (id: string) => setHidden([...new Set([...(hiddenIds ?? []), id])]);
+  const unhide = (id: string) => setHidden((hiddenIds ?? []).filter(x => x !== id));
+
+  return { ...state, catalog: shown, hidden, hide, unhide, save, remove };
 }

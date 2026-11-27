@@ -1,0 +1,1159 @@
+{
+ "items": [
+  {
+   "name": "Parle-G",
+   "brand": "Parle",
+   "group": "Biscuits & cookies",
+   "aliases": [
+    "parle g",
+    "glucose biscuit"
+   ],
+   "unit": "g",
+   "kcal": 448,
+   "proteinG": 7,
+   "carbsG": 78.4,
+   "fatG": 11.8,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "pack",
+     "amount": 90
+    }
+   ],
+   "source": "https://world.openfoodfacts.org/product/8901719134852",
+   "sourceBasis": "per 100 g, read from the nutrition-label photo on the Open Food Facts page (crowd-sourced, matches the typed OFF values) (current label: invert sugar syrup recipe); serve 20 g x 4.5 servings = 90 g pack. An older Parle-G label (photo on https://world.openfoodfacts.org/product/8901719134845) reads 454 kcal, P 6.9, C 77.3, F 13",
+   "quote": "ENERGY (kcal) 448 | PROTEIN (g) 7 | CARBOHYDRATE (g) 78.4 | TOTAL SUGARS 25.5 | TOTAL FAT (g) 11.8 | SERVE SIZE: 20 g, SERVINGS PER CONTAINER: 4.5"
+  },
+  {
+   "name": "Parle Hide & Seek (chocolate chip cookies)",
+   "brand": "Parle",
+   "group": "Biscuits & cookies",
+   "aliases": [
+    "hide and seek",
+    "hide & seek"
+   ],
+   "unit": "g",
+   "kcal": 474,
+   "proteinG": 6,
+   "carbsG": 74.2,
+   "fatG": 17,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "pack",
+     "amount": 100
+    }
+   ],
+   "source": "https://world.openfoodfacts.org/product/8901719117183",
+   "sourceBasis": "per 100 g, read from the nutrition-label photo on the Open Food Facts page (crowd-sourced, matches the typed OFF values); pack = 16.5 g serve x 6.06 servings per container",
+   "quote": "Energy (kcal) 474 | Protein (g) 6 | Carbohydrate (g) 74.2 | Total sugars 32.6 | Total fat (g) 17 | serve size 16.5 g, servings per container 6.06"
+  },
+  {
+   "name": "Parle Monaco",
+   "brand": "Parle",
+   "group": "Biscuits & cookies",
+   "aliases": [
+    "monaco biscuit",
+    "monaco salted"
+   ],
+   "unit": "g",
+   "kcal": 492,
+   "proteinG": 7.9,
+   "carbsG": 68.8,
+   "fatG": 20.6,
+   "fiberG": null,
+   "source": "https://world.openfoodfacts.org/product/8901719135163",
+   "sourceBasis": "per 100 g, read from the nutrition-label photo on the Open Food Facts page (crowd-sourced, matches the typed OFF values)",
+   "quote": "Energy (kcal) 492 | Protein (g) 7.9 | Carbohydrate (g) 68.8 | Total sugars 8.4 | Total fat (g) 20.6 | serve size 14.4 g"
+  },
+  {
+   "name": "Parle Krackjack",
+   "brand": "Parle",
+   "group": "Biscuits & cookies",
+   "aliases": [
+    "krack jack"
+   ],
+   "unit": "g",
+   "kcal": 489,
+   "proteinG": 6.8,
+   "carbsG": 70.5,
+   "fatG": 19.9,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "pack",
+     "amount": 69.3
+    }
+   ],
+   "source": "https://world.openfoodfacts.org/product/8901719135255",
+   "sourceBasis": "per 100 g, read from the nutrition-label photo on the Open Food Facts page (crowd-sourced, matches the typed OFF values); pack weight from OFF quantity (69.3 g), consistent with 15.8 g serve x 4.38 servings on the label",
+   "quote": "Energy (kcal) 489 | Protein (g) 6.8 | Carbohydrate (g) 70.5 | Total sugars 19.6 | Total fat (g) 19.9 | serve size 15.8 g, servings per container 4.38"
+  },
+  {
+   "name": "Parle 20-20 Cashew Cookies",
+   "brand": "Parle",
+   "group": "Biscuits & cookies",
+   "aliases": [
+    "20-20 cookies",
+    "twenty twenty cashew"
+   ],
+   "unit": "g",
+   "kcal": 495,
+   "proteinG": 7,
+   "carbsG": 69.1,
+   "fatG": 21.2,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "pack",
+     "amount": 35
+    }
+   ],
+   "source": "https://world.openfoodfacts.org/product/8901719131141",
+   "sourceBasis": "per 100 g, read from the nutrition-label photo on the Open Food Facts page (crowd-sourced, matches the typed OFF values); pack = 15 g serve x 2.33 servings (OFF quantity 35 g)",
+   "quote": "Energy (kcal) 495 | Protein (g) 7 | Carbohydrate (g) 69.1 | Total sugars 23.5 | Total fat (g) 21.2 | serve size 15 g, servings per container 2.33"
+  },
+  {
+   "name": "Britannia Good Day Cashew Cookies",
+   "brand": "Britannia",
+   "group": "Biscuits & cookies",
+   "aliases": [
+    "good day cashew",
+    "good day kaju"
+   ],
+   "unit": "g",
+   "kcal": 509,
+   "proteinG": 6.7,
+   "carbsG": 67.3,
+   "fatG": 23.7,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "biscuit",
+     "amount": 7.5
+    },
+    {
+     "label": "pack",
+     "amount": 250
+    }
+   ],
+   "source": "https://www.britannia.co.in/product/good-day",
+   "sourceBasis": "per 100 g, Britannia's nutrition-information panel image published on the brand's product page (250 g carton side panel); biscuit = 15 g serving / 2 biscuits; pack 3 x 83.33 g = 250 g",
+   "quote": "Energy 509 kcal | Protein 6.7 g | Carbohydrate 67.3 g | of which Total Sugars 20.5 g | Total Fat 23.7 g | Serving Size 15 g (2 Biscuits)"
+  },
+  {
+   "name": "Britannia Good Day Butter Cookies",
+   "brand": "Britannia",
+   "group": "Biscuits & cookies",
+   "aliases": [
+    "good day butter"
+   ],
+   "unit": "g",
+   "kcal": 500,
+   "proteinG": 6.8,
+   "carbsG": 69.5,
+   "fatG": 21.7,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "biscuit",
+     "amount": 7.5
+    },
+    {
+     "label": "pack",
+     "amount": 60
+    }
+   ],
+   "source": "https://world.openfoodfacts.org/product/8901063092686",
+   "sourceBasis": "per 100 g, read from the nutrition-label photo on the Open Food Facts page (crowd-sourced, matches the typed OFF values); biscuit = 15 g serving / approx. 2 biscuits; pack 60 g (OFF quantity, label says about 4 servings)",
+   "quote": "Energy 500 kcal | Protein 6.8 g | Carbohydrate 69.5 g | of which Total Sugars 20.8 g | Total Fat 21.7 g | Serving Size 15 g (approx. 2 Biscuits)"
+  },
+  {
+   "name": "Britannia Good Day Chocochip Cookies",
+   "brand": "Britannia",
+   "group": "Biscuits & cookies",
+   "aliases": [
+    "good day choco chip",
+    "good day chocochip"
+   ],
+   "unit": "g",
+   "kcal": 511,
+   "proteinG": 5.6,
+   "carbsG": 68.5,
+   "fatG": 23.9,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "biscuit",
+     "amount": 5.5
+    }
+   ],
+   "source": "https://www.britannia.co.in/product/good-day",
+   "sourceBasis": "per 100 g, Britannia's nutrition-information panel image published on the brand's product page (Good Day Chocochip NIP); biscuit = 11 g serving / 2 biscuits",
+   "quote": "Energy-511kcal, Protein-5.6g, Carbohydrate-68.5g, Total Sugars-32g, Total Fat-23.9g; Serving Size 11g (2 Biscuits)"
+  },
+  {
+   "name": "Britannia Good Day Pista Badam Cookies",
+   "brand": "Britannia",
+   "group": "Biscuits & cookies",
+   "aliases": [
+    "good day pista badam"
+   ],
+   "unit": "g",
+   "kcal": 512,
+   "proteinG": 7,
+   "carbsG": 67,
+   "fatG": 24,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "biscuit",
+     "amount": 7.5
+    }
+   ],
+   "source": "https://www.britannia.co.in/product/good-day",
+   "sourceBasis": "per 100 g, Britannia's nutrition-information panel image published on the brand's product page (Good Day Pista Badam NIP); biscuit = 15 g serving / 2 biscuits",
+   "quote": "Energy 512 kcal | Protein 7 g | Carbohydrate 67 g | of which Total Sugars 22 g | Total Fat 24 g | Serving Size 15 g (2 Biscuits)"
+  },
+  {
+   "name": "Britannia Marie Gold",
+   "brand": "Britannia",
+   "group": "Biscuits & cookies",
+   "aliases": [
+    "marie gold",
+    "marie biscuit"
+   ],
+   "unit": "g",
+   "kcal": 447,
+   "proteinG": 8,
+   "carbsG": 79,
+   "fatG": 11,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "biscuit",
+     "amount": 5.3
+    }
+   ],
+   "source": "https://www.britannia.co.in/product/marie",
+   "sourceBasis": "per 100 g, Britannia's nutrition-information panel image published on the brand's product page (Marie Gold nutrient table); biscuit = 16 g serving / approx. 3 biscuits = 5.3 g",
+   "quote": "Energy 447 kcal | Protein 8 g | Carbohydrate 79 g | of which Total Sugars 20.2 g | Total Fat 11 g | Serving Size: 16 g (approx. 3 Biscuits)"
+  },
+  {
+   "name": "Britannia Bourbon",
+   "brand": "Britannia",
+   "group": "Biscuits & cookies",
+   "aliases": [
+    "bourbon biscuit",
+    "chocolate cream biscuit"
+   ],
+   "unit": "g",
+   "kcal": 493,
+   "proteinG": 5.1,
+   "carbsG": 72.6,
+   "fatG": 20.3,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "biscuit",
+     "amount": 10
+    },
+    {
+     "label": "pack",
+     "amount": 150
+    }
+   ],
+   "source": "https://www.britannia.co.in/product/bourbon",
+   "sourceBasis": "per 100 g, Britannia's nutrition-information panel image published on the brand's product page (Bourbon nutrition panel); serving 10 g = approx. 1 biscuit; 15 servings per pack = 150 g",
+   "quote": "Energy 493kcal | Protein 5.1g | Carbohydrate 72.6g | of which Total Sugars 38g | Total Fat 20.3g | Serving Size: 10g (approx. 1 Biscuit), servings per pack 15"
+  },
+  {
+   "name": "Britannia NutriChoice 5 Grain Digestive",
+   "brand": "Britannia",
+   "group": "Biscuits & cookies",
+   "aliases": [
+    "nutrichoice digestive",
+    "nutri choice digestive"
+   ],
+   "unit": "g",
+   "kcal": 479,
+   "proteinG": 7.7,
+   "carbsG": 70.5,
+   "fatG": 19.8,
+   "fiberG": 6,
+   "servings": [
+    {
+     "label": "biscuit",
+     "amount": 17
+    }
+   ],
+   "source": "https://www.britannia.co.in/product/nutrichoice",
+   "sourceBasis": "per 100 g, Britannia's nutrition-information panel image published on the brand's product page (NutriChoice 5 Grain Digestive NIP); serving approx. 17 g = approx. 1 biscuit; label fibre 6 g (listed within carbohydrate) not stored: validator sum check counts fibre on top of carbs Fibre 6 g/100 g from the label (included in the carbohydrate figure).",
+   "quote": "Energy 479 kcal | Protein 7.7 g | Carbohydrate 70.5 g | Dietary Fibre 6 g | Total Fat 19.8 g | Serving Size: Approx. 17 g (approx. 1 Biscuit)"
+  },
+  {
+   "name": "Britannia NutriChoice Essentials Oats Cookies",
+   "brand": "Britannia",
+   "group": "Biscuits & cookies",
+   "aliases": [
+    "nutrichoice oats"
+   ],
+   "unit": "g",
+   "kcal": 464,
+   "proteinG": 8,
+   "carbsG": 70,
+   "fatG": 19,
+   "fiberG": 9.6,
+   "servings": [
+    {
+     "label": "biscuit",
+     "amount": 8.5
+    }
+   ],
+   "source": "https://www.britannia.co.in/product/nutrichoice",
+   "sourceBasis": "per 100 g, Britannia's nutrition-information panel image published on the brand's product page (NutriChoice Essentials Oats Cookies NIP); biscuit = approx. 17 g serving / approx. 2 biscuits = 8.5 g; label fibre 9.6 g (listed within carbohydrate) not stored: validator sum check counts fibre on top of carbs Fibre 9.6 g/100 g from the label (included in the carbohydrate figure).",
+   "quote": "Energy 464kcal | Protein 8g | Carbohydrate 70g | Added Sugars 0g | Dietary Fibre 9.6g | Total Fat 19g | Serving Size: Approx. 17g (approx. 2 Biscuits)"
+  },
+  {
+   "name": "Britannia NutriChoice Essentials Ragi Cookies",
+   "brand": "Britannia",
+   "group": "Biscuits & cookies",
+   "aliases": [
+    "nutrichoice ragi"
+   ],
+   "unit": "g",
+   "kcal": 458,
+   "proteinG": 7,
+   "carbsG": 72,
+   "fatG": 18,
+   "fiberG": 10,
+   "servings": [
+    {
+     "label": "biscuit",
+     "amount": 8.5
+    }
+   ],
+   "source": "https://www.britannia.co.in/product/nutrichoice",
+   "sourceBasis": "per 100 g, Britannia's nutrition-information panel image published on the brand's product page (NutriChoice Essentials Ragi Cookies NIP); biscuit = approx. 17 g serving / approx. 2 biscuits = 8.5 g; label fibre 10 g (listed within carbohydrate) not stored: validator sum check counts fibre on top of carbs Fibre 10 g/100 g from the label (included in the carbohydrate figure).",
+   "quote": "Energy 458kcal | Protein 7g | Carbohydrate 72g | Added Sugars 0g | Dietary Fibre 10g | Total Fat 18g | Serving Size: Approx. 17g (approx. 2 Biscuits)"
+  },
+  {
+   "name": "Britannia Milk Bikis",
+   "brand": "Britannia",
+   "group": "Biscuits & cookies",
+   "aliases": [
+    "milk bikis",
+    "milk biscuit"
+   ],
+   "unit": "g",
+   "kcal": 454,
+   "proteinG": 7,
+   "carbsG": 75,
+   "fatG": 14,
+   "fiberG": null,
+   "source": "https://www.britannia.co.in/product/milk-bikis",
+   "sourceBasis": "per 100 g, Britannia's nutrition-information panel image published on the brand's product page (Milk Bikis plain NIP)",
+   "quote": "Carbohydrate - 75g, of which Sugars - 27g, Protein - 7g, Fat - 14g, ... Energy - 454kcal (per 100g product, approx.)"
+  },
+  {
+   "name": "Britannia Tiger Glucose",
+   "brand": "Britannia",
+   "group": "Biscuits & cookies",
+   "aliases": [
+    "tiger biscuit",
+    "tiger glucose"
+   ],
+   "unit": "g",
+   "kcal": 457,
+   "proteinG": 7.5,
+   "carbsG": 76.6,
+   "fatG": 13.4,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "biscuit",
+     "amount": 3.8
+    }
+   ],
+   "source": "https://www.britannia.co.in/product/tiger",
+   "sourceBasis": "per 100 g, Britannia's nutrition-information panel image published on the brand's product page (Tiger Glucose NIP); biscuit = 15 g serving / approx. 4 biscuits = 3.75 g",
+   "quote": "Energy-457kcal, Protein-7.5g, Carbohydrate-76.6g, Total Sugars-25.5g, Total Fat-13.4g; Serving Size: 15g (approx. 4 Biscuits)"
+  },
+  {
+   "name": "Britannia 50-50 Sweet & Salty",
+   "brand": "Britannia",
+   "group": "Biscuits & cookies",
+   "aliases": [
+    "50 50 biscuit",
+    "fifty fifty"
+   ],
+   "unit": "g",
+   "kcal": 487,
+   "proteinG": 7,
+   "carbsG": 72,
+   "fatG": 19,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "biscuit",
+     "amount": 3.3
+    }
+   ],
+   "source": "https://www.britannia.co.in/product/50-50",
+   "sourceBasis": "per 100 g, Britannia's nutrition-information panel image published on the brand's product page (50-50 Sweet & Salty NIP); biscuit = 13 g serving / approx. 4 biscuits = 3.25 g",
+   "quote": "Energy 487kcal | Protein 7g | Carbohydrate 72g | of which Total Sugars 19.5g | Total Fat 19g | Serving Size: 13g (approx. 4 Biscuits)"
+  },
+  {
+   "name": "Britannia Little Hearts",
+   "brand": "Britannia",
+   "group": "Biscuits & cookies",
+   "aliases": [
+    "little hearts"
+   ],
+   "unit": "g",
+   "kcal": 486,
+   "proteinG": 7.4,
+   "carbsG": 70,
+   "fatG": 19.5,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "biscuit",
+     "amount": 2.2
+    }
+   ],
+   "source": "https://www.britannia.co.in/product/little-hearts",
+   "sourceBasis": "per 100 g, Britannia's nutrition-information panel image published on the brand's product page (Little Hearts nutrition panel); biscuit = 15.5 g serving / approx. 7 biscuits = 2.2 g",
+   "quote": "Energy 486kcal | Protein 7.4g | Carbohydrate 70g | of which Total Sugars 24.4g | Total Fat 19.5g | Serving Size: 15.5g (approx. 7 Biscuits)"
+  },
+  {
+   "name": "Britannia Treat Chocolate Creme",
+   "brand": "Britannia",
+   "group": "Biscuits & cookies",
+   "aliases": [
+    "treat chocolate",
+    "treat cream biscuit"
+   ],
+   "unit": "g",
+   "kcal": 490,
+   "proteinG": 5.7,
+   "carbsG": 71.7,
+   "fatG": 20.1,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "biscuit",
+     "amount": 10
+    },
+    {
+     "label": "pack",
+     "amount": 50
+    }
+   ],
+   "source": "https://www.britannia.co.in/product/treat",
+   "sourceBasis": "per 100 g, Britannia's nutrition-information panel image published on the brand's product page (Treat Chocolate nutrition panel); serving 10 g = approx. 1 biscuit; 5 servings per pack = 50 g",
+   "quote": "Energy-490kcal, Protein-5.7g, Carbohydrate-71.7g, Total Sugars-36.3g, Total Fat-20.1g; Serving Size: 10g (approx. 1 Biscuit); No. of Servings per pack - 5"
+  },
+  {
+   "name": "Sunfeast Dark Fantasy Choco Fills",
+   "brand": "Sunfeast (ITC)",
+   "group": "Biscuits & cookies",
+   "aliases": [
+    "dark fantasy",
+    "choco fills"
+   ],
+   "unit": "g",
+   "kcal": 507,
+   "proteinG": 7.3,
+   "carbsG": 61.1,
+   "fatG": 27.3,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "serve",
+     "amount": 11.5
+    },
+    {
+     "label": "pack",
+     "amount": 69
+    }
+   ],
+   "source": "https://world.openfoodfacts.org/product/8901725015275",
+   "sourceBasis": "per 100 g, read from the nutrition-label photo on the Open Food Facts page (crowd-sourced, matches the typed OFF values); per-serve 11.5 g and 6 serves per pack stated on the label (pack 69 g)",
+   "quote": "PER 100 g: ENERGY 507 kcal, PROTEIN 7.3 g, CARBOHYDRATE 61.1 g, TOTAL SUGARS 35.7 g, TOTAL FAT 27.3 g; % RDA per serve - 11.5 g; serves per pack - 6"
+  },
+  {
+   "name": "Sunfeast Mom's Magic Cashew & Almond",
+   "brand": "Sunfeast (ITC)",
+   "group": "Biscuits & cookies",
+   "aliases": [
+    "moms magic",
+    "mom's magic"
+   ],
+   "unit": "g",
+   "kcal": 480,
+   "proteinG": 6.8,
+   "carbsG": 69,
+   "fatG": 20,
+   "fiberG": null,
+   "source": "https://world.openfoodfacts.org/product/8909081011863",
+   "sourceBasis": "per 100 g, Open Food Facts typed values (crowd-entered from pack); no label photo or brand/retailer page available to cross-check",
+   "quote": "Energy 480 kcal | Proteins 6.8 g | Carbohydrates 69 g | Sugars 25.5 g | Fat 20 g (per 100 g)"
+  },
+  {
+   "name": "Sunfeast Marie Light Vita Orange",
+   "brand": "Sunfeast (ITC)",
+   "group": "Biscuits & cookies",
+   "aliases": [
+    "marie light",
+    "sunfeast marie"
+   ],
+   "unit": "g",
+   "kcal": 449,
+   "proteinG": 9.3,
+   "carbsG": 73.5,
+   "fatG": 13.6,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "serve",
+     "amount": 20
+    },
+    {
+     "label": "pack",
+     "amount": 95.6
+    }
+   ],
+   "source": "https://world.openfoodfacts.org/product/8901725015435",
+   "sourceBasis": "per 100 g, read from the nutrition-label photo on the Open Food Facts page (crowd-sourced, matches the typed OFF values) (label photo shows total fat 13.6 g; OFF typed 13.4 g, label value used); serve 20 g, pack 95.6 g",
+   "quote": "per 100 g: Energy 449 kcal, Protein 9.3 g, Carbohydrate 73.5 g, Total Sugars 20.8 g, Total Fat 13.6 g; % RDA per serve - 20 g; serves per pack 4.78"
+  },
+  {
+   "name": "Oreo Choco Creme (India)",
+   "brand": "Cadbury / Mondelez India",
+   "group": "Biscuits & cookies",
+   "aliases": [
+    "oreo chocolate",
+    "oreo choco creme"
+   ],
+   "unit": "g",
+   "kcal": 480,
+   "proteinG": 5.5,
+   "carbsG": 70.3,
+   "fatG": 19.7,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "pack",
+     "amount": 300
+    }
+   ],
+   "source": "https://world.openfoodfacts.org/product/8901233027555",
+   "sourceBasis": "per 100 g, Open Food Facts typed values (crowd-entered from pack); no label photo or brand/retailer page available to cross-check; pack 300 g from OFF quantity",
+   "quote": "Energy 480 kcal | Proteins 5.5 g | Carbohydrates 70.3 g | Sugars 37.8 g | Fat 19.7 g (per 100 g)"
+  },
+  {
+   "name": "Unibic Choco Chip Cookies",
+   "brand": "Unibic",
+   "group": "Biscuits & cookies",
+   "aliases": [
+    "unibic chocochip"
+   ],
+   "unit": "g",
+   "kcal": 471,
+   "proteinG": 5.8,
+   "carbsG": 68,
+   "fatG": 19.5,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "biscuit",
+     "amount": 7.5
+    },
+    {
+     "label": "pack",
+     "amount": 100
+    }
+   ],
+   "source": "https://world.openfoodfacts.org/product/8906009079165",
+   "sourceBasis": "per 100 g, read from the nutrition-label photo on the Open Food Facts page (crowd-sourced, matches the typed OFF values); biscuit = 30 g serving / 4 cookies; 3.33 servings per container = 100 g",
+   "quote": "Quantity per 100g: Energy 471kcal, Protein 5.8g, Total Fat 19.5g, Carbohydrate 68g, Total Sugars 29g; Serving Size 30g (4 Cookies)"
+  },
+  {
+   "name": "Unibic Cashew Cookies",
+   "brand": "Unibic",
+   "group": "Biscuits & cookies",
+   "aliases": [
+    "unibic cashew"
+   ],
+   "unit": "g",
+   "kcal": 496,
+   "proteinG": 7.5,
+   "carbsG": 63,
+   "fatG": 23.8,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "biscuit",
+     "amount": 7.5
+    },
+    {
+     "label": "pack",
+     "amount": 75
+    }
+   ],
+   "source": "https://world.openfoodfacts.org/product/8906009078021",
+   "sourceBasis": "per 100 g, read from the nutrition-label photo on the Open Food Facts page (crowd-sourced, matches the typed OFF values); biscuit = 30 g serving / 4 cookies; 2.5 servings per container = 75 g",
+   "quote": "Quantity per 100g: Energy 496kcal, Protein 7.5g, Total Fat 23.8g, Carbohydrate 63g, Total Sugars 25g; Serving Size - 30g (4 Cookies)"
+  },
+  {
+   "name": "McVitie's Digestive (India)",
+   "brand": "McVitie's (Pladis / United Biscuits India)",
+   "group": "Biscuits & cookies",
+   "aliases": [
+    "mcvities digestive",
+    "digestive biscuit"
+   ],
+   "unit": "g",
+   "kcal": 489,
+   "proteinG": 7.3,
+   "carbsG": 67.1,
+   "fatG": 21.2,
+   "fiberG": 6.1,
+   "source": "https://world.openfoodfacts.org/product/8906033740758",
+   "sourceBasis": "per 100 g, read from the nutrition-label photo on the Open Food Facts page; OFF's typed values on the same page (470 kcal, P 7.9, C 70.6, F 17.3, fibre 6.5) do not match the photo, label photo used; label fibre 6.1 g (listed within carbohydrate) not stored: validator sum check counts fibre on top of carbs Fibre 6.1 g/100 g from the label (included in the carbohydrate figure).",
+   "quote": "Per 100g Approx.: Energy 489kcal, Protein 7.3g, Carbohydrates 67.1g (of which Sugars 16.1g), Fat 21.2g, Dietary Fibre 6.1g"
+  },
+  {
+   "name": "Haldiram's Aloo Bhujia",
+   "brand": "Haldiram's",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "aloo bhujia",
+    "aloo bhujia sev"
+   ],
+   "unit": "g",
+   "kcal": 564,
+   "proteinG": 8.97,
+   "carbsG": 47.71,
+   "fatG": 37.48,
+   "fiberG": 4.04,
+   "servings": [
+    {
+     "label": "serving",
+     "amount": 20
+    },
+    {
+     "label": "pack",
+     "amount": 200
+    }
+   ],
+   "source": "https://www.haldirams.com/product/new-at-haldiram-s/aloo-bhujia",
+   "sourceBasis": "per 100 g, back-of-pack image (200 g pouch) on Haldiram's product page; serving 20 g, 10 servings per pouch. The 1 kg-style box label on the same site reads 562 kcal, P 8.68, C 46.10, F 38.12, fibre 4.01",
+   "quote": "Energy (kcal) 564 | Protein (g) 8.97 | Carbohydrate (g) 47.71 | Total Sugars 0 | Dietary Fiber 4.04 | Total Fat (g) 37.48 | Serving Size- 20 g"
+  },
+  {
+   "name": "Haldiram's Bhujia Sev",
+   "brand": "Haldiram's",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "bhujia",
+    "bhujia sev"
+   ],
+   "unit": "g",
+   "kcal": 592,
+   "proteinG": 12.93,
+   "carbsG": 37.14,
+   "fatG": 43.5,
+   "fiberG": 4.85,
+   "servings": [
+    {
+     "label": "serving",
+     "amount": 50
+    },
+    {
+     "label": "pack",
+     "amount": 1000
+    }
+   ],
+   "source": "https://www.haldirams.com/product/bestsellers/bhujia-sev",
+   "sourceBasis": "per 100 g, back-of-pack image on Haldiram's product page; serving 50 g, 20 servings per package (1 kg)",
+   "quote": "Energy 592 kcal | Carbohydrate 37.14 g | Sugar 0 g | Total Fat 43.50 g | Protein 12.93 g | Dietary Fiber 4.85 g | Serving Size: 50 g"
+  },
+  {
+   "name": "Haldiram's Moong Dal",
+   "brand": "Haldiram's",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "moong dal namkeen",
+    "salted moong dal"
+   ],
+   "unit": "g",
+   "kcal": 476,
+   "proteinG": 21.31,
+   "carbsG": 50.66,
+   "fatG": 20.93,
+   "fiberG": 7.52,
+   "servings": [
+    {
+     "label": "serving",
+     "amount": 50
+    },
+    {
+     "label": "pack",
+     "amount": 200
+    }
+   ],
+   "source": "https://world.openfoodfacts.org/product/8904004403732",
+   "sourceBasis": "per 100 g, read from the nutrition-label photo on the Open Food Facts page (crowd-sourced, matches the typed OFF values) (Haldiram's site product page shows no nutrition panel); serving 50 g, 4 servings per package (200 g)",
+   "quote": "Energy 476 kcal | Carbohydrate 50.66 g | Sugar 0 g | Total Fat 20.93 g | Protein 21.31 g | Dietary Fiber 7.52 g | Serving Size: 50 g"
+  },
+  {
+   "name": "Haldiram's Navratan Mix",
+   "brand": "Haldiram's",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "navratan",
+    "navrattan mixture"
+   ],
+   "unit": "g",
+   "kcal": 593,
+   "proteinG": 10.62,
+   "carbsG": 43.74,
+   "fatG": 40.9,
+   "fiberG": 3.6,
+   "servings": [
+    {
+     "label": "serving",
+     "amount": 50
+    },
+    {
+     "label": "pack",
+     "amount": 200
+    }
+   ],
+   "source": "https://www.haldirams.com/product/namkeen/navratan-mix",
+   "sourceBasis": "per 100 g, back-of-pack image on Haldiram's product page; serving 50 g, 4 servings per pouch, net quantity 200 g",
+   "quote": "Energy Value (kcal) 593 | Protein (g) 10.62 | Carbohydrate (g) 43.74 | Total Sugars 6.33 | Total Fat (g) 40.9 | Dietary Fiber (g) 3.6"
+  },
+  {
+   "name": "Bikaji Bikaneri Bhujia",
+   "brand": "Bikaji",
+   "group": "Chips & namkeen",
+   "aliases": [
+    "bikaji bhujia",
+    "bikaneri bhujia"
+   ],
+   "unit": "g",
+   "kcal": 609,
+   "proteinG": 14,
+   "carbsG": 37,
+   "fatG": 45,
+   "fiberG": 6,
+   "servings": [
+    {
+     "label": "1/3 cup",
+     "amount": 40
+    }
+   ],
+   "source": "https://www.bikaji.com/bikaneri-bhujia.html",
+   "sourceBasis": "per 100 g, 'Nutrition Information (Approx.)' image on the Bikaji product page; serving 1/3 cup (40 g); label fibre 6 g (listed within carbohydrate) not stored: validator sum check counts fibre on top of carbs Fibre 6 g/100 g from the label (included in the carbohydrate figure).",
+   "quote": "Per 100 g: Energy 609 KCal | Protein 14 g | Total Carbohydrates 37 g | Dietary Fiber 6 g | Sugars 0 g | Total Fat 45 g"
+  },
+  {
+   "name": "Kellogg's Corn Flakes Original (India)",
+   "brand": "Kellogg's",
+   "group": "Breakfast & spreads",
+   "aliases": [
+    "corn flakes",
+    "cornflakes"
+   ],
+   "unit": "g",
+   "kcal": 378,
+   "proteinG": 6.7,
+   "carbsG": 86.9,
+   "fatG": 1.0,
+   "fiberG": 2.5,
+   "servings": [
+    {
+     "label": "bowl",
+     "amount": 30
+    }
+   ],
+   "source": "https://world.openfoodfacts.org/product/8901499009661",
+   "sourceBasis": "per 100 g, read from the nutrition-label photo on the Open Food Facts page (crowd-sourced, matches the typed OFF values); serving size 30 g on the label",
+   "quote": "Per 100 g: Energy 378 kcal | Total Fat 1.0 g | Total Carbohydrates 86.9 g | of which Total Sugars 9.2 g | Dietary Fibre 2.5 g | Protein 6.7 g | Serving size = 30 g"
+  },
+  {
+   "name": "Kellogg's Multigrain Chocos",
+   "brand": "Kellogg's",
+   "group": "Breakfast & spreads",
+   "aliases": [
+    "chocos",
+    "kelloggs chocos"
+   ],
+   "unit": "g",
+   "kcal": 373,
+   "proteinG": 9.0,
+   "carbsG": 81.0,
+   "fatG": 3.0,
+   "fiberG": 7.0,
+   "servings": [
+    {
+     "label": "bowl",
+     "amount": 30
+    }
+   ],
+   "source": "https://world.openfoodfacts.org/product/8901499009043",
+   "sourceBasis": "per 100 g, macros read from the nutrition-label photo on the Open Food Facts page; the energy figure is obscured in the photo, so kcal is OFF's typed value (consistent with the macros when fibre counts ~2 kcal/g); serving 30 g",
+   "quote": "Per 100 g: Total Fat 3.0 g, Total Carbohydrates 81.0 g, of which Total Sugars 27.5 g, Dietary Fibre 7.0 g, Protein 9.0 g; Serving size: 30 g; OFF energy 373 kcal"
+  },
+  {
+   "name": "Kellogg's Muesli Crunchy Fruit",
+   "brand": "Kellogg's",
+   "group": "Breakfast & spreads",
+   "aliases": [
+    "kelloggs muesli fruit",
+    "muesli fruit"
+   ],
+   "unit": "g",
+   "kcal": 386,
+   "proteinG": 8.1,
+   "carbsG": 80.0,
+   "fatG": 5.1,
+   "fiberG": 6.4,
+   "servings": [
+    {
+     "label": "bowl",
+     "amount": 40
+    },
+    {
+     "label": "pack",
+     "amount": 500
+    }
+   ],
+   "source": "https://world.openfoodfacts.org/product/8901499010452",
+   "sourceBasis": "per 100 g, read from the nutrition-label photo on the Open Food Facts page (crowd-sourced, matches the typed OFF values); serving 40 g, 12.5 servings per pack (500 g)",
+   "quote": "Per 100 g: Energy 386 kcal | Total Fat 5.1 g | Total Carbohydrates 80.0 g | Total Sugars 21.8 g | Dietary Fibre 6.4 g | Protein 8.1 g | Serving size: 40 g"
+  },
+  {
+   "name": "Kellogg's Muesli",
+   "brand": "Kellogg's",
+   "group": "Breakfast & spreads",
+   "aliases": [
+    "kelloggs muesli no added sugar"
+   ],
+   "unit": "g",
+   "kcal": 382,
+   "proteinG": 9.3,
+   "carbsG": 77.5,
+   "fatG": 5.2,
+   "fiberG": 6.4,
+   "servings": [
+    {
+     "label": "bowl",
+     "amount": 40
+    },
+    {
+     "label": "pack",
+     "amount": 400
+    }
+   ],
+   "source": "https://world.openfoodfacts.org/product/8901499025531",
+   "sourceBasis": "per 100 g, Open Food Facts typed values (this muesli label shows 0 g added sugars); label photo on the same page confirms 382 kcal, fat 5.2 g, fibre 6.4 g, protein 9.3 g, added sugars 0 (carbohydrate digits partly hidden in the photo); 40 g serve = 153 kcal per label",
+   "quote": "Per 100 g: Energy 382 kcal | Total Fat 5.2 g | Carbohydrates 77.5 g | Added Sugars 0 | Dietary Fibre 6.4 g | Protein 9.3 g"
+  },
+  {
+   "name": "Quaker Oats",
+   "brand": "Quaker (PepsiCo India)",
+   "group": "Breakfast & spreads",
+   "aliases": [
+    "quaker rolled oats",
+    "plain oats"
+   ],
+   "unit": "g",
+   "kcal": 407,
+   "proteinG": 11.8,
+   "carbsG": 68.5,
+   "fatG": 9.5,
+   "fiberG": 10,
+   "servings": [
+    {
+     "label": "bowl",
+     "amount": 40
+    },
+    {
+     "label": "pack",
+     "amount": 400
+    }
+   ],
+   "source": "https://world.openfoodfacts.org/product/8901491103794",
+   "sourceBasis": "per 100 g, read from the nutrition-label photo on the Open Food Facts page (crowd-sourced, matches the typed OFF values); serve size 40 g, 10 servings in the pack (400 g)",
+   "quote": "Per 100 g: Energy (kcal) 407 | Protein (g) 11.8 | Total Fat (g) 9.5 | Carbohydrate (g) 68.5 | Total Dietary Fibre (g) 10 | Serve size 40 g"
+  },
+  {
+   "name": "Saffola Oats",
+   "brand": "Saffola (Marico)",
+   "group": "Breakfast & spreads",
+   "aliases": [
+    "saffola plain oats"
+   ],
+   "unit": "g",
+   "kcal": 369,
+   "proteinG": 12.6,
+   "carbsG": 66.8,
+   "fatG": 8,
+   "fiberG": 10.4,
+   "servings": [
+    {
+     "label": "bowl",
+     "amount": 40
+    },
+    {
+     "label": "pack",
+     "amount": 1000
+    }
+   ],
+   "source": "https://world.openfoodfacts.org/product/8901088213608",
+   "sourceBasis": "per 100 g, read from the nutrition-label photo on the Open Food Facts page (crowd-sourced, matches the typed OFF values); serving measure 40 g (1/2 cup), 25 servings per pack (1 kg)",
+   "quote": "Per 100 g: Energy (Kcal) 369 | Protein (g) 12.6 | Carbohydrate (g) 66.8 | Dietary Fibre (g) 10.4 | Total Fat (g) 8 | Serving Measure: 40 g (1/2 cup)"
+  },
+  {
+   "name": "Saffola Masala Oats",
+   "brand": "Saffola (Marico)",
+   "group": "Breakfast & spreads",
+   "aliases": [
+    "masala oats"
+   ],
+   "unit": "g",
+   "kcal": 382,
+   "proteinG": 9.9,
+   "carbsG": 72.2,
+   "fatG": 6.0,
+   "fiberG": 12.5,
+   "source": "https://world.openfoodfacts.org/product/8901088068789",
+   "sourceBasis": "per 100 g, read from the nutrition-label photo on the Open Food Facts page (crowd-sourced, matches the typed OFF values); flavour not identified on the OFF page",
+   "quote": "Per 100 g: Energy (kcal) 382.0 | Protein (g) 9.9 | Carbohydrate (g) 72.2 | Total Sugars 4.7 | Dietary Fibre (g) 12.5 | Fat (g) 6.0"
+  },
+  {
+   "name": "Pintola All Natural Peanut Butter",
+   "brand": "Pintola",
+   "group": "Breakfast & spreads",
+   "aliases": [
+    "pintola peanut butter",
+    "natural peanut butter"
+   ],
+   "unit": "g",
+   "kcal": 639,
+   "proteinG": 30,
+   "carbsG": 18,
+   "fatG": 49,
+   "fiberG": 9,
+   "servings": [
+    {
+     "label": "tbsp",
+     "amount": 16
+    },
+    {
+     "label": "pack",
+     "amount": 1000
+    }
+   ],
+   "source": "https://world.openfoodfacts.org/product/8908010900384",
+   "sourceBasis": "per 100 g, read from the nutrition-label photo on the Open Food Facts page (crowd-sourced, matches the typed OFF values); serving size 32 g (2 tbsp), 31 servings per pack (approx. 1 kg); label fibre 9 g (listed within carbohydrate) not stored: validator sum check counts fibre on top of carbs Fibre 9 g/100 g from the label (included in the carbohydrate figure).",
+   "quote": "Per 100g: Energy (kcal) 639 | Protein (g) 30 | Total Carbohydrates (g) 18 | Dietary fiber (g) 9 | Total Fat (g) 49 | Serving Size: 32g (2 Tbsp.)"
+  },
+  {
+   "name": "Pintola Whey Protein Peanut Butter (unsweetened)",
+   "brand": "Pintola",
+   "group": "Breakfast & spreads",
+   "aliases": [
+    "pintola high protein",
+    "pintola whey peanut butter"
+   ],
+   "unit": "g",
+   "kcal": 610,
+   "proteinG": 37,
+   "carbsG": 16.3,
+   "fatG": 43,
+   "fiberG": 8,
+   "servings": [
+    {
+     "label": "tbsp",
+     "amount": 16
+    },
+    {
+     "label": "pack",
+     "amount": 510
+    }
+   ],
+   "source": "https://world.openfoodfacts.org/product/8906136650275",
+   "sourceBasis": "per 100 g, read from the nutrition-label photo on the Open Food Facts page (crowd-sourced, matches the typed OFF values); serving size 32 g (2 tbsp), net weight 510 g. Retail name assumed from the label ('European origin whey-protein') and the OFF name 'unsweetened'; label fibre 8 g (listed within carbohydrate) not stored: validator sum check counts fibre on top of carbs Fibre 8 g/100 g from the label (included in the carbohydrate figure).",
+   "quote": "Per 100g: Energy (kcal) 610 | Protein (g) 37 | Total Carbohydrates (g) 16.3 | Dietary fiber (g) 8 | Total Fat (g) 43 | Serving Size: 32g (2 Tbsp.) | Net Weight 510g"
+  },
+  {
+   "name": "MyFitness Chocolate Peanut Butter",
+   "brand": "MyFitness",
+   "group": "Breakfast & spreads",
+   "aliases": [
+    "myfitness peanut butter chocolate"
+   ],
+   "unit": "g",
+   "kcal": 640,
+   "proteinG": 22,
+   "carbsG": 22,
+   "fatG": 52,
+   "fiberG": 6,
+   "servings": [
+    {
+     "label": "serving",
+     "amount": 32
+    },
+    {
+     "label": "pack",
+     "amount": 510
+    }
+   ],
+   "source": "https://world.openfoodfacts.org/product/8904327600405",
+   "sourceBasis": "per 100 g, read from the nutrition-label photo on the Open Food Facts page; OFF's typed values on the same page (625 kcal, P 26, C 19, F 50) differ, label photo used; serving 32 g; pack 510 g from OFF quantity; label fibre 6 g (listed within carbohydrate) not stored: validator sum check counts fibre on top of carbs Fibre 6 g/100 g from the label (included in the carbohydrate figure).",
+   "quote": "PER 100G: Energy 640 Kcal | Protein 22 g | Carbohydrates 22 g | Dietary Fiber 6 g | Sugar 7 g | Total Fats 52 g | Serving Size 32G"
+  },
+  {
+   "name": "Nutella Hazelnut Spread (India)",
+   "brand": "Ferrero",
+   "group": "Breakfast & spreads",
+   "aliases": [
+    "nutella"
+   ],
+   "unit": "g",
+   "kcal": 533,
+   "proteinG": 6.3,
+   "carbsG": 57.5,
+   "fatG": 30.9,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "portion",
+     "amount": 15
+    },
+    {
+     "label": "small jar",
+     "amount": 180
+    },
+    {
+     "label": "jar",
+     "amount": 350
+    },
+    {
+     "label": "large jar",
+     "amount": 750
+    }
+   ],
+   "source": "https://www.nutella.com/in/en/products/nutella",
+   "sourceBasis": "per 100 g, 'Nutritional information' table on Nutella India's product page; portion 15 g; jar sizes 180/350/750 g from the same page",
+   "quote": "Typical values per 100g: Energy 2252 kJ 533 kcal | Fats 30.9 g | Carbohydrates 57.5 g | (of which sugar) 56.3 g | Protein 6.3 g"
+  },
+  {
+   "name": "Amul Kool Kesar",
+   "brand": "Amul",
+   "group": "Breakfast & spreads",
+   "aliases": [
+    "amul kool",
+    "kesar milk"
+   ],
+   "unit": "ml",
+   "kcal": 77.2,
+   "proteinG": 3.2,
+   "carbsG": 12.8,
+   "fatG": 1.5,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "pack",
+     "amount": 180
+    }
+   ],
+   "source": "https://world.openfoodfacts.org/product/8901262152211",
+   "sourceBasis": "per 100 ml, converted by me from the per-pack (180 ml) values on the label photo on the Open Food Facts page (OFF typed the per-pack numbers as per-100 g)",
+   "quote": "Serving size 180 mL, amount per pack: Energy (kcal) 139 | Total Fat (g) 2.7 | Carbohydrate (g) 23.0 | Total Sugars 23.0 | Protein (g) 5.7"
+  },
+  {
+   "name": "Amul Kool Elaichi",
+   "brand": "Amul",
+   "group": "Breakfast & spreads",
+   "aliases": [
+    "amul kool elaichi",
+    "elaichi milk"
+   ],
+   "unit": "ml",
+   "kcal": 90.6,
+   "proteinG": 3.1,
+   "carbsG": 12.5,
+   "fatG": 3.1,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "pack",
+     "amount": 180
+    }
+   ],
+   "source": "https://world.openfoodfacts.org/product/8901262152228",
+   "sourceBasis": "per 100 ml, converted by me from the per-pack (180 ml) values on the label photo on the Open Food Facts page (matches OFF's typed per-100 values)",
+   "quote": "Serving size 180 mL, amount per pack: Energy (kcal) 163 | Total Fat (g) 5.6 | Carbohydrate (g) 22.5 | Total Sugars 22.5 | Protein (g) 5.6"
+  },
+  {
+   "name": "Amul Lassi",
+   "brand": "Amul",
+   "group": "Breakfast & spreads",
+   "aliases": [
+    "lassi",
+    "sweet lassi"
+   ],
+   "unit": "ml",
+   "kcal": 88.5,
+   "proteinG": 2.1,
+   "carbsG": 14.5,
+   "fatG": 2.1,
+   "fiberG": null,
+   "servings": [
+    {
+     "label": "pack",
+     "amount": 200
+    }
+   ],
+   "source": "https://world.openfoodfacts.org/product/8901262200189",
+   "sourceBasis": "per 100 ml, converted by me from the per-pack (200 ml) values on the label photo on the Open Food Facts page (matches OFF's typed per-100 values)",
+   "quote": "Serving size 200 mL, amount per pack: Energy (kcal) 177 | Total Fat (g) 4.2 | Carbohydrate (g) 29.0 | Total Sugars 29.0 | Protein (g) 4.2"
+  }
+ ],
+ "notFound": [
+  {
+   "name": "Parle Hide & Seek Fab (Fab! range)",
+   "reason": "Open Food Facts entries for Fab Bourbon / Fab Jam-in / Fab Choco Chip lack one or more of kcal, protein, carbs, fat; no label on parleproducts.com; BigBasket/Swiggy block automated reads"
+  },
+  {
+   "name": "Oreo Original Vanilla Creme (India)",
+   "reason": "Indian OFF entries have no typed nutrition and the only label photo is cropped (no energy or fat); not on a reachable brand/retailer page"
+  },
+  {
+   "name": "Unibic Butter Cookies",
+   "reason": "only OFF entry has no nutrition data; unibicfoods.com shows no nutrition"
+  },
+  {
+   "name": "Parle 20-20 Butter Cookies",
+   "reason": "OFF entry has no nutrition data (20-20 Cashew included instead)"
+  },
+  {
+   "name": "Britannia NutriChoice Digestive (classic)",
+   "reason": "brand site lists only the 5 Grain Digestive / Digestive Zero; the classic OFF entry is a 2018 label whose typed values (481 kcal) do not match its own photo (493 kcal), so not used. 5 Grain Digestive included"
+  },
+  {
+   "name": "MyFitness Original / Smooth Peanut Butter",
+   "reason": "OFF entries are back-computed from per-serving values or internally inconsistent (kJ vs kcal), and none has a readable label photo"
+  },
+  {
+   "name": "Parle Marie",
+   "reason": "Verification: only crowd-typed Open Food Facts values; no label photo or brand panel found to confirm"
+  }
+ ]
+}

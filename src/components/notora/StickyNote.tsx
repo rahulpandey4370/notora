@@ -7,7 +7,7 @@ import type { StickyNote as StickyNoteType } from '@/lib/types';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { MicButton, appendSpeech } from './MicButton';
-import { MoreVertical, Trash2, Wand2, BookText, List, BrainCircuit, Loader2, Paintbrush, TextCursorInput, RotateCcw, RotateCw, Newspaper, X } from 'lucide-react';
+import { MoreVertical, Trash2, Wand2, BookText, List, BrainCircuit, Loader2, Paintbrush, TextCursorInput, RotateCcw, RotateCw, Newspaper, X, Check } from 'lucide-react';
 import { polishStickyNote } from '@/ai/flows/polish-sticky-note';
 import { summarizeStickyNote } from '@/ai/flows/summarize-sticky-note';
 import { bulletifyStickyNote } from '@/ai/flows/bullet-ify-sticky-note';
@@ -20,6 +20,8 @@ import { generateNoteTitle } from '@/ai/flows/generate-note-title';
 import { SparkleIcon } from './SparkleIcon';
 import { useModelFor } from '@/hooks/use-model-store';
 import { useToast } from '@/hooks/use-toast';
+import { ToastAction } from '@/components/ui/toast';
+import { aiReplyFate, cancelPatch, type NoteText } from '@/lib/note-edit';
 
 interface StickyNoteProps {
   note: StickyNoteType;
@@ -60,11 +62,22 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const autoSaveTimer = useRef<NodeJS.Timeout | null>(null);
 
+  // lib/note-edit. An AI reply lands many renders after the click, so it is checked against the text on screen and
+  // saved through the change callback as they are at that moment (`now`), not as they were at the click.
+  const saved: NoteText = { title: note.title || '', content: note.content };
+  const now = useRef({ text: saved, editing: isEditing, onChange });
+  now.current = { text: isEditing ? { title: editedTitle, content: editedContent } : saved, editing: isEditing, onChange };
+  const gone = useRef(false); // the note is off the screen (deleted, or another board or view)
+  useEffect(() => { gone.current = false; return () => { gone.current = true; }; }, []);
+  const editStart = useRef(saved); // the note as it was when editing started: what Cancel restores
+
   const handleSave = useCallback(() => {
-    if (note.title !== editedTitle || note.content !== editedContent) {
+    // Only while editing: outside it the edited fields are left over from the last edit, and saving them would put
+    // old text back over the note (and over an AI result applied since).
+    if (isEditing && (note.title !== editedTitle || note.content !== editedContent)) {
         onChange(note.id, { title: editedTitle, content: editedContent });
     }
-  }, [note.id, note.title, note.content, editedTitle, editedContent, onChange]);
+  }, [note.id, note.title, note.content, editedTitle, editedContent, isEditing, onChange]);
 
   useEffect(() => {
     if (isEditing) {
@@ -94,8 +107,9 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
     setAiLoading(operation);
 
     try {
-        let result;
-        const contentToProcess = isEditing ? editedContent : note.content;
+        let patch: Partial<NoteText>;
+        const sent = now.current.text;
+        const contentToProcess = sent.content;
         
         // Save current state before AI change for undo
         handleSave();
@@ -103,32 +117,35 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
         switch (operation) {
             case 'title':
               if (!contentToProcess) return;
-              result = await generateNoteTitle({ content: contentToProcess }, selectedModel);
-              onChange(note.id, { title: result.title });
-              if (isEditing) setEditedTitle(result.title);
+              patch = { title: (await generateNoteTitle({ content: contentToProcess }, selectedModel)).title };
               break;
             case 'polish':
-                result = await polishStickyNote({ content: contentToProcess }, selectedModel);
-                onChange(note.id, { content: result.polishedContent });
-                if(isEditing) setEditedContent(result.polishedContent);
+                patch = { content: (await polishStickyNote({ content: contentToProcess }, selectedModel)).polishedContent };
                 break;
             case 'summarize':
-                result = await summarizeStickyNote({ content: contentToProcess }, selectedModel);
-                onChange(note.id, { content: result.summary });
-                if(isEditing) setEditedContent(result.summary);
+                patch = { content: (await summarizeStickyNote({ content: contentToProcess }, selectedModel)).summary };
                 break;
             case 'bulletify':
-                result = await bulletifyStickyNote({ text: contentToProcess }, selectedModel);
-                onChange(note.id, { content: result.bulletifiedText });
-                if(isEditing) setEditedContent(result.bulletifiedText);
+                patch = { content: (await bulletifyStickyNote({ text: contentToProcess }, selectedModel)).bulletifiedText };
                 break;
             case 'simplify':
-                result = await simplifyStickyNote({ text: contentToProcess }, selectedModel);
-                onChange(note.id, { content: result.simplifiedText });
-                if(isEditing) setEditedContent(result.simplifiedText);
+                patch = { content: (await simplifyStickyNote({ text: contentToProcess }, selectedModel)).simplifiedText };
                 break;
         }
+
+        const fate = aiReplyFate(sent, gone.current ? null : now.current.text, operation === 'title' ? 'title' : 'content');
+        if (fate === 'gone') return;
+        if (fate === 'typed') {
+            toast({ title: "You kept typing, so the AI result wasn't applied." });
+            return;
+        }
+        now.current.onChange(note.id, patch);
+        if (now.current.editing) {
+            if (patch.title !== undefined) setEditedTitle(patch.title);
+            if (patch.content !== undefined) setEditedContent(patch.content);
+        }
     } catch (error) {
+        if (gone.current) return;
         console.error(`Failed to ${operation} note:`, error);
         toast({ variant: 'destructive', title: 'AI action failed', description: `Couldn't ${operation === 'title' ? 'generate a title' : operation} this note. Try again.` });
     } finally {
@@ -143,16 +160,33 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
   
   const handleStartEditing = () => {
     if (isEditing) return;
+    editStart.current = saved;
     setEditedTitle(note.title || '');
     setEditedContent(note.content);
     setIsEditing(true);
   };
   
-  const handleCancelEditing = () => {
-      // Revert to last saved state
-      setEditedTitle(note.title || '');
-      setEditedContent(note.content);
+  /** Leave edit mode keeping what was typed (anything autosave hasn't written yet is saved now). */
+  const handleDoneEditing = () => {
+      handleSave();
       setIsEditing(false);
+  }
+
+  const handleCancelEditing = () => {
+      // Restore the note as it was when editing started. Autosave may have written since, so that is saved too.
+      // Until there was a Done button this X was the only way out of edit mode, and it kept the edits: so the
+      // discard comes with an Undo.
+      const start = editStart.current;
+      const discarded = { title: editedTitle, content: editedContent };
+      const patch = cancelPatch(start, saved);
+      if (patch) onChange(note.id, patch);
+      setEditedTitle(start.title);
+      setEditedContent(start.content);
+      setIsEditing(false);
+      if (discarded.title !== start.title || discarded.content !== start.content) {
+        toast({ title: 'Changes discarded', description: 'The note is back to how it was before you started editing.',
+          action: <ToastAction altText="Undo discard" onClick={() => now.current.onChange(note.id, discarded)}>Undo</ToastAction> });
+      }
   }
   
   const handleUndo = () => {
@@ -219,7 +253,8 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
         <div className="flex items-center justify-end px-2 py-1 flex-shrink-0 mt-auto" onClick={e => e.stopPropagation()}>
             {isEditing && (
                 <div className="flex-1 flex gap-1">
-                    <Button variant="ghost" size="icon" aria-label="Discard changes" className="h-8 w-8 rounded-full" onClick={handleCancelEditing}><X className="h-4 w-4 text-red-600" /></Button>
+                    <Button variant="ghost" size="icon" aria-label="Done editing" title="Done" className="h-8 w-8 rounded-full" onClick={handleDoneEditing}><Check className="h-4 w-4 text-green-700" /></Button>
+                    <Button variant="ghost" size="icon" aria-label="Discard changes" title="Discard changes" className="h-8 w-8 rounded-full" onClick={handleCancelEditing}><X className="h-4 w-4 text-red-600" /></Button>
                     <MicButton className="h-8 w-8 rounded-full" onText={t => setEditedContent(p => appendSpeech(p, t))} />
                 </div>
             )}

@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import type { AppData, Task } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -32,6 +32,9 @@ export default function TaskList({ data, onDataChange, currentMonth }: TaskListP
   const [isParsing, setIsParsing] = useState(false);
   const selectedModel = useModelFor('tasks');
   const { toast } = useToast();
+  // The title as it is now, for a parse reply that lands after more typing.
+  const titleNow = useRef(newTaskTitle);
+  titleNow.current = newTaskTitle;
 
   /**
    * Fill the structured fields from one plain-English line, so a task with a
@@ -40,8 +43,9 @@ export default function TaskList({ data, onDataChange, currentMonth }: TaskListP
    * submitted — a misparse never silently creates the wrong task.
    */
   const handleAiFill = async () => {
-    const text = newTaskTitle.trim();
-    if (!text) return;
+    const sent = newTaskTitle;
+    const text = sent.trim();
+    if (!text || isParsing) return;
     setIsParsing(true);
     try {
       const parsed = await parseTask(
@@ -53,6 +57,12 @@ export default function TaskList({ data, onDataChange, currentMonth }: TaskListP
         },
         selectedModel
       );
+      // Typing wins: the reply is for text that is no longer in the box (edited, or already added and cleared), so
+      // none of it is applied.
+      if (titleNow.current !== sent) {
+        if (titleNow.current) toast({ title: "You kept typing, so the AI result wasn't applied." });
+        return;
+      }
       setNewTaskTitle(parsed.title);
       setNewTaskPriority(parsed.priority);
       setAddTaskType(parsed.type);

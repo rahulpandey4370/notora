@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -18,6 +18,7 @@ import { Textarea } from '../ui/textarea';
 import { MicButton, appendSpeech } from './MicButton';
 import { useModelFor } from '@/hooks/use-model-store';
 import { useToast } from '@/hooks/use-toast';
+import { useAsk } from '@/hooks/use-ask';
 
 interface CustomPromptDialogProps {
   open: boolean;
@@ -35,28 +36,42 @@ export default function CustomPromptDialog({
   onContentChange,
 }: CustomPromptDialogProps) {
   const [prompt, setPrompt] = useState('');
-  const [loading, setLoading] = useState(false);
+  // lib/ask: idle → pending → ready | failed. Closing resets it, so a reply still on its way is dropped.
+  const transform = useAsk<string>();
+  const loading = transform.pending;
   const selectedModel = useModelFor('notes');
   const { toast } = useToast();
+  // The note and its change callback as they are when the reply lands, not as they were when it was asked for.
+  const now = useRef({ noteContent, onContentChange });
+  now.current = { noteContent, onContentChange };
+
+  useEffect(() => {
+    if (!open) return;
+    return () => transform.reset(); // closed, or the note is gone
+  }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (transform.state.state === 'failed') toast({ variant: 'destructive', title: 'Transform failed', description: transform.state.error });
+  }, [transform.state]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleTransform = async () => {
-    if (!prompt.trim()) return;
+    if (!prompt.trim() || loading) return;
 
-    setLoading(true);
-    try {
-      const result = await customTransformStickyNote({
-        content: noteContent,
-        prompt: prompt,
-      }, selectedModel);
-      onContentChange(noteId, { content: result.transformedContent });
-      onOpenChange(false);
-      setPrompt('');
-    } catch (error) {
-      console.error('Failed to transform note with custom prompt:', error);
-      toast({ variant: 'destructive', title: 'Transform failed', description: "Couldn't transform this note. Try again." });
-    } finally {
-      setLoading(false);
+    const sent = noteContent;
+    const content = await transform.run(async () => (await customTransformStickyNote({
+      content: sent,
+      prompt: prompt,
+    }, selectedModel)).transformedContent, {
+      error: (error) => { console.error('Failed to transform note with custom prompt:', error); return "Couldn't transform this note. Try again."; },
+    });
+    if (content === undefined) return; // it failed, or the dialog closed meanwhile
+    if (now.current.noteContent !== sent) {
+      toast({ title: "The note changed, so the AI result wasn't applied." });
+      return;
     }
+    now.current.onContentChange(noteId, { content });
+    onOpenChange(false);
+    setPrompt('');
   };
 
   return (

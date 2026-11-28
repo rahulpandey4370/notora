@@ -19,6 +19,7 @@ import { cn } from '@/lib/utils';
 import { Input } from '../ui/input';
 import { useModelFor } from '@/hooks/use-model-store';
 import { useToast } from '@/hooks/use-toast';
+import { aiReplyFate, type NoteText } from '@/lib/note-edit';
 
 interface FormattedNoteCardProps {
   note: StickyNote;
@@ -50,6 +51,14 @@ export default function FormattedNoteCard({ note, noteNumber, onNoteChange, onNo
   const { toast } = useToast();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const autoSaveTimer = useRef<NodeJS.Timeout | null>(null);
+
+  // lib/note-edit. An AI reply lands many renders after the click, so it is checked against the text on screen and
+  // saved through the change callback as they are at that moment (`now`), not as they were at the click.
+  const saved: NoteText = { title: note.title || '', content: note.content };
+  const now = useRef({ text: saved, editing: isEditing, onNoteChange });
+  now.current = { text: isEditing ? { title: editedTitle, content: editedContent } : saved, editing: isEditing, onNoteChange };
+  const gone = useRef(false); // the note is off the screen (deleted, or another board or view)
+  useEffect(() => { gone.current = false; return () => { gone.current = true; }; }, []);
 
   useEffect(() => {
     setEditedContent(note.content);
@@ -96,31 +105,34 @@ export default function FormattedNoteCard({ note, noteNumber, onNoteChange, onNo
     setAiLoading(operation);
     handleSave(); // Save current state for undo
     try {
-        let result;
-        const contentToProcess = isEditing ? editedContent : note.content;
+        let patch: Partial<NoteText>;
+        const sent = now.current.text;
+        const contentToProcess = sent.content;
         switch (operation) {
             case 'polish':
-                result = await polishStickyNote({ content: contentToProcess }, selectedModel);
-                onNoteChange(note.id, { content: result.polishedContent });
-                if(isEditing) setEditedContent(result.polishedContent);
+                patch = { content: (await polishStickyNote({ content: contentToProcess }, selectedModel)).polishedContent };
                 break;
             case 'summarize':
-                result = await summarizeStickyNote({ content: contentToProcess }, selectedModel);
-                onNoteChange(note.id, { content: result.summary });
-                if(isEditing) setEditedContent(result.summary);
+                patch = { content: (await summarizeStickyNote({ content: contentToProcess }, selectedModel)).summary };
                 break;
             case 'bulletify':
-                result = await bulletifyStickyNote({ text: contentToProcess }, selectedModel);
-                onNoteChange(note.id, { content: result.bulletifiedText });
-                if(isEditing) setEditedContent(result.bulletifiedText);
+                patch = { content: (await bulletifyStickyNote({ text: contentToProcess }, selectedModel)).bulletifiedText };
                 break;
             case 'simplify':
-                result = await simplifyStickyNote({ text: contentToProcess }, selectedModel);
-                onNoteChange(note.id, { content: result.simplifiedText });
-                if(isEditing) setEditedContent(result.simplifiedText);
+                patch = { content: (await simplifyStickyNote({ text: contentToProcess }, selectedModel)).simplifiedText };
                 break;
         }
+
+        const fate = aiReplyFate(sent, gone.current ? null : now.current.text, 'content');
+        if (fate === 'gone') return;
+        if (fate === 'typed') {
+            toast({ title: "You kept typing, so the AI result wasn't applied." });
+            return;
+        }
+        now.current.onNoteChange(note.id, patch);
+        if (now.current.editing && patch.content !== undefined) setEditedContent(patch.content);
     } catch (error) {
+        if (gone.current) return;
         console.error(`Failed to ${operation} note:`, error);
         toast({ variant: 'destructive', title: 'AI action failed', description: `Couldn't ${operation} this note. Try again.` });
     } finally {

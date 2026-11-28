@@ -70,7 +70,33 @@ Each has a check script in `src/lib` (`page-gate`, `ask`, `log-session`). The li
 - **Unreadable dates:** a task date or tick that can't be parsed now matches no day instead of throwing while a screen draws (the old per-screen code returned false; the first shared version threw). Days are worked out once per stored string: over a year of 1,500 one-off tasks the shared day filter took 93 ms against 476 ms for the old calendar filter, with the same 9,147 rows.
 - **Row 18, repeating lifecycle:** deferred to batch 4; no bug seen there.
 
-**Still to do:** rows 4, 7–15, 18–22, the rest of rows 6 and 16.
+**Batch 4 (2026-11-28), done:**
+
+- **Row 14, chat:** `lib/chat-session` (messages with ids, the request still out, each proposal as waiting / applying / applied / cancelled / failed). "New chat" mid-reply stays clean, a late reply is ignored, a failure shows as an error and frees the input.
+- **Row 4, speech capture:** a recogniser that was stopped or replaced can no longer write into the text box (its handlers check they still belong to the current one).
+- **Rows 6 and 7, foods:** one `screen` value (list / detail / editor) instead of separate flags; the "added" banner clears itself after 8 s; the built-in catalogue has its own status (`loading | ready | failed`) with "Try again"; a delete that fails puts the food back and says so.
+- **Row 8, Fitbit:** one shared status (`hooks/health-status-store`, `lib/health-status`) for the chip and the settings card, so they can't disagree; the connect result in the address bar is read once and removed.
+- **Row 9, notifications:** one shared store for both users of the hook; a dismissed permission prompt is no longer shown as "blocked"; a service worker that never becomes ready gives "Not ready here yet" after 3 s instead of a spinner that never ends (`lib/push-status`).
+- **Row 10, password and login:** the password forms are a named state; the dialog clears the fields only after a successful change; `login` returns a result (`lib/auth-result`) instead of throwing.
+- **Row 11, journal:** the coach runs on `useAsk`; Format and Summary replies are dropped if the day changed or the editor was opened meanwhile (`lib/journal-ai`).
+- **Row 12, notes:** sticky notes have "Done" (keep) and "Discard" (go back to how the note was when editing started, with an Undo toast); an AI reply that arrives after the note was edited or closed is dropped (`lib/note-edit`).
+- **Row 13, links:** search runs on `useAsk`; analysis is tracked per link (`lib/link-analysis`), and a link left on "Analyzing…" by a closed tab now shows "Analysis didn't finish · Retry".
+- **Row 15, Day End and Weekly Review:** they ask once per open instead of again on every data change; closing drops the reply.
+- **Row 16, the rest:** `TaskList` title parsing and `CustomPromptDialog` take only the latest reply; `BodyCard` photos say "Couldn't load · Try again" instead of spinning. `app/usage` was already fine.
+- **Row 18, repeating tasks:** `repeatState(task)` names the five cases (`oneOff | legacy | monthBound | repeating | stopped`); `isRepeating` reads it. No behaviour change.
+- **Row 19, journey headline:** `journeyHeadline` picks one headline, so "New low" can no longer sit beside "Plateau".
+- **Row 20, real burn target:** "This is your target" is worked out from the saved target, not a flag that went stale.
+- **Row 21, data in strings:** `isAutoEntry`, `isFitbitEntry`, `isTotalMeal` in `lib/fitness` replace the prefix and name tests scattered over four files. The stored strings are unchanged.
+
+New check scripts: `chat-session`, `journal-ai`, `link-analysis`, `note-edit`, `health-status`, `push-status`, `auth-result`; `journey` and `tasks` extended. All 26 pass.
+
+- **Seen in a browser, with every request held back so no AI or server call went out:** chat (new chat mid-reply, late reply, failure), the journal coach (button off while waiting, failure toast), sticky notes (Done, Discard, Undo), Day End (asks once, asks again on reopen, failure message), foods (sections, quick add, detail, back, banner gone after 8 s), and that Links, Tasks, Profile, Logs and Login draw without errors.
+- **Checked only by script:** the journal day change mid-request, link analysis fates, Fitbit, notification and login states.
+- **Behaviour that changed on purpose:** a journal Format/Summary reply is dropped if you change the day or open the editor while it runs; a link left mid-analysis stays "Analyzing…" until Retry; new wording for the notification states; Day End reads the tasks once when it opens.
+- **Known and left:** opening Day End before the workspace has loaded says no tasks were completed; `LinkCard` Edit then Save right after analysis can write "Analyzing…" back; `FormattedNoteCard` "Done" can drop the last second of typing; a sticky note's title button can still overlap another AI action on the same note; a `TaskList` reply after leaving the page still shows its toast; the login route falls back to the default users when the database is down (server side, not touched).
+- **Row 22, smaller ones:** not done. No bug seen in any of them.
+
+**Still to do:** row 22 and the items under "Known and left".
 
 ## Already explicit (need nothing)
 

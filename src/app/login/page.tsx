@@ -24,8 +24,8 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      const success = await login(email, password);
-      if (success) {
+      const result = await login(email, password);
+      if (result.ok) {
         toast({
           title: 'Login Successful',
           description: 'Welcome back!',
@@ -35,7 +35,7 @@ export default function LoginPage() {
         toast({
           variant: 'destructive',
           title: 'Login Failed',
-          description: 'Invalid email or password.',
+          description: result.reason === 'invalid' ? 'Invalid email or password.' : "Couldn't sign in right now. Check your connection and try again.",
         });
       }
     } catch (error) {

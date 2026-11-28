@@ -4,11 +4,12 @@ import { createContext, useState, useEffect, useCallback, type ReactNode } from 
 import { clearDeviceCache } from '@/lib/device-cache';
 import { useRouter } from 'next/navigation';
 import type { User } from '@/lib/types';
+import { loginResult, type LoginResult } from '@/lib/auth-result';
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (email: string, pass: string) => Promise<boolean>;
+  login: (email: string, pass: string) => Promise<LoginResult>;
   logout: () => void;
 }
 
@@ -50,14 +51,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
   }, []);
 
-  const login = async (email: string, pass: string): Promise<boolean> => {
+  const login = async (email: string, pass: string): Promise<LoginResult> => {
+    // No reply at all (offline, server unreachable) is a failure to sign in, not a wrong password.
     const response = await fetch('/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password: pass }),
-    });
+    }).catch(() => null);
+    const result = loginResult(response ? response.status : null);
 
-    if (response.ok) {
+    if (response && result.ok) {
         const userData: Omit<User, 'email'> & { email: string } = await response.json();
         const userToStore: User = { 
             username: userData.username, 
@@ -66,10 +69,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         };
         setUser(userToStore);
         localStorage.setItem('notora-user', JSON.stringify(userToStore));
-        return true;
     }
 
-    return false;
+    return result;
   };
 
   const logout = useCallback(() => {

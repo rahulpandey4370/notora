@@ -1,50 +1,31 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
 import { formatDistanceToNow } from 'date-fns';
 import { Watch, RefreshCw, Loader2, Unplug } from 'lucide-react';
 import { useApp } from '@/hooks/use-app';
-import { getHealthStatus, syncHealthNow, disconnectHealth, type HealthStatus } from '@/lib/health-actions';
+import { useHealthStatus } from '@/hooks/health-status-store';
+import { syncHealthNow, disconnectHealth } from '@/lib/health-actions';
+import { shown } from '@/lib/health-status';
 
 /** Connect / sync / reconnect Fitbit (via Google Health). Data lands in the Steps, Sleep and Resting heart rate trackers. Styled for the Logs page (inside .fit-ui). */
 export default function HealthConnectCard() {
   const { toast, reload } = useApp();
-  const params = useSearchParams();
-  const router = useRouter();
-  const [status, setStatus] = useState<HealthStatus | null>(null);
-  const [busy, setBusy] = useState(false);
+  // Shared with the hero chip (FitbitChip), which also announces the Google redirect's ?health= result.
+  const { status: fitbit, busy, refresh, run } = useHealthStatus();
 
-  const refresh = useCallback(() => getHealthStatus().then(setStatus).catch(() => setStatus({ state: 'unavailable' })), []);
-  useEffect(() => { void refresh(); }, [refresh]);
+  const status = shown(fitbit);
+  if (!status) return null;
 
-  // Result of the Google redirect (?health=connected|error&message=...).
-  useEffect(() => {
-    const result = params.get('health');
-    if (!result) return;
-    const message = params.get('message') ?? undefined;
-    if (result === 'connected') { toast({ title: 'Fitbit connected', description: message }); void reload(); }
-    else if (result === 'not_configured') toast({ variant: 'destructive', title: 'Fitbit sync is not set up on the server yet' });
-    else toast({ variant: 'destructive', title: "Couldn't connect Fitbit", description: message });
-    router.replace('/logs');
-  }, [params, toast, reload, router]);
-
-  if (!status || status.state === 'unavailable') return null;
-
-  const sync = async () => {
-    setBusy(true);
+  const sync = () => run(async () => {
     const r = await syncHealthNow().catch((e: Error) => ({ ok: false, message: e.message }));
     toast({ variant: r.ok ? 'default' : 'destructive', title: r.ok ? 'Fitbit synced' : 'Fitbit sync problem', description: r.message });
     await Promise.all([reload(), refresh()]);
-    setBusy(false);
-  };
+  });
 
-  const disconnect = async () => {
-    setBusy(true);
+  const disconnect = () => run(async () => {
     await disconnectHealth().catch(() => {});
     await refresh();
-    setBusy(false);
-  };
+  });
 
   const connectHref = '/api/health/connect';
   return (

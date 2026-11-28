@@ -32,22 +32,25 @@ function Section({ icon: Icon, title, hint, children }: { icon: typeof UserRound
   );
 }
 
+/** The change-password form: what was typed stays until the change goes through. */
+type PasswordState = { kind: 'idle' } | { kind: 'busy' } | { kind: 'changed' } | { kind: 'failed'; msg: string };
+
 function Password({ email }: { email: string }) {
   const [f, setF] = useState({ current: '', next: '', confirm: '' });
-  const [state, setState] = useState<{ busy?: boolean; msg?: string; ok?: boolean }>({});
+  const [state, setState] = useState<PasswordState>({ kind: 'idle' });
   const valid = f.current && f.next.length >= 6 && f.next === f.confirm;
   const submit = async () => {
-    if (!valid || state.busy) return;
-    setState({ busy: true });
+    if (!valid || state.kind === 'busy') return;
+    setState({ kind: 'busy' });
     try {
       const r = await fetch('/api/change-password', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, currentPassword: f.current, newPassword: f.next }) });
-      if (r.ok) { setState({ ok: true, msg: 'Password changed ✓' }); setF({ current: '', next: '', confirm: '' }); }
-      else { const j = await r.json().catch(() => ({})); setState({ msg: j?.message || j?.error || 'Couldn’t change it. Check your current password.' }); }
-    } catch { setState({ msg: 'Couldn’t reach the server. Try again.' }); }
+      if (r.ok) { setState({ kind: 'changed' }); setF({ current: '', next: '', confirm: '' }); }
+      else { const j = await r.json().catch(() => ({})); setState({ kind: 'failed', msg: j?.message || j?.error || 'Couldn’t change it. Check your current password.' }); }
+    } catch { setState({ kind: 'failed', msg: 'Couldn’t reach the server. Try again.' }); }
   };
   const input = (key: keyof typeof f, label: string, auto: string) => (
     <label className="flex flex-col gap-1 text-sm"><span className="font-medium">{label}</span>
-      <input className="f-input" type="password" autoComplete={auto} value={f[key]} onChange={e => { setF(x => ({ ...x, [key]: e.target.value })); setState({}); }} />
+      <input className="f-input" type="password" autoComplete={auto} value={f[key]} onChange={e => { setF(x => ({ ...x, [key]: e.target.value })); setState({ kind: 'idle' }); }} />
     </label>
   );
   return (
@@ -58,9 +61,10 @@ function Password({ email }: { email: string }) {
         {input('next', 'New password (6+ characters)', 'new-password')}
         {input('confirm', 'Confirm new password', 'new-password')}
         {f.confirm && f.next !== f.confirm && <p className="f-bad text-xs">The new passwords don’t match.</p>}
-        {state.msg && <p className={`text-sm ${state.ok ? 'f-good font-semibold' : 'f-bad'}`} aria-live="polite">{state.msg}</p>}
-        <button type="button" className="f-pill f-pill-primary w-full" disabled={!valid || state.busy} onClick={() => void submit()}>
-          {state.busy && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}Change password
+        {state.kind === 'changed' && <p className="text-sm f-good font-semibold" aria-live="polite">Password changed ✓</p>}
+        {state.kind === 'failed' && <p className="text-sm f-bad" aria-live="polite">{state.msg}</p>}
+        <button type="button" className="f-pill f-pill-primary w-full" disabled={!valid || state.kind === 'busy'} onClick={() => void submit()}>
+          {state.kind === 'busy' && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}Change password
         </button>
       </div>
     </details>
@@ -128,9 +132,9 @@ export function ProfilePage({ data, onDataChange, user, onLogout, showcase = fal
           </ul>
           {showcase ? <p className="f-muted mt-3 text-sm">Sign in to turn on notifications.</p> : (
             <div className="mt-3 space-y-2">
-              <button type="button" className={`f-pill w-full ${push.status === 'on' ? '' : 'f-pill-primary'}`} disabled={push.busy || push.status === 'loading' || push.status === 'unsupported' || push.status === 'blocked'} onClick={() => void togglePush()}>
+              <button type="button" className={`f-pill w-full ${push.status === 'on' ? '' : 'f-pill-primary'}`} disabled={push.busy || push.status === 'loading' || push.status === 'unsupported' || push.status === 'unavailable' || push.status === 'blocked'} onClick={() => void togglePush()}>
                 <Bell className="h-4 w-4" aria-hidden />
-                {push.status === 'on' ? 'Turn off on this device' : push.status === 'blocked' ? 'Blocked in browser settings' : push.status === 'unsupported' ? 'Not supported here (add to Home Screen on iPhone)' : 'Turn on for this device'}
+                {push.status === 'on' ? 'Turn off on this device' : push.status === 'blocked' ? 'Blocked in browser settings' : push.status === 'unsupported' ? 'Not supported here (add to Home Screen on iPhone)' : push.status === 'unavailable' ? 'Not ready here yet (reload the app and try again)' : 'Turn on for this device'}
               </button>
               {pushMsg && <p className="f-muted text-sm" aria-live="polite">{pushMsg}</p>}
             </div>

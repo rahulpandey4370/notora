@@ -93,6 +93,10 @@ export default function UserProfile({ user, userStats, onDayEnd, onWeekly }: Use
         if (response.ok) {
             toast({ title: 'Password changed successfully!' });
             setIsPasswordDialogOpen(false);
+            // Only now: after a failure the dialog keeps what was typed, so one wrong field doesn't mean retyping all three.
+            setCurrentPassword('');
+            setNewPassword('');
+            setConfirmNewPassword('');
         } else {
             const errorData = await response.json();
             toast({ variant: 'destructive', title: 'Failed to change password', description: errorData.error || 'An unknown error occurred.' });
@@ -102,9 +106,6 @@ export default function UserProfile({ user, userStats, onDayEnd, onWeekly }: Use
         toast({ variant: 'destructive', title: 'An error occurred', description: 'Please try again later.' });
     } finally {
         setPasswordChangeLoading(false);
-        setCurrentPassword('');
-        setNewPassword('');
-        setConfirmNewPassword('');
     }
   }
 

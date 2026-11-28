@@ -18,9 +18,9 @@ import { ChevronLeft, ChevronRight, ClipboardList, CalendarDays } from 'lucide-r
 import { format, startOfMonth, addMonths, subMonths, isSameDay, startOfDay, addDays, subDays, isAfter, isSameMonth, endOfMonth, startOfWeek, isWithinInterval, isBefore, isYesterday, setHours, setMinutes, setSeconds, endOfDay , parseISO} from 'date-fns';
 import { toYmd } from '@/lib/date-utils';
 import type { Task } from '@/lib/types';
-import TaskItem, { crossesReward, deleteWithUndo, editSingleTask } from '@/components/notora/TaskItem';
+import TaskItem, { crossesReward, deleteWithUndo, editSingleTask, wontDoWithUndo } from '@/components/notora/TaskItem';
 import { weekStart } from '@/lib/week';
-import { doneOn, monthXp, overdueOn, tasksOn, toggleOn, OVERDUE_GRACE_HOUR } from '@/lib/task-status';
+import { carriedForward, doneOn, monthXp, overdueOn, statusOn, tasksOn, toggleOn, OVERDUE_GRACE_HOUR } from '@/lib/task-status';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getTaskXp } from '@/lib/utils';
@@ -193,14 +193,7 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
 
     const newTasks = data.tasks.map(t => {
       if (t.id === id) {
-        const originalXp = t.originalXp || getTaskXp(t);
-
-        return {
-          ...t,
-          date: toYmd(addDays(parseISO(t.date!), 1)),
-          carryForwardCount: (t.carryForwardCount || 0) + 1,
-          originalXp: originalXp,
-        };
+        return carriedForward(t); // lib/task-status: next day, one more carry, any "won't do" cleared
       }
       return t;
     });
@@ -260,7 +253,11 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
                                 // Yesterday is not overdue until 11 PM today (OVERDUE_GRACE_HOUR, lib/task-status).
                                 const isPastDue = overdueOn(dayStr, new Date(), OVERDUE_GRACE_HOUR);
 
-                                const canCarryForward = task.type === 'single' && isPastDue && !isCompleted && (task.carryForwardCount || 0) < 2;
+                                // One-off tasks have a named status (lib/task-status); "won't do" keeps the task on its day.
+                                const status = task.type === 'single' ? statusOn(task, dayStr, new Date()) : undefined;
+                                const wontDo = status === 'wontDo';
+                                const canCarryForward = status === 'overdue' && (task.carryForwardCount || 0) < 2;
+                                const canWontDo = status === 'yesterday' || status === 'overdue' || wontDo;
           
                                 return (
                                     <TaskItem
@@ -273,8 +270,10 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
                                         onEdit={task.type === 'single' ? e => onEdit(task.id, e) : undefined}
                                         isCompleted={isCompleted}
                                         onCarryForward={canCarryForward ? () => handleCarryForward(task.id) : undefined}
-                                        isPastDue={isPastDue && !isCompleted}
-                                        className={cn((isPastDue && !isCompleted) ? "bg-muted/50" : "")}
+                                        status={status}
+                                        onWontDo={canWontDo ? () => wontDoWithUndo(task.id, latest, handleDataChange, toast) : undefined}
+                                        isPastDue={isPastDue && !isCompleted && !wontDo}
+                                        className={cn((isPastDue && !isCompleted && !wontDo) ? "bg-muted/50" : "")}
                                     />
                                 );
                             })}

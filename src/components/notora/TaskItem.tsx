@@ -2,7 +2,7 @@
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { Trash2, ChevronsRight, Repeat, Pencil } from "lucide-react";
+import { Trash2, ChevronsRight, Repeat, Pencil, Ban } from "lucide-react";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Input } from "../ui/input";
@@ -12,6 +12,7 @@ import type { AppData, Task } from "@/lib/types";
 import { ToastAction } from "../ui/toast";
 import type { useToast } from "@/hooks/use-toast";
 import { getTaskXp } from "@/lib/utils";
+import { skipOn, skippedOn, taskDay, type DayStatus } from "@/lib/task-status";
 import { Badge } from "../ui/badge";
 import { motion } from 'framer-motion';
 import { useTheme } from "next-themes";
@@ -30,6 +31,10 @@ interface TaskItemProps {
   /** Single tasks: edit title, priority and date in place. */
   onEdit?: (change: { title: string; priority: Task['priority']; date?: string }) => void;
   isPastDue?: boolean;
+  /** Past one-off tasks: mark "won't do" (it stays on its day, no longer open or overdue), or undo it. */
+  onWontDo?: () => void;
+  /** The task's status on this row's day (lib/task-status); 'wontDo' shows the tag. */
+  status?: DayStatus;
   className?: string;
 }
 
@@ -40,7 +45,29 @@ export const crossesReward = (before: number, after: number) => before < 100 && 
 export function editSingleTask(task: Task, edit: { title: string; priority: Task['priority']; date?: string }): { task: Task; xpDelta: number } {
   const completions = edit.date && task.date ? (task.completions || []).map(c => (c === task.date ? edit.date! : c)) : task.completions;
   const next = { ...task, ...edit, completions };
+  // Moved to another day: a "won't do" on the old day doesn't follow it.
+  if (edit.date && task.date && edit.date !== task.date) delete next.skipped;
   return { task: next, xpDelta: (completions || []).length * (getTaskXp(next) - getTaskXp(task)) };
+}
+
+/**
+ * Mark a one-off task "won't do" on its own day, or undo it (lib/task-status). Marking shows a toast with Undo,
+ * because on the Dashboard the task leaves the list; Undo reads `latest`, so later edits are kept.
+ */
+export function wontDoWithUndo(id: string, latest: { current: AppData }, onDataChange: (d: AppData) => void, toast: ReturnType<typeof useToast>['toast']) {
+  /** Flip the mark, or with `only: 'clear'` just remove it (Undo must never re-mark a task the user has since unmarked). */
+  const change = (only?: 'clear') => {
+    const cur = latest.current;
+    const task = cur.tasks.find(t => t.id === id);
+    if (!task) return null;
+    const day = taskDay(task.date);
+    if (only === 'clear' && !skippedOn(task, day)) return null;
+    const next = skipOn(task, day);
+    if (next !== task) onDataChange({ ...cur, tasks: cur.tasks.map(t => (t.id === id ? next : t)) });
+    return skippedOn(next, day) ? next : null;
+  };
+  const marked = change();
+  if (marked) toast({ title: "Marked won't do", description: `"${marked.title}" stays on its day and is no longer overdue.`, action: <ToastAction altText="Undo won't do" onClick={() => change('clear')}>Undo</ToastAction> });
 }
 
 /**
@@ -70,7 +97,7 @@ const priorityStyles = {
     Hard: "border-red-500/50 bg-red-500/10 text-red-700 dark:text-red-300",
 }
 
-export default function TaskItem({ task, onToggle, onDelete, isCompleted, onCarryForward, onDeleteFromToday, onEditFromToday, onEdit, isPastDue = false, className }: TaskItemProps) {
+export default function TaskItem({ task, onToggle, onDelete, isCompleted, onCarryForward, onDeleteFromToday, onEditFromToday, onEdit, isPastDue = false, onWontDo, status, className }: TaskItemProps) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState({ title: task.title, priority: task.priority, date: task.date });
   const save = onEditFromToday ?? onEdit;
@@ -81,6 +108,7 @@ export default function TaskItem({ task, onToggle, onDelete, isCompleted, onCarr
   const { resolvedTheme } = useTheme();
   
   const isOverdue = isPastDue && !isCompleted;
+  const wontDo = status === 'wontDo';
   const canCarryForward = !!onCarryForward;
 
   return (
@@ -90,14 +118,17 @@ export default function TaskItem({ task, onToggle, onDelete, isCompleted, onCarr
       animate={{ scale: 1, opacity: 1 }}
       exit={{ scale: 0.9, opacity: 0 }}
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+      data-status={status}
       className={cn(
-        "flex items-center gap-4 p-3 nb-border rounded-lg bg-card hover:nb-shadow transition-shadow duration-200",
+        // Wraps on a narrow screen: the action buttons drop to a second line instead of squeezing the title away.
+        "flex flex-wrap items-center gap-x-4 gap-y-1 p-3 nb-border rounded-lg bg-card hover:nb-shadow transition-shadow duration-200",
         isOverdue && "bg-muted/50 opacity-70",
+        wontDo && "bg-muted/40",
         className
       )}
     >
       <div
-        className="flex items-center gap-4 flex-1 rounded-md"
+        className="flex min-w-[9rem] items-center gap-4 flex-1 rounded-md"
       >
         <Checkbox
           id={uniqueId}
@@ -113,19 +144,29 @@ export default function TaskItem({ task, onToggle, onDelete, isCompleted, onCarr
         >
           <span className={cn(
             isCompleted && 'line-through bg-primary/70 text-muted-foreground px-2 rounded-sm',
-            isOverdue && 'text-muted-foreground'
+            (isOverdue || wontDo) && 'text-muted-foreground'
           )}>
             {task.title}
           </span>
+          {wontDo && <span className="ml-2 inline-block rounded-full border border-border px-2 py-0.5 align-middle text-[11px] font-normal text-muted-foreground">Won&apos;t do</span>}
           {repeating && <Repeat className="ml-1.5 inline h-3 w-3 text-muted-foreground" aria-label={task.type === 'monthly' ? 'Repeats monthly' : 'Repeats daily'} />}
         </label>
       </div>
       
       <Badge variant="outline" className={`font-mono text-xs ${priorityStyles[task.priority]}`}>{taskXp} XP</Badge>
 
+      <div className="ml-auto flex shrink-0 items-center gap-2">
       {canCarryForward && (
-        <Button variant="ghost" size="icon" onClick={onCarryForward} className="h-8 w-8 text-blue-500 hover:text-blue-500 rounded-full" title="Carry forward to next day" aria-label={`Carry ${task.title} forward to next day`}>
+        <Button variant="ghost" size="icon" onClick={onCarryForward} className="h-11 w-11 md:h-8 md:w-8 text-blue-500 hover:text-blue-500 rounded-full" title="Carry forward to next day" aria-label={`Carry ${task.title} forward to next day`}>
             <ChevronsRight className="h-4 w-4" />
+        </Button>
+      )}
+
+      {onWontDo && (
+        <Button variant="ghost" size="icon" onClick={onWontDo} aria-pressed={wontDo} title={wontDo ? "Undo won't do" : "Won't do: keep it on its day, stop showing it as overdue"}
+          aria-label={wontDo ? `Undo won't do for ${task.title}` : `Won't do ${task.title}`}
+          className={cn("h-11 w-11 md:h-8 md:w-8 rounded-full text-black/60 hover:bg-primary/10 dark:text-slate-400", wontDo && "bg-primary/15 text-foreground")}>
+          <Ban className="h-4 w-4" />
         </Button>
       )}
 
@@ -133,7 +174,7 @@ export default function TaskItem({ task, onToggle, onDelete, isCompleted, onCarr
         <>
           <Button variant="ghost" size="icon" aria-label={`Edit ${task.title}`} title={onEditFromToday ? 'Edit from today on' : 'Edit task'}
             onClick={() => { setDraft({ title: task.title, priority: task.priority, date: task.date }); setEditing(true); }}
-            className="h-8 w-8 text-black/60 hover:bg-primary/10 rounded-full dark:text-slate-400">
+            className="h-11 w-11 md:h-8 md:w-8 text-black/60 hover:bg-primary/10 rounded-full dark:text-slate-400">
             <Pencil className="h-4 w-4" />
           </Button>
           <Dialog open={editing} onOpenChange={setEditing}>
@@ -169,7 +210,7 @@ export default function TaskItem({ task, onToggle, onDelete, isCompleted, onCarr
       {onDeleteFromToday ? (
         <AlertDialog>
           <AlertDialogTrigger asChild>
-            <Button variant="ghost" size="icon" aria-label={`Remove ${task.title}`} className="h-8 w-8 text-black/60 hover:text-destructive hover:bg-destructive/10 rounded-full dark:text-slate-400 dark:hover:text-destructive">
+            <Button variant="ghost" size="icon" aria-label={`Remove ${task.title}`} className="h-11 w-11 md:h-8 md:w-8 text-black/60 hover:text-destructive hover:bg-destructive/10 rounded-full dark:text-slate-400 dark:hover:text-destructive">
               <Trash2 className="h-4 w-4" />
             </Button>
           </AlertDialogTrigger>
@@ -188,10 +229,11 @@ export default function TaskItem({ task, onToggle, onDelete, isCompleted, onCarr
           </AlertDialogContent>
         </AlertDialog>
       ) : (
-        <Button variant="ghost" size="icon" onClick={onDelete} aria-label={`Delete ${task.title}`} className="h-8 w-8 text-black/60 hover:text-destructive hover:bg-destructive/10 rounded-full dark:text-slate-400 dark:hover:text-destructive">
+        <Button variant="ghost" size="icon" onClick={onDelete} aria-label={`Delete ${task.title}`} className="h-11 w-11 md:h-8 md:w-8 text-black/60 hover:text-destructive hover:bg-destructive/10 rounded-full dark:text-slate-400 dark:hover:text-destructive">
           <Trash2 className="h-4 w-4" />
         </Button>
       )}
+      </div>
     </motion.div>
   );
 }

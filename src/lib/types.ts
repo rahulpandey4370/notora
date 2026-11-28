@@ -152,6 +152,8 @@ export const TaskSchema = z.object({
   endsOn: z.string().optional(),
   /** Recurring: first day shown (set on the copy an edit creates); otherwise the creation day. */
   startsOn: z.string().optional(),
+  /** Days marked "won't do" (stored like ticks): the task stays on its day but is no longer open or overdue. See lib/task-status. */
+  skipped: z.array(z.string()).optional(),
 });
 export type Task = z.infer<typeof TaskSchema>;
 

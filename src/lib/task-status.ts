@@ -80,13 +80,71 @@ export function toggleOn(task: Task, day: string): { task: Task; xpDelta: number
   const key = tickKey(task, day);
   return done.includes(key)
     ? { task: { ...task, completions: done.filter(c => c !== key) }, xpDelta: -xp, done: false }
-    : { task: { ...task, completions: [...done, key] }, xpDelta: xp, done: true };
+    : { task: unskip({ ...task, completions: [...done, key] }, ownKey(task, day)), xpDelta: xp, done: true }; // doing it after all clears a "won't do"
+}
+
+// --- Won't do -------------------------------------------------------------------------------------------------------
+
+/** The key a task's own status is stored under on `day`: a one-off always uses its own day. */
+const ownKey = (task: Task, day: string) => (task.type === 'single' && task.date ? taskDay(task.date) : tickKey(task, day));
+function unskip(task: Task, key: string): Task {
+  if (!task.skipped?.includes(key)) return task;
+  const { skipped, ...rest } = task;
+  const left = skipped.filter(k => k !== key);
+  return left.length ? { ...rest, skipped: left } : rest;
+}
+
+/** Marked "won't do" on `day`: it stays on its day but is no longer open or overdue. */
+export const skippedOn = (task: Task, day: string) => !!task.skipped?.includes(ownKey(task, day));
+
+/** Mark "won't do" on `day`, or undo it. No XP either way. A done task is left alone: done wins. */
+export function skipOn(task: Task, day: string): Task {
+  if (doneOn(task, day)) return task;
+  const key = ownKey(task, day);
+  return skippedOn(task, day) ? unskip(task, key) : { ...task, skipped: [...(task.skipped ?? []), key] };
 }
 
 /**
- * The hour (today) until which yesterday's unticked tasks are not yet overdue. The Tasks page uses it; the
- * Dashboard lists them as overdue from midnight. Which of the two is right is an open product decision: this
- * constant and the `graceHour` argument below are the only places it lives.
+ * A task's status on a day, as one named value:
+ *   done       ticked
+ *   wontDo     marked "won't do"
+ *   open       today or later
+ *   yesterday  yesterday's, unticked, and still inside the grace (before OVERDUE_GRACE_HOUR today)
+ *   overdue    its day has passed
+ * Done wins over won't do; both win over the clock.
+ */
+export type DayStatus = 'done' | 'wontDo' | 'open' | 'yesterday' | 'overdue';
+export function statusOn(task: Task, day: string, now: Date, graceHour: number | undefined = OVERDUE_GRACE_HOUR): DayStatus {
+  if (doneOn(task, day)) return 'done';
+  if (skippedOn(task, day)) return 'wontDo';
+  if (day >= ymd(now)) return 'open';
+  return overdueOn(day, now, graceHour) ? 'overdue' : 'yesterday';
+}
+
+/**
+ * Past one-off tasks still waiting, for the Dashboard: yesterday's inside the grace, and the overdue ones.
+ * `now` must be the real time, not midnight, or yesterday's would never turn overdue.
+ */
+export function pastOpen(tasks: Task[], now: Date, graceHour: number | undefined = OVERDUE_GRACE_HOUR): { yesterday: Task[]; overdue: Task[] } {
+  const yesterday: Task[] = [], overdue: Task[] = [];
+  for (const t of tasks) {
+    const day = t.type === 'single' ? taskDay(t.date) : '';
+    if (!day) continue; // not a one-off, or its date can't be read
+    const status = statusOn(t, day, now, graceHour);
+    if (status === 'yesterday') yesterday.push(t); else if (status === 'overdue') overdue.push(t);
+  }
+  return { yesterday, overdue };
+}
+
+/** Carry a one-off task to the next day: one more carry (each costs XP, see getTaskXp), and any "won't do" is cleared. */
+export function carriedForward(task: Task): Task {
+  const { skipped: _dropped, ...rest } = task;
+  return { ...rest, date: ymd(addDays(parseISO(task.date!), 1)), carryForwardCount: (task.carryForwardCount || 0) + 1, originalXp: task.originalXp || getTaskXp(task) };
+}
+
+/**
+ * The hour (today) until which yesterday's unticked tasks are not yet overdue. Until then they are simply
+ * "from yesterday": no overdue styling, no Carry forward. Used by the Tasks page, the Dashboard and the suggestions.
  */
 export const OVERDUE_GRACE_HOUR = 23;
 

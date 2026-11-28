@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import type { Task } from './types';
 import { weekKey } from './week';
-import { doneOn, monthXp, overdueOn, showsOn, taskDay, tasksOn, toggleOn, weekXp, OVERDUE_GRACE_HOUR } from './task-status';
+import { carriedForward, doneOn, monthXp, overdueOn, pastOpen, showsOn, skipOn, skippedOn, statusOn, taskDay, tasksOn, toggleOn, weekXp, OVERDUE_GRACE_HOUR } from './task-status';
 
 // Saturday 28 Nov 2026; its Mon–Sun week is 23–29 Nov.
 const SAT = new Date(2026, 10, 28, 15, 0, 0);
@@ -77,4 +77,52 @@ assert.equal(doneOn({ ...junk, completions: ['2026-11-28'] }, '2026-11-28'), fal
 assert.equal(doneOn({ ...weekly, completions: ['garbage', '2026-11-23'] }, '2026-11-28'), true, 'a bad tick is skipped, a good one still counts');
 assert.equal(toggleOn({ ...weekly, completions: ['garbage'] }, '2026-11-28').done, true);
 assert.deepEqual(tasksOn([junk, single], '2026-11-28').map(x => x.id), ['s']);
+
+// --- A one-off task's status on its day: done | wontDo | open | yesterday (inside the 11 PM grace) | overdue.
+const at = (h: number, m = 0) => new Date(2026, 10, 28, h, m, 0); // Saturday 28 Nov
+const yday = t({ id: 'y', type: 'single', date: '2026-11-27' });
+const old3 = t({ id: 'o', type: 'single', date: '2026-11-25' });
+assert.equal(statusOn(single, '2026-11-28', at(15)), 'open', 'today');
+assert.equal(statusOn(t({ id: 'f', type: 'single', date: '2026-11-30' }), '2026-11-30', at(15)), 'open', 'a future day');
+assert.equal(statusOn(yday, '2026-11-27', at(15)), 'yesterday', 'unticked, still inside the grace');
+assert.equal(statusOn(yday, '2026-11-27', at(22, 59)), 'yesterday');
+assert.equal(statusOn(yday, '2026-11-27', at(23, 0)), 'overdue', 'from 11 PM');
+assert.equal(statusOn(old3, '2026-11-25', at(9)), 'overdue', 'older than yesterday: no grace');
+assert.equal(statusOn({ ...yday, completions: ['2026-11-27'] }, '2026-11-27', at(23, 30)), 'done');
+
+// Won't do: the task stays on its day, is no longer open or overdue, and earns or loses no XP.
+const skipped = skipOn(old3, '2026-11-25');
+assert.deepEqual(skipped.skipped, ['2026-11-25']);
+assert.equal(skippedOn(skipped, '2026-11-25'), true);
+assert.equal(statusOn(skipped, '2026-11-25', at(9)), 'wontDo');
+assert.equal(showsOn(skipped, '2026-11-25'), true, 'still on its day');
+assert.equal(doneOn(skipped, '2026-11-25'), false, 'not done: totals still count it as missed');
+assert.deepEqual(skipped.completions, []);
+// Tapping it again undoes it.
+const back = skipOn(skipped, '2026-11-25');
+assert.equal(statusOn(back, '2026-11-25', at(9)), 'overdue');
+assert.ok(!back.skipped?.length);
+// Done wins, and doing it after all clears the skip.
+const doneLater = toggleOn(skipped, '2026-11-25');
+assert.deepEqual([doneLater.done, doneLater.xpDelta, statusOn(doneLater.task, '2026-11-25', at(9))], [true, 25, 'done']);
+assert.ok(!skippedOn(doneLater.task, '2026-11-25'), 'ticking clears the skip');
+assert.equal(statusOn({ ...skipped, completions: ['2026-11-25'] }, '2026-11-25', at(9)), 'done', 'done wins over won’t do');
+assert.equal(skipOn({ ...old3, completions: ['2026-11-25'] }, '2026-11-25').skipped?.length ?? 0, 0, 'a done task can’t be marked won’t do');
+// A task already carried forward twice can still be marked won't do.
+assert.equal(statusOn(skipOn(t({ id: 'c2', type: 'single', date: '2026-11-25', carryForwardCount: 2 }), '2026-11-25'), '2026-11-25', at(9)), 'wontDo');
+// Carrying it forward moves it to the next day and clears the skip, so it doesn't arrive already dismissed.
+const carried = carriedForward(skipped);
+assert.deepEqual([carried.date, carried.carryForwardCount, carried.originalXp, carried.skipped?.length ?? 0], ['2026-11-26', 1, 25, 0]);
+assert.equal(carriedForward({ ...carried }).originalXp, 25, 'the original XP is kept across carries');
+
+// The Dashboard's two lists of past one-off tasks, from the real time (not midnight).
+const mix = [single, yday, old3, skipped, { ...yday, id: 'yd', completions: ['2026-11-27'] }, daily, weekly, monthly];
+assert.deepEqual(pastOpen(mix, at(15)), { yesterday: [yday], overdue: [old3] });
+assert.deepEqual(pastOpen(mix, at(22, 59)).yesterday.map(x => x.id), ['y']);
+assert.deepEqual(pastOpen(mix, at(23, 0)), { yesterday: [], overdue: [yday, old3] }, 'at 11 PM yesterday’s task becomes overdue');
+// A one-off task whose date can't be read is in neither list (it used to count as overdue, where Carry forward would throw).
+assert.deepEqual(pastOpen([junk, old3], at(15)), { yesterday: [], overdue: [old3] });
+// Week and month XP don't move when a task is marked won't do.
+const before = [weekXp([yday, old3], SAT), monthXp([yday, old3], SAT)];
+assert.deepEqual([weekXp([yday, skipped], SAT), monthXp([yday, skipped], SAT)], before);
 console.log('task-status: all checks passed');

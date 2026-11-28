@@ -10,7 +10,7 @@ import { toYmd } from '@/lib/date-utils';
 import { getTaskXp } from '@/lib/utils';
 import { v4 as uuidv4 } from 'uuid';
 import { deleteFrom, editFrom, isRepeating, monthlyShowsIn, recurringShowsOn } from '@/lib/tasks';
-import { doneOn, monthXp, overdueOn, taskDay, tasksOn, toggleOn, weekXp } from '@/lib/task-status';
+import { carriedForward, doneOn, monthXp, pastOpen, tasksOn, toggleOn, weekXp } from '@/lib/task-status';
 import { useApp } from '@/hooks/use-app';
 import { PolarGrid, PolarRadiusAxis, RadialBar, RadialBarChart, Label } from "recharts"
 import {
@@ -18,7 +18,7 @@ import {
   ChartContainer,
 } from "@/components/ui/chart"
 import TaskList from './TaskList';
-import TaskItem, { crossesReward, deleteWithUndo, editSingleTask } from './TaskItem';
+import TaskItem, { crossesReward, deleteWithUndo, editSingleTask, wontDoWithUndo } from './TaskItem';
 import { weekStart } from '@/lib/week';
 import { motion } from 'framer-motion';
 import { Progress } from '../ui/progress';
@@ -83,14 +83,7 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
 
     const newTasks = data.tasks.map(t => {
       if (t.id === id) {
-        const originalXp = t.originalXp || getTaskXp(t);
-
-        return {
-          ...t,
-          date: toYmd(addDays(parseISO(t.date!), 1)),
-          carryForwardCount: (t.carryForwardCount || 0) + 1,
-          originalXp: originalXp,
-        };
+        return carriedForward(t); // lib/task-status: next day, one more carry, any "won't do" cleared
       }
       return t;
     });
@@ -145,9 +138,11 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
   }), [tasks, todayStr]);
 
   /** Past single tasks not ticked on their day: tick late (counts on that day) or carry forward, as on the Tasks page. */
-  // No grace hour here: yesterday's tasks are listed as overdue from midnight (the Tasks page waits until 11 PM;
-  // see OVERDUE_GRACE_HOUR in lib/task-status, an open decision).
-  const overdueTasks = useMemo(() => tasks.filter(t => t.type === 'single' && !!t.date && overdueOn(taskDay(t.date), today) && !doneOn(t, taskDay(t.date))), [tasks, today]);
+  // Past one-off tasks still waiting (lib/task-status): yesterday's are "From yesterday" until 11 PM, then overdue.
+  // The real time is needed here, not midnight, or yesterday's would never turn overdue; the hour re-keys the memo.
+  const hourNow = new Date().getHours();
+  const { yesterday: fromYesterday, overdue: overdueTasks } = useMemo(() => pastOpen(tasks, new Date()), [tasks, todayStr, hourNow]); // eslint-disable-line react-hooks/exhaustive-deps
+  const onWontDo = (id: string) => wontDoWithUndo(id, latest, onDataChange, toast);
 
   // Week and month totals: lib/task-status (the same code the Tasks page uses for its month ring).
   const { weeklyXp, totalWeeklyXp } = useMemo(() => { const w = weekXp(tasks, today); return { weeklyXp: w.earned, totalWeeklyXp: w.possible }; }, [tasks, today]);
@@ -226,6 +221,23 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
                   </CardHeader>
                   <CardContent className="space-y-4">
                       <TaskList data={data} onDataChange={onDataChange} currentMonth={today} />
+                      {fromYesterday.length > 0 && (
+                        <div className="space-y-2">
+                          <h3 className="text-sm font-semibold text-muted-foreground">From yesterday ({fromYesterday.length})</h3>
+                          {fromYesterday.map(task => (
+                            <TaskItem
+                                key={`${task.id}-${task.date}`}
+                                task={task}
+                                onToggle={() => onToggle(task.id, parseISO(task.date!))}
+                                onDelete={() => onDelete(task.id)}
+                                onEdit={e => onEdit(task.id, e)}
+                                isCompleted={false}
+                                status="yesterday"
+                                onWontDo={() => onWontDo(task.id)}
+                            />
+                          ))}
+                        </div>
+                      )}
                       {overdueTasks.length > 0 && (
                         <div className="space-y-2">
                           <h3 className="text-sm font-semibold text-destructive">Overdue ({overdueTasks.length})</h3>
@@ -238,6 +250,8 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
                                 onEdit={e => onEdit(task.id, e)}
                                 isCompleted={false}
                                 isPastDue
+                                status="overdue"
+                                onWontDo={() => onWontDo(task.id)}
                                 onCarryForward={(task.carryForwardCount || 0) < 2 ? () => handleCarryForward(task.id) : undefined}
                             />
                           ))}

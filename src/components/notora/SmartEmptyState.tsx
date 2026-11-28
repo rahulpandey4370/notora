@@ -8,7 +8,7 @@ import { differenceInCalendarDays, format, parseISO } from 'date-fns';
 import type { AppData } from '@/lib/types';
 import { useModelFor } from '@/hooks/use-model-store';
 import { useAsk } from '@/hooks/use-ask';
-import { doneOn, overdueOn, taskDay } from '@/lib/task-status';
+import { pastOpen } from '@/lib/task-status';
 import { suggestNextActions } from '@/ai/flows/next-actions';
 
 interface SmartEmptyStateProps {
@@ -47,8 +47,7 @@ export default function SmartEmptyState({ surface, data, message }: SmartEmptySt
       .sort((a, b) => b.daysSinceLastLog - a.daysSinceLastLog)
       .slice(0, 5);
 
-    const overdueTaskTitles = (data?.tasks ?? [])
-      .filter(t => t.type === 'single' && !!t.date && overdueOn(taskDay(t.date), new Date()) && !doneOn(t, taskDay(t.date))) // lib/task-status
+    const overdueTaskTitles = pastOpen(data?.tasks ?? [], new Date()).overdue // lib/task-status: same list as the Dashboard's Overdue
       .map(t => t.title)
       .slice(0, 5);
 

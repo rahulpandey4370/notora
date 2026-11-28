@@ -33,6 +33,20 @@ Each bug is marked **(R)** if the surveyor read the code that causes it, **(I)**
 | 21 | Data encoded in strings | ids `fitbit-`/`auto-`, meal names "Day total"/"Earlier total" | string prefixes and names | none seen | M |
 | 22 | Smaller ones | FitnessPage overlays (5 flags), model store hydration, auth, `MealNameParts`, Ring/DayLog goal chains | separate flags | none seen | S each |
 
+## Progress
+
+**Batch 1 (2026-11-28), done:**
+
+- **Row 2, page load gate:** `lib/page-gate` (loading / signedOut / failed / ready). A failed first load shows "Couldn't load your workspace · Try again".
+- **Row 16, on-demand AI lifecycle:** `lib/ask` + `hooks/use-ask` (idle / pending / ready / failed, latest reply only). Converted: `TrackerSheet` insights, `AiSummary`, `SmartEmptyState`, the `AddFood` lookup. Not yet: `TaskList` title parsing, `CustomPromptDialog`, `FoodEditor` submit, `BodyCard` photos, `app/usage`.
+- **Row 5, meal/workout edit:** "Edit with AI" runs on `lib/ask`; late replies are dropped, Save waits for the AI, a hand edit drops a proposed split and its note.
+- **Row 3, "Log it" session:** `lib/log-session` (conversation, draft, edits, composing / awaiting, the open save-to-My-Foods editor). Closing mid-request no longer leaves it busy; a late reply is ignored; the editor closes when the draft is replaced; the unused `saved` flag is gone.
+- **Row 6, in part:** a food lookup still running when you switch to Manual is dropped.
+
+Each has a check script in `src/lib` (`page-gate`, `ask`, `log-session`). The live AI reply path was not run (no signed-in session in development); the transitions it uses are covered by the checks.
+
+**Still to do:** rows 1, 4, 7–15, 17–22, the rest of rows 6 and 16.
+
 ## Already explicit (need nothing)
 
 `RealBurn`, `HealthStatus`, `MatchResult`/`Amount`, `FoodsResult`, `SaveResult`, the upload result, `BurnInfo.source`, ProgressHub `Tab` and LogSheet `View`, the toast reducer, `ConfirmDelete`, `UpdatePrompt`.

@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { format } from 'date-fns';
 import { Camera, Check, Copy, Dumbbell, Footprints, Globe, Loader2, Mic, Send, Square, Star, Utensils, X } from 'lucide-react';
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import type { AppData } from '@/lib/types';
 import { useModelFor, useModelStore } from '@/hooks/use-model-store';
-import { parseFitnessLog, type LoggedMealEdit } from '@/ai/flows/parse-fitness-log';
+import { parseFitnessLog } from '@/ai/flows/parse-fitness-log';
 import { MEAL_SLOTS, bmr, describeValueChange, flooredKcal, slotForTime, weightOn, type FitnessDraft, type LogEdit } from '@/lib/fitness';
 import type { MealSlot } from '@/lib/types';
 import type { AddTarget } from './DayLog';
@@ -15,6 +15,7 @@ import { describeFood, foodsFor, matchText, nearestFoods, perBasis, type Food } 
 import { FoodEditor, FoodsPanel } from './FoodsPanel';
 import type { FoodsApi } from './useFoods';
 import { matchable } from '@/lib/food-catalog';
+import { isAwaiting, logSession, NEW_SESSION } from '@/lib/log-session';
 
 const FORM_KEY = 'fit-log-form'; // remembers which tab the user last chose: '0' AI, '1' form, 'foods'
 type View = 'ai' | 'foods' | 'form';
@@ -40,7 +41,6 @@ export function downscale(file: File): Promise<string> {
   });
 }
 
-type Msg = { role: 'user' | 'ai'; text: string; image?: string; error?: boolean };
 const EMPTY = (date: string): FitnessDraft => ({ date, meals: [], activities: [], values: [] });
 
 function NumField({ label, value, onChange, width = 'w-16' }: { label: string; value: number; onChange: (n: number) => void; width?: string }) {
@@ -73,33 +73,30 @@ export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, o
 }) {
   const { webSearch, setWebSearch } = useModelStore();
   const selectedModel = useModelFor('food');
-  const [msgs, setMsgs] = useState<Msg[]>([]);
+  // The session (conversation, draft, pending request) is one state machine: lib/log-session. The composer's own
+  // input below (text, photo, speech) is plain local state.
+  const [session, dispatch] = useReducer(logSession, NEW_SESSION);
+  const { msgs, draft, edits, ver, savingMeal: saving } = session;
+  const busy = isAwaiting(session);
   const [text, setText] = useState('');
   const [interim, setInterim] = useState('');
   const [photo, setPhoto] = useState<string | null>(null);
-  const [draft, setDraft] = useState<FitnessDraft | null>(null);
-  const [edits, setEdits] = useState<LoggedMealEdit[]>([]); // changes to meals already logged that day
   const logged = data.fitnessDays?.[day]?.meals ?? [];
-  const [busy, setBusy] = useState(false);
   const [listening, setListening] = useState(false);
-  const [saved, setSaved] = useState(false);
   const [view, setView] = useState<View>('ai');
   const manual = view !== 'ai';
-  const [saving, setSaving] = useState<number | null>(null); // draft meal being saved to My Foods
-  const [ver, setVer] = useState(0); // bumps on each AI reply so number fields re-read their values
   const recRef = useRef<any>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const endRef = useRef<HTMLDivElement>(null);
-  const reqRef = useRef(0); // newest request id: older replies, or ones from a closed sheet, are dropped
+  const reqRef = useRef(0); // makes request ids; the session keeps the one whose reply still counts
   const supported = typeof window !== 'undefined' && !!SR();
   // Meals logged for today default to the section for this time of day; for another day, lunch.
   const nowSlot: MealSlot = day === today ? slotForTime(new Date().getHours(), new Date().getMinutes()) : 'lunch';
 
   useEffect(() => {
-    reqRef.current++;
     if (open) {
-      setMsgs([]); setText(''); setInterim(''); setPhoto(null); setDraft(null); setEdits([]); setSaved(false);
+      dispatch({ type: 'opened' }); setText(''); setInterim(''); setPhoto(null);
       let v: View = mode === 'form' ? 'form' : 'ai';
       try {
         const last = localStorage.getItem(FORM_KEY);
@@ -107,13 +104,13 @@ export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, o
         if (mode === 'form' && preset?.kind === 'meal' && foods.foods.length) v = 'foods';
         else if (mode === 'type') v = last === '1' ? 'form' : last === 'foods' && foods.foods.length ? 'foods' : 'ai';
       } catch { /* default */ }
-      setView(v); setSaving(null);
+      setView(v);
       const form = v !== 'ai';
       if (form) { /* the form takes focus on tap */ }
       else if (mode === 'photo') setTimeout(() => fileRef.current?.click(), 80);
       else if (mode === 'voice' && SR()) start();
       else setTimeout(() => inputRef.current?.focus(), 150);
-    } else stop();
+    } else { dispatch({ type: 'closed' }); stop(); } // closed: a reply still on its way no longer counts
     return () => recRef.current?.abort?.();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
@@ -138,7 +135,7 @@ export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, o
     };
     rec.onerror = (e: any) => {
       if (e?.error === 'not-allowed' || e?.error === 'service-not-allowed') {
-        setMsgs(m => [...m, { role: 'ai', text: 'The microphone is blocked. Allow it, or just type below.', error: true }]);
+        dispatch({ type: 'noted', text: 'The microphone is blocked. Allow it, or just type below.', error: true });
       }
     };
     rec.onend = () => { setListening(false); setInterim(''); };
@@ -150,7 +147,7 @@ export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, o
   const pick = async (file?: File) => {
     if (!file) return;
     try { setPhoto(await downscale(file)); setTimeout(() => inputRef.current?.focus(), 50); }
-    catch (e: any) { setMsgs(m => [...m, { role: 'ai', text: e.message, error: true }]); }
+    catch (e: any) { dispatch({ type: 'noted', text: e.message, error: true }); }
   };
 
   // How often each saved/catalogue food was logged: on a tie ("milk"), your usual one is logged.
@@ -181,26 +178,23 @@ export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, o
     const said = `${text} ${interim}`.trim();
     if (!said && !photo) return;
     const image = photo ?? undefined;
-    setMsgs(m => [...m, { role: 'user', text: said, image }]);
-    setText(''); setInterim(''); setPhoto(null); setSaved(false);
+    dispatch({ type: 'said', text: said, image });
+    setText(''); setInterim(''); setPhoto(null);
     // Only known foods (My Foods, then the built-in catalogue) in the message ("150g rice, 2 rotis"): log from My Foods, no AI call. Still a draft until Save.
     // Not while a draft or edits are open: "make it 3 rotis" is a correction for the AI.
     const local = !image && said && !hasItems ? matchText(said, foods.foods, nowSlot, matchable(foods.catalog), usage) : null;
     if (local?.kind === 'all') {
-      setDraft(d => ({ ...(d ?? EMPTY(day)), date: d?.date ?? day, meals: [...(d?.meals ?? []), ...local.meals] }));
-      setVer(v => v + 1);
-      setMsgs(m => [...m, { role: 'ai', text: `From your foods, no AI used: ${local.meals.map(x => `${x.name} (${x.kcal} kcal)`).join(', ')}. Check, then Save.` }]);
+      dispatch({ type: 'matched', day, meals: local.meals, text: `From your foods, no AI used: ${local.meals.map(x => `${x.name} (${x.kcal} kcal)`).join(', ')}. Check, then Save.` });
       return;
     }
     if (aiDisabled) {
       // Showcase: a fixed sample so the draft cards and Save can be tried without AI.
-      setDraft({ date: day, meals: [{ name: '2 rotis', kcal: 220, proteinG: 6, slot: nowSlot }], activities: [{ name: 'Jog', minutes: 30, kcal: 320, stepBased: true }], values: [] });
-      setVer(v => v + 1);
-      setMsgs(m => [...m, { role: 'ai', text: 'Demo: a sample result. Sign in for real AI logging.' }]);
+      dispatch({ type: 'drafted', text: 'Demo: a sample result. Sign in for real AI logging.',
+        draft: { date: day, meals: [{ name: '2 rotis', kcal: 220, proteinG: 6, slot: nowSlot }], activities: [{ name: 'Jog', minutes: 30, kcal: 320, stepBased: true }], values: [] } });
       return;
     }
-    setBusy(true);
     const req = ++reqRef.current;
+    dispatch({ type: 'asked', req });
     const kg = weightOn(data, day);
     try {
       const r = await parseFitnessLog({
@@ -215,21 +209,18 @@ export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, o
         currentEdits: edits.length ? edits : undefined,
         knownFoods: said ? knownFor(said) : undefined,
       }, selectedModel);
-      if (req !== reqRef.current) return;
       const { reply, web, edits: changed, ...next } = r;
-      setEdits(changed);
       next.meals = next.meals.map(m => (m.slot ? m : { ...m, slot: nowSlot })); // the AI couldn't tell: file it under the meal for this time of day
-      setDraft(next);
-      setVer(v => v + 1);
       const text = reply || 'Here’s what I got. Check the numbers, then Save.';
-      setMsgs(m => [...m, { role: 'ai', text: web ? `${text} 🌐 Checked the web.` : webSearch ? `${text} (Web search found nothing, so these are estimates.)` : text }]);
+      // The session drops this if the request is no longer the pending one (a newer message, or the sheet closed).
+      dispatch({ type: 'replied', req, draft: next, edits: changed, text: web ? `${text} 🌐 Checked the web.` : webSearch ? `${text} (Web search found nothing, so these are estimates.)` : text });
     } catch {
-      if (req === reqRef.current) setMsgs(m => [...m, { role: 'ai', text: "Couldn't read that. Check your connection and try again.", error: true }]);
-    } finally { if (req === reqRef.current) setBusy(false); }
+      dispatch({ type: 'failed', req, text: "Couldn't read that. Check your connection and try again." });
+    }
   };
 
-  const update = (fn: (d: FitnessDraft) => FitnessDraft) => setDraft(d => (d ? fn(d) : d));
-  const remove = (fn: (d: FitnessDraft) => FitnessDraft) => { update(fn); setVer(v => v + 1); };
+  const update = (fn: (d: FitnessDraft) => FitnessDraft) => dispatch({ type: 'draftEdited', update: fn });
+  const remove = (fn: (d: FitnessDraft) => FitnessDraft) => dispatch({ type: 'draftCut', update: fn });
   const hasItems = edits.length > 0 || (!!draft && (draft.meals.length + draft.activities.length + draft.values.length) > 0);
   const trackerName = (id: string) => data.logTrackers.find(t => t.id === id);
   const save = () => {
@@ -239,10 +230,7 @@ export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, o
       return target ? [{ id: target.id, ...(del ? { delete: true } : { patch: patch as LogEdit['patch'] }) }] : [];
     });
     onSave(draft ?? EMPTY(day), asEdits);
-    setSaved(true);
-    setDraft(EMPTY(day));
-    setEdits([]);
-    setMsgs(m => [...m, { role: 'ai', text: 'Saved ✓ Anything else?' }]);
+    dispatch({ type: 'saved', day, text: 'Saved ✓ Anything else?' });
   };
   const choose = (v: View) => {
     if (v !== 'ai') stop();
@@ -250,8 +238,9 @@ export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, o
     try { localStorage.setItem(FORM_KEY, v === 'form' ? '1' : v === 'foods' ? 'foods' : '0'); } catch { /* not remembered */ }
   };
   const saveToFoods = (i: number) => async (f: Omit<Food, 'id'> & { id?: string }) => {
+    const was = draft?.meals[i]?.name ?? ''; // if the draft changes while this saves, the food is not linked to another meal
     const r = await foods.save(f);
-    if (r.ok && r.food) { update(d => ({ ...d, meals: d.meals.map((x, j) => (j === i ? { ...x, foodId: r.food!.id } : x)) })); setSaving(null); }
+    if (r.ok && r.food) dispatch({ type: 'mealLinked', index: i, was, foodId: r.food.id });
     return r;
   };
   const dayText = draft && draft.date !== day ? ` for ${new Date(`${draft.date}T00:00:00`).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}` : '';
@@ -347,7 +336,7 @@ export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, o
                           </span>
                         </span>
                         <button type="button" className="f-muted -mr-2 flex h-11 w-11 shrink-0 items-center justify-center" aria-label={`Don't change ${old.name}`}
-                          onClick={() => setEdits(xs => xs.filter((_, j) => j !== i))}><X className="h-4 w-4" /></button>
+                          onClick={() => dispatch({ type: 'editDropped', at: i })}><X className="h-4 w-4" /></button>
                       </div>
                     );
                   })}
@@ -363,10 +352,10 @@ export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, o
                   </span>
                   {!m.foodId && foods.status === 'ready' && (
                     <button type="button" className="f-muted -my-2 flex h-11 w-11 shrink-0 items-center justify-center" aria-label={`Save ${m.name} to My Foods`} aria-expanded={saving === i}
-                      onClick={() => setSaving(s => (s === i ? null : i))}><Star className="h-4 w-4" /></button>
+                      onClick={() => dispatch({ type: 'savingMeal', index: saving === i ? null : i })}><Star className="h-4 w-4" /></button>
                   )}
                   <button type="button" className="f-muted -my-2 -mr-2 flex h-11 w-11 shrink-0 items-center justify-center" aria-label={`Remove ${m.name}`}
-                    onClick={() => { setSaving(null); remove(d => ({ ...d, meals: d.meals.filter((_, j) => j !== i) })); }}><X className="h-4 w-4" /></button>
+                    onClick={() => remove(d => ({ ...d, meals: d.meals.filter((_, j) => j !== i) }))}><X className="h-4 w-4" /></button>
                 </div>
                 <div className="mt-1 flex items-end gap-2">
                   <label className="flex min-w-0 flex-1 flex-col text-[11px]">
@@ -383,7 +372,7 @@ export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, o
                   <div className="mt-2">
                     <p className="f-muted mb-2 text-xs">{m.grams ? `Saved per 100 g from this ${m.grams} g portion. Tidy the name so it matches how you'll type it.` : 'These are the numbers for this portion. Add what it weighs (g or ml) so it logs by weight as well as by serving.'}</p>
                     <FoodEditor initial={{ name: m.name.replace(/,?\s*\d+(\.\d+)?\s*(g|gm|grams?|ml)\b.*$/i, '').trim() || m.name, ...perBasis(m, m.grams), servings: [] }}
-                      onCancel={() => setSaving(null)} onSave={saveToFoods(i)} />
+                      onCancel={() => dispatch({ type: 'savingMeal', index: null })} onSave={saveToFoods(i)} />
                   </div>
                 )}
               </div>))}

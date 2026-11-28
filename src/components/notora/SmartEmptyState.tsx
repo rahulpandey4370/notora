@@ -7,6 +7,7 @@ import { Sparkles, Lightbulb } from 'lucide-react';
 import { differenceInCalendarDays, format, parseISO } from 'date-fns';
 import type { AppData } from '@/lib/types';
 import { useModelFor } from '@/hooks/use-model-store';
+import { useAsk } from '@/hooks/use-ask';
 import { suggestNextActions } from '@/ai/flows/next-actions';
 
 interface SmartEmptyStateProps {
@@ -22,9 +23,9 @@ interface SmartEmptyStateProps {
  * than automatic, so an empty screen never silently costs a model request.
  */
 export default function SmartEmptyState({ surface, data, message }: SmartEmptyStateProps) {
-  const [nudges, setNudges] = useState<{ text: string }[] | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  // lib/ask: idle → pending → ready | failed; earlier suggestions stay on show while new ones load.
+  const sug = useAsk<{ text: string }[]>();
+  const nudges = sug.value ?? null, loading = sug.pending, error = sug.error || null;
   const selectedModel = useModelFor('tasks');
 
   // Everything the nudge flow reasons about is computed locally first, so the
@@ -73,25 +74,17 @@ export default function SmartEmptyState({ surface, data, message }: SmartEmptySt
     signals.recurringTaskTitles.length > 0 ||
     (signals.daysSinceLastJournal ?? 0) >= 3;
 
-  const run = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await suggestNextActions(signals, selectedModel);
-      setNudges(res.nudges.length ? res.nudges : []);
-    } catch (err: any) {
-      // Next.js replaces server-action errors with an opaque "Server Components
-      // render" blob in production. Don't paste that at the user.
+  const run = () => void sug.run(async () => (await suggestNextActions(signals, selectedModel)).nudges, {
+    keep: true,
+    // Next.js replaces server-action errors with an opaque "Server Components
+    // render" blob in production. Don't paste that at the user.
+    error: (err: any) => {
       const msg: string = err?.message ?? '';
-      setError(
-        /Server Components render|omitted in production/i.test(msg)
-          ? "Couldn't get suggestions right now — check the selected model has a valid API key."
-          : msg || 'Could not fetch suggestions.'
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+      return /Server Components render|omitted in production/i.test(msg)
+        ? "Couldn't get suggestions right now — check the selected model has a valid API key."
+        : msg || 'Could not fetch suggestions.';
+    },
+  });
 
   return (
     <div className="flex flex-col items-center justify-center gap-3 py-8 text-center">

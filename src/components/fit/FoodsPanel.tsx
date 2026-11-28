@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Check, ChevronDown, ChevronLeft, Copy, Globe, Loader2, Minus, Pencil, Plus, Search, Sparkles, X } from 'lucide-react';
 import { useModelFor, useModelStore } from '@/hooks/use-model-store';
+import { useAsk } from '@/hooks/use-ask';
 import { describeFood, type DescribedFood } from '@/ai/flows/describe-food';
 import type { AppData, MealSlot } from '@/lib/types';
 import { MEAL_SLOTS, type FitnessDraft } from '@/lib/fitness';
@@ -116,40 +117,34 @@ function AddFood({ name, aiDisabled, onSave, onCancel }: {
   const selectedModel = useModelFor('food');
   const [how, setHow] = useState<'ai' | 'manual'>(aiDisabled ? 'manual' : 'ai');
   const [ask, setAsk] = useState(name);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState('');
-  const [found, setFound] = useState<DescribedFood | null>(null);
-  const run = async () => {
-    if (!ask.trim() || busy) return;
-    setBusy(true); setError('');
-    try { setFound(await describeFood(ask, selectedModel, webSearch)); }
-    catch { setError('Couldn’t look that up. Try again, or add it manually.'); }
-    finally { setBusy(false); }
-  };
+  // lib/ask: idle → pending → ready | failed. Switching to Manual or cancelling drops a lookup still on its way.
+  const look = useAsk<DescribedFood>();
+  const found = look.value ?? null, busy = look.pending, error = look.error;
+  const run = () => { if (ask.trim() && !busy) void look.run(() => describeFood(ask, selectedModel, webSearch), { error: 'Couldn’t look that up. Try again, or add it manually.' }); };
   return (
     <div className="space-y-3">
       <div className="flex gap-1" role="group" aria-label="How to add">
         <button type="button" className="f-chip" data-on={how === 'ai'} aria-pressed={how === 'ai'} disabled={aiDisabled} onClick={() => setHow('ai')}><Sparkles className="h-3.5 w-3.5" aria-hidden />With AI</button>
-        <button type="button" className="f-chip" data-on={how === 'manual'} aria-pressed={how === 'manual'} onClick={() => setHow('manual')}><Pencil className="h-3.5 w-3.5" aria-hidden />Manually</button>
+        <button type="button" className="f-chip" data-on={how === 'manual'} aria-pressed={how === 'manual'} onClick={() => { if (look.pending) look.reset(); setHow('manual'); }}><Pencil className="h-3.5 w-3.5" aria-hidden />Manually</button>
       </div>
       {how === 'manual' ? <FoodEditor initial={{ name }} onSave={onSave} onCancel={onCancel} /> : found ? (
         <>
           <p className="f-muted text-sm">{found.note ? `${found.note}. ` : ''}Check the numbers, then save. {found.web ? '🌐 Checked the web.' : ''}</p>
-          <FoodEditor initial={found} onSave={onSave} onCancel={() => setFound(null)} />
+          <FoodEditor initial={found} onSave={onSave} onCancel={look.reset} />
         </>
       ) : (
         <div className="space-y-2 rounded-2xl bg-[var(--f-tint)] p-3">
           <p className="text-sm">Name the food: add a brand, or paste the label, for packaged items. The AI fills in nutrition per 100 g and the usual servings.</p>
           <div className="flex gap-2">
             <input className="f-input min-w-0 flex-1" value={ask} onChange={e => setAsk(e.target.value)} placeholder="e.g. Amul Gold milk, steamed rice, MuscleBlaze whey"
-              onKeyDown={e => e.key === 'Enter' && void run()} aria-label="Food to look up" autoFocus />
+              onKeyDown={e => e.key === 'Enter' && run()} aria-label="Food to look up" autoFocus />
             <button type="button" className={`f-icon-btn h-11 w-11 shrink-0 ${webSearch ? '!border-[var(--f-deep)] !bg-[var(--f-deep)] !text-white' : ''}`} aria-pressed={webSearch}
               aria-label={`Web search ${webSearch ? 'on' : 'off'} (best for branded items)`} title="Web search: best for branded items" onClick={() => setWebSearch(!webSearch)}><Globe className="h-5 w-5" /></button>
           </div>
           {error && <p className="f-bad text-sm" aria-live="polite">{error}</p>}
           <div className="flex gap-2">
             <button type="button" className="f-pill flex-1" onClick={onCancel}>Cancel</button>
-            <button type="button" className="f-pill f-pill-primary flex-[2]" disabled={!ask.trim() || busy} onClick={() => void run()}>
+            <button type="button" className="f-pill f-pill-primary flex-[2]" disabled={!ask.trim() || busy} onClick={run}>
               {busy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <Sparkles className="h-4 w-4" aria-hidden />}{busy ? 'Looking it up…' : 'Fill in with AI'}
             </button>
           </div>

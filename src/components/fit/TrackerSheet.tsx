@@ -8,6 +8,7 @@ import { addDays, findTracker } from '@/lib/fitness';
 import { direction, isDerived, meets, series, stats, type Direction } from '@/lib/tracker-stats';
 import { getLogInsights, type GetLogInsightsOutput } from '@/ai/flows/get-log-insights';
 import { useModelFor } from '@/hooks/use-model-store';
+import { useAsk } from '@/hooks/use-ask';
 import { fmtSleep } from './Ring';
 
 const RANGES = [{ days: 7, label: '7D' }, { days: 30, label: '30D' }, { days: 90, label: '90D' }, { days: 365, label: '1Y' }];
@@ -78,7 +79,7 @@ function Body({ t, data, day, today, aiDisabled, onChange, onDelete }: {
   const [days, setDays] = useState(30);
   const [showAll, setShowAll] = useState(false);
   const [form, setForm] = useState({ date: day, value: '' });
-  const [ai, setAi] = useState<{ busy: boolean; out?: GetLogInsightsOutput; error?: string }>({ busy: false });
+  const ai = useAsk<GetLogInsightsOutput>(); // lib/ask: idle → pending → ready | failed
 
   const isSleep = t.healthMetric === 'sleep';
   const derived = isDerived(data, t);
@@ -132,15 +133,10 @@ function Body({ t, data, day, today, aiDisabled, onChange, onDelete }: {
     setForm({ date: day, value: '' });
   };
 
-  const askAi = async () => {
-    setAi({ busy: true });
-    try {
-      const history = series(data, t, day, 30).filter(p => p.value != null).map(p => ({ date: p.date, value: Math.round(p.value! * 100) / 100, notes: t.logs.find(l => l.date === p.date)?.notes ?? '' }));
-      setAi({ busy: false, out: await getLogInsights({ trackerName: t.name, unit: t.unit, goal: t.goal, logHistory: history }, selectedModel) });
-    } catch {
-      setAi({ busy: false, error: 'Couldn’t get insights right now. Try again in a moment.' });
-    }
-  };
+  const askAi = () => void ai.run(() => {
+    const history = series(data, t, day, 30).filter(p => p.value != null).map(p => ({ date: p.date, value: Math.round(p.value! * 100) / 100, notes: t.logs.find(l => l.date === p.date)?.notes ?? '' }));
+    return getLogInsights({ trackerName: t.name, unit: t.unit, goal: t.goal, logHistory: history }, selectedModel);
+  }, { error: 'Couldn’t get insights right now. Try again in a moment.' });
 
   const words = t.name.trim().split(' ');
   const statTile = (label: string, value: React.ReactNode, sub?: React.ReactNode) => (
@@ -316,15 +312,15 @@ function Body({ t, data, day, today, aiDisabled, onChange, onDelete }: {
       {/* AI coach */}
       <section className="space-y-2 rounded-2xl bg-[var(--f-tint)] p-4" aria-label="AI coach">
         <span className="flex items-center gap-1.5 text-sm font-semibold"><Sparkles className="h-4 w-4 text-[var(--f-deep)]" aria-hidden />AI coach</span>
-        {ai.out ? (
+        {ai.value ? (
           <>
-            <p className="text-sm leading-relaxed whitespace-pre-wrap">{ai.out.feedback}</p>
-            <p className="f-muted text-xs">Trend: {ai.out.trend}{ai.out.modelId ? ` · ${ai.out.modelId}` : ''}</p>
+            <p className="text-sm leading-relaxed whitespace-pre-wrap">{ai.value.feedback}</p>
+            <p className="f-muted text-xs">Trend: {ai.value.trend}{ai.value.modelId ? ` · ${ai.value.modelId}` : ''}</p>
           </>
         ) : <p className="f-muted text-sm">An honest read of your last 30 days, with what to do next.</p>}
         {ai.error && <p className="f-bad text-sm" aria-live="polite">{ai.error}</p>}
-        <button type="button" className="f-pill w-full" disabled={aiDisabled || ai.busy || series(data, t, day, 30).filter(p => p.value != null).length < 2} onClick={() => void askAi()}>
-          {ai.busy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <Sparkles className="h-4 w-4" aria-hidden />}{ai.busy ? 'Thinking…' : ai.out ? 'Ask again' : 'Get insights'}
+        <button type="button" className="f-pill w-full" disabled={aiDisabled || ai.pending || series(data, t, day, 30).filter(p => p.value != null).length < 2} onClick={() => void askAi()}>
+          {ai.pending ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <Sparkles className="h-4 w-4" aria-hidden />}{ai.pending ? 'Thinking…' : ai.value ? 'Ask again' : 'Get insights'}
         </button>
       </section>
 

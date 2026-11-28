@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Lightbulb, RefreshCw, Sparkles } from 'lucide-react';
 import type { AppData } from '@/lib/types';
 import { useModelFor } from '@/hooks/use-model-store';
+import { useAsk } from '@/hooks/use-ask';
 import { addDays, dayBurn, dayIntake, findTracker, trendSeries, valueOn, weeklyRate } from '@/lib/fitness';
 import { summarizeFitness, type FitnessDayRow, type SummarizeFitnessOutput } from '@/ai/flows/summarize-fitness';
 
@@ -36,10 +37,9 @@ export function AiSummary({ data, today, aiDisabled }: { data: AppData; today: s
   const selectedModel = useModelFor('summaries');
   const [period, setPeriod] = useState<Period>('7');
   const [custom, setCustom] = useState({ from: addDays(today, -13), to: today });
-  const [result, setResult] = useState<{ key: string; out: SummarizeFitnessOutput } | null>(null);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState('');
-  const req = useRef(0);
+  // lib/ask: idle → pending (the last summary stays on show) → ready | failed.
+  const sum = useAsk<{ key: string; out: SummarizeFitnessOutput }>();
+  const result = sum.value ?? null, busy = sum.pending, error = sum.error;
 
   const from = period === 'custom' ? custom.from : addDays(today, -(Number(period) - 1));
   const to = period === 'custom' ? custom.to : today;
@@ -47,16 +47,13 @@ export function AiSummary({ data, today, aiDisabled }: { data: AppData; today: s
   const validRange = from <= to && to <= today;
 
   useEffect(() => {
-    try { const saved = JSON.parse(localStorage.getItem(KEY) || 'null'); if (saved?.key && saved?.out) setResult(saved); } catch { /* nothing saved */ }
-  }, []);
+    try { const saved = JSON.parse(localStorage.getItem(KEY) || 'null'); if (saved?.key && saved?.out) sum.set(saved); } catch { /* nothing saved */ }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const run = async () => {
     if (busy || !validRange) return;
-    setError('');
-    if (aiDisabled) { setResult({ key, out: DEMO }); return; }
-    setBusy(true);
-    const id = ++req.current;
-    try {
+    if (aiDisabled) { sum.set({ key, out: DEMO }); return; }
+    const next = await sum.run(async () => {
       const weight = findTracker(data, 'weight');
       const series = trendSeries(weight?.logs ?? []);
       const out = await summarizeFitness({
@@ -65,13 +62,10 @@ export function AiSummary({ data, today, aiDisabled }: { data: AppData; today: s
         trendWeightKg: series.length ? series[series.length - 1].trend : undefined,
         weeklyRateKg: weeklyRate(series, today) ?? undefined,
       }, selectedModel);
-      if (id !== req.current) return;
-      const next = { key, out };
-      setResult(next);
-      try { localStorage.setItem(KEY, JSON.stringify(next)); } catch { /* not saved */ }
-    } catch {
-      if (id === req.current) setError("Couldn't create the summary. Check your connection and try again.");
-    } finally { if (id === req.current) setBusy(false); }
+      return { key, out };
+    }, { keep: true, error: "Couldn't create the summary. Check your connection and try again." });
+    // Saved only when this reply was the one shown (not a late one).
+    if (next) try { localStorage.setItem(KEY, JSON.stringify(next)); } catch { /* not saved */ }
   };
 
   const shown = result?.key === key ? result.out : null;

@@ -6,13 +6,15 @@ import { useAuth } from '@/hooks/use-auth';
 import { useApp } from '@/hooks/use-app';
 import Dashboard from '@/components/notora/Dashboard';
 import { Skeleton } from '@/components/ui/skeleton';
+import { pageGate } from '@/lib/page-gate';
+import LoadFailed from '@/components/notora/LoadFailed';
 import AppLayout from '@/components/notora/AppLayout';
 import Particles from '@/components/ui/particles';
 import { useTheme } from 'next-themes';
 
 export default function Home() {
   const { user, loading: authLoading } = useAuth();
-  const { data, loading: appLoading, handleDataChange } = useApp();
+  const { data, loading: appLoading, handleDataChange, loadFailed, retryLoad } = useApp();
   const router = useRouter();
   const { resolvedTheme } = useTheme();
   const [showParticles, setShowParticles] = useState(false);
@@ -29,6 +31,11 @@ export default function Home() {
     setShowParticles(resolvedTheme === 'dark');
   }, [resolvedTheme]);
 
+
+  // One named state for the page (lib/page-gate). 'failed' used to be a skeleton forever; the guard below keeps the types narrow.
+  if (pageGate({ loading: authLoading || appLoading, user, data, loadFailed }).kind === 'failed') {
+    return <AppLayout><LoadFailed onRetry={retryLoad} /></AppLayout>;
+  }
 
   if (authLoading || appLoading || !data || !user) {
     return (

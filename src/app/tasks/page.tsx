@@ -5,6 +5,8 @@ import { useEffect, useState, useMemo, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/use-auth';
 import { useApp } from '@/hooks/use-app';
+import { pageGate } from '@/lib/page-gate';
+import LoadFailed from '@/components/notora/LoadFailed';
 import { Skeleton } from '@/components/ui/skeleton';
 import AppLayout from '@/components/notora/AppLayout';
 import TaskList from '@/components/notora/TaskList';
@@ -43,6 +45,8 @@ function useTasksPageData(isShowcase: boolean) {
     return {
       data: showcaseData.data,
       loading: !showcaseData.data,
+      loadFailed: false,
+      retryLoad: undefined,
       user: showcaseData.demoUser,
       handleDataChange: showcaseData.handleDataChange,
       toast: showcaseData.toast,
@@ -54,6 +58,8 @@ function useTasksPageData(isShowcase: boolean) {
   return {
     data: appData.data,
     loading: auth.loading || appData.loading,
+    loadFailed: appData.loadFailed,
+    retryLoad: appData.retryLoad,
     user: auth.user,
     handleDataChange: appData.handleDataChange,
     toast: appData.toast,
@@ -62,7 +68,7 @@ function useTasksPageData(isShowcase: boolean) {
 
 export default function TasksPage({ showcase = false }: TasksPageProps) {
   const router = useRouter();
-  const { data, loading, user, handleDataChange, toast } = useTasksPageData(showcase);
+  const { data, loading, user, handleDataChange, toast, loadFailed, retryLoad } = useTasksPageData(showcase);
   
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [currentDay, setCurrentDay] = useState(new Date());
@@ -140,6 +146,11 @@ export default function TasksPage({ showcase = false }: TasksPageProps) {
   const latest = useRef(data!);
   if (data) latest.current = data;
 
+
+  // One named state for the page (lib/page-gate). 'failed' used to be a skeleton forever; the guard below keeps the types narrow.
+  if (pageGate({ loading, user: user, data, loadFailed }).kind === 'failed') {
+    return <AppLayout data={data}><LoadFailed onRetry={retryLoad} /></AppLayout>;
+  }
 
   if (loading || !data || !user) {
     return (

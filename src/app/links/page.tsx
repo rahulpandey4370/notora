@@ -5,6 +5,8 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/use-auth';
 import { useApp } from '@/hooks/use-app';
+import { pageGate } from '@/lib/page-gate';
+import LoadFailed from '@/components/notora/LoadFailed';
 import { Skeleton } from '@/components/ui/skeleton';
 import AppLayout from '@/components/notora/AppLayout';
 import LinkManager from '@/components/notora/LinkManager';
@@ -21,6 +23,8 @@ function useLinksPageData(isShowcase: boolean) {
     return {
       data: showcaseData.data,
       loading: !showcaseData.data,
+      loadFailed: false,
+      retryLoad: undefined,
       user: showcaseData.demoUser,
       handleDataChange: showcaseData.handleDataChange,
     };
@@ -30,6 +34,8 @@ function useLinksPageData(isShowcase: boolean) {
   return {
     data: appData.data,
     loading: auth.loading || appData.loading,
+    loadFailed: appData.loadFailed,
+    retryLoad: appData.retryLoad,
     user: auth.user,
     handleDataChange: appData.handleDataChange,
   };
@@ -37,13 +43,18 @@ function useLinksPageData(isShowcase: boolean) {
 
 export default function LinksPage({ showcase = false }: LinksPageProps) {
   const router = useRouter();
-  const { data, loading, user, handleDataChange } = useLinksPageData(showcase);
+  const { data, loading, user, handleDataChange, loadFailed, retryLoad } = useLinksPageData(showcase);
   
   useEffect(() => {
     if (!showcase && !loading && !user) {
       router.push('/login');
     }
   }, [user, loading, router, showcase]);
+
+  // One named state for the page (lib/page-gate). 'failed' used to be a skeleton forever; the guard below keeps the types narrow.
+  if (pageGate({ loading, user: user, data, loadFailed }).kind === 'failed') {
+    return <AppLayout data={data}><LoadFailed onRetry={retryLoad} /></AppLayout>;
+  }
 
   if (loading || !data || !user) {
     return (

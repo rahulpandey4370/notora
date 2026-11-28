@@ -44,6 +44,10 @@ type SaveState = 'idle' | 'saving' | 'saved' | 'error';
 interface AppContextType {
   data: AppData | null;
   loading: boolean;
+  /** The first load failed with nothing cached to show: pages offer Retry (lib/page-gate) instead of a skeleton forever. */
+  loadFailed: boolean;
+  /** Load again with the skeleton showing (the Retry button). */
+  retryLoad: () => void;
   /** Surfaced so the UI can show a saving/failed indicator instead of pretending every edit succeeded. */
   saveState: SaveState;
   handleDataChange: (newData: AppData) => void;
@@ -105,6 +109,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const username = user?.username ?? null;
   const [data, setData] = useState<AppData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadFailed, setLoadFailed] = useState(false);
   const [saveState, setSaveState] = useState<SaveState>('idle');
   const { toast } = useToast();
 
@@ -144,6 +149,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }
     }
     if (!opts.quiet && !hasData.current) setLoading(true);
+    setLoadFailed(false);
     try {
       const stored = (await api<Stored | null>({ op: 'load' })) ?? (await api<Stored>({ op: 'create', data: freshDefaults() }));
       const base = version.current ?? cachedVersion.current;
@@ -172,6 +178,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       hasData.current = true;
       writeCache(username, stored);
     } catch (err) {
+      if (!hasData.current) setLoadFailed(true); // nothing on screen to fall back on
       reportError(err, "Couldn't load your workspace");
     } finally {
       setLoading(false);
@@ -181,7 +188,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (authLoading) return;
     if (username) void loadData();
-    else { setLoading(false); setData(null); hasData.current = false; version.current = null; }
+    else { setLoading(false); setLoadFailed(false); setData(null); hasData.current = false; version.current = null; }
   }, [username, authLoading, loadData]);
 
   /**
@@ -261,6 +268,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [username, flushNow, loadData]);
 
   /** Re-fetch from the server (e.g. after a Fitbit sync), saving pending edits first so none are dropped. */
+  const retryLoad = useCallback(() => { void loadData(); }, [loadData]);
   const reload = useCallback(async () => { await flushNow(); await loadData({ quiet: true }); }, [flushNow, loadData]);
 
   /**
@@ -286,7 +294,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [flushNow]);
 
   return (
-    <AppContext.Provider value={{ data, loading, saveState, handleDataChange, toast, reload, serverWrite }}>
+    <AppContext.Provider value={{ data, loading, loadFailed, retryLoad, saveState, handleDataChange, toast, reload, serverWrite }}>
       {children}
     </AppContext.Provider>
   );

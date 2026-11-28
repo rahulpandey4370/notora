@@ -26,7 +26,22 @@ export function monthlyShowsIn(task: Task, ym: string): boolean {
 /** "Stop repeating": still there today (this month for monthly), gone after. */
 export const stopRepeating = (task: Task, today: string): Task => ({ ...task, ongoing: true, endsOn: today });
 export const resumeRepeating = (task: Task): Task => { const { endsOn: _, ...rest } = task; return { ...rest, ongoing: true }; };
-export const isRepeating = (task: Task) => !!task.ongoing && !task.endsOn;
+/**
+ * Where a task is in its repeating life, as one named value:
+ *   oneOff      a single or weekly task: it doesn't repeat
+ *   legacy      recurring/monthly from before the one-time upgrade (`ongoing` unset): bound to its month
+ *   monthBound  `ongoing: false`: shows only in its month
+ *   repeating   carries on until switched off
+ *   stopped     was repeating; `endsOn` is its last day (or month)
+ */
+export type RepeatState = 'oneOff' | 'legacy' | 'monthBound' | 'repeating' | 'stopped';
+export function repeatState(task: Task): RepeatState {
+  if (task.type !== 'recurring' && task.type !== 'monthly') return 'oneOff';
+  if (task.ongoing === undefined) return 'legacy';
+  if (!task.ongoing) return 'monthBound';
+  return task.endsOn ? 'stopped' : 'repeating';
+}
+export const isRepeating = (task: Task) => repeatState(task) === 'repeating';
 
 const dayBefore = (ymd: string) => { const d = new Date(`${ymd}T00:00:00Z`); d.setUTCDate(d.getUTCDate() - 1); return d.toISOString().slice(0, 10); };
 type Change = Partial<Pick<Task, 'title' | 'priority'>>;

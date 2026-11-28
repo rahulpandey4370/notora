@@ -17,19 +17,32 @@ export type FoodsApi = {
   status: 'loading' | 'ready' | 'missing' | 'error'; foods: Food[]; error?: string;
   /** The built-in catalogue (All foods) minus the ones you removed; empty until its file has loaded. Read-only. */
   catalog: CatalogFood[];
+  /** Why the catalogue may be empty: still loading, or it failed (then `reloadCatalog` tries again). */
+  catalogStatus: 'loading' | 'ready' | 'failed';
+  reloadCatalog: () => void;
   /** Built-in foods you removed, with hide/restore. No-ops without onDataChange. */
   hidden: CatalogFood[];
   hide: (id: string) => void;
   unhide: (id: string) => void;
   save: (f: Omit<Food, 'id'> & { id?: string }) => Promise<{ ok: boolean; error?: string; food?: Food }>;
-  remove: (id: string) => Promise<void>;
+  /** Removes at once; if the server refuses, the food is put back and the result says so. */
+  remove: (id: string) => Promise<{ ok: boolean }>;
 };
 
 /** My Foods for the Logs page: Supabase for a signed-in user, a fixed in-memory list in the showcase. */
 export function useFoods(showcase: boolean, data?: AppData, onDataChange?: (d: AppData) => void): FoodsApi {
   const [state, setState] = useState<Pick<FoodsApi, 'status' | 'foods' | 'error'>>({ status: 'loading', foods: [] });
   const [catalog, setCatalog] = useState<CatalogFood[]>([]);
-  useEffect(() => { loadCatalog().then(setCatalog).catch(() => undefined); }, []);
+  const [catalogStatus, setCatalogStatus] = useState<FoodsApi['catalogStatus']>('loading');
+  const [catalogTry, setCatalogTry] = useState(0);
+  useEffect(() => {
+    let live = true;
+    setCatalogStatus('loading');
+    // A failure used to be swallowed, so an empty list meant "loading" or "failed" with no way to tell.
+    loadCatalog().then(c => { if (live) { setCatalog(c); setCatalogStatus('ready'); } }).catch(() => { if (live) setCatalogStatus('failed'); });
+    return () => { live = false; };
+  }, [catalogTry]);
+  const reloadCatalog = useCallback(() => setCatalogTry(n => n + 1), []);
 
   useEffect(() => {
     if (showcase) { setState({ status: 'ready', foods: DEMO }); return; }
@@ -54,9 +67,14 @@ export function useFoods(showcase: boolean, data?: AppData, onDataChange?: (d: A
   }, [showcase]);
 
   const remove = useCallback<FoodsApi['remove']>(async id => {
-    setState(s => ({ ...s, foods: s.foods.filter(f => f.id !== id) }));
-    if (!showcase) await deleteFood(id).catch(() => undefined);
-  }, [showcase]);
+    let gone: Food | undefined;
+    setState(s => { gone = s.foods.find(f => f.id === id); return { ...s, foods: s.foods.filter(f => f.id !== id) }; });
+    if (showcase) return { ok: true };
+    const r = await deleteFood(id).catch(() => ({ ok: false }));
+    // Not deleted on the server: put it back, or it would reappear on the next load with no explanation.
+    if (!r.ok && gone) upsertLocal(gone);
+    return { ok: r.ok };
+  }, [showcase]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const hiddenIds = data?.hiddenFoods;
   const [shown, hidden] = useMemo(() => {
@@ -67,5 +85,5 @@ export function useFoods(showcase: boolean, data?: AppData, onDataChange?: (d: A
   const hide = (id: string) => setHidden([...new Set([...(hiddenIds ?? []), id])]);
   const unhide = (id: string) => setHidden((hiddenIds ?? []).filter(x => x !== id));
 
-  return { ...state, catalog: shown, hidden, hide, unhide, save, remove };
+  return { ...state, catalog: shown, catalogStatus, reloadCatalog, hidden, hide, unhide, save, remove };
 }

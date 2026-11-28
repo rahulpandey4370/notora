@@ -45,16 +45,22 @@ export function valueOn(t: LogTracker | undefined, ymd: string): number | undefi
   return v ? v : undefined;
 }
 
-const isAuto = (id: string) => id.startsWith('auto-');
+// How an entry or meal came to be is stored in its id prefix or its name (the stored shape is fixed). These are
+// the only places that read those conventions.
+/** A tracker entry the app computed from the day's meals and workouts. */
+export const isAutoEntry = (id: string) => id.startsWith('auto-');
+/** A tracker entry synced from Fitbit / Google Health. */
+export const isFitbitEntry = (id: string) => id.startsWith('fitbit-');
+const isAuto = isAutoEntry;
 /** A non-derived, non-zero value (an older AI or hand-typed total). */
 const storedOn = (t: LogTracker | undefined, ymd: string) => {
   const e = entryOn(t, ymd);
-  return e && !isAuto(e.id) && !e.id.startsWith('fitbit-') && e.value > 0 ? e.value : undefined;
+  return e && !isAuto(e.id) && !isFitbitEntry(e.id) && e.value > 0 ? e.value : undefined;
 };
 /** Fitbit's measured burn for the day (fitbit-burned-<date>). */
 const fitbitOn = (t: LogTracker | undefined, ymd: string) => {
   const e = entryOn(t, ymd);
-  return e?.id.startsWith('fitbit-') && e.value > 0 ? e.value : undefined;
+  return e && isFitbitEntry(e.id) && e.value > 0 ? e.value : undefined;
 };
 
 // ---------------------------------------------------------------- weight
@@ -216,7 +222,9 @@ export function mealsBySlot(meals: Meal[]): Record<MealSlot | 'other', Meal[]> {
 }
 
 export type QuickMeal = Omit<Meal, 'id'>;
-const isTotal = (m: Meal) => m.name === 'Day total' || m.name === 'Earlier total';
+/** A stand-in "meal" that carries a typed day total ('Day total'), or what was typed before meals were logged ('Earlier total'). Never shown as food. */
+export const isTotalMeal = (m: Pick<Meal, 'name'>) => m.name === 'Day total' || m.name === 'Earlier total';
+const isTotal = isTotalMeal;
 const strip = ({ id: _id, ...m }: Meal): QuickMeal => m;
 
 /**
@@ -274,7 +282,7 @@ export function describeValueChange(data: AppData, draft: FitnessDraft, v: Fitne
     const isFood = t === findTracker(data, 'intake') || t === findTracker(data, 'protein');
     if (isFood && (day?.meals.length ?? 0) > 1) parts.push("merges the day's meals into one total");
   }
-  if (t === findTracker(data, 'steps') && (t.healthMetric === 'steps' || entryOn(t, draft.date)?.id.startsWith('fitbit-'))) {
+  if (t === findTracker(data, 'steps') && (t.healthMetric === 'steps' || isFitbitEntry(entryOn(t, draft.date)?.id ?? ''))) {
     parts.push("Fitbit won't update this day");
   }
   return parts.length ? parts.join(' · ') : null;
@@ -321,7 +329,7 @@ function writeBurn(w: Work) {
   const t = tracker(w, 'burned');
   if (!w.day.activities.length && w.day.burnBase == null) {
     // Nothing logged by hand any more: drop the derived entry, the page computes it live.
-    if (entryOn(t, w.date)?.id.startsWith('auto-')) setEntry(t, w.date, null);
+    if (isAuto(entryOn(t, w.date)?.id ?? '')) setEntry(t, w.date, null);
     return;
   }
   if (w.day.burnBase == null && fitbitOn(t, w.date) != null) return; // Fitbit's burn stays the day's total
@@ -521,7 +529,7 @@ export function stepsStreak(data: AppData, today: string): number {
 
 /** Consecutive days you logged something yourself (Fitbit's automatic entries don't count). */
 export function loggingStreak(data: AppData, today: string): number {
-  const dates = new Set((data.logTrackers ?? []).flatMap(t => t.logs.filter(l => !l.id.startsWith('fitbit-')).map(l => l.date)));
+  const dates = new Set((data.logTrackers ?? []).flatMap(t => t.logs.filter(l => !isFitbitEntry(l.id)).map(l => l.date)));
   let d = dates.has(today) ? today : addDays(today, -1);
   let n = 0;
   while (dates.has(d)) { n++; d = addDays(d, -1); }

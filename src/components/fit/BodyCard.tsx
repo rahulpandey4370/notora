@@ -81,6 +81,9 @@ export function BodyCard({ data, today, onDataChange, onOpenTracker, showcase }:
 function Photos({ data, today, onDataChange, showcase }: { data: AppData; today: string; onDataChange: (d: AppData) => void; showcase?: boolean }) {
   const photos = useMemo(() => [...(data.progressPhotos ?? [])].sort((a, b) => a.date.localeCompare(b.date)), [data.progressPhotos]);
   const [urls, setUrls] = useState<Record<string, string>>({});
+  // Photo links: loading (no entry yet) | ready (in `urls`) | failed, with a retry.
+  const [urlsFailed, setUrlsFailed] = useState(false);
+  const [urlsTry, setUrlsTry] = useState(0);
   const [pose, setPose] = useState<ProgressPhoto['pose']>('front');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -94,9 +97,11 @@ function Photos({ data, today, onDataChange, showcase }: { data: AppData; today:
   useEffect(() => {
     if (showcase || !photos.length) return;
     let live = true;
-    progressPhotoUrls(photos.map(p => p.path)).then(u => { if (live) setUrls(u); }).catch(() => undefined);
+    setUrlsFailed(false);
+    // A failed fetch used to be swallowed, leaving every frame on "Loading…" for good.
+    progressPhotoUrls(photos.map(p => p.path)).then(u => { if (live) setUrls(u); }).catch(() => { if (live) setUrlsFailed(true); });
     return () => { live = false; };
-  }, [paths, showcase]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [paths, showcase, urlsTry]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const add = async (file?: File) => {
     if (!file || busy) return;
@@ -118,7 +123,9 @@ function Photos({ data, today, onDataChange, showcase }: { data: AppData; today:
     <figure className="min-w-0 flex-1">
       <div className="aspect-[3/4] overflow-hidden rounded-2xl bg-[var(--f-tint)]">
         {p && urls[p.path] ? <img src={urls[p.path]} alt={`${label}: ${p.pose} photo from ${short(p.date)}`} className="h-full w-full object-cover" />
-          : <div className="f-muted flex h-full items-center justify-center text-xs">{p ? 'Loading…' : 'No photo'}</div>}
+          : <div className="f-muted flex h-full flex-col items-center justify-center gap-1 text-xs">
+              {!p ? 'No photo' : urlsFailed ? <><span>Couldn’t load</span><button type="button" className="f-chip" onClick={() => setUrlsTry(n => n + 1)}>Try again</button></> : 'Loading…'}
+            </div>}
       </div>
       <figcaption className="mt-1 text-center text-xs"><strong>{label}</strong>{p ? ` · ${short(p.date)}${kg(p.date) ? ` · ${kg(p.date)}` : ''}` : ''}</figcaption>
     </figure>

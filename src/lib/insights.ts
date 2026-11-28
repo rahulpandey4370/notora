@@ -4,7 +4,7 @@
 // Sleep is credited to the day you WOKE UP, so "the night before day D" is
 // sleep on D, and "the night after D" is sleep on D+1.
 import type { AppData, LogTracker } from '@/lib/types';
-import { MEAL_SLOTS, addDays, dayBurn, dayMacros, findTracker, fmtSleep, slotBudgets, trendSeries, valueOn } from '@/lib/fitness';
+import { MEAL_SLOTS, addDays, dayBurn, dayMacros, findTracker, fmtSleep, slotBudgets, trendSeries, valueOn, isTotalMeal } from '@/lib/fitness';
 import { KCAL_PER_KG } from '@/lib/real-burn';
 
 export type Pattern = { id: string; text: string; detail: string; tone: 'good' | 'bad' | 'neutral' };
@@ -131,7 +131,7 @@ export function foodInsights(data: AppData, today: string) {
   const days = window_(today, 60);
   const by = new Map<string, FoodInsight>();
   for (const d of days) for (const m of data.fitnessDays?.[d]?.meals ?? []) {
-    if (m.name === 'Day total' || m.name === 'Earlier total' || m.kcal <= 0) continue;
+    if (isTotalMeal(m) || m.kcal <= 0) continue;
     const key = m.name.trim().toLowerCase();
     const f = by.get(key) ?? { name: m.name, times: 0, kcal: 0, proteinShare: 0, total: 0 };
     f.times++; f.total += m.kcal; f.proteinShare += m.proteinG * 4;

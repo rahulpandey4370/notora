@@ -12,9 +12,18 @@ export type Journey = {
   /** The trend is 0.1 kg+ below anything before the last 3 days (worth a celebration). */
   newLow: boolean;
   status: 'losing' | 'plateau' | 'regaining' | 'early'; ratePerWeek: number | null;
+  /** The one message the card leads with (see journeyHeadline). */
+  headline: JourneyHeadline;
   /** Trend change over the last 14 days (kg). */
   change14: number | null;
 };
+
+export type JourneyHeadline = 'newLow' | 'losing' | 'plateau' | 'regaining' | 'early';
+/**
+ * The one thing the journey card says about the trend. A new low wins over the 4-week rate: the two are measured
+ * differently and can disagree (a fresh low after a flat month), and the card must not celebrate and warn at once.
+ */
+export const journeyHeadline = (status: Journey['status'], newLow: boolean): JourneyHeadline => (newLow ? 'newLow' : status);
 
 const STEP = 2.5;
 export const JOURNEY_DEFAULT = '90d';
@@ -72,13 +81,14 @@ export function journey(data: AppData, today: string): Journey | null {
   const rate = weeklyRate(s, today);
   const at14 = s.find(p => p.date === addDays(last.date, -14));
   const days = Math.round((Date.parse(`${today}T00:00:00Z`) - Date.parse(`${start.date}T00:00:00Z`)) / 86400_000);
+  // A real new low: 0.1 kg under the lowest EVER before the last 3 days (the smoothed trend inches down forever on a plateau).
+  // Judged on all weigh-ins, not the journey window: "lightest yet" must stay true after an old regain.
+  const newLow = all.length > 7 && last.date >= addDays(today, -3) && last.trend <= Math.min(...all.filter(p => p.date < addDays(last.date, -3)).map(p => p.trend)) - 0.1;
+  const status: Journey['status'] = rate == null ? 'early' : rate < -0.1 ? 'losing' : rate > 0.1 ? 'regaining' : 'plateau';
   return {
     start, current, goal, lost: r1(lost), toGo: goal != null ? r1(Math.max(0, current.kg - goal)) : null, pct, days,
     milestones, next: milestones.find(m => !m.reached), lowest: { date: lowest.date, kg: lowest.trend },
-    // A real new low: 0.1 kg under the lowest EVER before the last 3 days (the smoothed trend inches down forever on a plateau).
-    // Judged on all weigh-ins, not the journey window: "lightest yet" must stay true after an old regain.
-    newLow: all.length > 7 && last.date >= addDays(today, -3) && last.trend <= Math.min(...all.filter(p => p.date < addDays(last.date, -3)).map(p => p.trend)) - 0.1,
-    status: rate == null ? 'early' : rate < -0.1 ? 'losing' : rate > 0.1 ? 'regaining' : 'plateau',
+    newLow, status, headline: journeyHeadline(status, newLow),
     ratePerWeek: rate, change14: at14 ? r1(last.trend - at14.trend) : null,
   };
 }

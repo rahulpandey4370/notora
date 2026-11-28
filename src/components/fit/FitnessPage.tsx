@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Drumstick, Flame, Footprints, Moon, UserRound } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Activity, AppData, Meal } from '@/lib/types';
-import { applyDraft, applyLogEdits, clearBurnBase, dayBurn, dayIntake, editDayItem, findTracker, loggingStreak, stepsStreak, valueOn, type FitnessDraft, type LogEdit } from '@/lib/fitness';
+import { applyDraft, applyLogEdits, clearBurnBase, dayBurn, dayIntake, editDayItem, findTracker, loggingStreak, stepsStreak, valueOn, type FitnessDraft, type LogEdit, isTotalMeal } from '@/lib/fitness';
 import { fitSerif } from './font';
 import { Hero } from './Hero';
 import { fmtSleep } from './Ring';
@@ -34,7 +34,7 @@ const k = (n: number) => Math.round(n).toLocaleString('en-US');
 function heroLines(data: AppData, day: string): string[] {
   const fd = data.fitnessDays?.[day];
   const lines: string[] = [];
-  const meals = (fd?.meals ?? []).filter(m => m.name !== 'Earlier total' && m.name !== 'Day total');
+  const meals = (fd?.meals ?? []).filter(m => !isTotalMeal(m));
   const clip = (s: string) => (s.length > 22 ? `${s.slice(0, 21).trimEnd()}…` : s);
   if (meals.length) lines.push(`Had ${meals.slice(0, 2).map(m => clip(m.name)).join(' and ')}${meals.length > 2 ? ` +${meals.length - 2} more` : ''} · ${k(meals.reduce((s, m) => s + m.kcal, 0))} kcal`);
   for (const a of (fd?.activities ?? []).slice(0, 2)) lines.push(`${a.name}, ${Math.round(a.minutes)} min · ${k(a.kcal)} kcal`);
@@ -99,7 +99,7 @@ export function FitnessPage({ data, onDataChange, showcase = false }: { data: Ap
     onDataChange(next);
     // The meals this save added, so a quick-add from Foods can be undone. Not the "Earlier total" that applyDraft
     // makes to carry a typed day total: undoing an add must leave that total where it was.
-    const meals = new Set((next.fitnessDays?.[draft.date]?.meals ?? []).filter(m => m.name !== 'Earlier total' && m.name !== 'Day total').map(m => m.id));
+    const meals = new Set((next.fitnessDays?.[draft.date]?.meals ?? []).filter(m => !isTotalMeal(m)).map(m => m.id));
     return made.filter(id => meals.has(id));
   };
   const undoMeals = (ids: string[]) => onDataChange(ids.reduce((d, id) => editDayItem(d, day, 'meal', id, null, uuidv4), data));

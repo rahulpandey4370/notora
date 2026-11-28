@@ -125,6 +125,7 @@ export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, o
     rec.continuous = true;
     rec.interimResults = true;
     rec.onresult = (e: any) => {
+      if (recRef.current !== rec) return;
       let finals = '', live = '';
       for (let i = e.resultIndex; i < e.results.length; i++) {
         const t = e.results[i][0]?.transcript ?? '';
@@ -138,7 +139,9 @@ export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, o
         dispatch({ type: 'noted', text: 'The microphone is blocked. Allow it, or just type below.', error: true });
       }
     };
-    rec.onend = () => { setListening(false); setInterim(''); };
+    // Only the current recogniser may switch listening off: a restart aborts the old one, and its late onend
+    // would otherwise turn the microphone indicator off while the new one is running.
+    rec.onend = () => { if (recRef.current !== rec) return; setListening(false); setInterim(''); };
     recRef.current = rec;
     try { rec.start(); setListening(true); } catch { setListening(false); }
   }

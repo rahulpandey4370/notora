@@ -1,14 +1,14 @@
 
 'use client';
 
-import { useState, useRef, useEffect, useContext } from 'react';
+import { useState, useRef, useEffect, useContext, useReducer } from 'react';
 import { AppContext } from '@/contexts/app-context';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bot, User, Send, Loader2, X, MessageSquare, Cpu, Check, Copy, ShieldCheck, Maximize2, Minimize2 } from 'lucide-react';
 import '@/components/fit/fit.css';
 import { fitSerif } from '@/components/fit/font';
 import { applyAgentActions } from '@/ai/flows/apply-agent-actions';
-import type { ProposedAction } from '@/lib/agent-actions';
+import { chatSession, isAwaiting, NEW_CHAT } from '@/lib/chat-session';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,16 +18,6 @@ import { ScrollArea } from '../ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { contextualChat } from '@/ai/flows/contextual-chat';
 import { useModelFor, useModelStore } from '@/hooks/use-model-store';
-
-interface ChatMessage {
-  role: 'user' | 'model';
-  content: string;
-  modelId?: string;
-  /** Changes the assistant proposed; nothing is applied until Confirm. */
-  pending?: ProposedAction[];
-  status?: 'waiting' | 'applying' | 'applied' | 'cancelled' | 'failed';
-  result?: string;
-}
 
 interface ContextualChatbotProps {
   pageContext: any;
@@ -39,9 +29,13 @@ export default function ContextualChatbot({ pageContext }: ContextualChatbotProp
   const [isOpen, setIsOpen] = useState(false);
   /** Full screen uses the Logs page look; the small panel keeps the app's own. */
   const [full, setFull] = useState(false);
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  // The conversation is one state machine (lib/chat-session): messages have ids, and a reply or a Confirm outcome
+  // that arrives after "New chat" is dropped instead of landing in the new conversation.
+  const [session, dispatch] = useReducer(chatSession, NEW_CHAT);
+  const messages = session.messages;
+  const loading = isAwaiting(session);
+  const reqRef = useRef(0);
   const [input, setInput] = useState('');
-  const [loading, setLoading] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const fullScrollRef = useRef<HTMLDivElement>(null);
   const { webSearch } = useModelStore();
@@ -50,9 +44,7 @@ export default function ContextualChatbot({ pageContext }: ContextualChatbotProp
 
   // Greet once; closing the chat keeps the conversation (it's cleared only with "New chat").
   useEffect(() => {
-    if (isOpen && !messages.length) {
-      setMessages([{ role: 'model', content: GREETING }]);
-    }
+    if (isOpen) dispatch({ type: 'opened', greeting: GREETING });
   }, [isOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Escape: leave full screen first, then close.
@@ -75,58 +67,45 @@ export default function ContextualChatbot({ pageContext }: ContextualChatbotProp
   }, [messages, full, loading]);
 
   const handleSend = async () => {
-    if (!input.trim()) return;
-
-    const userMessage: ChatMessage = { role: 'user', content: input };
-    setMessages((prev) => [...prev, userMessage]);
+    const text = input;
+    if (!text.trim() || loading) return;
+    const req = ++reqRef.current;
+    dispatch({ type: 'sent', text, req });
     setInput('');
-    setLoading(true);
-
     try {
       const result = await contextualChat({
         // Tell the assistant how earlier proposals ended (confirmed, cancelled or failed).
         history: messages.map(({ role, content, result }) => ({ role, content: result ? `${content}\n(${result})` : content })),
-        query: input,
+        query: text,
         pageContext: JSON.stringify(pageContext, null, 2),
         webSearch,
       }, selectedModel);
-      
-      const aiMessage: ChatMessage = {
-        role: 'model', content: result.response, modelId: result.modelId,
-        ...(result.pending?.length ? { pending: result.pending, status: 'waiting' as const } : {}),
-      };
-      setMessages((prev) => [...prev, aiMessage]);
-
+      dispatch({ type: 'replied', req, content: result.response, modelId: result.modelId, pending: result.pending });
     } catch (error) {
       console.error('Chatbot error:', error);
-      const errorMessage: ChatMessage = {
-        role: 'model',
-        content: 'Sorry, I encountered an error. Please try again.',
-      };
-      setMessages((prev) => [...prev, errorMessage]);
-    } finally {
-      setLoading(false);
+      dispatch({ type: 'failed', req, text: 'Sorry, I encountered an error. Please try again.' });
     }
   };
 
-  const setMsg = (i: number, patch: Partial<ChatMessage>) => setMessages(prev => prev.map((m, j) => (j === i ? { ...m, ...patch } : m)));
   /** The only place assistant changes are applied: after the user taps Confirm. */
-  const confirm = async (i: number) => {
-    const m = messages[i];
+  const confirm = async (id: number) => {
+    const m = messages.find(x => x.id === id);
     if (!m?.pending?.length || m.status !== 'waiting') return;
-    setMsg(i, { status: 'applying' });
+    dispatch({ type: 'proposal', id, status: 'applying' });
     try {
       // The server writes the change; this device's own saves wait until it's loaded back, so they can't race.
       const run = () => applyAgentActions(m.pending!.map(p => p.action));
       const r = app ? await app.serverWrite(run) : await run();
-      setMsg(i, { status: r.applied.length ? 'applied' : 'failed', result: [r.applied.length ? `Done: ${r.applied.length} change${r.applied.length === 1 ? '' : 's'} saved.` : 'Nothing was changed.', ...r.skipped.map(x => `Skipped: ${x}`)].join(' ') });
+      // The change is saved either way. If the chat has moved on ("New chat"), there is no message left to note it on.
+      dispatch({ type: 'proposal', id, status: r.applied.length ? 'applied' : 'failed', result: [r.applied.length ? `Done: ${r.applied.length} change${r.applied.length === 1 ? '' : 's'} saved.` : 'Nothing was changed.', ...r.skipped.map(x => `Skipped: ${x}`)].join(' ') });
     } catch (e: any) {
-      setMsg(i, { status: 'failed', result: e?.message?.includes('another device') ? e.message : "Couldn't save the changes. Nothing was changed; try again." });
+      dispatch({ type: 'proposal', id, status: 'failed', result: e?.message?.includes('another device') ? e.message : "Couldn't save the changes. Nothing was changed; try again." });
     }
   };
+  const cancel = (id: number) => dispatch({ type: 'proposal', id, status: 'cancelled', result: 'Cancelled. Nothing was changed.' });
 
   const close = () => { setIsOpen(false); setFull(false); };
-  const newChat = () => setMessages([{ role: 'model', content: GREETING }]);
+  const newChat = () => dispatch({ type: 'newChat', greeting: GREETING });
   // Selecting text on a phone is fiddly: every reply gets a one-tap Copy.
   const [copied, setCopied] = useState<number | null>(null);
   const copy = (i: number, text: string) => void navigator.clipboard?.writeText(text).then(() => { setCopied(i); setTimeout(() => setCopied(c => (c === i ? null : c)), 1500); }).catch(() => {});
@@ -135,7 +114,7 @@ export default function ContextualChatbot({ pageContext }: ContextualChatbotProp
   const list = (
     <div className="space-y-4">
       {messages.map((message, index) => (
-        <div key={index} className={cn('flex items-start gap-3', message.role === 'user' ? 'justify-end' : 'justify-start')}>
+        <div key={message.id} className={cn('flex items-start gap-3', message.role === 'user' ? 'justify-end' : 'justify-start')}>
           {message.role === 'model' && (
             <div className={cn('flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full', full ? 'bg-[var(--f-deep)] text-white dark:text-[#04201f]' : 'bg-primary text-primary-foreground')}>
               <Bot className="h-5 w-5" aria-hidden />
@@ -152,18 +131,18 @@ export default function ContextualChatbot({ pageContext }: ContextualChatbotProp
                   <div className="mt-2 flex gap-2">
                     {full ? (
                       <>
-                        <button type="button" className="f-pill f-pill-primary flex-1 !min-h-9" disabled={message.status === 'applying'} onClick={() => void confirm(index)}>
+                        <button type="button" className="f-pill f-pill-primary flex-1 !min-h-9" disabled={message.status === 'applying'} onClick={() => void confirm(message.id)}>
                           {message.status === 'applying' ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden /> : <Check className="h-3.5 w-3.5" aria-hidden />}Confirm
                         </button>
-                        <button type="button" className="f-pill flex-1 !min-h-9" disabled={message.status === 'applying'} onClick={() => setMsg(index, { status: 'cancelled', result: 'Cancelled. Nothing was changed.' })}>Cancel</button>
+                        <button type="button" className="f-pill flex-1 !min-h-9" disabled={message.status === 'applying'} onClick={() => cancel(message.id)}>Cancel</button>
                       </>
                     ) : (
                       <>
-                        <Button size="sm" className="h-8 flex-1" disabled={message.status === 'applying'} onClick={() => void confirm(index)}>
+                        <Button size="sm" className="h-8 flex-1" disabled={message.status === 'applying'} onClick={() => void confirm(message.id)}>
                           {message.status === 'applying' ? <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" /> : <Check className="mr-1 h-3.5 w-3.5" />}Confirm
                         </Button>
                         <Button size="sm" variant="outline" className="h-8 flex-1" disabled={message.status === 'applying'}
-                          onClick={() => setMsg(index, { status: 'cancelled', result: 'Cancelled. Nothing was changed.' })}>Cancel</Button>
+                          onClick={() => cancel(message.id)}>Cancel</Button>
                       </>
                     )}
                   </div>

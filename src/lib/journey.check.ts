@@ -65,4 +65,14 @@ const regain = make(d => (d < 100 ? 95 - d * 0.1 : d < 200 ? 85 + (d - 100) * 0.
 const rj = journey(regain, TODAY)!;
 assert.equal(rj.newLow, false, 'above the all-time low of 85');
 assert.ok(rj.lowest.kg < 86.5, `lowest is the all-time low: ${rj.lowest.kg}`);
+// One headline for the journey card. BUG (was real): "New low" could show together with "Plateau" or the regain warning.
+import { journeyHeadline } from './journey';
+assert.equal(journeyHeadline('plateau', true), 'newLow', 'a new low is the headline, whatever the 4-week rate says');
+assert.equal(journeyHeadline('regaining', true), 'newLow');
+assert.equal(journeyHeadline('losing', true), 'newLow');
+assert.equal(journeyHeadline('losing', false), 'losing');
+assert.equal(journeyHeadline('plateau', false), 'plateau');
+assert.equal(journeyHeadline('regaining', false), 'regaining');
+assert.equal(journeyHeadline('early', false), 'early');
+assert.equal(rj.headline, journeyHeadline(rj.status, rj.newLow), 'the journey carries its headline');
 console.log('journey window: all checks passed');

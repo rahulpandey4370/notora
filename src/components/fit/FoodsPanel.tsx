@@ -271,10 +271,16 @@ export function FoodsPanel({ foods, data, day, slot, onSave, onUndo, aiDisabled,
   /** Profile page: tap a food to edit it; no logging. */ manage?: boolean;
 }) {
   const [q, setQ] = useState('');
-  const [detail, setDetail] = useState<{ food: Food; builtIn: boolean } | null>(null);
+  // One screen at a time (it used to be two nullable values that could both be set): the list, one food's detail, or the editor.
+  const [screen, setScreen] = useState<{ kind: 'list' } | { kind: 'detail'; food: Food; builtIn: boolean } | { kind: 'editor'; initial: Partial<Food> }>({ kind: 'list' });
+  const detail = screen.kind === 'detail' ? screen : null;
+  const editing = screen.kind === 'editor' ? screen.initial : null;
+  const setDetail = (d: { food: Food; builtIn: boolean } | null) => setScreen(d ? { kind: 'detail', ...d } : { kind: 'list' });
+  const setEditing = (initial: Partial<Food> | null) => setScreen(initial ? { kind: 'editor', initial } : { kind: 'list' });
   const [openGroups, setOpenGroups] = useState<Set<string>>(new Set());
-  const [editing, setEditing] = useState<Partial<Food> | null>(null);
-  const [done, setDone] = useState<{ text: string; unhide?: string; mealIds?: string[] } | null>(null);
+  const [done, setDone] = useState<{ text: string; unhide?: string; mealIds?: string[]; bad?: boolean } | null>(null);
+  // The banner (and its Undo) goes away by itself: it used to stay until the next action, long after Undo made sense.
+  useEffect(() => { if (!done) return; const t = setTimeout(() => setDone(null), 8000); return () => clearTimeout(t); }, [done]);
   const [showHidden, setShowHidden] = useState(false);
 
   // How often each food was logged in this meal / at all, so the usual picks come first.
@@ -329,7 +335,7 @@ export function FoodsPanel({ foods, data, day, slot, onSave, onUndo, aiDisabled,
     return (
       <FoodDetail food={f} slot={slot} builtIn={builtIn} group={builtIn ? (f as CatalogFood).group : undefined} onBack={() => setDetail(null)}
         onEdit={() => { setDetail(null); if (builtIn) copy(f); else setEditing(f); }}
-        onDelete={() => { if (builtIn) { foods.hide(f.id); setDone({ text: `${f.name} removed from your list`, unhide: f.id }); } else void foods.remove(f.id); setDetail(null); }}
+        onDelete={() => { if (builtIn) { foods.hide(f.id); setDone({ text: `${f.name} removed from your list`, unhide: f.id }); } else void foods.remove(f.id).then(r => { if (!r.ok) setDone({ text: `Couldn’t delete ${f.name}. It’s back in your list.`, bad: true }); }); setDetail(null); }}
         onLog={m => { log(m); setDetail(null); }} />
     );
   }
@@ -373,7 +379,7 @@ export function FoodsPanel({ foods, data, day, slot, onSave, onUndo, aiDisabled,
         <button type="button" className="f-pill shrink-0" onClick={() => setEditing({ name: q })}><Plus className="h-4 w-4" aria-hidden />New</button>
       </div>
       {done && (
-        <p className="f-good flex items-center gap-2 text-sm font-semibold" aria-live="polite">
+        <p className={`${done.bad ? 'f-bad' : 'f-good'} flex items-center gap-2 text-sm font-semibold`} aria-live="polite">
           <span className="min-w-0 flex-1 select-text">{done.text}</span>
           {done.unhide && <button type="button" className="f-chip" onClick={() => { foods.unhide(done.unhide!); setDone(null); }}>Undo</button>}
           {done.mealIds?.length && onUndo ? <button type="button" className="f-chip" onClick={() => { onUndo(done.mealIds!); setDone(null); }}>Undo</button> : null}
@@ -395,6 +401,10 @@ export function FoodsPanel({ foods, data, day, slot, onSave, onUndo, aiDisabled,
       )}
 
       {foods.catalog.length > 0 && <h3 className="f-muted pt-1 text-xs font-semibold uppercase tracking-wide">All foods</h3>}
+      {!foods.catalog.length && foods.catalogStatus === 'loading' && <p className="f-muted text-sm">Loading the built-in foods…</p>}
+      {!foods.catalog.length && foods.catalogStatus === 'failed' && (
+        <p className="f-bad flex flex-wrap items-center gap-2 text-sm"><span>Couldn’t load the built-in foods.</span><button type="button" className="f-chip" onClick={foods.reloadCatalog}>Try again</button></p>
+      )}
       {t ? (
         !catHits.length ? (foods.catalog.length > 0 && <p className="f-muted text-sm">Nothing in All foods matches “{q}”. Tap <strong>New</strong> to add it.</p>) : (
           <>

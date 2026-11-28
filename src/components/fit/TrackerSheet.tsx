@@ -4,7 +4,7 @@ import { Bar, CartesianGrid, ComposedChart, Line, ReferenceLine, ResponsiveConta
 import { Info, Loader2, Pencil, Plus, Sparkles, Trash2, Watch } from 'lucide-react';
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet';
 import type { AppData, LogTracker } from '@/lib/types';
-import { addDays, findTracker } from '@/lib/fitness';
+import { addDays, findTracker, isAutoEntry, isFitbitEntry } from '@/lib/fitness';
 import { direction, isDerived, meets, series, stats, type Direction } from '@/lib/tracker-stats';
 import { getLogInsights, type GetLogInsightsOutput } from '@/ai/flows/get-log-insights';
 import { useModelFor } from '@/hooks/use-model-store';
@@ -118,7 +118,7 @@ function Body({ t, data, day, today, aiDisabled, onChange, onDelete }: {
   // Entries in range, newest first, with where each came from.
   const rows = v.points.filter(p => p.value != null).reverse().map(p => {
     const e = t.logs.find(l => l.date === p.date);
-    const source = e?.id.startsWith('fitbit-') ? 'Fitbit' : e?.id.startsWith('auto-') || !e ? (t === findTracker(data, 'burned') ? 'Worked out' : 'From meals') : 'You';
+    const source = (!!e && isFitbitEntry(e.id)) ? 'Fitbit' : (!!e && isAutoEntry(e.id)) || !e ? (t === findTracker(data, 'burned') ? 'Worked out' : 'From meals') : 'You';
     return { date: p.date, value: p.value!, entry: e, source };
   });
   const shown = showAll ? rows : rows.slice(0, 7);
@@ -274,7 +274,7 @@ function Body({ t, data, day, today, aiDisabled, onChange, onDelete }: {
               onChange={e => setForm(f => ({ ...f, value: e.target.value }))} onKeyDown={e => e.key === 'Enter' && saveEntry()} aria-label={`Value in ${isSleep ? 'hours' : t.unit}`} />
           </div>
           {existing && (
-            <p className="f-muted text-xs">Replaces {withUnit(existing.value)}{existing.id.startsWith('fitbit-') ? ' from Fitbit. Your value stays even after the next sync.' : '.'}</p>
+            <p className="f-muted text-xs">Replaces {withUnit(existing.value)}{isFitbitEntry(existing.id) ? ' from Fitbit. Your value stays even after the next sync.' : '.'}</p>
           )}
           <button type="button" className="f-pill f-pill-primary w-full" disabled={!canSave} onClick={saveEntry}><Plus className="h-4 w-4" aria-hidden />Save</button>
         </section>

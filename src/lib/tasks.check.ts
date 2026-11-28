@@ -1,7 +1,7 @@
 // Run: npx tsx src/lib/tasks.check.ts — which days recurring and monthly tasks show on.
 import assert from 'node:assert/strict';
 import type { Task } from './types';
-import { adoptOngoing, deleteFrom, editFrom, isRepeating, monthlyShowsIn, recurringShowsOn, resumeRepeating, stopRepeating } from './tasks';
+import { adoptOngoing, deleteFrom, editFrom, isRepeating, monthlyShowsIn, recurringShowsOn, resumeRepeating, stopRepeating, repeatState } from './tasks';
 
 const rec = (extra: Partial<Task> = {}): Task => ({ id: 'r', title: 'Gym', priority: 'Medium', type: 'recurring', completions: [], createdAt: '2026-10-05T09:00:00.000Z', ...extra });
 const mon = (month: string, extra: Partial<Task> = {}): Task => ({ id: `m-${month}`, title: 'Pay rent', priority: 'Easy', type: 'monthly', completions: [], createdAt: `${month}-01T09:00:00.000Z`, month, ...extra });
@@ -91,5 +91,19 @@ assert.equal(monthlyShowsIn(monStopped, '2026-12'), false, 'gone from next month
   assert.equal(recurringShowsOn(task!, '2026-11-26', start), false);
   assert.equal(recurringShowsOn(task!, '2026-11-20', start), true);
   assert.equal(deleteFrom(rec({ ongoing: true, createdAt: '2026-11-26T05:00:00.000Z' }), '2026-11-26').task, null, 'no history: removed outright');
+}
+
+// The repeating lifecycle as one named value (it was read off `ongoing`, `endsOn` and the type in several places).
+{
+  const base = { id: 'x', title: 'X', priority: 'Easy' as const, completions: [], createdAt: '2026-11-01T08:00:00.000Z' };
+  assert.equal(repeatState({ ...base, type: 'single', date: '2026-11-02' }), 'oneOff');
+  assert.equal(repeatState({ ...base, type: 'weekly', week: '2026-48' }), 'oneOff');
+  assert.equal(repeatState({ ...base, type: 'recurring' }), 'legacy', 'before the one-time upgrade: treated as bound to its month');
+  assert.equal(repeatState({ ...base, type: 'recurring', ongoing: false }), 'monthBound');
+  assert.equal(repeatState({ ...base, type: 'monthly', month: '2026-11', ongoing: true }), 'repeating');
+  assert.equal(repeatState({ ...base, type: 'recurring', ongoing: true, endsOn: '2026-11-20' }), 'stopped');
+  assert.equal(repeatState({ ...base, type: 'recurring', ongoing: false, endsOn: '2026-11-20' }), 'monthBound', 'a contradictory pair reads as not repeating');
+  for (const t of [{ ...base, type: 'recurring' as const, ongoing: true }, { ...base, type: 'recurring' as const, ongoing: true, endsOn: '2026-11-20' }, { ...base, type: 'single' as const }])
+    assert.equal(isRepeating(t), repeatState(t) === 'repeating');
 }
 console.log('tasks checks passed');

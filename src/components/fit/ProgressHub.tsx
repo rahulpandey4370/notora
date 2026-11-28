@@ -81,21 +81,21 @@ function JourneyCard({ j, burn, data, today, onFrom }: { j: Journey | null; burn
       </ul>
       {j.next && <p className="text-sm">Next milestone: <strong>{j.next.kg} kg</strong> ({j.next.tag === 'goal' ? 'your goal' : `−${j.next.lost} kg`}), <strong>{Math.max(0, j.current.kg - j.next.kg).toFixed(1)} kg</strong> to go.</p>}
 
-      {j.newLow && <Banner tone="good" icon={PartyPopper}><strong>New low: {j.current.kg.toFixed(1)} kg.</strong> Your lightest trend weight yet. That’s weeks of good days adding up.</Banner>}
-      {j.status === 'losing' && !j.newLow && <Banner tone="good" icon={TrendingDown}>Losing <strong>{Math.abs(j.ratePerWeek!).toFixed(2)} kg a week</strong>{eta ? <>. At this pace you reach {j.goal} kg around <strong>{short(eta)}</strong>.</> : '.'}</Banner>}
-      {j.status === 'plateau' && (
+      {j.headline === 'newLow' && <Banner tone="good" icon={PartyPopper}><strong>New low: {j.current.kg.toFixed(1)} kg.</strong> Your lightest trend weight yet. That’s weeks of good days adding up.</Banner>}
+      {j.headline === 'losing' && <Banner tone="good" icon={TrendingDown}>Losing <strong>{Math.abs(j.ratePerWeek ?? 0).toFixed(2)} kg a week</strong>{eta ? <>. At this pace you reach {j.goal} kg around <strong>{short(eta)}</strong>.</> : '.'}</Banner>}
+      {j.headline === 'plateau' && (
         <Banner tone="warn" icon={AlertTriangle}>
           <strong>Plateau.</strong> Your trend has barely moved lately. Water, salt and stress can hide fat loss for a week or two, but a longer stall means you’re eating about what you burn.
           {burn.ok && <> You’ve averaged <strong>{k(burn.avgIntake)} kcal</strong> against a real burn of <strong>{k(burn.real)}</strong>. About <strong>{k(restart!)} kcal</strong> a day restarts a 0.5 kg/week loss.</>}
         </Banner>
       )}
-      {j.status === 'regaining' && (
+      {j.headline === 'regaining' && (
         <Banner tone="bad" icon={AlertTriangle}>
           <strong>Wake-up call:</strong> your trend is {j.change14 != null ? `up ${signed(j.change14, 'kg')} in 2 weeks` : 'going up'}.
           {burn.ok ? <> That’s about <strong>{k(Math.max(0, burn.avgIntake - burn.real))} kcal a day</strong> over your real burn. Getting back to {k(restart!)} kcal turns it around.</> : ' Log every meal this week to find where the extra is coming from.'}
         </Banner>
       )}
-      {j.status === 'early' && <p className="f-muted text-sm">Log 7+ weigh-ins in 4 weeks to see your rate and pace.</p>}
+      {j.headline === 'early' && <p className="f-muted text-sm">Log 7+ weigh-ins in 4 weeks to see your rate and pace.</p>}
     </div>
   );
 }
@@ -103,7 +103,6 @@ function JourneyCard({ j, burn, data, today, onFrom }: { j: Journey | null; burn
 /** What your body really burns (intake vs trend), against Fitbit and the formula, and the target that follows. */
 function RealBurnCard({ burn, data, today, onSetTarget }: { burn: RealBurn; data: AppData; today: string; onSetTarget: (kcal: number) => void }) {
   const [pace, setPace] = useState(0.5);
-  const [done, setDone] = useState(false);
   if (!burn.ok) {
     return (
       <div className="space-y-2 text-sm">
@@ -137,11 +136,11 @@ function RealBurnCard({ burn, data, today, onSetTarget }: { burn: RealBurn; data
       <div className="space-y-2 rounded-2xl border border-[var(--f-line)] p-3">
         <p className="text-sm font-semibold">Daily target from your real burn</p>
         <div className="flex flex-wrap gap-1.5" role="group" aria-label="Weekly loss">
-          {[0.25, 0.5, 0.75, 1].map(p => <button key={p} type="button" className="f-chip" data-on={pace === p} aria-pressed={pace === p} onClick={() => { setPace(p); setDone(false); }}>{p} kg/week</button>)}
+          {[0.25, 0.5, 0.75, 1].map(p => <button key={p} type="button" className="f-chip" data-on={pace === p} aria-pressed={pace === p} onClick={() => setPace(p)}>{p} kg/week</button>)}
         </div>
         <p className="text-sm">Eat about <strong className="text-base">{k(t.kcal)} kcal</strong> a day{current ? <span className="f-muted"> (now {k(current)})</span> : null}.{t.floored ? <span className="f-muted"> Kept at your safe minimum of {k(floor)}; pick a slower pace.</span> : null}</p>
-        <button type="button" className="f-pill f-pill-primary w-full" disabled={done || current === t.kcal} onClick={() => { onSetTarget(t.kcal); setDone(true); }}>
-          <Target className="h-4 w-4" aria-hidden />{done || current === t.kcal ? 'This is your target ✓' : `Use ${k(t.kcal)} kcal as my target`}
+        <button type="button" className="f-pill f-pill-primary w-full" disabled={current === t.kcal} onClick={() => onSetTarget(t.kcal)}>
+          <Target className="h-4 w-4" aria-hidden />{current === t.kcal ? 'This is your target ✓' : `Use ${k(t.kcal)} kcal as my target`}
         </button>
       </div>
     </div>

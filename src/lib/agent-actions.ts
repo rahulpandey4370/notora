@@ -7,6 +7,7 @@ import { linkCategories, moods } from '@/lib/types';
 import { getTaskXp } from '@/lib/utils';
 import { applyDraft, applyLogEdits, editDayItem, MEAL_SLOTS } from '@/lib/fitness';
 import { deleteFrom, editFrom, isRepeating } from '@/lib/tasks';
+import { doneOn, toggleOn } from '@/lib/task-status';
 
 const ymd = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
 const id = z.string().min(1);
@@ -101,6 +102,12 @@ function applyOne(d: AppData, a: AgentAction, ctx: Ctx): AppData {
     }
     case 'task.complete': {
       const t = findTask(d, a.id)!;
+      // A weekly task is done for its whole week: the shared rule decides, so a second day can't add a second tick and its XP.
+      if (t.type === 'weekly') {
+        if (doneOn(t, a.date) === a.done) return d;
+        const r = toggleOn(t, a.date);
+        return { ...d, tasks: d.tasks.map(x => (x.id === t.id ? r.task : x)), userStats: { xp: d.userStats.xp + r.xpDelta } };
+      }
       const key = t.type === 'monthly' ? `${a.date.slice(0, 7)}-01` : a.date;
       const has = (t.completions ?? []).includes(key);
       if (has === a.done) return d;

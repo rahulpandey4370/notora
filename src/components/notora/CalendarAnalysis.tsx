@@ -1,7 +1,7 @@
 
 'use client';
 
-import { recurringShowsOn } from '@/lib/tasks';
+import { doneOn, tasksOn } from '@/lib/task-status';
 import { weekStart } from '@/lib/week';
 import { useState, useMemo, useEffect } from 'react';
 import type { AppData, Task } from '@/lib/types';
@@ -50,25 +50,7 @@ export default function CalendarAnalysis({ data }: CalendarAnalysisProps) {
   const numberOfMonths = useResponsiveCalendar();
 
 
-  const getTasksForDay = (day: Date): Task[] => {
-    return data.tasks.filter(task => {
-        const taskDay = startOfDay(day);
-        switch (task.type) {
-            case 'single':
-                return task.date ? isSameDay(parseISO(task.date), taskDay) : false;
-            case 'recurring':
-                return recurringShowsOn(task, format(taskDay, 'yyyy-MM-dd'));
-            case 'weekly': {
-                const weekStartDate = task.week ? weekStart(task.week) : null;
-                return !!weekStartDate && isWithinInterval(taskDay, { start: weekStartDate, end: dfEndOfWeek(weekStartDate, { weekStartsOn: 1 }) });
-            }
-            case 'monthly':
-                return false; // Monthly tasks should not be counted in daily progress.
-            default:
-                return false;
-        }
-    });
-  };
+  const getTasksForDay = (day: Date): Task[] => tasksOn(data.tasks, format(day, 'yyyy-MM-dd')); // lib/task-status
 
  const modifiers = useMemo(() => {
     const taskModifiers: Record<string, Date[]> = {
@@ -87,7 +69,7 @@ export default function CalendarAnalysis({ data }: CalendarAnalysisProps) {
             const dayStr = format(day, 'yyyy-MM-dd');
             const tasksForDay = getTasksForDay(day);
             if (tasksForDay.length > 0) {
-              const completedTasks = tasksForDay.filter(t => (t.completions || []).includes(dayStr));
+              const completedTasks = tasksForDay.filter(t => doneOn(t, dayStr)); // a weekly task counts on every day of its week once ticked
               const percentage = (completedTasks.length / tasksForDay.length) * 100;
               
               if (percentage > 75) taskModifiers['task-complete'].push(day);

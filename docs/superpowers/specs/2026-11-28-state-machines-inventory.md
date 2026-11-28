@@ -54,7 +54,19 @@ Each has a check script in `src/lib` (`page-gate`, `ask`, `log-session`). The li
 - **Account replaced directly:** logging in as someone else without signing out counts as a sign-out for the engine (`accountLeft`).
 - **Not exercised:** the real server, first-ever workspace creation, and the real 401 sign-out path (that a late 401 no longer signs the next person out comes from reading the code).
 
-**Still to do:** rows 4, 7–15, 17–22, the rest of rows 6 and 16.
+**Batch 3 (2026-11-28), done:**
+
+- **Row 17, task status on a day:** `lib/task-status` holds the rules once: `showsOn` / `tasksOn` (which day lists a task is on), `doneOn`, `toggleOn` (what a tick does, with its XP), `overdueOn`, `weekXp`, `monthXp`. The Tasks page, the Dashboard, the calendar colouring and the next-action suggestions use them; the chat's tick action uses them for weekly tasks.
+- **Confirmed and fixed:** a weekly task's tick was stored and read per day, so one ticked on Monday showed unticked on Tuesday and could be ticked again for its XP again (up to seven times, also through the chat). It is now done for its whole week once ticked on any day; ticks stay stored on the day they were made. Unticking removes every tick in that week and takes back each one's XP.
+- **Changed on purpose:** the Dashboard's "today" card counts a weekly task as done (and its XP as earned) once it is ticked this week; the calendar colours every day of that week as done for that task.
+- **Not changed, one visible setting:** the two overdue rules. The Tasks page passes `OVERDUE_GRACE_HOUR` (23) to `overdueOn`; the Dashboard and the suggestions pass no grace. Which is right is an open decision.
+- **Compared:** both screens traced on seeded tasks before and after (a weekly task ticked Monday, one ticked twice, one untouched, yesterday's unticked task, a task carried twice, an old timestamp date). Order, overdue styling, Carry forward, non-weekly XP and the week and month totals are identical; only weekly done state and weekly ticks differ.
+- **Left with their own rule:** the reminder notifications (`api/notify`: they use the app time zone and skip weekly tasks) and the chat's tick for non-weekly tasks (it stores under the date it is given).
+- **Also left:** the chat's own task list for a day (`ai/adk/notora-agent`: app time zone, and it lists no weekly tasks at all).
+- **Unreadable dates:** a task date or tick that can't be parsed now matches no day instead of throwing while a screen draws (the old per-screen code returned false; the first shared version threw). Days are worked out once per stored string: over a year of 1,500 one-off tasks the shared day filter took 93 ms against 476 ms for the old calendar filter, with the same 9,147 rows.
+- **Row 18, repeating lifecycle:** deferred to batch 4; no bug seen there.
+
+**Still to do:** rows 4, 7–15, 18–22, the rest of rows 6 and 16.
 
 ## Already explicit (need nothing)
 

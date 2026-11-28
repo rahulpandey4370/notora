@@ -4,6 +4,7 @@ import type { AppData } from './types';
 import { AgentActionSchema, applyActions, describeAction, type AgentAction } from './agent-actions';
 import { applyDraft, dayIntake } from './fitness';
 import { recurringShowsOn } from './tasks';
+import { weekKey } from './week';
 
 const TODAY = '2026-11-27';
 let n = 0;
@@ -41,6 +42,17 @@ const run = (actions: AgentAction[], d = base()) => applyActions(d, actions.map(
   assert.ok(r.data.userStats.xp > 100, 'XP added');
   const again = run([{ type: 'task.complete', id: 'call', date: TODAY, done: true }], r.data);
   assert.equal(again.data.userStats.xp, r.data.userStats.xp, 'marking done twice changes nothing');
+}
+{
+  // A weekly task is done for its whole week (lib/task-status). Friday 27 Nov is in the week of Mon 23 Nov.
+  const d = base();
+  d.tasks.push({ id: 'review', title: 'Weekly review', priority: 'Medium', type: 'weekly', week: weekKey(new Date(2026, 10, 27)), completions: ['2026-11-23'], createdAt: '2026-11-20T05:00:00.000Z' });
+  const again = run([{ type: 'task.complete', id: 'review', date: TODAY, done: true }], d);
+  assert.deepEqual(again.data.tasks.find(t => t.id === 'review')!.completions, ['2026-11-23'], 'already done this week: no second tick');
+  assert.equal(again.data.userStats.xp, d.userStats.xp, 'and no second helping of XP');
+  const undone = run([{ type: 'task.complete', id: 'review', date: TODAY, done: false }], d);
+  assert.deepEqual(undone.data.tasks.find(t => t.id === 'review')!.completions, [], 'unticking on another day of the week removes the week’s tick');
+  assert.equal(undone.data.userStats.xp, d.userStats.xp - 100);
 }
 {
   const r = run([{ type: 'task.delete', id: 'gym' }]);

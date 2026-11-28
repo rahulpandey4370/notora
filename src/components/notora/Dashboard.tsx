@@ -10,6 +10,7 @@ import { toYmd } from '@/lib/date-utils';
 import { getTaskXp } from '@/lib/utils';
 import { v4 as uuidv4 } from 'uuid';
 import { deleteFrom, editFrom, isRepeating, monthlyShowsIn, recurringShowsOn } from '@/lib/tasks';
+import { doneOn, monthXp, overdueOn, taskDay, tasksOn, toggleOn, weekXp } from '@/lib/task-status';
 import { useApp } from '@/hooks/use-app';
 import { PolarGrid, PolarRadiusAxis, RadialBar, RadialBarChart, Label } from "recharts"
 import {
@@ -101,44 +102,18 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
     });
   };
 
+  // What a tick does (and its XP) is decided in lib/task-status: a weekly task is done for its whole week.
   const onToggle = (id: string, date: Date) => {
-    let xpChange = 0;
-    const newTasks = data.tasks.map((task) => {
-      if (task.id === id) {
-        const taskXp = getTaskXp(task);
-        
-        const relevantDate = task.type === 'monthly' ? startOfMonth(date) : startOfDay(date);
-        const dateStr = format(relevantDate, 'yyyy-MM-dd');
-
-        const isCompleted = (task.completions || []).includes(dateStr);
-        
-        let newCompletions: string[];
-        if (isCompleted) {
-          xpChange = -taskXp;
-          newCompletions = (task.completions || []).filter(d => d !== dateStr);
-        } else {
-          xpChange = taskXp;
-          newCompletions = [...(task.completions || []), dateStr];
-        }
-
-        if(!isCompleted) {
-            toast({
-                title: `+${taskXp} XP! ✨`,
-                description: `You've completed "${task.title}". Great job!`,
-            });
-            if (crossesReward(data.userStats.xp, data.userStats.xp + xpChange)) {
-              toast({
-                title: '🎉 Reward Yourself! 🎉',
-                description: 'You have earned over 100 XP. Time for a well-deserved break!',
-              });
-            }
-        }
-        return { ...task, completions: newCompletions };
+    const task = data.tasks.find(t => t.id === id);
+    if (!task) return;
+    const { task: next, xpDelta, done } = toggleOn(task, format(date, 'yyyy-MM-dd'));
+    if (done) {
+      toast({ title: `+${xpDelta} XP! ✨`, description: `You've completed "${task.title}". Great job!` });
+      if (crossesReward(data.userStats.xp, data.userStats.xp + xpDelta)) {
+        toast({ title: '🎉 Reward Yourself! 🎉', description: 'You have earned over 100 XP. Time for a well-deserved break!' });
       }
-      return task;
-    });
-
-    onDataChange({ ...data, tasks: newTasks, userStats: { xp: data.userStats.xp + xpChange } });
+    }
+    onDataChange({ ...data, tasks: data.tasks.map(t => (t.id === id ? next : t)), userStats: { xp: data.userStats.xp + xpDelta } });
   };
 
   const onDelete = (id: string) => deleteWithUndo(id, latest, onDataChange, toast);
@@ -163,139 +138,28 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
     onDataChange({ ...data, tasks: data.tasks.flatMap(t => (t.id === id ? parts : [t])) });
   };
   
-  const allTodaysTasks = useMemo(() => {
-    const todayStart = startOfDay(today);
-    return tasks.filter(task => {
-        
-        if (task.type === 'single' && task.date) {
-             const taskDate = startOfDay(parseISO(task.date));
-             return isSameDay(taskDate, todayStart);
-        }
-        
-        if (task.type === 'recurring') return recurringShowsOn(task, format(today, 'yyyy-MM-dd'));
-
-        if (task.type === 'weekly' && task.week) {
-             const taskWeekDate = weekStart(task.week);
-             return !!taskWeekDate && isWithinInterval(todayStart, { start: taskWeekDate, end: endOfWeek(taskWeekDate, { weekStartsOn: 1 }) });
-        }
-        return false;
-    }).sort((a,b) => {
-        const aDate = a.date ? parseISO(a.date) : new Date(a.createdAt);
-        const bDate = b.date ? parseISO(b.date) : new Date(b.createdAt);
-        return aDate.getTime() - bDate.getTime();
-    });
-  }, [tasks, today]);
-
-  /** Past single tasks not ticked on their day: tick late (counts on that day) or carry forward, as on the Tasks page. */
-  const overdueTasks = useMemo(() => tasks.filter(t => {
-    if (t.type !== 'single' || !t.date) return false;
-    const day = format(parseISO(t.date), 'yyyy-MM-dd');
-    return day < todayStr && !(t.completions || []).includes(day);
+  const allTodaysTasks = useMemo(() => tasksOn(tasks, todayStr).sort((a, b) => {
+    const aDate = a.date ? parseISO(a.date) : new Date(a.createdAt);
+    const bDate = b.date ? parseISO(b.date) : new Date(b.createdAt);
+    return aDate.getTime() - bDate.getTime();
   }), [tasks, todayStr]);
 
-  const { weeklyXp, totalWeeklyXp } = useMemo(() => {
-    const monday = startOfWeek(today, { weekStartsOn: 1 });
-    const weekEnd = endOfWeek(today, { weekStartsOn: 1 });
-    
-    let achieved = 0;
-    let total = 0;
+  /** Past single tasks not ticked on their day: tick late (counts on that day) or carry forward, as on the Tasks page. */
+  // No grace hour here: yesterday's tasks are listed as overdue from midnight (the Tasks page waits until 11 PM;
+  // see OVERDUE_GRACE_HOUR in lib/task-status, an open decision).
+  const overdueTasks = useMemo(() => tasks.filter(t => t.type === 'single' && !!t.date && overdueOn(taskDay(t.date), today) && !doneOn(t, taskDay(t.date))), [tasks, today]);
 
-    tasks.forEach(task => {
-        const taskXpValue = getTaskXp(task);
-        
-        if (task.type === 'weekly' && task.week) {
-            const taskWeekDate = weekStart(task.week);
-            if (taskWeekDate && isSameDay(taskWeekDate, monday)) {
-                total += taskXpValue;
-                 if ((task.completions || []).some(c => isWithinInterval(parseISO(c), { start: monday, end: weekEnd }))) {
-                    achieved += taskXpValue;
-                }
-            }
-        } else if (task.type === 'recurring') {
-             // Iterate through each day of the current week
-             for (let i = 0; i < 7; i++) {
-                const dayInWeek = addDays(monday, i);
-                if (recurringShowsOn(task, format(dayInWeek, 'yyyy-MM-dd'))) {
-                    total += taskXpValue;
-                    if ((task.completions || []).includes(format(dayInWeek, 'yyyy-MM-dd'))) {
-                       achieved += taskXpValue;
-                    }
-                }
-            }
-        } else if (task.type === 'single' && task.date) {
-            const taskDate = startOfDay(parseISO(task.date));
-            if (isWithinInterval(taskDate, { start: monday, end: weekEnd })) {
-                total += taskXpValue;
-                if ((task.completions || []).includes(format(taskDate, 'yyyy-MM-dd'))) {
-                    achieved += taskXpValue;
-                }
-            }
-        }
-    });
-
-    return { weeklyXp: achieved, totalWeeklyXp: total };
-  }, [tasks, today]);
-  
-  const { monthlyXp, totalPossibleMonthlyXp } = useMemo(() => {
-    const monthStart = startOfMonth(today);
-    let achieved = 0;
-    let total = 0;
-
-    tasks.forEach(task => {
-        const taskXpValue = getTaskXp(task);
-        const completionsForMonth = (task.completions || []).filter(c => isSameMonth(new Date(c), today));
-
-        if (task.type === 'monthly' && monthlyShowsIn(task, format(today, 'yyyy-MM'))) {
-            total += taskXpValue;
-            if (completionsForMonth.length > 0) {
-                achieved += taskXpValue;
-            }
-        } else if (task.type === 'weekly' && task.week) {
-            const taskWeekStartDate = weekStart(task.week);
-            if (taskWeekStartDate && isSameMonth(taskWeekStartDate, today)) {
-                total += taskXpValue;
-                if (completionsForMonth.length > 0) {
-                    achieved += taskXpValue;
-                }
-            }
-        } else if (task.type === 'single' && task.date) {
-            if (isSameMonth(parseISO(task.date), today)) {
-                total += taskXpValue;
-                if (completionsForMonth.length > 0) {
-                    achieved += taskXpValue;
-                }
-            }
-        } else if (task.type === 'recurring') {
-            {
-                const daysInMonth = getDaysInMonth(today);
-                for (let i = 0; i < daysInMonth; i++) {
-                    const dayInMonth = addDays(monthStart, i);
-                    if (recurringShowsOn(task, format(dayInMonth, 'yyyy-MM-dd'))) {
-                        total += taskXpValue;
-                        if ((task.completions || []).includes(format(dayInMonth, 'yyyy-MM-dd'))) {
-                            achieved += taskXpValue;
-                        }
-                    }
-                }
-            }
-        }
-    });
-    
-    return { monthlyXp: achieved, totalPossibleMonthlyXp: total };
-  }, [tasks, today]);
-
+  // Week and month totals: lib/task-status (the same code the Tasks page uses for its month ring).
+  const { weeklyXp, totalWeeklyXp } = useMemo(() => { const w = weekXp(tasks, today); return { weeklyXp: w.earned, totalWeeklyXp: w.possible }; }, [tasks, today]);
+  const { monthlyXp, totalPossibleMonthlyXp } = useMemo(() => { const m = monthXp(tasks, today); return { monthlyXp: m.earned, totalPossibleMonthlyXp: m.possible }; }, [tasks, today]);
 
   const { completedTodayCount, todaysTotalXp, todaysAchievedXp } = useMemo(() => {
-    const todayStr = format(today, 'yyyy-MM-dd');
-    const completedTasks = allTodaysTasks.filter(t => {
-      const completionDate = t.type === 'single' && t.date ? format(startOfDay(parseISO(t.date)), 'yyyy-MM-dd') : todayStr;
-      return (t.completions || []).includes(completionDate);
-    });
+    const completedTasks = allTodaysTasks.filter(t => doneOn(t, todayStr));
     const completedCount = completedTasks.length;
     const totalXp = allTodaysTasks.reduce((acc, t) => acc + getTaskXp(t), 0);
     const achievedXp = completedTasks.reduce((acc, t) => acc + getTaskXp(t), 0);
     return { completedTodayCount: completedCount, todaysTotalXp: totalXp, todaysAchievedXp: achievedXp };
-  }, [allTodaysTasks, today]);
+  }, [allTodaysTasks, todayStr]);
   
   const animationVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -385,14 +249,9 @@ export default function Dashboard({ user, data, onDataChange }: DashboardProps) 
                               const todayStart = startOfDay(today);
                               let taskDate, isCompleted;
                               
-                              if (task.type === 'single' && task.date) {
-                                taskDate = startOfDay(parseISO(task.date));
-                                isCompleted = (task.completions || []).includes(format(taskDate, 'yyyy-MM-dd'));
-                              } else { 
-                                taskDate = todayStart;
-                                const todayStr = format(taskDate, 'yyyy-MM-dd');
-                                isCompleted = (task.completions || []).includes(todayStr);
-                              }
+                              if (task.type === 'single' && task.date) taskDate = startOfDay(parseISO(task.date));
+                              else taskDate = todayStart;
+                              isCompleted = doneOn(task, format(taskDate, 'yyyy-MM-dd'));
 
                               return (
                                 <TaskItem

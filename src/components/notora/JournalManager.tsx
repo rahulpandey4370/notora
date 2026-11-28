@@ -14,9 +14,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { MicButton, appendSpeech } from './MicButton';
 import { useToast } from '@/hooks/use-toast';
 import { useModelFor } from '@/hooks/use-model-store';
+import { useAsk } from '@/hooks/use-ask';
+import { aiReplyFate } from '@/lib/journal-ai';
 import { cn } from '@/lib/utils';
 import { v4 as uuidv4 } from 'uuid';
-import { reflectOnJournalEntry } from '@/ai/flows/reflect-on-journal-entry';
+import { reflectOnJournalEntry, type ReflectOnJournalEntryOutput } from '@/ai/flows/reflect-on-journal-entry';
 import { formatJournalEntry } from '@/ai/flows/format-journal-entry';
 import { summarizeJournalEntry } from '@/ai/flows/summarize-journal-entry';
 import { Skeleton } from '../ui/skeleton';
@@ -38,15 +40,6 @@ interface JournalManagerProps {
   journalEntries: JournalEntry[];
   data: AppData;
   onDataChange: (data: AppData) => void;
-}
-
-interface AIReflection {
-    reflection: string;
-    followUpQuestion: string;
-    emotion: string;
-    writingStyle: string;
-    mainThemes: string[];
-    isLoading: boolean;
 }
 
 interface JournalEditorProps {
@@ -136,7 +129,10 @@ const JournalEditor = ({ entry, selectedDate, onSave, onCancel, allTags }: Journ
 export default function JournalManager({ journalEntries: initialJournalEntries, data, onDataChange }: JournalManagerProps) {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [isEditing, setIsEditing] = useState(false);
-  const [aiReflection, setAiReflection] = useState<AIReflection>({ reflection: '', followUpQuestion: '', emotion: '', writingStyle: '', mainThemes: [], isLoading: false });
+  // The AI Writing Coach for the day on screen, as one named state (lib/ask): idle → pending → ready | failed.
+  // Changing the day or deleting the entry resets it, which also drops a reply still on its way.
+  const coach = useAsk<ReflectOnJournalEntryOutput>();
+  const aiReflection = coach.value;
   const [activeTagFilter, setActiveTagFilter] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [aiLoading, setAiLoading] = useState<'format' | 'summarize' | null>(null);
@@ -144,6 +140,12 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
   // Saves can land after a re-render (autosave timer, unmount flush, AI calls): always write onto the latest data.
   const latestData = useRef(data);
   latestData.current = data;
+  const latestEditing = useRef(isEditing);
+  latestEditing.current = isEditing;
+  // Format / AI Summary: one at a time, for the day on screen. Only the reply to the latest request counts; a day
+  // change, a delete or leaving the page makes it stale (dropEntryAi), so it is neither saved nor left spinning.
+  const entryAiReq = useRef(0);
+  const dropEntryAi = () => { entryAiReq.current++; setAiLoading(null); };
 
   const { toast } = useToast();
   const selectedModel = useModelFor('journal');
@@ -172,9 +174,22 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
   // Open/close only when the day changes: an autosave updating the entry must not close the editor.
   useEffect(() => {
     setIsEditing(!todaysEntry);
-    setAiReflection({ reflection: '', followUpQuestion: '', emotion: '', writingStyle: '', mainThemes: [], isLoading: false });
+    coach.reset();
+    setAiLoading(null);
+    // Leaving the day (or the page, after which latestData is no longer the latest) orphans a Format / AI Summary reply.
+    return () => { entryAiReq.current++; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dateKey]);
+
+  useEffect(() => {
+    if (coach.state.state !== 'failed') return; // only the request still in play can fail; a dropped one stays silent
+    toast({
+        variant: 'destructive',
+        title: 'Reflection Failed',
+        description: 'Could not generate an AI reflection for this entry.'
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [coach.state]);
   
   const allTags = useMemo(() => {
     const tags = new Set<string>();
@@ -226,56 +241,62 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
       description: `Your journal entry for ${format(selectedDate, 'PPP')} has been deleted.`,
     });
     
-    setAiReflection({ reflection: '', followUpQuestion: '', emotion: '', writingStyle: '', mainThemes: [], isLoading: false });
+    coach.reset();
+    dropEntryAi(); // a Format reply must not write the deleted entry back
     setIsEditing(true);
   };
   
   const handleGetReflection = async () => {
     if (!todaysEntry?.content) return;
-    setAiReflection({ reflection: '', followUpQuestion: '', emotion: '', writingStyle: '', mainThemes: [], isLoading: true });
+    const content = todaysEntry.content;
+    await coach.run(async () => {
+        try {
+            return await reflectOnJournalEntry({ content }, selectedModel);
+        } catch(e) {
+            console.error(e);
+            throw e;
+        }
+    });
+  }
+
+  /**
+   * Run Format / AI Summary on the day's entry and save the result, unless the reply is no longer current (dropped
+   * silently) or the user started editing the entry meanwhile (typing wins: dropped, and `kept` says so).
+   */
+  const runEntryAi = async (kind: 'format' | 'summarize', work: (content: string) => Promise<{ changes: Partial<JournalEntry>; done: Parameters<typeof toast>[0] }>, kept: string, failed: string) => {
+    if (!todaysEntry?.content) return;
+    const { id, content } = todaysEntry;
+    const req = ++entryAiReq.current;
+    setAiLoading(kind);
     try {
-        const result = await reflectOnJournalEntry({ content: todaysEntry.content }, selectedModel);
-        setAiReflection({ ...result, isLoading: false });
+        const { changes, done } = await work(content);
+        const stored = (latestData.current.journalEntries || []).find(entry => entry.id === id)?.content;
+        const fate = aiReplyFate({ current: req === entryAiReq.current, sent: content, stored, editing: latestEditing.current });
+        if (fate === 'stale') return;
+        if (fate === 'edited') {
+            toast({ title: kept, description: 'You started editing this entry while the AI was working, so your text was kept.' });
+            return;
+        }
+        handleSave(changes);
+        toast(done);
     } catch(e) {
+        if (req !== entryAiReq.current) return;
         console.error(e);
-        toast({
-            variant: 'destructive',
-            title: 'Reflection Failed',
-            description: 'Could not generate an AI reflection for this entry.'
-        })
-        setAiReflection({ reflection: '', followUpQuestion: '', emotion: '', writingStyle: '', mainThemes: [], isLoading: false });
+        toast({ variant: 'destructive', title: failed });
+    } finally {
+        if (req === entryAiReq.current) setAiLoading(null);
     }
   }
 
-  const handleFormatEntry = async () => {
-    if (!todaysEntry?.content) return;
-    setAiLoading('format');
-    try {
-        const result = await formatJournalEntry({ content: todaysEntry.content }, selectedModel);
-        handleSave({ content: result.formattedContent });
-        toast({ title: 'Journal Formatted', description: 'AI has beautifully formatted your entry.' });
-    } catch(e) {
-        console.error(e);
-        toast({ variant: 'destructive', title: 'Formatting Failed' });
-    } finally {
-        setAiLoading(null);
-    }
-  }
+  const handleFormatEntry = () => runEntryAi('format', async content => {
+    const result = await formatJournalEntry({ content }, selectedModel);
+    return { changes: { content: result.formattedContent }, done: { title: 'Journal Formatted', description: 'AI has beautifully formatted your entry.' } };
+  }, 'Entry not formatted', 'Formatting Failed');
 
-  const handleSummarizeEntry = async () => {
-    if (!todaysEntry?.content) return;
-    setAiLoading('summarize');
-    try {
-        const result = await summarizeJournalEntry({ content: todaysEntry.content }, selectedModel);
-        handleSave({ aiSummary: result.summary });
-        toast({ title: 'Summary Generated', description: 'An AI-powered summary has been saved with your entry.' });
-    } catch(e) {
-        console.error(e);
-        toast({ variant: 'destructive', title: 'Summarization Failed' });
-    } finally {
-        setAiLoading(null);
-    }
-  }
+  const handleSummarizeEntry = () => runEntryAi('summarize', async content => {
+    const result = await summarizeJournalEntry({ content }, selectedModel);
+    return { changes: { aiSummary: result.summary }, done: { title: 'Summary Generated', description: 'An AI-powered summary has been saved with your entry.' } };
+  }, 'Summary not saved', 'Summarization Failed');
 
   const handleExport = (formatType: 'json' | 'md') => {
     let content = '';
@@ -417,7 +438,7 @@ a.click();
            {todaysEntry && !isEditing && (
             <div className="space-y-4">
                 <div className="flex flex-wrap gap-2">
-                    <Button onClick={handleGetReflection} disabled={aiReflection.isLoading} className="w-full sm:w-auto flex-1"><Wand2 className="mr-2 h-4 w-4" /> AI Writing Coach</Button>
+                    <Button onClick={handleGetReflection} disabled={coach.pending} className="w-full sm:w-auto flex-1"><Wand2 className="mr-2 h-4 w-4" /> AI Writing Coach</Button>
                     <Button onClick={handleFormatEntry} disabled={!!aiLoading} variant="outline" className="w-full sm:w-auto flex-1">
                         {aiLoading === 'format' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <DraftingCompass className="mr-2 h-4 w-4" />} Format Entry
                     </Button>
@@ -426,9 +447,9 @@ a.click();
                     </Button>
                 </div>
                 <AnimatePresence>
-                {aiReflection.isLoading ? (
+                {coach.pending ? (
                     <Card className="dark:neon-journal"><CardContent className="p-4"><Skeleton className="h-40 w-full" /></CardContent></Card>
-                ) : aiReflection.reflection && (
+                ) : aiReflection?.reflection && (
                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
                         <Card className="bg-muted/50 dark:neon-journal">
                             <CardHeader className="pb-4">

@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useRef, useState, useMemo } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 import type { AppData, SavedLink } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,6 +15,8 @@ import { ToastAction } from '@/components/ui/toast';
 import LinkCard from './LinkCard';
 import { motion } from 'framer-motion';
 import { useModelFor } from '@/hooks/use-model-store';
+import { useAsk } from '@/hooks/use-ask';
+import { ANALYZING, analysisFate, linkAnalysis } from '@/lib/link-analysis';
 
 interface LinkManagerProps {
   savedLinks: SavedLink[];
@@ -24,17 +26,24 @@ interface LinkManagerProps {
 
 export default function LinkManager({ savedLinks, data, onDataChange }: LinkManagerProps) {
   const [newUrl, setNewUrl] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [searchLoading, setSearchLoading] = useState(false);
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchedLinkIds, setSearchedLinkIds] = useState<string[] | null>(null);
-  const [searchModel, setSearchModel] = useState<string | undefined>();
+  // The search as one named state (lib/ask): idle → pending → ready | failed. Clearing resets it, which also drops a
+  // reply still on its way; the results on show stay up while a new search runs and after one fails.
+  const search = useAsk<{ ids: string[]; model?: string }>();
+  const searchLoading = search.pending;
+  const searchedLinkIds = search.value?.ids ?? null;
+  const searchModel = search.value?.model;
+  // Links this screen has an analysis out for. A link's status is its stored summary plus this (lib/link-analysis).
+  const [running, setRunning] = useState<string[]>([]);
   const { toast } = useToast();
   const selectedModel = useModelFor('tasks');
   // The latest data, so Undo restores into what's current (not a snapshot from before the delete).
   const latest = useRef({ data, onDataChange });
   latest.current = { data, onDataChange };
+  // Once this screen is gone `latest` stops updating, so a late analysis reply would write an old copy of everything.
+  const alive = useRef(true);
+  useEffect(() => { alive.current = true; return () => { alive.current = false; }; }, []);
 
   const handleAddLink = async () => {
     if (!newUrl.trim()) return;
@@ -54,24 +63,43 @@ export default function LinkManager({ savedLinks, data, onDataChange }: LinkMana
     const url = newUrl.trim();
     const id = uuidv4();
     const host = (() => { try { return new URL(url).hostname.replace(/^www\./, ''); } catch { return url; } })();
-    const placeholder: SavedLink = { id, url, title: host, summary: 'Analyzing…', category: 'Other', dateAdded: new Date().toISOString() };
+    const placeholder: SavedLink = { id, url, title: host, summary: ANALYZING, category: 'Other', dateAdded: new Date().toISOString() };
     onDataChange({ ...data, savedLinks: [placeholder, ...(data.savedLinks || [])] });
     setNewUrl('');
-    // Patch only this link in whatever the data is by then (other edits made meanwhile are kept).
-    const patch = (p: Partial<SavedLink>) => {
-      const { data: cur, onDataChange: save } = latest.current;
-      if (!(cur.savedLinks || []).some(l => l.id === id)) return; // deleted meanwhile
-      save({ ...cur, savedLinks: (cur.savedLinks || []).map(l => (l.id === id ? { ...l, ...p } : l)) });
-    };
+    void analyze(placeholder);
+  };
+
+  /** Ask the AI about a link that is saved as analyzing (`started`: the link as it is when the request goes out). */
+  const analyze = async (started: SavedLink) => {
+    const { id, url } = started;
+    setRunning(r => [...r, id]);
+    let found: Partial<SavedLink> | null = null;
     try {
       const result = await analyzeLink({ url }, selectedModel);
-      patch({ title: result.title, summary: result.summary, category: result.category, model: result.modelId });
+      found = { title: result.title, summary: result.summary, category: result.category, model: result.modelId };
     } catch (error) {
       console.error('Failed to analyze link:', error);
-      patch({ summary: 'Couldn’t analyze this link. It’s saved; tap edit to add a title and notes.' });
-      toast({ variant: 'destructive', title: 'Saved, but not analyzed', description: 'The link is in your list. Tap edit to add details, or try adding it again later.' });
     }
+    if (!alive.current) return; // the screen was left: the link stays saved as analyzing and offers a retry next time
+    setRunning(r => r.filter(x => x !== id));
+    // Patch only this link in whatever the data is by then (other edits made meanwhile are kept).
+    const { data: cur, onDataChange: save } = latest.current;
+    const fate = analysisFate(started, (cur.savedLinks || []).find(l => l.id === id));
+    if (fate === 'gone') return; // deleted meanwhile
+    if (fate === 'edited') {
+      // Typing wins: the user's title, notes or category are not overwritten.
+      if (found) toast({ title: 'Kept your edits', description: 'You changed this link while it was being analyzed, so the AI’s details weren’t applied.' });
+      return;
+    }
+    const patch = found ?? { summary: 'Couldn’t analyze this link. It’s saved; tap edit to add a title and notes.' };
+    const next = { ...cur, savedLinks: (cur.savedLinks || []).map(l => (l.id === id ? { ...l, ...patch } : l)) };
+    latest.current = { data: next, onDataChange: save }; // a second reply before the re-render builds on this one
+    save(next);
+    if (!found) toast({ variant: 'destructive', title: 'Saved, but not analyzed', description: 'The link is in your list. Tap edit to add details, or try adding it again later.' });
   };
+
+  // Saved as analyzing with nothing running: the tab was closed or the page left mid-analysis.
+  const stalled = savedLinks.filter(link => linkAnalysis(link, running) === 'stalled');
 
   const handleDeleteLink = (id: string) => {
     const links = data.savedLinks || [];
@@ -105,27 +133,31 @@ export default function LinkManager({ savedLinks, data, onDataChange }: LinkMana
       return;
     }
 
-    setSearchLoading(true);
-    try {
-      const result = await searchLinks({ query: searchQuery, links: savedLinks }, selectedModel);
-      setSearchedLinkIds(result.relevantLinkIds);
-      setSearchModel(result.modelId);
-    } catch (error) {
-      console.error('Failed to search links:', error);
-      toast({
-        variant: 'destructive',
-        title: 'Search Failed',
-        description: 'Could not perform the search. Please try again.',
-      });
-    } finally {
-      setSearchLoading(false);
-    }
+    await search.run(async () => {
+      try {
+        const result = await searchLinks({ query: searchQuery, links: savedLinks }, selectedModel);
+        return { ids: result.relevantLinkIds, model: result.modelId };
+      } catch (error) {
+        console.error('Failed to search links:', error);
+        throw error;
+      }
+    }, { keep: true });
   };
+
+  // Only a failure of the search still in play gets here: one that was cleared or replaced never becomes 'failed'.
+  useEffect(() => {
+    if (search.state.state !== 'failed') return;
+    toast({
+      variant: 'destructive',
+      title: 'Search Failed',
+      description: 'Could not perform the search. Please try again.',
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search.state]);
 
   const handleClearSearch = () => {
     setSearchQuery('');
-    setSearchedLinkIds(null);
-    setSearchModel(undefined);
+    search.reset();
   };
   
   const filteredLinks = useMemo(() => {
@@ -156,14 +188,9 @@ export default function LinkManager({ savedLinks, data, onDataChange }: LinkMana
                 onChange={(e) => setNewUrl(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleAddLink()}
                 className="w-full nb-border rounded-md h-9"
-                disabled={loading}
                 />
-                <Button onClick={handleAddLink} className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground nb-border rounded-md h-9 nb-shadow-sm dark:shadow-[2px_2px_0px_hsl(var(--primary))]" disabled={loading}>
-                {loading ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                    <Plus className="mr-2 h-4 w-4" />
-                )}
+                <Button onClick={handleAddLink} className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground nb-border rounded-md h-9 nb-shadow-sm dark:shadow-[2px_2px_0px_hsl(var(--primary))]">
+                <Plus className="mr-2 h-4 w-4" />
                 Add Link
                 </Button>
             </div>
@@ -222,6 +249,13 @@ export default function LinkManager({ savedLinks, data, onDataChange }: LinkMana
         </div>
       )}
 
+      {stalled.length > 0 && (
+        <div className="text-sm text-muted-foreground flex items-center gap-1 justify-center">
+            {stalled.length === 1 ? 'Analysis didn’t finish for 1 link.' : `Analysis didn’t finish for ${stalled.length} links.`}
+            <Button variant="link" size="sm" className="h-auto p-0 pl-1" onClick={() => stalled.forEach(link => void analyze(link))}>Retry</Button>
+        </div>
+      )}
+
       <motion.div 
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
         initial={{ opacity: 0 }}
@@ -239,7 +273,7 @@ export default function LinkManager({ savedLinks, data, onDataChange }: LinkMana
         </p>
       )}
 
-      {savedLinks.length === 0 && !loading && (
+      {savedLinks.length === 0 && (
         <p className="text-center text-muted-foreground pt-10">
           Save your first link to get started!
         </p>

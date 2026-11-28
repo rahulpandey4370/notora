@@ -13,7 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Textarea } from '@/components/ui/textarea';
 import { MicButton, appendSpeech } from './MicButton';
 import { useToast } from '@/hooks/use-toast';
-import { useModelStore } from '@/hooks/use-model-store';
+import { useModelFor } from '@/hooks/use-model-store';
 import { cn } from '@/lib/utils';
 import { v4 as uuidv4 } from 'uuid';
 import { reflectOnJournalEntry } from '@/ai/flows/reflect-on-journal-entry';
@@ -146,7 +146,7 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
   latestData.current = data;
 
   const { toast } = useToast();
-  const { selectedModel } = useModelStore();
+  const selectedModel = useModelFor('journal');
   const isMobile = useIsMobile();
   const dateKey = toYmd(selectedDate);
   

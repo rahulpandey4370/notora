@@ -261,6 +261,8 @@ export interface AppData {
   logsLook?: 'lagoon' | 'onyx' | 'coral' | 'grape';
   /** Built-in catalogue foods (ids like "cat-…") you removed from your lists; restorable from the Profile page. */
   hiddenFoods?: string[];
+  /** Where the weight journey measures from: 'all', a rolling window ('30d', '90d', '180d') or a date (yyyy-MM-dd). Unset = '90d'. */
+  journeyFrom?: string;
 }
 
 export interface ProgressPhoto { id: string; date: string; path: string; pose: 'front' | 'side' | 'back'; note?: string }

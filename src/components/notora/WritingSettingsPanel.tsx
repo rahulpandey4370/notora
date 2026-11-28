@@ -25,8 +25,8 @@ export default function WritingSettingsPanel({ open, onOpenChange }: WritingSett
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent>
         <SheetHeader>
-          <SheetTitle>Writing Environment</SheetTitle>
-          <SheetDescription>
+          <SheetTitle className="pr-8">Writing Environment</SheetTitle>
+          <SheetDescription className="pr-8">
             Customize your writing space for maximum comfort and focus.
           </SheetDescription>
         </SheetHeader>

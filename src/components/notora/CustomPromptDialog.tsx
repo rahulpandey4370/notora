@@ -16,7 +16,7 @@ import { Loader2, Sparkles } from 'lucide-react';
 import type { StickyNote } from '@/lib/types';
 import { Textarea } from '../ui/textarea';
 import { MicButton, appendSpeech } from './MicButton';
-import { useModelStore } from '@/hooks/use-model-store';
+import { useModelFor } from '@/hooks/use-model-store';
 import { useToast } from '@/hooks/use-toast';
 
 interface CustomPromptDialogProps {
@@ -36,7 +36,7 @@ export default function CustomPromptDialog({
 }: CustomPromptDialogProps) {
   const [prompt, setPrompt] = useState('');
   const [loading, setLoading] = useState(false);
-  const { selectedModel } = useModelStore();
+  const selectedModel = useModelFor('notes');
   const { toast } = useToast();
 
   const handleTransform = async () => {

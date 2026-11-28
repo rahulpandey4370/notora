@@ -6,6 +6,7 @@
 // rewritten; `fitbit-*` come from the Fitbit merge; anything else is a stored
 // total that only the explicit rules below touch. A stored 0 is "no entry".
 import type { Activity, AppData, FitnessDay, FitnessProfile, LogEntry, LogTracker, Meal, MealSlot } from '@/lib/types';
+import { splitMealName } from '@/lib/food-match';
 
 export const TRACKER = {
   weight: 'Weight', protein: 'Protein Intake', steps: 'Steps', intake: 'Daily Calorie Intake', burned: 'Calories Burned',
@@ -90,11 +91,18 @@ export function trendSeries(logs: LogEntry[]): TrendPoint[] {
   return out;
 }
 
-/** kg/week from a least-squares fit of the last 28 days of trend (since any restart); null with < 7 weigh-ins there. */
-export function weeklyRate(series: TrendPoint[], today: string): number | null {
+/** The points weeklyRate fits: the last 28 days up to and including `today`, since any restart. */
+function rateWindow(series: TrendPoint[], today: string) {
   const restart = [...series].reverse().find(p => p.reseed && p.date <= today)?.date;
   const from = restart && restart > addDays(today, -27) ? restart : addDays(today, -27);
-  const pts = series.filter(p => p.date >= from && p.date <= today);
+  return { from, pts: series.filter(p => p.date >= from && p.date <= today) };
+}
+/** How many weigh-ins weeklyRate has to work with (it needs 7): the number to show the user. */
+export const rateWeighIns = (series: TrendPoint[], today: string): number => rateWindow(series, today).pts.filter(p => p.weight !== undefined).length;
+
+/** kg/week from a least-squares fit of the last 28 days of trend (since any restart); null with < 7 weigh-ins there. */
+export function weeklyRate(series: TrendPoint[], today: string): number | null {
+  const { from, pts } = rateWindow(series, today);
   if (pts.filter(p => p.weight !== undefined).length < 7) return null;
   const xs = pts.map(p => daysBetween(from, p.date));
   const mx = xs.reduce((s, x) => s + x, 0) / xs.length;
@@ -390,6 +398,13 @@ export function applyLogEdits(data: AppData, ymd: string, edits: LogEdit[], newI
     if (!e) return [m];
     if (e.delete) return [];
     const next = { ...m, ...pick(e.patch ?? {}, ['name', 'kcal', 'proteinG', 'carbsG', 'fatG', 'fiberG', 'slot']) };
+    // The stored weight was for the old numbers. Keep one only if the new name states it ("…, 200 g", "× 3 (120 g)"):
+    // a stale weight would make a later change of amount scale from the wrong base.
+    if (e.patch?.kcal != null && m.grams != null) {
+      const sp = splitMealName(next.name);
+      const stated = sp.kind === 'weight' ? sp.qty : sp.kind === 'x' ? sp.grams : undefined;
+      if (stated) next.grams = Math.round(stated); else delete next.grams;
+    }
     return [{ ...next, kcal: flooredKcal(next) }];
   });
   writeFood(w);
@@ -405,7 +420,8 @@ export function editDayItem(
     w.day.meals = patch === null ? w.day.meals.filter(m => m.id !== id)
       : w.day.meals.map(m => {
         if (m.id !== id) return m;
-        const next = { ...m, ...pick(patch, ['name', 'kcal', 'proteinG', 'carbsG', 'fatG', 'fiberG', 'slot', 'notes']) };
+        const next = { ...m, ...pick(patch, ['name', 'kcal', 'proteinG', 'carbsG', 'fatG', 'fiberG', 'slot', 'notes', 'grams']) };
+        if (!next.grams) delete next.grams; // grams: 0 = the weight no longer applies
         return { ...next, kcal: flooredKcal(next) };
       });
     writeFood(w);

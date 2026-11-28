@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Lightbulb, RefreshCw, Sparkles } from 'lucide-react';
 import type { AppData } from '@/lib/types';
-import { useModelStore } from '@/hooks/use-model-store';
+import { useModelFor } from '@/hooks/use-model-store';
 import { addDays, dayBurn, dayIntake, findTracker, trendSeries, valueOn, weeklyRate } from '@/lib/fitness';
 import { summarizeFitness, type FitnessDayRow, type SummarizeFitnessOutput } from '@/ai/flows/summarize-fitness';
 
@@ -33,7 +33,7 @@ function rowsFor(data: AppData, from: string, to: string): FitnessDayRow[] {
 
 /** On-demand AI review of a period (last 7 / 30 days or custom), generated with the ↻ button. */
 export function AiSummary({ data, today, aiDisabled }: { data: AppData; today: string; aiDisabled?: boolean }) {
-  const { selectedModel } = useModelStore();
+  const selectedModel = useModelFor('summaries');
   const [period, setPeriod] = useState<Period>('7');
   const [custom, setCustom] = useState({ from: addDays(today, -13), to: today });
   const [result, setResult] = useState<{ key: string; out: SummarizeFitnessOutput } | null>(null);

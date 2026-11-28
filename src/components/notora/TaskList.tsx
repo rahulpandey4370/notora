@@ -13,7 +13,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Calendar } from '../ui/calendar';
 import { format, parseISO } from 'date-fns';
 import { weekKey } from '@/lib/week';
-import { useModelStore } from '@/hooks/use-model-store';
+import { useModelFor } from '@/hooks/use-model-store';
 import { useToast } from '@/hooks/use-toast';
 import { parseTask } from '@/ai/flows/parse-task';
 import { toYmd } from '@/lib/date-utils';
@@ -30,7 +30,7 @@ export default function TaskList({ data, onDataChange, currentMonth }: TaskListP
   const [addTaskType, setAddTaskType] = useState<'single' | 'recurring' | 'monthly' | 'weekly'>('single');
   const [taskDate, setTaskDate] = useState<Date | undefined>(new Date());
   const [isParsing, setIsParsing] = useState(false);
-  const { selectedModel } = useModelStore();
+  const selectedModel = useModelFor('tasks');
   const { toast } = useToast();
 
   /**

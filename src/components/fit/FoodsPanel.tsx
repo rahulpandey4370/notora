@@ -1,10 +1,10 @@
-import { useMemo, useState } from 'react';
-import { Check, ChevronDown, Copy, Globe, Loader2, Pencil, Plus, Search, Sparkles, Star, X } from 'lucide-react';
-import { useModelStore } from '@/hooks/use-model-store';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Check, ChevronDown, ChevronLeft, Copy, Globe, Loader2, Minus, Pencil, Plus, Search, Sparkles, X } from 'lucide-react';
+import { useModelFor, useModelStore } from '@/hooks/use-model-store';
 import { describeFood, type DescribedFood } from '@/ai/flows/describe-food';
 import type { AppData, MealSlot } from '@/lib/types';
 import { MEAL_SLOTS, type FitnessDraft } from '@/lib/fitness';
-import { norm, perPieceTo100, scaleFood, type Amount, type Food } from '@/lib/food-match';
+import { amountOf, defaultAmount, measuresFor, norm, perPieceTo100, scaleFood, type Food } from '@/lib/food-match';
 import type { FoodsApi } from './useFoods';
 import { INGREDIENTS, type CatalogFood } from '@/lib/food-catalog';
 import { ConfirmDelete } from './TrackerSheet';
@@ -94,7 +94,7 @@ export function FoodEditor({ initial, onSave, onCancel }: {
               <input className="f-input !py-1.5 !w-20 shrink-0" type="number" inputMode="decimal" min={0} step="any" value={s.amount} aria-label={`Serving size in ${servingUnit}`}
                 onChange={e => set({ servings: f.servings.map((x, j) => (j === i ? { ...x, amount: e.target.value } : x)) })} />
               <span className="f-muted w-5">{servingUnit}</span>
-              <button type="button" className="f-muted flex h-9 w-9 items-center justify-center" aria-label="Remove serving" onClick={() => set({ servings: f.servings.filter((_, j) => j !== i) })}><X className="h-4 w-4" /></button>
+              <button type="button" className="f-muted flex h-11 w-11 shrink-0 items-center justify-center" aria-label="Remove serving" onClick={() => set({ servings: f.servings.filter((_, j) => j !== i) })}><X className="h-4 w-4" /></button>
             </div>
           ))}
           {f.servings.length < 5 && <button type="button" className="f-chip" onClick={() => set({ servings: [...f.servings, { label: '', amount: '' }] })}><Plus className="h-3.5 w-3.5" aria-hidden />Add a serving</button>}
@@ -112,7 +112,8 @@ export function FoodEditor({ initial, onSave, onCancel }: {
 function AddFood({ name, aiDisabled, onSave, onCancel }: {
   name: string; aiDisabled?: boolean; onSave: (f: Omit<Food, 'id'> & { id?: string }) => Promise<{ ok: boolean; error?: string }>; onCancel: () => void;
 }) {
-  const { selectedModel, webSearch, setWebSearch } = useModelStore();
+  const { webSearch, setWebSearch } = useModelStore();
+  const selectedModel = useModelFor('food');
   const [how, setHow] = useState<'ai' | 'manual'>(aiDisabled ? 'manual' : 'ai');
   const [ask, setAsk] = useState(name);
   const [busy, setBusy] = useState(false);
@@ -158,51 +159,127 @@ function AddFood({ name, aiDisabled, onSave, onCancel }: {
   );
 }
 
-/** Pick an amount of one food and log it. */
-function AmountPicker({ food, slot, onLog, onEdit, onDelete, builtIn }: { food: Food; slot: MealSlot; onLog: (m: FitnessDraft['meals'][number]) => void; onEdit: () => void; onDelete: () => void; /** Built-in foods are copied to edit, and "removed" (hidden for you) rather than deleted. */ builtIn?: boolean }) {
-  const opts = food.unit === 'serving' ? [{ id: 'serving', label: 'serving' }] : [{ id: 'grams', label: food.unit }, ...food.servings.map(s => ({ id: `s:${s.label}`, label: s.label }))];
-  const [unit, setUnit] = useState(opts.length > 1 ? opts[1].id : opts[0].id);
-  const [qty, setQty] = useState(unit === 'grams' ? '100' : '1');
-  const [to, setTo] = useState<MealSlot>(slot);
-  const q = n(qty);
-  const amount: Amount | null = q == null || q <= 0 ? null : unit === 'grams' ? { grams: q } : unit === 'serving' ? { count: q } : { count: q, label: unit.slice(2) };
-  const meal = amount ? scaleFood(food, amount, to) : null;
-  const quick = unit === 'grams' ? ['100', '150', '200', '250'] : ['0.5', '1', '2', '3'];
+/** Quantity (with − / +) and measure (g/ml or a named serving): the same two fields when adding a food and when editing a logged one. */
+export function QtyMeasure({ qty, unit, measures, onQty, onUnit }: {
+  qty: string; unit: string; measures: { id: string; label: string }[]; onQty: (q: string) => void; onUnit: (u: string) => void;
+}) {
+  const step = unit === 'grams' ? 10 : 0.5;
+  const bump = (d: number) => onQty(String(Math.max(0, Math.round(((n(qty) ?? 0) + d) * 100) / 100)));
   return (
-    <div className="space-y-3 border-t border-[var(--f-line)] bg-[var(--f-tint)] px-4 py-3">
-      <div className="flex items-center gap-2">
-        <input className="f-input !w-24 shrink-0 !py-2" type="number" inputMode="decimal" min={0} step="any" value={qty} onChange={e => setQty(e.target.value)} aria-label="Amount" autoFocus />
-        <select className="f-input !py-2 min-w-0 flex-1" value={unit} onChange={e => { setUnit(e.target.value); setQty(e.target.value === 'grams' ? '100' : '1'); }} aria-label="Unit">
-          {opts.map(o => <option key={o.id} value={o.id}>{o.id === 'grams' ? o.label : `× ${o.label}`}</option>)}
+    <div className="flex flex-col gap-3 sm:flex-row">
+      <div className="flex flex-col gap-1 text-sm">
+        <span className="font-medium">Quantity</span>
+        <span className="flex items-center gap-2">
+          <button type="button" className="f-icon-btn h-11 w-11 shrink-0" aria-label={`Less (${step})`} onClick={() => bump(-step)}><Minus className="h-4 w-4" /></button>
+          <input className="f-input min-w-0 flex-1 !py-2 text-center tabular-nums sm:!w-24 sm:flex-none" type="number" inputMode="decimal" min={0} step="any" value={qty} onChange={e => onQty(e.target.value)} aria-label="Quantity" />
+          <button type="button" className="f-icon-btn h-11 w-11 shrink-0" aria-label={`More (${step})`} onClick={() => bump(step)}><Plus className="h-4 w-4" /></button>
+        </span>
+      </div>
+      <label className="flex min-w-0 flex-1 flex-col gap-1 text-sm">
+        <span className="font-medium">Measure</span>
+        <select className="f-input !py-2" value={unit} onChange={e => onUnit(e.target.value)} aria-label="Measure" disabled={measures.length < 2}>
+          {measures.map(o => <option key={o.id} value={o.id}>{o.label}</option>)}
         </select>
+      </label>
+    </div>
+  );
+}
+
+/** One food in full before logging it: the whole name, what the chosen amount comes to, quantity + measure, and one Add button. */
+function FoodDetail({ food, slot, builtIn, group, onBack, onLog, onEdit, onDelete }: {
+  food: Food; slot: MealSlot; onBack: () => void; onLog: (m: FitnessDraft['meals'][number]) => void; onEdit: () => void; onDelete: () => void;
+  /** Built-in foods are copied to edit, and "removed" (hidden for you) rather than deleted. */ builtIn?: boolean; group?: string;
+}) {
+  const measures = measuresFor(food);
+  const start = defaultAmount(food);
+  const [unit, setUnit] = useState(start.unit);
+  const [qty, setQty] = useState(String(start.qty));
+  const [to, setTo] = useState<MealSlot>(slot);
+  const top = useRef<HTMLDivElement>(null);
+  useEffect(() => { top.current?.scrollIntoView({ block: 'start' }); }, []);
+  const q = n(qty);
+  const meal = q != null && q > 0 ? scaleFood(food, amountOf(unit, q), to) : null;
+  const quick = unit === 'grams' ? ['50', '100', '150', '200', '250'] : ['0.5', '1', '1.5', '2', '3'];
+  const u = food.unit === 'ml' ? 'ml' : 'g';
+  const shares = meal && meal.kcal > 0 ? [meal.proteinG * 4, (meal.carbsG ?? 0) * 4, (meal.fatG ?? 0) * 9] : null;
+  const sum = shares ? shares[0] + shares[1] + shares[2] : 0;
+  const toLabel = MEAL_SLOTS.find(x => x.id === to)?.label ?? 'log';
+  const tile = (label: string, value: number | undefined, color?: string) => (
+    <div className="rounded-2xl bg-[var(--f-tint)] px-2 py-2 text-center">
+      <p className="text-base font-semibold tabular-nums">{meal ? value ?? 0 : '–'}<span className="f-muted text-xs font-normal"> g</span></p>
+      <p className="f-muted flex items-center justify-center gap-1 text-[11px]">{color && <span className="h-2 w-2 rounded-full" style={{ background: color }} aria-hidden />}{label}</p>
+    </div>
+  );
+  return (
+    <div ref={top} className="space-y-4">
+      <button type="button" className="f-chip -ml-1" onClick={onBack}><ChevronLeft className="h-4 w-4" aria-hidden />All foods</button>
+      <div>
+        <h3 className="select-text break-words text-xl font-semibold leading-snug">{food.name}</h3>
+        <p className="f-muted select-text text-xs">{builtIn ? `${group ?? 'Built-in food'} · built-in` : 'My food'}{food.aliases.length ? ` · also: ${food.aliases.join(', ')}` : ''}</p>
       </div>
-      <div className="flex flex-wrap gap-1.5">
-        {quick.map(v => <button key={v} type="button" className="f-chip !min-h-9" data-on={qty === v} onClick={() => setQty(v)}>{unit === 'grams' ? `${v} ${food.unit}` : `${v} ${unit === 'serving' ? 'serving' : unit.slice(2)}`}</button>)}
+
+      <div className="f-card space-y-3 p-4" aria-live="polite">
+        <p className="flex items-baseline gap-2">
+          <span className="fit-display text-4xl tabular-nums">{meal ? meal.kcal : '–'}</span><span className="f-muted text-sm">kcal</span>
+          <span className="f-muted ml-auto text-right text-xs">{meal ? (meal.grams != null ? `for ${meal.grams} ${u}` : `for ${qty} serving${q === 1 ? '' : 's'}`) : 'Enter an amount'}</span>
+        </p>
+        <div className="grid grid-cols-4 gap-2">
+          {tile('Protein', meal?.proteinG, 'var(--f-chart-a)')}{tile('Carbs', meal?.carbsG, 'var(--f-sun)')}{tile('Fat', meal?.fatG, 'var(--f-chart-b)')}{tile('Fibre', meal?.fiberG)}
+        </div>
+        {shares && sum > 0 && (
+          <div className="flex h-2 overflow-hidden rounded-full" role="img" aria-label={`Calories from protein ${Math.round((shares[0] / sum) * 100)}%, carbs ${Math.round((shares[1] / sum) * 100)}%, fat ${Math.round((shares[2] / sum) * 100)}%`}>
+            <span style={{ width: `${(shares[0] / sum) * 100}%`, background: 'var(--f-chart-a)' }} />
+            <span style={{ width: `${(shares[1] / sum) * 100}%`, background: 'var(--f-sun)' }} />
+            <span style={{ width: `${(shares[2] / sum) * 100}%`, background: 'var(--f-chart-b)' }} />
+          </div>
+        )}
       </div>
-      {food.unit === 'serving' && <p className="f-muted text-xs">Saved without a weight, so only servings work. Tap ✎ and add what 1 serving weighs to log it in g or ml too.</p>}
-      <p className="text-sm tabular-nums">{meal ? <><strong>{meal.kcal} kcal</strong> · P {meal.proteinG} · C {meal.carbsG} · F {meal.fatG} · Fibre {meal.fiberG} g</> : <span className="f-muted">Enter an amount</span>}</p>
-      <div className="flex flex-wrap items-center gap-2">
-        <select className="f-input !py-2 w-auto" value={to} onChange={e => setTo(e.target.value as MealSlot)} aria-label="Meal">
+
+      <QtyMeasure qty={qty} unit={unit} measures={measures} onQty={setQty} onUnit={v => { setUnit(v); setQty(v === 'grams' ? '100' : '1'); }} />
+      <div className="flex flex-wrap gap-1.5" role="group" aria-label="Common amounts">
+        {quick.map(v => <button key={v} type="button" className="f-chip" data-on={qty === v} aria-pressed={qty === v} onClick={() => setQty(v)}>{unit === 'grams' ? `${v} ${u}` : `× ${v}`}</button>)}
+      </div>
+      {food.unit === 'serving'
+        ? <p className="f-muted text-xs">Saved without a weight, so only servings work. Edit it and add what 1 serving weighs to log it in g or ml too.</p>
+        : <p className="f-muted select-text text-xs tabular-nums">Per 100 {u}: {food.kcal} kcal · P {food.proteinG} · C {food.carbsG} · F {food.fatG} · Fibre {food.fiberG} g</p>}
+
+      <label className="flex flex-col gap-1 text-sm">
+        <span className="font-medium">Meal</span>
+        <select className="f-input !py-2" value={to} onChange={e => setTo(e.target.value as MealSlot)}>
           {MEAL_SLOTS.map(x => <option key={x.id} value={x.id}>{x.label}</option>)}
         </select>
-        <button type="button" className="f-pill f-pill-primary flex-1" disabled={!meal} onClick={() => meal && onLog(meal)}><Plus className="h-4 w-4" aria-hidden />Log it</button>
-        <button type="button" className="f-icon-btn h-11 w-11" aria-label={builtIn ? `Copy ${food.name} to My Foods to edit it` : `Edit ${food.name}`} title={builtIn ? 'Copy to My Foods' : 'Edit'} onClick={onEdit}>{builtIn ? <Copy className="h-4 w-4" /> : <Pencil className="h-4 w-4" />}</button>
-        <ConfirmDelete label={builtIn ? 'Remove' : 'Delete'} confirm="Sure?" className="!min-h-11 !px-3 !text-xs" onConfirm={onDelete} />
+      </label>
+      <div className="flex flex-wrap items-center gap-2">
+        <button type="button" className="f-chip" onClick={onEdit}>{builtIn ? <Copy className="h-3.5 w-3.5" aria-hidden /> : <Pencil className="h-3.5 w-3.5" aria-hidden />}{builtIn ? 'Copy to My Foods to edit' : 'Edit this food'}</button>
+        <ConfirmDelete label={builtIn ? 'Remove from my list' : 'Delete'} confirm="Sure?" className="!min-h-11 !px-3 !text-xs" onConfirm={onDelete} />
+      </div>
+
+      {/* Stays in reach at the bottom of the sheet, above the keyboard. */}
+      <div className="sticky bottom-0 -mx-5 border-t border-[var(--f-line)] bg-[var(--f-bg)] px-5 py-3">
+        <button type="button" className="f-pill f-pill-primary w-full" disabled={!meal} onClick={() => meal && onLog(meal)}><Plus className="h-4 w-4" aria-hidden />Add to {toLabel}</button>
       </div>
     </div>
   );
 }
 
 const MAX_HITS = 40; // catalogue rows shown for a search; refine to see others
+const FREQUENT = 6;
 
-/** My Foods (yours, editable) and All foods (built in, read-only): search both, pick an amount and log it — no AI. */
-export function FoodsPanel({ foods, data, day, slot, onSave, aiDisabled, manage }: { foods: FoodsApi; data: AppData; day: string; slot: MealSlot; onSave?: (d: FitnessDraft) => void; aiDisabled?: boolean; /** Profile page: tap a food to edit it; no logging. */ manage?: boolean }) {
+/**
+ * My Foods (yours, editable) and All foods (built in, read-only): search both; "+" logs a food's usual serving at once,
+ * tapping it opens the full detail with quantity and measure — no AI.
+ */
+export function FoodsPanel({ foods, data, day, slot, onSave, onUndo, aiDisabled, manage }: {
+  foods: FoodsApi; data: AppData; day: string; slot: MealSlot; aiDisabled?: boolean;
+  /** Logs the draft; returns the ids of the meals it added so a quick-add can be undone. */
+  onSave?: (d: FitnessDraft) => string[] | void; onUndo?: (mealIds: string[]) => void;
+  /** Profile page: tap a food to edit it; no logging. */ manage?: boolean;
+}) {
   const [q, setQ] = useState('');
-  const [open, setOpen] = useState<string | null>(null);
+  const [detail, setDetail] = useState<{ food: Food; builtIn: boolean } | null>(null);
   const [openGroups, setOpenGroups] = useState<Set<string>>(new Set());
   const [editing, setEditing] = useState<Partial<Food> | null>(null);
-  const [done, setDone] = useState('');
-  const [undoHide, setUndoHide] = useState<string | null>(null);
+  const [done, setDone] = useState<{ text: string; unhide?: string; mealIds?: string[] } | null>(null);
   const [showHidden, setShowHidden] = useState(false);
 
   // How often each food was logged in this meal / at all, so the usual picks come first.
@@ -227,64 +304,99 @@ export function FoodsPanel({ foods, data, day, slot, onSave, aiDisabled, manage 
   // Exact name/alias first, then names starting with the search, then the rest; raw ingredients last.
   const rank = (f: CatalogFood) => (f.group === INGREDIENTS ? 10 : 0) + ([f.name, ...f.aliases].some(x => norm(x) === t) ? 0 : norm(f.name).startsWith(t) ? 1 : 2);
   const catHits = useMemo(() => (t ? foods.catalog.filter(hits).sort((a, b) => rank(a) - rank(b) || a.name.length - b.name.length) : []), [t, foods.catalog]); // eslint-disable-line react-hooks/exhaustive-deps
+  // The foods you log most (this meal first), from My Foods and the catalogue alike.
+  const frequent = useMemo(() => {
+    const mine = new Set(foods.foods.map(f => f.id));
+    return [...foods.foods, ...foods.catalog].filter(f => usage.any.has(f.id))
+      .sort((a, b) => (usage.inSlot.get(b.id) ?? 0) - (usage.inSlot.get(a.id) ?? 0) || (usage.any.get(b.id) ?? 0) - (usage.any.get(a.id) ?? 0))
+      .slice(0, FREQUENT).map(f => ({ food: f as Food, builtIn: !mine.has(f.id) }));
+  }, [foods.foods, foods.catalog, usage]);
 
   if (foods.status === 'loading') return <p className="f-muted py-6 text-center text-sm">Loading your foods…</p>;
   if (foods.status === 'missing') return <p className="f-muted text-sm">My Foods needs a one-time database step: run <code>supabase/notora-v5-foods-reminders.sql</code> in Supabase, then reopen this.</p>;
   if (foods.status === 'error') return <p className="f-bad text-sm">Couldn’t load your foods: {foods.error}</p>;
-  const saveEdit = async (f: Omit<Food, 'id'> & { id?: string }) => { const r = await foods.save(f); if (r.ok) { setEditing(null); setDone(`${f.name} saved to My Foods ✓`); } return r; };
-  if (editing) return editing.id || editing.kcal != null
-    ? <FoodEditor initial={editing} onCancel={() => setEditing(null)} onSave={saveEdit} />
-    : <AddFood name={editing.name ?? ''} aiDisabled={aiDisabled} onCancel={() => setEditing(null)} onSave={saveEdit} />;
+  const saveEdit = async (f: Omit<Food, 'id'> & { id?: string }) => { const r = await foods.save(f); if (r.ok) { setEditing(null); setDone({ text: `${f.name} saved to My Foods ✓` }); } return r; };
+  if (editing) return (
+    <div className="pb-5">
+      {editing.id || editing.kcal != null
+        ? <FoodEditor initial={editing} onCancel={() => setEditing(null)} onSave={saveEdit} />
+        : <AddFood name={editing.name ?? ''} aiDisabled={aiDisabled} onCancel={() => setEditing(null)} onSave={saveEdit} />}
+    </div>
+  );
+
+  const copy = (f: Food) => { const { id: _drop, ...rest } = f; setEditing(rest); }; // eslint-disable-line @typescript-eslint/no-unused-vars
+  const log = (m: FitnessDraft['meals'][number]) => {
+    const ids = onSave?.({ date: day, meals: [m], activities: [], values: [] });
+    setDone({ text: `${m.name} logged ✓`, mealIds: ids || undefined });
+  };
+  if (detail) {
+    const { food: f, builtIn } = detail;
+    return (
+      <FoodDetail food={f} slot={slot} builtIn={builtIn} group={builtIn ? (f as CatalogFood).group : undefined} onBack={() => setDetail(null)}
+        onEdit={() => { setDetail(null); if (builtIn) copy(f); else setEditing(f); }}
+        onDelete={() => { if (builtIn) { foods.hide(f.id); setDone({ text: `${f.name} removed from your list`, unhide: f.id }); } else void foods.remove(f.id); setDetail(null); }}
+        onLog={m => { log(m); setDetail(null); }} />
+    );
+  }
 
   const mine = foods.foods
     .filter(f => !t || hits(f))
     .sort((a, b) => (usage.inSlot.get(b.id) ?? 0) - (usage.inSlot.get(a.id) ?? 0) || (usage.any.get(b.id) ?? 0) - (usage.any.get(a.id) ?? 0) || a.name.localeCompare(b.name));
-  const slotLabel = MEAL_SLOTS.find(s => s.id === slot)?.label ?? '';
-  const copy = (f: Food) => { const { id: _drop, ...rest } = f; setEditing(rest); }; // eslint-disable-line @typescript-eslint/no-unused-vars
 
-  const row = (f: Food, builtIn: boolean) => (
-    <li key={f.id} className="border-t border-[var(--f-line)] first:border-t-0">
-      <button type="button" className="flex w-full items-center gap-3 px-4 py-3 text-left" aria-expanded={open === f.id}
-        onClick={() => (manage ? (builtIn ? copy(f) : setEditing(f)) : setOpen(o => (o === f.id ? null : f.id)))}>
-        <Star className={`h-4 w-4 shrink-0 ${usage.inSlot.get(f.id) ? 'fill-[var(--f-sun)] text-[var(--f-sun)]' : 'f-muted'}`} aria-hidden />
-        <span className="min-w-0 flex-1">
-          <span className="block truncate font-medium">{f.name}</span>
-          <span className="f-muted block truncate text-xs tabular-nums">{f.kcal} kcal · P {f.proteinG} g per {per(f)}{f.servings.length ? ` · 1 ${f.servings[0].label} = ${f.servings[0].amount} ${f.unit}` : ''}</span>
-        </span>
-      </button>
-      {open === f.id && (
-        <AmountPicker food={f} slot={slot} builtIn={builtIn} onEdit={() => (builtIn ? copy(f) : setEditing(f))}
-          onDelete={() => { if (builtIn) { foods.hide(f.id); setUndoHide(f.id); setDone(`${f.name} removed from your list`); } else void foods.remove(f.id); setOpen(null); }}
-          onLog={m => { onSave?.({ date: day, meals: [m], activities: [], values: [] }); setDone(`${m.name} logged ✓`); setOpen(null); }} />
-      )}
-    </li>
-  );
+  // One row: the whole name (it wraps, never cut), the usual serving and what it comes to, and "+" to log that serving at once.
+  const row = (f: Food, builtIn: boolean) => {
+    const d = defaultAmount(f);
+    const usual = scaleFood(f, amountOf(d.unit, d.qty), slot);
+    const serving = d.unit === 'grams' ? `100 ${f.unit}` : d.unit === 'serving' ? '1 serving' : `1 ${measuresFor(f)[0].label}`;
+    return (
+      <li key={f.id} className="flex items-stretch border-t border-[var(--f-line)] first:border-t-0">
+        <button type="button" className="flex min-w-0 flex-1 items-center gap-3 py-3 pl-4 pr-1 text-left" aria-label={manage ? `Edit ${f.name}` : `${f.name}: details and amount`}
+          onClick={() => (manage ? (builtIn ? copy(f) : setEditing(f)) : setDetail({ food: f, builtIn }))}>
+          <span className="min-w-0 flex-1">
+            <span className="block break-words font-medium leading-snug">{f.name}</span>
+            <span className="f-muted block text-xs tabular-nums">{serving} · P {usual?.proteinG ?? f.proteinG} g</span>
+          </span>
+          <span className="shrink-0 text-right text-sm font-semibold tabular-nums">{usual?.kcal ?? f.kcal}<span className="f-muted block text-[10px] font-normal">kcal</span></span>
+        </button>
+        {manage ? <span className="w-3 shrink-0" /> : (
+          <button type="button" className="flex w-14 shrink-0 items-center justify-center" aria-label={`Add ${serving} of ${f.name}`} disabled={!usual} onClick={() => usual && log(usual)}>
+            <span className="f-icon-btn h-9 w-9 !border-[var(--f-deep)] !bg-[var(--f-deep)] !text-white dark:!text-[#04201f]"><Plus className="h-4 w-4" aria-hidden /></span>
+          </button>
+        )}
+      </li>
+    );
+  };
   const toggleGroup = (g: string) => setOpenGroups(s => { const n = new Set(s); if (n.has(g)) n.delete(g); else n.add(g); return n; });
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 pb-5">
       <div className="flex gap-2">
         <label className="relative min-w-0 flex-1">
           <Search className="f-muted pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" aria-hidden />
-          <input className="f-input !pl-9" value={q} onChange={e => setQ(e.target.value)} placeholder="Search foods" aria-label="Search your foods and all foods" />
+          <input className="f-input !pl-9" type="search" enterKeyHint="search" value={q} onChange={e => setQ(e.target.value)} placeholder="Search foods" aria-label="Search your foods and all foods" />
         </label>
         <button type="button" className="f-pill shrink-0" onClick={() => setEditing({ name: q })}><Plus className="h-4 w-4" aria-hidden />New</button>
       </div>
       {done && (
         <p className="f-good flex items-center gap-2 text-sm font-semibold" aria-live="polite">
-          <span className="min-w-0 flex-1">{done}</span>
-          {undoHide && <button type="button" className="f-chip !min-h-8" onClick={() => { foods.unhide(undoHide); setUndoHide(null); setDone(''); }}>Undo</button>}
+          <span className="min-w-0 flex-1 select-text">{done.text}</span>
+          {done.unhide && <button type="button" className="f-chip" onClick={() => { foods.unhide(done.unhide!); setDone(null); }}>Undo</button>}
+          {done.mealIds?.length && onUndo ? <button type="button" className="f-chip" onClick={() => { onUndo(done.mealIds!); setDone(null); }}>Undo</button> : null}
         </p>
+      )}
+
+      {!t && !manage && frequent.length > 0 && (
+        <>
+          <h3 className="f-muted text-xs font-semibold uppercase tracking-wide">Frequent</h3>
+          <ul className="f-card overflow-hidden">{frequent.map(x => row(x.food, x.builtIn))}</ul>
+        </>
       )}
 
       {!(t && !mine.length && catHits.length) && <h3 className="f-muted text-xs font-semibold uppercase tracking-wide">My foods</h3>}
       {t && !mine.length && catHits.length ? null : !foods.foods.length ? (
         <p className="f-muted text-sm">Foods you save show here first, editable. Pick one below from All foods, tap <strong>New</strong> to add your own (with AI or manually), or ★ any AI result.</p>
       ) : !mine.length ? <p className="f-muted text-sm">None of your foods match “{q}”.</p> : (
-        <>
-          {!q && usage.inSlot.size > 0 && <p className="f-muted text-xs">Your usual {slotLabel.toLowerCase()} picks are first.</p>}
-          <ul className="f-card overflow-hidden">{mine.map(f => row(f, false))}</ul>
-        </>
+        <ul className="f-card overflow-hidden">{mine.map(f => row(f, false))}</ul>
       )}
 
       {foods.catalog.length > 0 && <h3 className="f-muted pt-1 text-xs font-semibold uppercase tracking-wide">All foods</h3>}
@@ -317,9 +429,9 @@ export function FoodsPanel({ foods, data, day, slot, onSave, aiDisabled, manage 
               {showHidden && (
                 <ul className="border-t border-[var(--f-line)]">
                   {foods.hidden.map(f => (
-                    <li key={f.id} className="flex items-center gap-3 border-t border-[var(--f-line)] px-4 py-2.5 first:border-t-0">
-                      <span className="min-w-0 flex-1 truncate text-sm">{f.name}</span>
-                      <button type="button" className="f-chip !min-h-8" onClick={() => foods.unhide(f.id)}>Restore</button>
+                    <li key={f.id} className="flex items-center gap-3 border-t border-[var(--f-line)] px-4 py-2 first:border-t-0">
+                      <span className="min-w-0 flex-1 break-words text-sm">{f.name}</span>
+                      <button type="button" className="f-chip" onClick={() => foods.unhide(f.id)}>Restore</button>
                     </li>
                   ))}
                 </ul>

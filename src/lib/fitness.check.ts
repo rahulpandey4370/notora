@@ -356,4 +356,24 @@ const bmr80 = bmr(profile, 80, TODAY);
   assert.ok(!('id' in q.yesterday[0]), 'ids dropped so a re-log gets new ones');
   assert.deepEqual(q.usual.map(m => m.name), ['Eggs', 'Oats'], 'most often first; Poha not repeated; Idli too old; Day total skipped');
 }
+{
+  // A logged weight belongs to the logged numbers: an edit that changes the calories keeps it only when the new name states one.
+  const d0 = applyDraft(base([]), { date: TODAY, meals: [
+    { name: 'Paneer tikka, 150 g', kcal: 300, proteinG: 20, grams: 150 }, { name: 'Chai', kcal: 90, proteinG: 3, grams: 120 },
+    { name: 'Roti × 2 (80 g)', kcal: 240, proteinG: 8, grams: 80 }, { name: 'Curd, 100 g', kcal: 60, proteinG: 3, grams: 100 },
+  ], activities: [], values: [] }, id);
+  const [paneer, chai, roti, curd] = d0.fitnessDays![TODAY].meals;
+  assert.equal(paneer.grams, 150, 'the draft weight is stored');
+  const d1 = applyLogEdits(d0, TODAY, [
+    { id: paneer.id, patch: { name: 'Paneer tikka, 200 g', kcal: 400 } }, { id: chai.id, patch: { kcal: 180 } },
+    { id: roti.id, patch: { name: 'Roti × 3 (120 g)', kcal: 360 } }, { id: curd.id, patch: { slot: 'lunch' } },
+  ], id);
+  const g = (mid: string) => d1.fitnessDays![TODAY].meals.find(m => m.id === mid)!.grams;
+  assert.deepEqual([g(paneer.id), g(chai.id), g(roti.id), g(curd.id)], [200, undefined, 120, 100], 'new weight from the name; unknown → dropped; untouched numbers keep theirs');
+  // The edit screen: a new weight is saved, 0 clears one that no longer applies.
+  const d2 = editDayItem(d0, TODAY, 'meal', curd.id, { kcal: 120, grams: 200 }, id);
+  assert.equal(d2.fitnessDays![TODAY].meals.find(m => m.id === curd.id)!.grams, 200);
+  const d3 = editDayItem(d0, TODAY, 'meal', chai.id, { kcal: 150, grams: 0 }, id);
+  assert.ok(!('grams' in d3.fitnessDays![TODAY].meals.find(m => m.id === chai.id)!), 'grams: 0 clears the stored weight');
+}
 console.log('fitness checks passed');

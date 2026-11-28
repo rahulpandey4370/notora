@@ -38,3 +38,31 @@ assert.ok(up.change14! > 0);
 
 assert.equal(journey({ logTrackers: [] } as unknown as AppData, TODAY), null, 'no weigh-ins');
 console.log('journey: all checks passed');
+
+// The journey measures from a chosen start (default: the last 90 days), not the first weigh-in ever.
+import { journeyStartDate } from './journey';
+assert.equal(journeyStartDate(undefined, TODAY), addDays(TODAY, -90), 'default is the last 90 days');
+assert.equal(journeyStartDate('all', TODAY), null);
+assert.equal(journeyStartDate('30d', TODAY), addDays(TODAY, -30));
+assert.equal(journeyStartDate('2026-06-01', TODAY), '2026-06-01');
+assert.equal(journeyStartDate('nonsense', TODAY), null, 'an unreadable setting means all time');
+const long = make(d => 110 - (d * 0.35) / 7, 400); // 400 days: 110 kg → 90 kg
+const recent = journey(long, TODAY)!;
+assert.equal(recent.start.date, addDays(TODAY, -90));
+assert.equal(recent.days, 90);
+assert.ok(recent.start.kg < 96 && recent.start.kg > 93, `starts on the trend 90 days ago, not at 110: ${recent.start.kg}`);
+assert.ok(recent.lost > 3.5 && recent.lost < 5.5, `lost over the last 90 days: ${recent.lost}`);
+const allTime = journey({ ...long, journeyFrom: 'all' } as AppData, TODAY)!;
+assert.equal(allTime.start.date, addDays(TODAY, -400));
+assert.equal(allTime.start.kg, 110);
+assert.equal(journey({ ...long, journeyFrom: '30d' } as AppData, TODAY)!.days, 30);
+assert.equal(journey({ ...long, journeyFrom: addDays(TODAY, -200) } as AppData, TODAY)!.start.date, addDays(TODAY, -200));
+// Nothing weighed inside the window: fall back to all time rather than showing no journey.
+const stale: AppData = { logTrackers: [{ id: 'w', name: 'Weight', unit: 'kg', goal: 85, logs: [200, 190, 180].map((ago, i) => ({ id: `s${i}`, date: addDays(TODAY, -ago), value: 100 - i })) }] } as unknown as AppData;
+assert.equal(journey(stale, TODAY)!.start.date, addDays(TODAY, -200));
+// "New low" is an all-time claim: losing again after an old regain is not the lightest yet, even inside a 90-day window.
+const regain = make(d => (d < 100 ? 95 - d * 0.1 : d < 200 ? 85 + (d - 100) * 0.1 : 95 - (d - 200) * 0.03), 400); // 95 → 85 → 95 → 89
+const rj = journey(regain, TODAY)!;
+assert.equal(rj.newLow, false, 'above the all-time low of 85');
+assert.ok(rj.lowest.kg < 86.5, `lowest is the all-time low: ${rj.lowest.kg}`);
+console.log('journey window: all checks passed');

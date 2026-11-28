@@ -16,7 +16,7 @@ import { generateWeeklyReview, type WeeklyReviewOutput } from '@/ai/flows/weekly
 import type { AppData } from '@/lib/types';
 import { CalendarRange, Cpu, TrendingUp, AlertTriangle, Link2, Target } from 'lucide-react';
 import { format, startOfWeek, endOfWeek, subWeeks, eachDayOfInterval, parseISO, isWithinInterval } from 'date-fns';
-import { useModelStore } from '@/hooks/use-model-store';
+import { useModelFor } from '@/hooks/use-model-store';
 
 interface WeeklyReviewDialogProps {
   open: boolean;
@@ -30,7 +30,7 @@ export default function WeeklyReviewDialog({ open, onOpenChange, data }: WeeklyR
   const [review, setReview] = useState<WeeklyReviewOutput | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { selectedModel } = useModelStore();
+  const selectedModel = useModelFor('summaries');
 
   const weekBounds = useMemo(() => {
     const now = new Date();

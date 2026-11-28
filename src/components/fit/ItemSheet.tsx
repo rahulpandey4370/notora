@@ -1,12 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { format } from 'date-fns';
 import { Loader2, Sparkles, Trash2 } from 'lucide-react';
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet';
 import type { Activity, AppData, Meal, MealSlot } from '@/lib/types';
-import { useModelStore } from '@/hooks/use-model-store';
+import { useModelFor, useModelStore } from '@/hooks/use-model-store';
 import { MEAL_SLOTS, type FitnessDraft } from '@/lib/fitness';
 import { parseFitnessLog } from '@/ai/flows/parse-fitness-log';
 import { AutoTextarea } from './AutoTextarea';
+import { QtyMeasure } from './FoodsPanel';
+import type { FoodsApi } from './useFoods';
+import { amountOf, measuresFor, openMealAmount, rescaleMeal, savedMealName, scaleFood, type Food, type MealAmount } from '@/lib/food-match';
 
 export type ItemRef = { kind: 'meal' | 'activity'; id: string };
 type Form = Record<'name' | 'notes' | 'kcal' | 'proteinG' | 'carbsG' | 'fatG' | 'fiberG' | 'minutes', string> & { slot: MealSlot | ''; stepBased: boolean };
@@ -19,13 +22,16 @@ const toForm = (m?: Meal, a?: Activity): Form => ({
 });
 
 /** Full detail of one logged meal or workout: every number editable, plus "edit with AI". Nothing saves until Save. */
-export function ItemSheet({ item, data, day, today, onClose, onSave, onDelete, onReplace, aiDisabled }: {
+export function ItemSheet({ item, data, day, today, onClose, onSave, onDelete, onReplace, aiDisabled, foods }: {
   item: ItemRef | null; data: AppData; day: string; today: string; onClose: () => void;
   onSave: (item: ItemRef, patch: Partial<Meal & Activity>) => void; onDelete: (item: ItemRef) => void;
   /** The AI split one meal into several: replace it with these. */
   onReplace: (item: ItemRef, draft: FitnessDraft) => void; aiDisabled?: boolean;
+  /** My Foods and the catalogue: a meal logged from one of them re-scales from that food when its amount changes. */
+  foods?: FoodsApi;
 }) {
-  const { selectedModel, webSearch } = useModelStore();
+  const { webSearch } = useModelStore();
+  const selectedModel = useModelFor('food');
   const fd = data.fitnessDays?.[day];
   const meal = item?.kind === 'meal' ? fd?.meals.find(m => m.id === item.id) : undefined;
   const act = item?.kind === 'activity' ? fd?.activities.find(a => a.id === item.id) : undefined;
@@ -35,10 +41,69 @@ export function ItemSheet({ item, data, day, today, onClose, onSave, onDelete, o
   const [note, setNote] = useState('');
   const [split, setSplit] = useState<FitnessDraft | null>(null);
 
-  useEffect(() => { if (item) { setF(toForm(meal, act)); setAsk(''); setNote(''); setSplit(null); } }, [item?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  // A meal's amount lives in Quantity + Measure, never in the Food field: the name is shown without it and put back on save.
+  // The rules (when a meal still follows its food, how the amount is read off a name, what name is saved) are in
+  // lib/food-match: openMealAmount / savedMealName. `base` holds the numbers that get scaled when there is no food to follow.
+  const linked = meal?.foodId && foods ? [...foods.foods, ...foods.catalog, ...foods.hidden].find(x => x.id === meal.foodId) : undefined;
+  const [opened, setOpened] = useState<MealAmount | null>(null);
+  const origName = useRef(''); // the name `opened` was read from: saved back untouched unless something changes
+  const food = opened?.linked ? linked : undefined;
+  const parts = opened?.parts ?? { kind: 'none' as const };
+  const [amt, setAmt] = useState({ unit: 'portion', qty: '1' });
+  const base = useRef<{ qty: number; kcal: number; proteinG: number; carbsG?: number; fatG?: number; fiberG?: number; grams?: number } | null>(null);
+  const [grams, setGrams] = useState<number | undefined>(undefined); // the weight to save once it changed; 0 = it no longer applies
+  const measures = food ? measuresFor(food) : amt.unit === 'grams' ? [{ id: 'grams', label: parts.unit ?? 'g' }]
+    : [{ id: 'portion', label: parts.kind === 'count' ? parts.label! : parts.kind === 'none' ? '× the portion as logged' : 'count' }];
+
+  /** Open one meal: returns the name to show (without its amount). */
+  const load = (m: Pick<Meal, 'name' | 'kcal' | 'proteinG' | 'carbsG' | 'fatG' | 'fiberG' | 'grams'>, from?: Food) => {
+    const o = openMealAmount(m, from);
+    setOpened(o); origName.current = m.name;
+    setAmt({ unit: o.unit, qty: String(o.qty) }); setGrams(undefined);
+    // A weight stated in the name is the one the numbers are for; a stored one can be stale.
+    base.current = { qty: o.qty, kcal: m.kcal, proteinG: m.proteinG, carbsG: m.carbsG, fatG: m.fatG, fiberG: m.fiberG, grams: o.unit === 'grams' ? o.qty : o.parts.grams ?? m.grams };
+    return o.name;
+  };
+
+  // Re-runs when the linked food arrives (the catalogue loads after the page): only reload a form nobody has touched.
+  const shown = useRef<string | null>(null);
+  const dirty = useRef(false);
+  useEffect(() => {
+    if (!item) { shown.current = null; return; }
+    if (shown.current === item.id && dirty.current) return;
+    shown.current = item.id; dirty.current = false;
+    const name = meal ? load(meal, linked) : undefined;
+    setF({ ...toForm(meal, act), ...(name != null ? { name } : {}) }); setAsk(''); setNote(''); setSplit(null);
+  }, [item?.id, !!linked]); // eslint-disable-line react-hooks/exhaustive-deps
   if (item && !meal && !act) return null;
   const isMeal = item?.kind === 'meal';
-  const set = (p: Partial<Form>) => { setF(x => ({ ...x, ...p })); setSplit(null); };
+  const set = (p: Partial<Form>) => { dirty.current = true; setF(x => ({ ...x, ...p })); setSplit(null); };
+  const amtQty = Number(amt.qty);
+  const amtOk = amt.qty.trim() !== '' && Number.isFinite(amtQty) && amtQty > 0;
+  // A new amount rewrites the numbers. An empty or zero amount changes nothing, so a half-typed field never zeroes the meal.
+  const changeAmount = (next: { unit: string; qty: string }) => {
+    dirty.current = true;
+    setAmt(next); setSplit(null);
+    const q = Number(next.qty);
+    if (next.qty.trim() === '' || !Number.isFinite(q) || q <= 0 || !meal) return;
+    if (food) {
+      const m = scaleFood(food, amountOf(next.unit, q));
+      if (!m) return;
+      setF(x => ({ ...x, kcal: str(m.kcal), proteinG: str(m.proteinG), carbsG: str(m.carbsG), fatG: str(m.fatG), fiberG: str(m.fiberG) }));
+      setGrams(m.grams);
+    } else if (base.current) {
+      const b = base.current;
+      const r = rescaleMeal({ name: '', kcal: b.kcal, proteinG: b.proteinG, carbsG: b.carbsG, fatG: b.fatG, fiberG: b.fiberG, grams: b.grams }, q / b.qty);
+      setF(x => ({ ...x, kcal: str(r.kcal), proteinG: str(r.proteinG), carbsG: str(r.carbsG), fatG: str(r.fatG), fiberG: str(r.fiberG) }));
+      setGrams(next.unit === 'grams' ? Math.round(q) : r.grams);
+    }
+  };
+  /** The name to save: untouched it is the original; otherwise the Food field with the amount written back in the name's own style. */
+  const fullName = () => {
+    if (!meal || !opened) return f.name.trim();
+    const q = amtOk ? amtQty : opened.qty;
+    return savedMealName(origName.current, opened, { name: f.name, unit: amt.unit, qty: q, amountChanged: amt.unit !== opened.unit || q !== opened.qty }, food);
+  };
 
   // Energy split and a consistency check: protein and carbs are ~4 kcal/g, fat ~9.
   const p = num(f.proteinG), c = num(f.carbsG), fat = num(f.fatG), kcal = num(f.kcal);
@@ -50,7 +115,7 @@ export function ItemSheet({ item, data, day, today, onClose, onSave, onDelete, o
     if (!item) return;
     if (split) { onReplace(item, split); onClose(); return; }
     const patch: Partial<Meal & Activity> = isMeal
-      ? { name: f.name.trim() || meal!.name, kcal, proteinG: p, carbsG: c, fatG: fat, fiberG: num(f.fiberG), notes: f.notes.trim() || undefined, ...(f.slot ? { slot: f.slot } : {}) }
+      ? { name: fullName() || meal!.name, kcal, proteinG: p, carbsG: c, fatG: fat, fiberG: num(f.fiberG), notes: f.notes.trim() || undefined, ...(f.slot ? { slot: f.slot } : {}), ...(grams != null ? { grams } : {}) }
       : { name: f.name.trim() || act!.name, kcal, minutes: num(f.minutes), stepBased: f.stepBased, notes: f.notes.trim() || undefined };
     onSave(item, patch);
     onClose();
@@ -59,9 +124,9 @@ export function ItemSheet({ item, data, day, today, onClose, onSave, onDelete, o
   const askAi = async () => {
     if (!item || !ask.trim() || busy) return;
     if (aiDisabled) { setNote('Demo: sign in to edit with AI.'); return; }
-    setBusy(true); setNote('');
+    setBusy(true); setNote(''); dirty.current = true;
     const current: FitnessDraft = isMeal
-      ? { date: day, meals: [{ name: f.name, kcal, proteinG: p, carbsG: c, fatG: fat, fiberG: num(f.fiberG), ...(f.slot ? { slot: f.slot } : {}) }], activities: [], values: [] }
+      ? { date: day, meals: [{ name: fullName(), kcal, proteinG: p, carbsG: c, fatG: fat, fiberG: num(f.fiberG), ...(f.slot ? { slot: f.slot } : {}) }], activities: [], values: [] }
       : { date: day, meals: [], activities: [{ name: f.name, minutes: num(f.minutes), kcal, stepBased: f.stepBased }], values: [] };
     try {
       const r = await parseFitnessLog({ message: ask.trim(), todayYmd: today, dayYmd: day, trackers: [], currentDraft: current, webSearch, localTime: format(new Date(), 'HH:mm') }, selectedModel);
@@ -71,7 +136,12 @@ export function ItemSheet({ item, data, day, today, onClose, onSave, onDelete, o
         setNote(`${r.reply} Save to replace this with ${r.meals.length} items.`);
       } else if (isMeal && r.meals[0]) {
         const m = r.meals[0];
-        setF(x => ({ ...x, name: m.name, kcal: str(m.kcal), proteinG: str(m.proteinG), carbsG: str(m.carbsG), fatG: str(m.fatG), fiberG: str(m.fiberG), slot: m.slot ?? x.slot }));
+        // The AI's numbers are now the ones the amount scales, and they no longer follow the saved food. The stored
+        // weight was for the old numbers: save the AI's, or the one its name states, or clear it (0).
+        const name = load(m);
+        const o = openMealAmount(m);
+        setGrams(m.grams ?? (o.parts.kind === 'weight' ? o.qty : 0));
+        setF(x => ({ ...x, name, kcal: str(m.kcal), proteinG: str(m.proteinG), carbsG: str(m.carbsG), fatG: str(m.fatG), fiberG: str(m.fiberG), slot: m.slot ?? x.slot }));
         setNote(`${r.reply} Check it, then Save.`);
       } else if (!isMeal && r.activities[0]) {
         const a = r.activities[0];
@@ -97,8 +167,8 @@ export function ItemSheet({ item, data, day, today, onClose, onSave, onDelete, o
   return (
     <Sheet open={!!item} onOpenChange={o => !o && onClose()}>
       <SheetContent side="bottom" className="fit-ui f-sheet max-h-[calc((100dvh-var(--kb,0px))*0.92)] overflow-y-auto rounded-t-[28px] border-0 px-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] pt-6 sm:mx-auto sm:max-w-lg">
-        <SheetTitle className="fit-display text-2xl text-[var(--f-ink)]">{isMeal ? <>Meal <em>details</em></> : <>Workout <em>details</em></>}</SheetTitle>
-        <SheetDescription className="f-muted text-sm">Change anything below, or ask the AI. Nothing is saved until you tap Save.</SheetDescription>
+        <SheetTitle className="pr-10 fit-display text-2xl text-[var(--f-ink)]">{isMeal ? <>Meal <em>details</em></> : <>Workout <em>details</em></>}</SheetTitle>
+        <SheetDescription className="pr-10 f-muted text-sm">Change anything below, or ask the AI. Nothing is saved until you tap Save.</SheetDescription>
 
         <div className="mt-4 space-y-4">
           <label className="flex flex-col gap-1 text-sm">
@@ -108,6 +178,15 @@ export function ItemSheet({ item, data, day, today, onClose, onSave, onDelete, o
 
           {isMeal ? (
             <>
+              <div className="space-y-1.5">
+                <QtyMeasure qty={amt.qty} unit={amt.unit} measures={measures} onQty={q => changeAmount({ ...amt, qty: q })}
+                  onUnit={u => changeAmount({ unit: u, qty: u === 'grams' ? String(grams ?? meal?.grams ?? 100) : '1' })} />
+                <p className="f-muted text-xs">
+                  {!amtOk ? <span className="f-bad">Enter an amount above 0 to save.</span> : food ? `Calories and macros follow the amount, from ${food.name}.`
+                    : amt.unit === 'grams' ? 'Calories and macros scale with the weight.' : parts.kind !== 'none' ? 'Calories and macros scale with the quantity.'
+                    : 'No amount was logged for this, so this scales the whole portion: 1 is as logged, 1.5 is half as much again.'}
+                </p>
+              </div>
               <label className="flex flex-col gap-1 text-sm">
                 <span className="font-medium">Meal</span>
                 <select className="f-input" value={f.slot} onChange={e => set({ slot: e.target.value as MealSlot })}>
@@ -173,7 +252,7 @@ export function ItemSheet({ item, data, day, today, onClose, onSave, onDelete, o
 
           <div className="flex gap-2">
             <button type="button" className="f-pill flex-1" onClick={() => { if (item) { onDelete(item); onClose(); } }}><Trash2 className="h-4 w-4" aria-hidden />Delete</button>
-            <button type="button" className="f-pill f-pill-primary flex-[2]" onClick={save}>Save</button>
+            <button type="button" className="f-pill f-pill-primary flex-[2]" disabled={isMeal && !amtOk && !split} onClick={save}>Save</button>
           </div>
         </div>
       </SheetContent>

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { AlertTriangle, CalendarCheck, Flame, Lightbulb, PartyPopper, Ruler, Route, Target, TrendingDown } from 'lucide-react';
 import type { AppData } from '@/lib/types';
 import { findTracker, fmtSleep, goalEta } from '@/lib/fitness';
-import { journey, type Journey } from '@/lib/journey';
+import { JOURNEY_DEFAULT, journey, type Journey } from '@/lib/journey';
 import { kcalFloor, realBurn, targetFor, type RealBurn } from '@/lib/real-burn';
 import { weeklyCheckin } from '@/lib/checkin';
 import { InsightsCard } from './InsightsCard';
@@ -29,15 +29,29 @@ function Banner({ tone, icon: Icon, children }: { tone: 'good' | 'bad' | 'warn';
 }
 
 /** Start → now → goal, milestones, and what the trend is doing (celebrate, or a wake-up call). */
-function JourneyCard({ j, burn, data, today }: { j: Journey | null; burn: RealBurn; data: AppData; today: string }) {
+function JourneyCard({ j, burn, data, today, onFrom }: { j: Journey | null; burn: RealBurn; data: AppData; today: string; onFrom: (from: string) => void }) {
   if (!j) return <p className="f-muted text-sm">Weigh in a few times (say “94.2 kg” in Log it) to start your journey.</p>;
   const total = j.goal != null && j.start.kg > j.goal ? j.start.kg - j.goal : Math.max(10, j.lost + 2.5);
   const at = (lost: number) => `${Math.max(0, Math.min(100, (lost / total) * 100))}%`;
   const eta = goalEta(j.current.kg, j.ratePerWeek, j.goal, today);
   const floor = kcalFloor(data, today);
   const restart = burn.ok ? targetFor(burn.real, 0.5, floor).kcal : null;
+  const from = data.journeyFrom ?? JOURNEY_DEFAULT;
+  const isDate = /^\d{4}-\d{2}-\d{2}$/.test(from);
   return (
     <div className="space-y-4">
+      {/* Where progress is measured from: recent by default, so it reflects now, not a weigh-in from long ago. */}
+      <div className="flex flex-wrap items-center gap-2">
+        <label className="flex min-w-0 flex-1 items-center gap-2 text-sm">
+          <span className="f-muted shrink-0">Measure from</span>
+          <select className="f-input !py-2 min-w-0 flex-1" value={isDate ? 'date' : from} aria-label="Measure progress from"
+            onChange={e => onFrom(e.target.value === 'date' ? j.start.date : e.target.value)}>
+            <option value="30d">Last 30 days</option><option value="90d">Last 90 days</option><option value="180d">Last 6 months</option>
+            <option value="all">My first weigh-in</option><option value="date">A date I pick</option>
+          </select>
+        </label>
+        {isDate && <input type="date" className="f-input !py-2 !w-auto" value={from} max={today} aria-label="Journey start date" onChange={e => e.target.value && onFrom(e.target.value)} />}
+      </div>
       <div className="flex flex-wrap items-end justify-between gap-2">
         <div>
           <p className="f-muted text-xs font-semibold uppercase tracking-[0.14em]">Since {short(j.start.date)} · {j.days} days</p>
@@ -123,7 +137,7 @@ function RealBurnCard({ burn, data, today, onSetTarget }: { burn: RealBurn; data
       <div className="space-y-2 rounded-2xl border border-[var(--f-line)] p-3">
         <p className="text-sm font-semibold">Daily target from your real burn</p>
         <div className="flex flex-wrap gap-1.5" role="group" aria-label="Weekly loss">
-          {[0.25, 0.5, 0.75, 1].map(p => <button key={p} type="button" className="f-chip !min-h-9" data-on={pace === p} aria-pressed={pace === p} onClick={() => { setPace(p); setDone(false); }}>{p} kg/week</button>)}
+          {[0.25, 0.5, 0.75, 1].map(p => <button key={p} type="button" className="f-chip" data-on={pace === p} aria-pressed={pace === p} onClick={() => { setPace(p); setDone(false); }}>{p} kg/week</button>)}
         </div>
         <p className="text-sm">Eat about <strong className="text-base">{k(t.kcal)} kcal</strong> a day{current ? <span className="f-muted"> (now {k(current)})</span> : null}.{t.floored ? <span className="f-muted"> Kept at your safe minimum of {k(floor)}; pick a slower pace.</span> : null}</p>
         <button type="button" className="f-pill f-pill-primary w-full" disabled={done || current === t.kcal} onClick={() => { onSetTarget(t.kcal); setDone(true); }}>
@@ -202,7 +216,7 @@ export function ProgressHub({ data, today, onDataChange, showcase }: {
         ))}
       </div>
       <div className="mt-4" role="tabpanel" aria-label={TABS.find(t => t.id === tab)?.label}>
-        {tab === 'journey' && <JourneyCard j={j} burn={burn} data={data} today={today} />}
+        {tab === 'journey' && <JourneyCard j={j} burn={burn} data={data} today={today} onFrom={from => onDataChange({ ...data, journeyFrom: from })} />}
         {tab === 'burn' && <RealBurnCard burn={burn} data={data} today={today} onSetTarget={setTarget} />}
         {tab === 'checkin' && <CheckinCard data={data} today={today} />}
         {tab === 'insights' && <InsightsCard data={data} today={today} burn={burn} trendKg={j?.current.kg} />}

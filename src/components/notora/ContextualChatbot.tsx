@@ -17,7 +17,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { ScrollArea } from '../ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { contextualChat } from '@/ai/flows/contextual-chat';
-import { useModelStore } from '@/hooks/use-model-store';
+import { useModelFor, useModelStore } from '@/hooks/use-model-store';
 
 interface ChatMessage {
   role: 'user' | 'model';
@@ -44,7 +44,8 @@ export default function ContextualChatbot({ pageContext }: ContextualChatbotProp
   const [loading, setLoading] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const fullScrollRef = useRef<HTMLDivElement>(null);
-  const { selectedModel, webSearch } = useModelStore();
+  const { webSearch } = useModelStore();
+  const selectedModel = useModelFor('chat');
   const app = useContext(AppContext);
 
   // Greet once; closing the chat keeps the conversation (it's cleared only with "New chat").

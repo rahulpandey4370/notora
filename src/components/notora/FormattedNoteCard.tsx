@@ -17,7 +17,7 @@ import { simplifyStickyNote } from '@/ai/flows/simplify-sticky-note';
 import CustomPromptDialog from './CustomPromptDialog';
 import { cn } from '@/lib/utils';
 import { Input } from '../ui/input';
-import { useModelStore } from '@/hooks/use-model-store';
+import { useModelFor } from '@/hooks/use-model-store';
 import { useToast } from '@/hooks/use-toast';
 
 interface FormattedNoteCardProps {
@@ -46,7 +46,7 @@ export default function FormattedNoteCard({ note, noteNumber, onNoteChange, onNo
   const [editedContent, setEditedContent] = useState(note.content);
   const [aiLoading, setAiLoading] = useState<AIOperation | null>(null);
   const [isPromptDialogOpen, setIsPromptDialogOpen] = useState(false);
-  const { selectedModel } = useModelStore();
+  const selectedModel = useModelFor('notes');
   const { toast } = useToast();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const autoSaveTimer = useRef<NodeJS.Timeout | null>(null);

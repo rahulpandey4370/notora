@@ -11,11 +11,11 @@ function Row({ icon, title, detail, amount, tone, onOpen, onDelete }: {
 }) {
   return (
     <li className="f-row">
-      <button type="button" onClick={onOpen} className="flex min-w-0 flex-1 items-center gap-3 text-left" aria-label={`Open ${title}`}>
+      <button type="button" onClick={onOpen} className="flex min-h-11 min-w-0 flex-1 items-center gap-3 text-left" aria-label={`Open ${title}`}>
         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--f-tint)]">{icon}</span>
         <span className="min-w-0">
-          <span className="block truncate font-medium">{title}</span>
-          {detail && <span className="f-muted block truncate text-xs">{detail}</span>}
+          <span className="block break-words font-medium leading-snug">{title}</span>
+          {detail && <span className="f-muted block text-xs">{detail}</span>}
         </span>
       </button>
       <span className={`shrink-0 text-sm font-semibold tabular-nums ${tone === 'in' ? '' : tone === 'out' ? 'f-good' : 'f-muted'}`}>{amount}</span>
@@ -125,7 +125,7 @@ export function DayLog({ data, day, kcalGoal, onEdit, onOpen, onClearBurn, onAdd
                       </div>
                     )}
                   </div>
-                  <button type="button" className="f-icon-btn h-9 w-9 shrink-0" aria-label={`Add to ${label}`} onClick={() => onAdd({ kind: 'meal', slot: id })}><Plus className="h-4 w-4" /></button>
+                  <button type="button" className="f-icon-btn h-11 w-11 shrink-0" aria-label={`Add to ${label}`} onClick={() => onAdd({ kind: 'meal', slot: id })}><Plus className="h-4 w-4" /></button>
                 </div>
                 {groups[id].length > 0 ? <ul>{groups[id].map(mealRow)}</ul> : (() => {
                   const q = quickPicks(data, day, id);
@@ -133,13 +133,13 @@ export function DayLog({ data, day, kcalGoal, onEdit, onOpen, onClearBurn, onAdd
                   return (
                     <div className="f-scroll-x flex gap-1.5 overflow-x-auto px-4 pb-2 pt-1" role="group" aria-label={`Quick add to ${label}`}>
                       {q.yesterday.length > 0 && (
-                        <button type="button" className="f-chip shrink-0 !min-h-9" onClick={() => onQuickAdd(q.yesterday, id)}
+                        <button type="button" className="f-chip shrink-0" onClick={() => onQuickAdd(q.yesterday, id)}
                           aria-label={`Log the same ${label.toLowerCase()} as yesterday: ${q.yesterday.map(m => m.name).join(', ')}`}>
                           <RotateCcw className="h-3.5 w-3.5" aria-hidden />Same as yesterday · {k(sum(q.yesterday as Meal[]))}
                         </button>
                       )}
                       {q.usual.map(m => (
-                        <button key={m.name} type="button" className="f-chip shrink-0 !min-h-9 max-w-[14rem]" onClick={() => onQuickAdd([m], id)} aria-label={`Log ${m.name} to ${label}`}>
+                        <button key={m.name} type="button" className="f-chip shrink-0 max-w-[14rem]" onClick={() => onQuickAdd([m], id)} aria-label={`Log ${m.name} to ${label}`}>
                           <Plus className="h-3.5 w-3.5 shrink-0" aria-hidden /><span className="truncate">{m.name}</span><span className="shrink-0 tabular-nums">· {k(m.kcal)}</span>
                         </button>
                       ))}
@@ -172,7 +172,7 @@ export function DayLog({ data, day, kcalGoal, onEdit, onOpen, onClearBurn, onAdd
                 <li key={w.id} className="f-row">
                   <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--f-tint)]"><Watch className="h-4 w-4 text-[var(--f-chart-b)]" aria-hidden /></span>
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate font-medium">{w.name}</span>
+                    <span className="block break-words font-medium leading-snug">{w.name}</span>
                     <span className="f-muted block text-xs">
                       {[w.start, `${w.minutes} min`, w.distanceKm ? `${w.distanceKm} km` : '', w.avgHr ? `avg ${w.avgHr} bpm` : '', 'Fitbit'].filter(Boolean).join(' · ')}
                     </span>

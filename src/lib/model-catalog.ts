@@ -220,3 +220,29 @@ export function defaultModelKey(providers?: AIProvider[]): string {
   // GPT-6 Luna when OpenAI is enabled, else a balanced-tagged model, else the first on offer.
   return (models.find(m => m.id === 'gpt-6-luna') ?? models.find(m => m.tags.includes('balanced')) ?? models[0])?.key ?? 'google::gemini-2.5-flash';
 }
+
+/**
+ * The model to use once the server's provider list is known: the user's own
+ * pick while it is still on offer, else the default for that list. The model
+ * the browser guessed before the list arrived is never kept: without the
+ * server list it only sees Google + Azure, so its guess was Gemini 2.5 Flash.
+ */
+export function startModelKey(providers: AIProvider[] | undefined, picked?: string | null): string {
+  return picked && availableModels(providers).some(m => m.key === picked) ? picked : defaultModelKey(providers);
+}
+
+/** Parts of the app that can each use their own model (AI models, in the avatar menu). */
+export type ModelArea = 'food' | 'chat' | 'notes' | 'journal' | 'tasks' | 'summaries';
+export const MODEL_AREAS: { id: ModelArea; label: string; hint: string }[] = [
+  { id: 'food', label: 'Food & workout log', hint: 'Log it, meal edits, new foods' },
+  { id: 'chat', label: 'Chat assistant', hint: 'The chat bubble on every page' },
+  { id: 'notes', label: 'Notes', hint: 'Titles, polish, summaries, custom prompts' },
+  { id: 'journal', label: 'Journal', hint: 'Reflect, format, summarise' },
+  { id: 'tasks', label: 'Tasks & links', hint: 'Task ordering, next actions, link search' },
+  { id: 'summaries', label: 'Summaries & insights', hint: 'Day end, weekly review, fitness insights' },
+];
+
+/** The model for one area: its own choice while that model is still on offer, else the default pick. */
+export function modelForArea(models: CatalogModel[], fallback: string, override?: string | null): string {
+  return override && models.some(m => m.key === override) ? override : fallback;
+}

@@ -94,9 +94,15 @@ export function FitnessPage({ data, onDataChange, showcase = false }: { data: Ap
   const save = (draft: FitnessDraft, edits: LogEdit[] = []) => {
     // Changes to meals already logged (for the picked day), then any new items, in one save.
     let next = edits.length ? applyLogEdits(data, day, edits, uuidv4) : data;
-    if (draft.meals.length || draft.activities.length || draft.values.length) next = applyDraft(next, draft, uuidv4);
+    const made: string[] = [];
+    if (draft.meals.length || draft.activities.length || draft.values.length) next = applyDraft(next, draft, () => { const id = uuidv4(); made.push(id); return id; });
     onDataChange(next);
+    // The meals this save added, so a quick-add from Foods can be undone. Not the "Earlier total" that applyDraft
+    // makes to carry a typed day total: undoing an add must leave that total where it was.
+    const meals = new Set((next.fitnessDays?.[draft.date]?.meals ?? []).filter(m => m.name !== 'Earlier total' && m.name !== 'Day total').map(m => m.id));
+    return made.filter(id => meals.has(id));
   };
+  const undoMeals = (ids: string[]) => onDataChange(ids.reduce((d, id) => editDayItem(d, day, 'meal', id, null, uuidv4), data));
   const edit = (kind: 'meal' | 'activity', id: string, patch: Partial<Meal & Activity> | null) => onDataChange(editDayItem(data, day, kind, id, patch, uuidv4));
   const tracker = data.logTrackers.find(t => t.id === openTracker) ?? null;
   const needsSetup = !data.fitnessProfile;
@@ -142,8 +148,8 @@ export function FitnessPage({ data, onDataChange, showcase = false }: { data: Ap
         </div>
       </div>
 
-      <LogSheet open={log.open} onOpenChange={o => setLog(l => ({ ...l, open: o }))} mode={log.mode} preset={log.preset} data={data} day={day} today={today} onSave={save} aiDisabled={showcase} foods={foods} />
-      <ItemSheet item={item} data={data} day={day} today={today} aiDisabled={showcase} onClose={() => setItem(null)}
+      <LogSheet open={log.open} onOpenChange={o => setLog(l => ({ ...l, open: o }))} mode={log.mode} preset={log.preset} data={data} day={day} today={today} onSave={save} onUndoMeals={undoMeals} aiDisabled={showcase} foods={foods} />
+      <ItemSheet item={item} data={data} day={day} today={today} aiDisabled={showcase} foods={foods} onClose={() => setItem(null)}
         onSave={(it, patch) => onDataChange(editDayItem(data, day, it.kind, it.id, patch, uuidv4))}
         onDelete={it => onDataChange(editDayItem(data, day, it.kind, it.id, null, uuidv4))}
         onReplace={(it, draft) => onDataChange(applyDraft(editDayItem(data, day, it.kind, it.id, null, uuidv4), draft, uuidv4))} />

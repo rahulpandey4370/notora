@@ -15,8 +15,8 @@ export function TargetsSheet({ open, onOpenChange, data, today, onSave }: {
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="bottom" className="fit-ui f-sheet max-h-[calc((100dvh-var(--kb,0px))*0.92)] overflow-y-auto rounded-t-[28px] border-0 px-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] pt-6 sm:mx-auto sm:max-w-lg">
-        <SheetTitle className="fit-display text-2xl text-[var(--f-ink)]">Targets &amp; <em>you</em></SheetTitle>
-        <SheetDescription className="f-muted text-sm">Used for your burn estimate and the rings. Synced to all your devices. Also on your Profile page.</SheetDescription>
+        <SheetTitle className="pr-10 fit-display text-2xl text-[var(--f-ink)]">Targets &amp; <em>you</em></SheetTitle>
+        <SheetDescription className="pr-10 f-muted text-sm">Used for your burn estimate and the rings. Synced to all your devices. Also on your Profile page.</SheetDescription>
         {open && <TargetsForm data={data} today={today} onSave={next => { onSave(next); onOpenChange(false); }} />}
       </SheetContent>
     </Sheet>

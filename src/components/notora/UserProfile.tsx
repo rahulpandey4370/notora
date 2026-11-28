@@ -24,7 +24,8 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { LogOut, User as UserIcon, Award, Bell, KeyRound, Loader2, Gauge, Globe } from 'lucide-react';
+import { LogOut, User as UserIcon, Award, Bell, KeyRound, Loader2, Gauge, Globe, Cpu, Wand2, CalendarRange } from 'lucide-react';
+import AiModelsDialog from './AiModelsDialog';
 import { Switch } from '@/components/ui/switch';
 import { useModelStore } from '@/hooks/use-model-store';
 import Link from 'next/link';
@@ -35,9 +36,13 @@ import { usePushNotifications } from '@/hooks/use-push-notifications';
 interface UserProfileProps {
   user: User;
   userStats: UserStats;
+  /** Day End Summary and Weekly Review: shown here on phones, where the top bar has no room for them. */
+  onDayEnd?: () => void;
+  onWeekly?: () => void;
 }
 
-export default function UserProfile({ user, userStats }: UserProfileProps) {
+export default function UserProfile({ user, userStats, onDayEnd, onWeekly }: UserProfileProps) {
+  const [modelsOpen, setModelsOpen] = useState(false);
   const { logout } = useAuth();
   const { toast } = useToast();
   const { webSearch, setWebSearch } = useModelStore();
@@ -107,14 +112,14 @@ export default function UserProfile({ user, userStats }: UserProfileProps) {
     <>
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+        <Button variant="ghost" className="relative h-11 w-11 rounded-full" aria-label="Account menu">
           <Avatar className="h-10 w-10">
             <AvatarImage src={user.avatarUrl} alt={user.username} data-ai-hint="user avatar" />
             <AvatarFallback>{user.username.charAt(0).toUpperCase()}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56" align="end" forceMount>
+      <DropdownMenuContent className="w-60 max-md:[&_[role=menuitem]]:min-h-11" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">{user.username}</p>
@@ -142,6 +147,12 @@ export default function UserProfile({ user, userStats }: UserProfileProps) {
               : 'Enable notifications'}
           </span>
         </DropdownMenuItem>
+        {onDayEnd && <DropdownMenuItem className="md:hidden" onSelect={onDayEnd}><Wand2 className="mr-2 h-4 w-4" /><span>Day End Summary</span></DropdownMenuItem>}
+        {onWeekly && <DropdownMenuItem className="md:hidden" onSelect={onWeekly}><CalendarRange className="mr-2 h-4 w-4" /><span>Weekly Review</span></DropdownMenuItem>}
+        <DropdownMenuItem onSelect={() => setModelsOpen(true)}>
+          <Cpu className="mr-2 h-4 w-4" />
+          <span>AI models</span>
+        </DropdownMenuItem>
         <DropdownMenuItem onSelect={(e) => { e.preventDefault(); setWebSearch(!webSearch); }}>
           <Globe className="mr-2 h-4 w-4" />
           <span className="flex-1">Web search for AI</span>
@@ -162,6 +173,8 @@ export default function UserProfile({ user, userStats }: UserProfileProps) {
       </DropdownMenuContent>
     </DropdownMenu>
     
+    <AiModelsDialog open={modelsOpen} onOpenChange={setModelsOpen} />
+
     <Dialog open={isPasswordDialogOpen} onOpenChange={setIsPasswordDialogOpen}>
         <DialogContent>
             <DialogHeader>

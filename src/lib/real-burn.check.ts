@@ -47,6 +47,13 @@ assert.equal(realScale(thin), null, 'no scale without enough data');
 const noWeight = realBurn({ ...data, logTrackers: data.logTrackers.filter(t => t.id !== 'w') }, TODAY);
 assert.ok(!noWeight.ok && /weigh-ins/.test(noWeight.need));
 
+// A weigh-in is a reading, not a day in progress: today's counts. Three days running (today, yesterday, the day before) is 3.
+const three = realBurn({ ...data, logTrackers: data.logTrackers.map(t => (t.id === 'w' ? { ...t, logs: [0, 1, 2].map(ago => ({ id: `t${ago}`, date: addDays(TODAY, -ago), value: 99 + ago * 0.1 })) } : t)) }, TODAY);
+assert.ok(!three.ok && three.weighIns === 3 && /you have 3\)/.test(three.need), `today's weigh-in counts: ${!three.ok && three.need}`);
+// Seven weigh-ins ending today are enough to unlock it (with the food logs above).
+const seven = realBurn({ ...data, logTrackers: data.logTrackers.map(t => (t.id === 'w' ? { ...t, logs: [0, 1, 2, 3, 4, 5, 6].map(ago => ({ id: `s${ago}`, date: addDays(TODAY, -ago), value: 95 + ago * 0.07 })) } : t)) }, TODAY);
+assert.ok(seven.ok, 'seven weigh-ins including today unlock it');
+
 // Targets: rounded to 50, never below the floor.
 assert.deepEqual(targetFor(2550, 0.5, 1500), { kcal: 2000, floored: false });
 assert.deepEqual(targetFor(1800, 1, 1500), { kcal: 1500, floored: true });

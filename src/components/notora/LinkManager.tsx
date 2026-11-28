@@ -14,7 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import { ToastAction } from '@/components/ui/toast';
 import LinkCard from './LinkCard';
 import { motion } from 'framer-motion';
-import { useModelStore } from '@/hooks/use-model-store';
+import { useModelFor } from '@/hooks/use-model-store';
 
 interface LinkManagerProps {
   savedLinks: SavedLink[];
@@ -31,7 +31,7 @@ export default function LinkManager({ savedLinks, data, onDataChange }: LinkMana
   const [searchedLinkIds, setSearchedLinkIds] = useState<string[] | null>(null);
   const [searchModel, setSearchModel] = useState<string | undefined>();
   const { toast } = useToast();
-  const { selectedModel } = useModelStore();
+  const selectedModel = useModelFor('tasks');
   // The latest data, so Undo restores into what's current (not a snapshot from before the delete).
   const latest = useRef({ data, onDataChange });
   latest.current = { data, onDataChange };

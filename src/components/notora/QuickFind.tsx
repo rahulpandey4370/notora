@@ -84,7 +84,7 @@ export default function QuickFind() {
 
   return (
     <>
-      <Button variant="outline" size="sm" onClick={() => setOpen(true)} aria-label="Search or capture a note (Ctrl+K)">
+      <Button variant="outline" size="sm" className="h-11 min-w-11 md:h-9" onClick={() => setOpen(true)} aria-label="Search or capture a note (Ctrl+K)">
         <Search className="h-4 w-4 md:mr-2" />
         <span className="hidden md:inline">Search</span>
         <kbd className="ml-2 hidden lg:inline text-xs text-muted-foreground">⌘K</kbd>

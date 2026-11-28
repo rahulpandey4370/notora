@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { format } from 'date-fns';
-import { Camera, Check, Dumbbell, Footprints, Globe, Loader2, Mic, Send, Square, Star, Utensils, X } from 'lucide-react';
+import { Camera, Check, Copy, Dumbbell, Footprints, Globe, Loader2, Mic, Send, Square, Star, Utensils, X } from 'lucide-react';
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import type { AppData } from '@/lib/types';
-import { useModelStore } from '@/hooks/use-model-store';
+import { useModelFor, useModelStore } from '@/hooks/use-model-store';
 import { parseFitnessLog, type LoggedMealEdit } from '@/ai/flows/parse-fitness-log';
 import { MEAL_SLOTS, bmr, describeValueChange, flooredKcal, slotForTime, weightOn, type FitnessDraft, type LogEdit } from '@/lib/fitness';
 import type { MealSlot } from '@/lib/types';
@@ -53,12 +53,26 @@ function NumField({ label, value, onChange, width = 'w-16' }: { label: string; v
   );
 }
 
+/** Tap to copy a chat message: long-press selection is unreliable inside sheets on iPhone. */
+function CopyButton({ text }: { text: string }) {
+  const [done, setDone] = useState(false);
+  return (
+    <button type="button" className="f-muted flex h-11 w-11 shrink-0 items-center justify-center" aria-label={done ? 'Copied' : 'Copy message'}
+      onClick={() => void navigator.clipboard?.writeText(text).then(() => { setDone(true); setTimeout(() => setDone(false), 1500); })}>
+      {done ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+    </button>
+  );
+}
+
 /** "Log it": type, speak or snap → AI draft cards → Save. Nothing is written before Save. */
-export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, onSave, aiDisabled, foods }: {
+export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, onSave, onUndoMeals, aiDisabled, foods }: {
   open: boolean; onOpenChange: (o: boolean) => void; mode: 'type' | 'voice' | 'photo' | 'form' | 'ai'; preset?: AddTarget;
-  data: AppData; day: string; today: string; onSave: (draft: FitnessDraft, edits: LogEdit[]) => void; aiDisabled?: boolean; foods: FoodsApi;
+  data: AppData; day: string; today: string; aiDisabled?: boolean; foods: FoodsApi;
+  /** Saves the draft and edits; returns the ids of the meals it added (so a quick-add from Foods can be undone). */
+  onSave: (draft: FitnessDraft, edits: LogEdit[]) => string[] | void; onUndoMeals?: (mealIds: string[]) => void;
 }) {
-  const { selectedModel, webSearch, setWebSearch } = useModelStore();
+  const { webSearch, setWebSearch } = useModelStore();
+  const selectedModel = useModelFor('food');
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const [text, setText] = useState('');
   const [interim, setInterim] = useState('');
@@ -244,11 +258,13 @@ export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, o
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" className="fit-ui f-sheet flex max-h-[calc((100dvh-var(--kb,0px))*0.92)] flex-col gap-0 rounded-t-[28px] border-0 p-0 sm:mx-auto sm:max-w-lg">
-        <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-2 px-5 pb-2 pt-5 pr-12">
-          <div className="min-w-[13rem] flex-1">
+      {/* Anchored to the top: the keyboard opening shrinks the list below instead of moving the whole sheet. */}
+      <SheetContent side="top" className="fit-ui f-sheet inset-x-2 top-[max(0.5rem,env(safe-area-inset-top))] flex max-h-[calc(100dvh-var(--kb,0px)-max(0.5rem,env(safe-area-inset-top))-0.5rem)] flex-col gap-0 overflow-y-auto rounded-[28px] border-0 p-0 sm:mx-auto sm:max-w-lg">
+        <div className="flex shrink-0 flex-wrap items-center justify-between gap-x-3 gap-y-2 px-5 pb-2 pt-4 pr-14">
+          <div className="flex-1 sm:min-w-[13rem]">
             <SheetTitle className="fit-display text-2xl text-[var(--f-ink)]">Log <em>it</em></SheetTitle>
-            <SheetDescription className="f-muted text-sm">{view === 'form' ? 'Fill in the numbers yourself. No AI.' : view === 'foods' ? 'Your foods and 1,400+ built-in ones, scaled to what you ate. No AI.' : 'Meals, workouts or numbers — type, speak, or send a photo.'}</SheetDescription>
+            {/* Phones: read to screen readers only, so the keyboard leaves room for the list. */}
+            <SheetDescription className="f-muted text-sm max-sm:sr-only">{view === 'form' ? 'Fill in the numbers yourself. No AI.' : view === 'foods' ? 'Your foods and 1,400+ built-in ones, scaled to what you ate. No AI.' : 'Meals, workouts or numbers — type, speak, or send a photo.'}</SheetDescription>
           </div>
           <div className="flex shrink-0 gap-1" role="group" aria-label="How to log">
             <button type="button" className="f-chip !px-2.5" data-on={view === 'ai'} aria-pressed={view === 'ai'} onClick={() => choose('ai')}>AI</button>
@@ -258,32 +274,56 @@ export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, o
         </div>
 
         {view === 'foods' ? (
-          <div className="flex-1 overflow-y-auto px-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] pt-3">
-            <FoodsPanel foods={foods} data={data} day={day} slot={preset?.kind === 'meal' ? preset.slot : nowSlot} onSave={d => onSave(d, [])} aiDisabled={aiDisabled} />
+          <div className="min-h-[12rem] flex-1 overflow-y-auto px-5 pt-3">
+            <FoodsPanel foods={foods} data={data} day={day} slot={preset?.kind === 'meal' ? preset.slot : nowSlot} onSave={d => onSave(d, [])} onUndo={onUndoMeals} aiDisabled={aiDisabled} />
           </div>
         ) : manual ? (
-          <div className="flex-1 overflow-y-auto px-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] pt-3">
+          <div className="min-h-[12rem] flex-1 overflow-y-auto px-5 pb-5 pt-3">
             <ManualLog key={`${preset?.kind ?? ''}-${preset?.kind === 'meal' ? preset.slot : ''}`} data={data} day={day} onSave={d => onSave(d, [])}
               initialKind={preset?.kind ?? 'meal'} defaultSlot={preset?.kind === 'meal' ? preset.slot : nowSlot} />
           </div>
         ) : (<>
 
-        <div className="flex-1 space-y-3 overflow-y-auto px-5 py-2" aria-live="polite">
-          {!msgs.length && (
-            <div className="f-muted space-y-1 text-sm">
-              <p>Try:</p>
-              <p>“2 rotis, dal and a 30 min jog”</p>
-              <p>“94.1 kg, 110 g protein”</p>
-              <p>📷 a meal, or a screenshot of a workout summary</p>
+        <div className="shrink-0 border-b border-[var(--f-line)] px-4 pb-3 pt-1">
+          {photo && (
+            <div className="mb-2 flex items-center gap-2">
+              <img src={photo} alt="Photo to send" className="h-14 w-14 rounded-xl object-cover" />
+              <button type="button" className="f-chip" onClick={() => setPhoto(null)}><X className="h-3.5 w-3.5" aria-hidden />Remove photo</button>
             </div>
           )}
+          <AutoTextarea ref={inputRef} maxRows={4} rows={2} className="min-h-[2.75rem]"
+            placeholder={listening ? 'Listening…' : hasItems ? 'Correct it, e.g. “make it 3 rotis”' : logged.length ? 'What did you eat or do? e.g. “2 rotis, dal and a 30 min jog”, or change a meal: “lunch was 2 bowls”' : 'What did you eat or do? e.g. “2 rotis, dal and a 30 min jog” or “94.1 kg”'}
+            value={interim ? `${text} ${interim}`.trim() : text} onChange={e => setText(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); void send(); } }} aria-label="Message" />
+          <div className="mt-2 flex items-center gap-2">
+            <button type="button" className="f-icon-btn h-11 w-11 shrink-0" aria-label="Add a photo" onClick={() => fileRef.current?.click()}><Camera className="h-5 w-5" /></button>
+            <button type="button" className={cn('f-icon-btn h-11 w-11 shrink-0', webSearch && '!border-[var(--f-deep)] !bg-[var(--f-deep)] !text-white dark:!text-[#04201f]')}
+              aria-label={`Web search ${webSearch ? 'on' : 'off'}`} aria-pressed={webSearch} title={webSearch ? 'Web search on' : 'Web search off'} onClick={() => setWebSearch(!webSearch)}>
+              <Globe className="h-5 w-5" />
+            </button>
+            <span className="flex-1" />
+            {supported && (
+              <button type="button" className={cn('f-icon-btn h-11 w-11 shrink-0', listening && '!bg-[var(--f-coral)] !text-white')}
+                aria-label={listening ? 'Stop listening' : 'Speak'} aria-pressed={listening} onClick={() => (listening ? stop() : start())}>
+                {listening ? <Square className="h-4 w-4" /> : <Mic className="h-5 w-5" />}
+              </button>
+            )}
+            <button type="button" className="f-voice-btn h-11 w-11 shrink-0 !rounded-full" aria-label="Send" disabled={busy} onClick={() => void send()}>
+              {busy ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
+            </button>
+          </div>
+          <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={e => { void pick(e.target.files?.[0]); e.target.value = ''; }} />
+        </div>
+
+        <div className={cn('min-h-[7rem] flex-1 space-y-3 overflow-y-auto px-5 py-3', !msgs.length && !busy && !hasItems && 'hidden')} aria-live="polite">
           {msgs.map((m, i) => (
-            <div key={i} className={cn('flex', m.role === 'user' ? 'justify-end' : 'justify-start')}>
-              <div className={cn('max-w-[85%] rounded-2xl px-3 py-2 text-sm',
+            <div key={i} className={cn('flex items-end gap-0.5', m.role === 'user' ? 'flex-row-reverse' : 'flex-row')}>
+              <div className={cn('max-w-[80%] select-text whitespace-pre-wrap rounded-2xl px-3 py-2 text-sm',
                 m.role === 'user' ? 'bg-[var(--f-deep)] text-white dark:text-[#04201f]' : m.error ? 'bg-[var(--f-coral-soft)] text-[var(--f-ink)]' : 'f-card')}>
                 {m.image && <img src={m.image} alt="Photo you sent" className="mb-1.5 max-h-40 rounded-xl" />}
                 {m.text}
               </div>
+              {m.text && <CopyButton text={m.text} />}
             </div>
           ))}
           {busy && <div className="f-muted flex items-center gap-2 text-sm"><Loader2 className="h-4 w-4 animate-spin" aria-hidden />Reading…</div>}
@@ -306,7 +346,7 @@ export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, o
                             {e.delete ? 'will be removed' : `${kOld} → ${kNew} kcal · P ${Math.round(next.proteinG)} · C ${Math.round(next.carbsG ?? 0)} · F ${Math.round(next.fatG ?? 0)} · Fibre ${Math.round(next.fiberG ?? 0)} g`}
                           </span>
                         </span>
-                        <button type="button" className="f-muted -mr-2 flex h-9 w-9 shrink-0 items-center justify-center" aria-label={`Don't change ${old.name}`}
+                        <button type="button" className="f-muted -mr-2 flex h-11 w-11 shrink-0 items-center justify-center" aria-label={`Don't change ${old.name}`}
                           onClick={() => setEdits(xs => xs.filter((_, j) => j !== i))}><X className="h-4 w-4" /></button>
                       </div>
                     );
@@ -315,24 +355,29 @@ export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, o
               )}
               {draft && (draft.meals.length + draft.activities.length + draft.values.length) > 0 && <p className="text-xs font-semibold uppercase tracking-wide f-muted">To save{dayText}</p>}
               {draft?.meals.map((m, i) => (<div key={`m${ver}-${i}`}>
-                <div className="flex items-end gap-2">
-                  <Utensils className="mb-2 h-4 w-4 shrink-0 text-[var(--f-chart-a)]" aria-hidden />
-                  <span className="mb-1.5 min-w-0 flex-1">
-                    <span className="block text-sm font-medium">{m.name}</span>
+                <div className="flex items-start gap-2">
+                  <Utensils className="mt-1 h-4 w-4 shrink-0 text-[var(--f-chart-a)]" aria-hidden />
+                  <span className="min-w-0 flex-1">
+                    <span className="block select-text text-sm font-medium">{m.name}</span>
                     <span className="f-muted block text-[11px] tabular-nums">C {Math.round(m.carbsG ?? 0)} · F {Math.round(m.fatG ?? 0)} · Fibre {Math.round(m.fiberG ?? 0)} g{m.foodId ? ' · ★ My Foods' : ''}</span>
-                    <select className="f-muted mt-0.5 max-w-full bg-transparent text-xs underline decoration-dotted underline-offset-2" aria-label={`Meal for ${m.name}`}
+                  </span>
+                  {!m.foodId && foods.status === 'ready' && (
+                    <button type="button" className="f-muted -my-2 flex h-11 w-11 shrink-0 items-center justify-center" aria-label={`Save ${m.name} to My Foods`} aria-expanded={saving === i}
+                      onClick={() => setSaving(s => (s === i ? null : i))}><Star className="h-4 w-4" /></button>
+                  )}
+                  <button type="button" className="f-muted -my-2 -mr-2 flex h-11 w-11 shrink-0 items-center justify-center" aria-label={`Remove ${m.name}`}
+                    onClick={() => { setSaving(null); remove(d => ({ ...d, meals: d.meals.filter((_, j) => j !== i) })); }}><X className="h-4 w-4" /></button>
+                </div>
+                <div className="mt-1 flex items-end gap-2">
+                  <label className="flex min-w-0 flex-1 flex-col text-[11px]">
+                    <span className="f-muted">meal</span>
+                    <select className="f-input mt-0.5 !px-2 !py-1 text-sm" aria-label={`Meal for ${m.name}`}
                       value={m.slot ?? nowSlot} onChange={e => update(d => ({ ...d, meals: d.meals.map((x, j) => (j === i ? { ...x, slot: e.target.value as MealSlot } : x)) }))}>
                       {MEAL_SLOTS.map(x => <option key={x.id} value={x.id}>{x.label}</option>)}
                     </select>
-                  </span>
+                  </label>
                   <NumField label="kcal" value={m.kcal} onChange={n => update(d => ({ ...d, meals: d.meals.map((x, j) => (j === i ? { ...x, kcal: n } : x)) }))} />
                   <NumField label="protein g" value={m.proteinG} onChange={n => update(d => ({ ...d, meals: d.meals.map((x, j) => (j === i ? { ...x, proteinG: n } : x)) }))} />
-                  {!m.foodId && foods.status === 'ready' && (
-                    <button type="button" className="f-muted -mr-1 mb-0 flex h-11 w-9 shrink-0 items-center justify-center" aria-label={`Save ${m.name} to My Foods`} aria-expanded={saving === i}
-                      onClick={() => setSaving(s => (s === i ? null : i))}><Star className="h-4 w-4" /></button>
-                  )}
-                  <button type="button" className="f-muted -mr-2 mb-0 flex h-11 w-11 shrink-0 items-center justify-center" aria-label={`Remove ${m.name}`}
-                    onClick={() => { setSaving(null); remove(d => ({ ...d, meals: d.meals.filter((_, j) => j !== i) })); }}><X className="h-4 w-4" /></button>
                 </div>
                 {saving === i && (
                   <div className="mt-2">
@@ -372,36 +417,6 @@ export function LogSheet({ open, onOpenChange, mode, preset, data, day, today, o
             </div>
           )}
           <div ref={endRef} />
-        </div>
-
-        <div className="border-t border-[var(--f-line)] px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-3">
-          {photo && (
-            <div className="mb-2 flex items-center gap-2">
-              <img src={photo} alt="Photo to send" className="h-14 w-14 rounded-xl object-cover" />
-              <button type="button" className="f-chip" onClick={() => setPhoto(null)}><X className="h-3.5 w-3.5" aria-hidden />Remove photo</button>
-            </div>
-          )}
-          <div className="flex items-end gap-2">
-            <button type="button" className="f-icon-btn h-11 w-11 shrink-0" aria-label="Add a photo" onClick={() => fileRef.current?.click()}><Camera className="h-5 w-5" /></button>
-            <button type="button" className={cn('f-icon-btn h-11 w-11 shrink-0', webSearch && '!border-[var(--f-deep)] !bg-[var(--f-deep)] !text-white dark:!text-[#04201f]')}
-              aria-label={`Web search ${webSearch ? 'on' : 'off'}`} aria-pressed={webSearch} title={webSearch ? 'Web search on' : 'Web search off'} onClick={() => setWebSearch(!webSearch)}>
-              <Globe className="h-5 w-5" />
-            </button>
-            <AutoTextarea ref={inputRef} maxRows={6} className="min-h-[2.75rem] flex-1"
-              placeholder={listening ? 'Listening…' : hasItems ? 'Correct it, e.g. “make it 3 rotis”' : logged.length ? 'What did you eat or do? Or change a logged meal, e.g. “lunch was 2 bowls”' : 'What did you eat or do?'}
-              value={interim ? `${text} ${interim}`.trim() : text} onChange={e => setText(e.target.value)}
-              onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); void send(); } }} aria-label="Message" />
-            {supported && (
-              <button type="button" className={cn('f-icon-btn h-11 w-11 shrink-0', listening && '!bg-[var(--f-coral)] !text-white')}
-                aria-label={listening ? 'Stop listening' : 'Speak'} aria-pressed={listening} onClick={() => (listening ? stop() : start())}>
-                {listening ? <Square className="h-4 w-4" /> : <Mic className="h-5 w-5" />}
-              </button>
-            )}
-            <button type="button" className="f-voice-btn h-11 w-11 shrink-0 !rounded-full" aria-label="Send" disabled={busy} onClick={() => void send()}>
-              {busy ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
-            </button>
-          </div>
-          <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={e => { void pick(e.target.files?.[0]); e.target.value = ''; }} />
         </div>
         </>)}
       </SheetContent>

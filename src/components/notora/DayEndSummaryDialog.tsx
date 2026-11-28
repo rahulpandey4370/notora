@@ -16,7 +16,7 @@ import type { Task } from '@/lib/types';
 import { Sparkle, Cpu } from 'lucide-react';
 import { Skeleton } from '../ui/skeleton';
 import { format } from 'date-fns';
-import { useModelStore } from '@/hooks/use-model-store';
+import { useModelFor } from '@/hooks/use-model-store';
 
 interface DayEndSummaryDialogProps {
   open: boolean;
@@ -42,7 +42,7 @@ export default function DayEndSummaryDialog({ open, onOpenChange, tasks }: DayEn
   const [quote, setQuote] = useState('');
   const [modelId, setModelId] = useState<string | undefined>();
   const [loading, setLoading] = useState(false);
-  const { selectedModel } = useModelStore();
+  const selectedModel = useModelFor('summaries');
 
   useEffect(() => {
     if (open) {

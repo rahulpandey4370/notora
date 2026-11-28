@@ -8,6 +8,7 @@ import { AppProvider } from '@/contexts/app-context';
 import ModelCatalogSync from '@/components/providers/model-catalog-sync';
 import { resolveEnabledProviders } from '@/lib/ai-providers-server';
 import KeyboardInset from '@/components/providers/keyboard-inset';
+import UpdatePrompt from '@/components/providers/update-prompt';
 
 // Server actions run under the page that calls them; the ADK chat can make several
 // model and tool calls per message (FinWise's chat route allows 300s). 60s fits every Vercel plan.
@@ -57,6 +58,7 @@ export default function RootLayout({
               {children}
               <Toaster />
               <KeyboardInset />
+              <UpdatePrompt />
             </AppProvider>
           </AuthProvider>
         </ThemeProvider>

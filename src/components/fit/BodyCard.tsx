@@ -134,7 +134,7 @@ function Photos({ data, today, onDataChange, showcase }: { data: AppData; today:
         <>
           <div className="flex flex-wrap items-center gap-2">
             <div className="flex gap-1" role="group" aria-label="Pose">
-              {POSES.map(x => <button key={x} type="button" className="f-chip !min-h-9 capitalize" data-on={pose === x} aria-pressed={pose === x} onClick={() => { setPose(x); setPair({}); }}>{x}</button>)}
+              {POSES.map(x => <button key={x} type="button" className="f-chip capitalize" data-on={pose === x} aria-pressed={pose === x} onClick={() => { setPose(x); setPair({}); }}>{x}</button>)}
             </div>
             <button type="button" className="f-pill flex-1" disabled={busy} onClick={() => fileRef.current?.click()}>
               {busy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <Camera className="h-4 w-4" aria-hidden />}{busy ? 'Uploading…' : `Add a ${pose} photo`}
@@ -160,7 +160,7 @@ function Photos({ data, today, onDataChange, showcase }: { data: AppData; today:
               {[...photos].reverse().map(p => (
                 <li key={p.id} className="f-row">
                   <span className="min-w-0 flex-1 text-sm"><span className="font-semibold capitalize">{p.pose}</span> · {short(p.date)}{kg(p.date) ? ` · ${kg(p.date)}` : ''}</span>
-                  <ConfirmDelete label="Delete" confirm="Sure?" className="!min-h-9 !px-3 !text-xs" onConfirm={() => remove(p)} />
+                  <ConfirmDelete label="Delete" confirm="Sure?" className="!min-h-11 !px-3 !text-xs" onConfirm={() => remove(p)} />
                 </li>
               ))}
             </ul>

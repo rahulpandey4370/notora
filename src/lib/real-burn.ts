@@ -3,7 +3,7 @@
 // formula only estimate burn; this is measured against your own results.
 // Pure; checked by `npx tsx src/lib/real-burn.check.ts`.
 import type { AppData } from '@/lib/types';
-import { addDays, bmr, dayBurn, dayMacros, findTracker, trendSeries, weeklyRate, weightOn } from '@/lib/fitness';
+import { addDays, bmr, dayBurn, dayMacros, findTracker, rateWeighIns, trendSeries, weeklyRate, weightOn } from '@/lib/fitness';
 
 export const KCAL_PER_KG = 7700;
 const WINDOW = 28;
@@ -27,7 +27,7 @@ const mean = (xs: number[]) => xs.reduce((a, b) => a + b, 0) / xs.length;
  * make the real burn look far too low.
  */
 export function realBurn(data: AppData, today: string): RealBurn {
-  const end = addDays(today, -1); // today isn't over
+  const end = addDays(today, -1); // today's food isn't all logged yet, so food days stop at yesterday
   const goal = findTracker(data, 'intake')?.goal;
   const floor = goal ? goal * 0.4 : 900;
   const days: { d: string; kcal: number }[] = [];
@@ -37,8 +37,10 @@ export function realBurn(data: AppData, today: string): RealBurn {
     if (kcal >= floor) days.push({ d, kcal });
   }
   const series = trendSeries(findTracker(data, 'weight')?.logs ?? []);
-  const weighIns = series.filter(p => p.weight !== undefined && p.date > addDays(end, -WINDOW) && p.date <= end).length;
-  const rate = weeklyRate(series, end);
+  // Weight runs through today: a weigh-in is a finished reading, and this morning's is the result of food up to yesterday.
+  // Counted exactly as weeklyRate counts them, so "you have N" is the number it is waiting on.
+  const weighIns = rateWeighIns(series, today);
+  const rate = weeklyRate(series, today);
   if (days.length < MIN_DAYS || rate == null) {
     const need = [days.length < MIN_DAYS ? `full food logs on ${MIN_DAYS} of the last ${WINDOW} days (you have ${days.length})` : null,
       rate == null ? `7+ weigh-ins in 4 weeks (you have ${weighIns})` : null].filter(Boolean).join(' and ');

@@ -7,7 +7,7 @@ import type { AppData, LogTracker } from '@/lib/types';
 import { addDays, findTracker } from '@/lib/fitness';
 import { direction, isDerived, meets, series, stats, type Direction } from '@/lib/tracker-stats';
 import { getLogInsights, type GetLogInsightsOutput } from '@/ai/flows/get-log-insights';
-import { useModelStore } from '@/hooks/use-model-store';
+import { useModelFor } from '@/hooks/use-model-store';
 import { fmtSleep } from './Ring';
 
 const RANGES = [{ days: 7, label: '7D' }, { days: 30, label: '30D' }, { days: 90, label: '90D' }, { days: 365, label: '1Y' }];
@@ -74,7 +74,7 @@ export function TrackerSheet({ tracker, data, day, today, aiDisabled, onClose, o
 function Body({ t, data, day, today, aiDisabled, onChange, onDelete }: {
   t: LogTracker; data: AppData; day: string; today: string; aiDisabled?: boolean; onChange: (patch: Partial<LogTracker>) => void; onDelete: () => void;
 }) {
-  const { selectedModel } = useModelStore();
+  const selectedModel = useModelFor('summaries');
   const [days, setDays] = useState(30);
   const [showAll, setShowAll] = useState(false);
   const [form, setForm] = useState({ date: day, value: '' });
@@ -162,10 +162,10 @@ function Body({ t, data, day, today, aiDisabled, onChange, onDelete }: {
   return (
     <div className="space-y-4">
       <div>
-        <SheetTitle className="fit-display text-[2rem] text-[var(--f-ink)]">
+        <SheetTitle className="pr-10 fit-display text-[2rem] text-[var(--f-ink)]">
           {words.length > 1 ? <>{words.slice(0, -1).join(' ')} <em>{words.at(-1)}</em></> : <em>{t.name}</em>}
         </SheetTitle>
-        <SheetDescription className="f-muted mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
+        <SheetDescription className="pr-10 f-muted mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
           {t.healthMetric && <span className="inline-flex items-center gap-1"><Watch className="h-3.5 w-3.5" aria-hidden />Fitbit</span>}
           <span>{isSleep ? 'hours asleep' : t.unit}</span>
           {dir !== 'neutral' && <span>· {dir === 'up' ? 'higher is better' : 'lower is better'}</span>}
@@ -200,7 +200,7 @@ function Body({ t, data, day, today, aiDisabled, onChange, onDelete }: {
           <h3 className="text-sm font-semibold">History</h3>
           <div className="flex gap-1" role="group" aria-label="Range">
             {RANGES.map(r => (
-              <button key={r.days} type="button" className="f-chip !min-h-9 !px-3" data-on={days === r.days} aria-pressed={days === r.days} onClick={() => { setDays(r.days); setShowAll(false); }}>{r.label}</button>
+              <button key={r.days} type="button" className="f-chip !px-3" data-on={days === r.days} aria-pressed={days === r.days} onClick={() => { setDays(r.days); setShowAll(false); }}>{r.label}</button>
             ))}
           </div>
         </div>

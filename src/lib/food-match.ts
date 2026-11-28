@@ -58,6 +58,125 @@ export function scaleFood(f: Food, a: Amount, slot?: MealSlot): FoodDraftMeal | 
   };
 }
 
+/** Ways to measure a food: its named servings first ("roti (40 g)"), then weight; a per-serving food only by serving. */
+export function measuresFor(f: Food): { id: string; label: string; grams?: number }[] {
+  if (f.unit === 'serving') return [{ id: 'serving', label: 'serving' }];
+  const u = unitLabel(f);
+  return [
+    ...f.servings.map(s => ({ id: `s:${s.label}`, label: /\d\s*(g|ml)\b/i.test(s.label) ? s.label : `${s.label} (${s.amount} ${u})`, grams: s.amount })),
+    { id: 'grams', label: u },
+  ];
+}
+
+/** A measure id from measuresFor plus a quantity, as an Amount for scaleFood. */
+export const amountOf = (unit: string, qty: number): Amount =>
+  unit === 'grams' ? { grams: qty } : unit === 'serving' ? { count: qty } : { count: qty, label: unit.slice(2) };
+
+/** What "+" logs and the detail screen opens on: one of the first serving, else 100 g/ml. */
+export function defaultAmount(f: Food): { unit: string; qty: number } {
+  const first = measuresFor(f)[0].id;
+  return { unit: first, qty: first === 'grams' ? 100 : 1 };
+}
+
+/**
+ * The amount a logged meal was, for editing it. Only the weight is stored, so a serving count is offered only for the
+ * app's own "Name × 2 (80 g)" names where the weight is that many servings. With no stored weight: the count in the
+ * name, else the amount its calories imply; the food's default only when nothing says otherwise.
+ */
+export function guessAmount(f: Food, meal: { name: string; grams?: number; kcal?: number }): { unit: string; qty: number } {
+  const count = Number(/×\s*(\d+(?:\.\d+)?)/.exec(meal.name)?.[1]);
+  if (f.unit === 'serving') return { unit: 'serving', qty: count > 0 ? count : meal.kcal && f.kcal > 0 ? Math.round((meal.kcal / f.kcal) * 4) / 4 || 1 : 1 };
+  if (!meal.grams) {
+    if (count > 0 && f.servings.length) return { unit: `s:${f.servings[0].label}`, qty: count };
+    return meal.kcal && f.kcal > 0 ? { unit: 'grams', qty: Math.round((meal.kcal / f.kcal) * 100) } : defaultAmount(f);
+  }
+  const s = count > 0 ? f.servings.find(x => Math.abs(x.amount * count - meal.grams!) < 1) : undefined;
+  return s ? { unit: `s:${s.label}`, qty: count } : { unit: 'grams', qty: meal.grams };
+}
+
+/** A logged meal scaled to a new amount when its food isn't known: every number × factor, and the weight in its name updated. */
+export function rescaleMeal<T extends { name: string; kcal: number; proteinG: number; carbsG?: number; fatG?: number; fiberG?: number; grams?: number }>(m: T, factor: number): T {
+  const out: T = { ...m, kcal: Math.round(m.kcal * factor), proteinG: r1(m.proteinG * factor) };
+  for (const k of ['carbsG', 'fatG', 'fiberG'] as const) if (m[k] != null) out[k] = r1(m[k]! * factor);
+  if (m.grams) {
+    out.grams = Math.round(m.grams * factor);
+    out.name = m.name.replace(new RegExp(`\\b${m.grams}(\\s*)(g|ml)\\b`, 'i'), `${out.grams}$1$2`);
+  }
+  return out;
+}
+
+export type MealNameParts = { base: string; kind: 'x' | 'weight' | 'count' | 'lead' | 'none'; qty?: number; label?: string; unit?: 'g' | 'ml'; /** The weight in a "× 2 (80 g)" name. */ grams?: number };
+
+/**
+ * A logged meal's name without its amount, and that amount, so the edit screen can show them in separate fields.
+ * ponytail: pattern-based. It reads the app's own names ("Roti × 2 (80 g)", "Chai, 120 ml") and the common AI ones
+ * (", 1 plate", "2 rotis"); anything else is left whole ('none'). A capitalised word after a leading number is
+ * taken as a brand ("5 Star"), not a count. Store qty + measure on the meal if names ever need more than this.
+ */
+export function splitMealName(name: string): MealNameParts {
+  const n = name.trim();
+  let m = /^(.+?)\s*×\s*(\d+(?:\.\d+)?)(?:\s*\((\d+(?:\.\d+)?)\s*(g|ml)\))?$/i.exec(n);
+  if (m) return { base: m[1].trim(), kind: 'x', qty: Number(m[2]), ...(m[3] ? { grams: Number(m[3]), unit: m[4].toLowerCase() as 'g' | 'ml' } : {}) };
+  m = /^(.+?)[,\s]\s*\(?(\d+(?:\.\d+)?)\s*(g|ml)\)?$/i.exec(n);
+  if (m) return { base: m[1].replace(/,$/, '').trim(), kind: 'weight', qty: Number(m[2]), unit: m[3].toLowerCase() as 'g' | 'ml' };
+  // Not for a meal of several things ("Dal, rice, 2 rotis", "2 rotis, dal"): a number there counts only one of them.
+  const several = (x: string) => /,|\+|&|\band\b/i.test(x);
+  m = /^(.+?),\s*(\d+(?:\.\d+)?)\s+([a-z][a-z ]{0,20})$/i.exec(n);
+  if (m && !several(m[1])) return { base: m[1].trim(), kind: 'count', qty: Number(m[2]), label: m[3].trim() };
+  m = /^(\d+(?:\.\d+)?)\s+([a-z].*)$/.exec(n);
+  if (m && Number(m[1]) <= 20 && !several(m[2])) return { base: m[2].trim(), kind: 'lead', qty: Number(m[1]) };
+  return { base: n, kind: 'none' };
+}
+
+/** The name to save: the (possibly renamed) food with its amount put back the way it was written. */
+export function joinMealName(base: string, p: Omit<MealNameParts, 'base'>): string {
+  const q = p.qty != null ? Math.round(p.qty * 100) / 100 : undefined; // 0.75 cup stays 0.75
+  if (q == null || p.kind === 'none') return base;
+  if (p.kind === 'x') return `${base} × ${q}${p.grams ? ` (${Math.round(p.grams)} ${p.unit ?? 'g'})` : ''}`;
+  return p.kind === 'weight' ? `${base}, ${Math.round(q)} ${p.unit ?? 'g'}` : p.kind === 'count' ? `${base}, ${q} ${p.label}` : `${q} ${base}`;
+}
+
+/** A logged meal opened for editing: the name to show (without its amount), the amount, and whether its numbers still follow its food. */
+export type MealAmount = { name: string; unit: string; qty: number; parts: Omit<MealNameParts, 'base'>; /** The app wrote the amount into the name, so a new amount rewrites it. */ appNamed: boolean; linked: boolean };
+
+/**
+ * How the edit screen opens a meal. It follows its food only while its numbers still match that food at the stored
+ * amount (an AI or manual edit breaks that); otherwise the amount is read off the name ("× 3", ", 200 g", ", 1 plate",
+ * "2 rotis"), which wins over a stored weight that may be stale, then the stored weight, then a plain ×1 multiplier.
+ */
+export function openMealAmount(m: { name: string; kcal: number; grams?: number }, f?: Food): MealAmount {
+  const { base, ...parts } = splitMealName(m.name);
+  if (f) {
+    const a = guessAmount(f, m);
+    const exp = scaleFood(f, amountOf(a.unit, a.qty));
+    if (exp && Math.abs(exp.kcal - m.kcal) <= Math.max(3, m.kcal * 0.03)) {
+      // "Milk, 200 ml" is the app's name for Milk; "Milk tea, 200 ml" is the user's own and keeps its base.
+      const rest = m.name.startsWith(f.name) ? m.name.slice(f.name.length) : null;
+      const app = rest != null && /^(\s*×\s*\d+(\.\d+)?(\s*\(\d+(\.\d+)?\s*(g|ml)\))?|,\s*\d+(\.\d+)?\s*(g|ml))?$/i.test(rest);
+      const named = app || parts.kind === 'x' || parts.kind === 'weight';
+      return { name: app ? f.name : named ? base : m.name, unit: a.unit, qty: a.qty, parts, appNamed: named, linked: true };
+    }
+  }
+  if (parts.qty && (parts.kind === 'count' || parts.kind === 'lead' || parts.kind === 'x')) return { name: base, unit: 'portion', qty: parts.qty, parts, appNamed: false, linked: false };
+  if (parts.kind === 'weight' && parts.qty) return { name: base, unit: 'grams', qty: parts.qty, parts, appNamed: false, linked: false };
+  return { name: m.name, unit: m.grams ? 'grams' : 'portion', qty: m.grams ?? 1, parts: { kind: 'none', unit: parts.unit }, appNamed: false, linked: false };
+}
+
+/**
+ * The name to save after editing. Untouched, it is the original, character for character; a rename swaps only the
+ * food's part and keeps the amount as it was written; a new amount is written back in the name's own style.
+ */
+export function savedMealName(orig: string, o: MealAmount, now: { name: string; unit: string; qty: number; amountChanged: boolean }, f?: Food): string {
+  const b = now.name.trim() || o.name;
+  if (!now.amountChanged) return b === o.name ? orig : orig.replace(o.name, () => b);
+  if (o.linked && f) {
+    const m = o.appNamed ? scaleFood(f, amountOf(now.unit, now.qty)) : null;
+    return m ? `${b}${m.name.slice(f.name.length)}` : b;
+  }
+  if (now.unit === 'grams') return o.parts.kind === 'weight' ? joinMealName(b, { kind: 'weight', qty: now.qty, unit: o.parts.unit }) : b;
+  return joinMealName(b, { ...o.parts, qty: now.qty, grams: o.parts.grams ? (o.parts.grams * now.qty) / o.qty : undefined });
+}
+
 /**
  * Values for one piece/pack → per 100 g (or ml), with the piece kept as the first serving,
  * so a food logs both ways: "2 parathas" gives exactly the piece's numbers, "120 g" works too.

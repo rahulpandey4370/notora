@@ -6,7 +6,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Sparkles, Lightbulb } from 'lucide-react';
 import { differenceInCalendarDays, format, parseISO } from 'date-fns';
 import type { AppData } from '@/lib/types';
-import { useModelStore } from '@/hooks/use-model-store';
+import { useModelFor } from '@/hooks/use-model-store';
 import { suggestNextActions } from '@/ai/flows/next-actions';
 
 interface SmartEmptyStateProps {
@@ -25,7 +25,7 @@ export default function SmartEmptyState({ surface, data, message }: SmartEmptySt
   const [nudges, setNudges] = useState<{ text: string }[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { selectedModel } = useModelStore();
+  const selectedModel = useModelFor('tasks');
 
   // Everything the nudge flow reasons about is computed locally first, so the
   // model only ever sees a small, already-relevant summary.

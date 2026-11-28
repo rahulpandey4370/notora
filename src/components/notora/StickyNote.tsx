@@ -18,7 +18,7 @@ import { Input } from '../ui/input';
 import { cn } from '@/lib/utils';
 import { generateNoteTitle } from '@/ai/flows/generate-note-title';
 import { SparkleIcon } from './SparkleIcon';
-import { useModelStore } from '@/hooks/use-model-store';
+import { useModelFor } from '@/hooks/use-model-store';
 import { useToast } from '@/hooks/use-toast';
 
 interface StickyNoteProps {
@@ -51,7 +51,7 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState(note.content);
   const [editedTitle, setEditedTitle] = useState(note.title || '');
-  const { selectedModel } = useModelStore();
+  const selectedModel = useModelFor('notes');
   const { toast } = useToast();
 
   const x = useMotionValue(note.position.x);

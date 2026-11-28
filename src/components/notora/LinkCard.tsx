@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import type { SavedLink } from '@/lib/types';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -49,11 +49,23 @@ export default function LinkCard({ link, onDelete, onUpdate }: LinkCardProps) {
 
     const videoId = getYouTubeVideoId(link.url);
 
+    // The link as it was when Edit was pressed. Save sends only the fields changed since, so a field the user left
+    // alone can't write an old value (the "Analyzing…" placeholder, say) over what the AI filled in meanwhile.
+    const seed = useRef(link);
+    const startEditing = () => {
+        seed.current = link;
+        setEditedTitle(link.title);
+        setEditedSummary(link.summary);
+        setEditedCategory(link.category);
+        setIsEditing(true);
+    };
+
     const handleSave = () => {
+        const was = seed.current;
         onUpdate(link.id, {
-            title: editedTitle,
-            summary: editedSummary,
-            category: editedCategory,
+            ...(editedTitle !== was.title ? { title: editedTitle } : {}),
+            ...(editedSummary !== was.summary ? { summary: editedSummary } : {}),
+            ...(editedCategory !== was.category ? { category: editedCategory } : {}),
         });
         setIsEditing(false);
     };
@@ -133,7 +145,7 @@ export default function LinkCard({ link, onDelete, onUpdate }: LinkCardProps) {
                             </>
                         ) : (
                             <>
-                                <Button variant="ghost" size="icon" onClick={() => setIsEditing(true)} className="text-muted-foreground hover:text-foreground rounded-full" aria-label={`Edit ${link.title || 'link'}`}>
+                                <Button variant="ghost" size="icon" onClick={startEditing} className="text-muted-foreground hover:text-foreground rounded-full" aria-label={`Edit ${link.title || 'link'}`}>
                                     <Edit className="h-4 w-4" />
                                 </Button>
                                 <Button variant="ghost" size="icon" onClick={() => onDelete(link.id)} className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-full" aria-label={`Delete ${link.title || 'link'}`}>

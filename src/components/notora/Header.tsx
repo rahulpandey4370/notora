@@ -19,10 +19,12 @@ import { useModelStore } from '@/hooks/use-model-store';
 interface HeaderProps {
   user: User | null;
   tasks: Task[];
+  /** The workspace `tasks` came from is there (false while it loads: an empty list would read as "nothing done"). */
+  loaded: boolean;
   userStats: UserStats;
 }
 
-export default function Header({ user, tasks, userStats }: HeaderProps) {
+export default function Header({ user, tasks, loaded, userStats }: HeaderProps) {
   const [summaryOpen, setSummaryOpen] = useState(false);
   const [weeklyOpen, setWeeklyOpen] = useState(false);
   const { data: appData } = useApp();
@@ -58,7 +60,7 @@ export default function Header({ user, tasks, userStats }: HeaderProps) {
         {user && <UserProfile user={user} userStats={userStats} onDayEnd={() => setSummaryOpen(true)} onWeekly={() => setWeeklyOpen(true)} />}
       </div>
       <WeeklyReviewDialog open={weeklyOpen} onOpenChange={setWeeklyOpen} data={appData} />
-      <DayEndSummaryDialog open={summaryOpen} onOpenChange={setSummaryOpen} tasks={tasks} />
+      <DayEndSummaryDialog open={summaryOpen} onOpenChange={setSummaryOpen} tasks={tasks} loaded={loaded} />
     </header>
   );
 }

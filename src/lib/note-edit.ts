@@ -8,11 +8,11 @@ const same = (a: NoteText, b: NoteText) => a.title === b.title && a.content === 
 /**
  * What to do with an AI reply about a note. `sent` is the text when the AI was asked; `now` is the text on screen
  * when the reply lands (null once the note is gone); `writes` is the field the reply replaces. Typing wins: a reply
- * is dropped if the content it was made from has changed, or if it would replace something typed meanwhile.
+ * is dropped if the field it would replace was changed meanwhile. A change to the other field loses nothing.
  */
 export function aiReplyFate(sent: NoteText, now: NoteText | null, writes: keyof NoteText): 'apply' | 'typed' | 'gone' {
   if (!now) return 'gone';
-  return now.content === sent.content && now[writes] === sent[writes] ? 'apply' : 'typed';
+  return now[writes] === sent[writes] ? 'apply' : 'typed';
 }
 
 /**

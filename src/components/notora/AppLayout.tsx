@@ -52,6 +52,7 @@ export default function AppLayout({ children, data: dataFromProp }: AppLayoutPro
              <Header 
                 user={user} 
                 tasks={tasks} 
+                loaded={!!data}
                 userStats={userStats}
             />
             {/* The dock is fixed at bottom-5 (20px) and is h-16 (64px) tall, so it

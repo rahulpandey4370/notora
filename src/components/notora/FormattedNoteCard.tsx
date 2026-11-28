@@ -95,9 +95,9 @@ export default function FormattedNoteCard({ note, noteNumber, onNoteChange, onNo
     }
   }, [isEditing, editedContent]);
 
-  const handleCancelEditing = () => {
-    setEditedTitle(note.title || '');
-    setEditedContent(note.content);
+  /** "Done": leave edit mode keeping what was typed (anything autosave hasn't written yet is saved now). */
+  const handleDoneEditing = () => {
+    handleSave();
     setIsEditing(false);
   };
   
@@ -229,7 +229,7 @@ export default function FormattedNoteCard({ note, noteNumber, onNoteChange, onNo
               />
               <div className="flex justify-end gap-2">
                 <MicButton className="mr-auto" onText={t => setEditedContent(p => appendSpeech(p, t))} />
-                <Button variant="ghost" onClick={(e) => { e.stopPropagation(); handleCancelEditing(); }}>Done</Button>
+                <Button variant="ghost" onClick={(e) => { e.stopPropagation(); handleDoneEditing(); }}>Done</Button>
               </div>
             </div>
           ) : (

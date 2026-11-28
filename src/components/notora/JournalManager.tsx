@@ -135,22 +135,25 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
   const aiReflection = coach.value;
   const [activeTagFilter, setActiveTagFilter] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [aiLoading, setAiLoading] = useState<'format' | 'summarize' | null>(null);
+  // Format / AI Summary requests that are out, by entry id: the day on screen shows its own, and a reply is saved to
+  // its own entry whichever day is on screen by then.
+  const [aiBusy, setAiBusy] = useState<Record<string, 'format' | 'summarize'>>({});
   const [mobileTab, setMobileTab] = useState('journal');
   // Saves can land after a re-render (autosave timer, unmount flush, AI calls): always write onto the latest data.
   const latestData = useRef(data);
   latestData.current = data;
   const latestEditing = useRef(isEditing);
   latestEditing.current = isEditing;
-  // Format / AI Summary: one at a time, for the day on screen. Only the reply to the latest request counts; a day
-  // change, a delete or leaving the page makes it stale (dropEntryAi), so it is neither saved nor left spinning.
-  const entryAiReq = useRef(0);
-  const dropEntryAi = () => { entryAiReq.current++; setAiLoading(null); };
+  // Once the page is gone latestData stops updating, so a late Format / AI Summary reply would save an old copy.
+  const alive = useRef(true);
+  useEffect(() => { alive.current = true; return () => { alive.current = false; }; }, []);
 
   const { toast } = useToast();
   const selectedModel = useModelFor('journal');
   const isMobile = useIsMobile();
   const dateKey = toYmd(selectedDate);
+  const latestDateKey = useRef(dateKey);
+  latestDateKey.current = dateKey;
   
   const filteredEntries = useMemo(() => {
     let entries = initialJournalEntries;
@@ -170,14 +173,12 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
   const todaysEntry = useMemo(() => {
     return initialJournalEntries.find(entry => isSameDay(parseISO(entry.date), selectedDate));
   }, [initialJournalEntries, selectedDate]);
+  const aiLoading = (todaysEntry && aiBusy[todaysEntry.id]) || null;
 
   // Open/close only when the day changes: an autosave updating the entry must not close the editor.
   useEffect(() => {
     setIsEditing(!todaysEntry);
     coach.reset();
-    setAiLoading(null);
-    // Leaving the day (or the page, after which latestData is no longer the latest) orphans a Format / AI Summary reply.
-    return () => { entryAiReq.current++; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dateKey]);
 
@@ -242,7 +243,6 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
     });
     
     coach.reset();
-    dropEntryAi(); // a Format reply must not write the deleted entry back
     setIsEditing(true);
   };
   
@@ -260,31 +260,33 @@ export default function JournalManager({ journalEntries: initialJournalEntries, 
   }
 
   /**
-   * Run Format / AI Summary on the day's entry and save the result, unless the reply is no longer current (dropped
-   * silently) or the user started editing the entry meanwhile (typing wins: dropped, and `kept` says so).
+   * Run Format / AI Summary on the day's entry and save the result to that entry, unless the page was left or the
+   * entry deleted meanwhile (dropped silently) or its text was changed (typing wins: dropped, and `kept` says so).
+   * Changing the day while it runs is fine: the result is saved to the day it was asked for.
    */
   const runEntryAi = async (kind: 'format' | 'summarize', work: (content: string) => Promise<{ changes: Partial<JournalEntry>; done: Parameters<typeof toast>[0] }>, kept: string, failed: string) => {
-    if (!todaysEntry?.content) return;
+    if (!todaysEntry?.content || aiBusy[todaysEntry.id]) return;
     const { id, content } = todaysEntry;
-    const req = ++entryAiReq.current;
-    setAiLoading(kind);
+    const day = selectedDate, dayKey = dateKey;
+    setAiBusy(busy => ({ ...busy, [id]: kind }));
     try {
         const { changes, done } = await work(content);
         const stored = (latestData.current.journalEntries || []).find(entry => entry.id === id)?.content;
-        const fate = aiReplyFate({ current: req === entryAiReq.current, sent: content, stored, editing: latestEditing.current });
+        const editing = latestEditing.current && latestDateKey.current === dayKey;
+        const fate = aiReplyFate({ current: alive.current, sent: content, stored, editing, writesText: kind === 'format' });
         if (fate === 'stale') return;
         if (fate === 'edited') {
-            toast({ title: kept, description: 'You started editing this entry while the AI was working, so your text was kept.' });
+            toast({ title: kept, description: 'You changed this entry while the AI was working, so your text was kept.' });
             return;
         }
-        handleSave(changes);
+        handleSave(changes, day);
         toast(done);
     } catch(e) {
-        if (req !== entryAiReq.current) return;
+        if (!alive.current) return;
         console.error(e);
         toast({ variant: 'destructive', title: failed });
     } finally {
-        if (req === entryAiReq.current) setAiLoading(null);
+        if (alive.current) setAiBusy(({ [id]: _done, ...rest }) => rest);
     }
   }
 

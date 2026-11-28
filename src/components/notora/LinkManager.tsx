@@ -16,7 +16,7 @@ import LinkCard from './LinkCard';
 import { motion } from 'framer-motion';
 import { useModelFor } from '@/hooks/use-model-store';
 import { useAsk } from '@/hooks/use-ask';
-import { ANALYZING, analysisFate, linkAnalysis } from '@/lib/link-analysis';
+import { ANALYZING, PLACEHOLDER_CATEGORY, analysisPatch, hostOf, linkAnalysis, type AnalysisFound } from '@/lib/link-analysis';
 
 interface LinkManagerProps {
   savedLinks: SavedLink[];
@@ -62,18 +62,16 @@ export default function LinkManager({ savedLinks, data, onDataChange }: LinkMana
     // Show it straight away; the AI fills in title, summary and category behind it.
     const url = newUrl.trim();
     const id = uuidv4();
-    const host = (() => { try { return new URL(url).hostname.replace(/^www\./, ''); } catch { return url; } })();
-    const placeholder: SavedLink = { id, url, title: host, summary: ANALYZING, category: 'Other', dateAdded: new Date().toISOString() };
+    const placeholder: SavedLink = { id, url, title: hostOf(url), summary: ANALYZING, category: PLACEHOLDER_CATEGORY, dateAdded: new Date().toISOString() };
     onDataChange({ ...data, savedLinks: [placeholder, ...(data.savedLinks || [])] });
     setNewUrl('');
     void analyze(placeholder);
   };
 
-  /** Ask the AI about a link that is saved as analyzing (`started`: the link as it is when the request goes out). */
-  const analyze = async (started: SavedLink) => {
-    const { id, url } = started;
+  /** Ask the AI about a link that is saved as analyzing, and fill in whatever the user hasn't set by then. */
+  const analyze = async ({ id, url }: SavedLink) => {
     setRunning(r => [...r, id]);
-    let found: Partial<SavedLink> | null = null;
+    let found: AnalysisFound | null = null;
     try {
       const result = await analyzeLink({ url }, selectedModel);
       found = { title: result.title, summary: result.summary, category: result.category, model: result.modelId };
@@ -82,20 +80,18 @@ export default function LinkManager({ savedLinks, data, onDataChange }: LinkMana
     }
     if (!alive.current) return; // the screen was left: the link stays saved as analyzing and offers a retry next time
     setRunning(r => r.filter(x => x !== id));
-    // Patch only this link in whatever the data is by then (other edits made meanwhile are kept).
+    // Patch only this link in whatever the data is by then (other edits made meanwhile are kept), and in it only the
+    // fields the user hasn't set: typing wins, but the link never stays on "Analyzing…" (lib/link-analysis).
     const { data: cur, onDataChange: save } = latest.current;
-    const fate = analysisFate(started, (cur.savedLinks || []).find(l => l.id === id));
-    if (fate === 'gone') return; // deleted meanwhile
-    if (fate === 'edited') {
-      // Typing wins: the user's title, notes or category are not overwritten.
-      if (found) toast({ title: 'Kept your edits', description: 'You changed this link while it was being analyzed, so the AI’s details weren’t applied.' });
-      return;
+    const hit = analysisPatch((cur.savedLinks || []).find(l => l.id === id), found);
+    if (!hit) return; // deleted meanwhile, or nothing left to fill
+    if (Object.keys(hit.patch).length) {
+      const next = { ...cur, savedLinks: (cur.savedLinks || []).map(l => (l.id === id ? { ...l, ...hit.patch } : l)) };
+      latest.current = { data: next, onDataChange: save }; // a second reply before the re-render builds on this one
+      save(next);
     }
-    const patch = found ?? { summary: 'Couldn’t analyze this link. It’s saved; tap edit to add a title and notes.' };
-    const next = { ...cur, savedLinks: (cur.savedLinks || []).map(l => (l.id === id ? { ...l, ...patch } : l)) };
-    latest.current = { data: next, onDataChange: save }; // a second reply before the re-render builds on this one
-    save(next);
     if (!found) toast({ variant: 'destructive', title: 'Saved, but not analyzed', description: 'The link is in your list. Tap edit to add details, or try adding it again later.' });
+    else if (hit.kept) toast({ title: 'Kept your edits', description: 'You changed this link while it was being analyzed, so the AI filled in only the rest.' });
   };
 
   // Saved as analyzing with nothing running: the tab was closed or the page left mid-analysis.

@@ -68,7 +68,9 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
   const now = useRef({ text: saved, editing: isEditing, onChange });
   now.current = { text: isEditing ? { title: editedTitle, content: editedContent } : saved, editing: isEditing, onChange };
   const gone = useRef(false); // the note is off the screen (deleted, or another board or view)
-  useEffect(() => { gone.current = false; return () => { gone.current = true; }; }, []);
+  const dropUndo = useRef<(() => void) | null>(null); // takes down the "Changes discarded · Undo" toast
+  // Off the screen, `now` stops updating: an Undo pressed then would save an old copy of everything. So the toast goes too.
+  useEffect(() => { gone.current = false; return () => { gone.current = true; dropUndo.current?.(); }; }, []);
   const editStart = useRef(saved); // the note as it was when editing started: what Cancel restores
 
   const handleSave = useCallback(() => {
@@ -147,7 +149,7 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
     } catch (error) {
         if (gone.current) return;
         console.error(`Failed to ${operation} note:`, error);
-        toast({ variant: 'destructive', title: 'AI action failed', description: `Couldn't ${operation === 'title' ? 'generate a title' : operation} this note. Try again.` });
+        toast({ variant: 'destructive', title: 'AI action failed', description: `Couldn't ${operation === 'title' ? 'generate a title for' : operation} this note. Try again.` });
     } finally {
         setAiLoading(null);
     }
@@ -184,8 +186,14 @@ export default function StickyNote({ note, onChange, onDelete, onStopDrag, const
       setEditedContent(start.content);
       setIsEditing(false);
       if (discarded.title !== start.title || discarded.content !== start.content) {
-        toast({ title: 'Changes discarded', description: 'The note is back to how it was before you started editing.',
-          action: <ToastAction altText="Undo discard" onClick={() => now.current.onChange(note.id, discarded)}>Undo</ToastAction> });
+        const undo = () => {
+          if (gone.current) return;
+          now.current.onChange(note.id, discarded);
+          // Editing again already: show the text that came back, or autosave would write the other one over it.
+          if (now.current.editing) { setEditedTitle(discarded.title); setEditedContent(discarded.content); }
+        };
+        dropUndo.current = toast({ title: 'Changes discarded', description: 'The note is back to how it was before you started editing.',
+          action: <ToastAction altText="Undo discard" onClick={undo}>Undo</ToastAction> }).dismiss;
       }
   }
   

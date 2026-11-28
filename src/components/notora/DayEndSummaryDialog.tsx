@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -18,11 +18,14 @@ import { Skeleton } from '../ui/skeleton';
 import { format } from 'date-fns';
 import { useModelFor } from '@/hooks/use-model-store';
 import { useAsk } from '@/hooks/use-ask';
+import { dayEndInput } from '@/lib/review-input';
 
 interface DayEndSummaryDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   tasks: Task[];
+  /** The workspace is there. Until then the dialog waits: an empty list would read as "nothing done today". */
+  loaded: boolean;
 }
 
 const showNotification = (title: string, options: NotificationOptions) => {
@@ -41,24 +44,25 @@ const showNotification = (title: string, options: NotificationOptions) => {
 // Shown, and sent as the notification, when the AI fails: there is no summary then, only this.
 const FALLBACK_QUOTE = 'Every moment is a fresh beginning. - T.S. Eliot';
 
-export default function DayEndSummaryDialog({ open, onOpenChange, tasks }: DayEndSummaryDialogProps) {
-  // lib/ask: idle (not opened yet) → pending → ready | failed. One run per open.
+export default function DayEndSummaryDialog({ open, onOpenChange, tasks, loaded }: DayEndSummaryDialogProps) {
+  // lib/ask: idle (not opened yet, or waiting for the workspace) → pending → ready | failed.
   const sum = useAsk<DayEndSummaryOutput>();
   const selectedModel = useModelFor('summaries');
   const loading = sum.pending || sum.state.state === 'idle';
   const quote = sum.error ? FALLBACK_QUOTE : sum.value?.motivationalQuote ?? '';
 
-  // Depends on `open` only: the tasks and model are read once, as they are when the dialog opens. A task ticked (or
-  // any other save) while it is open must not ask the AI again or send a second notification.
+  // Today's ticked tasks (lib/review-input), null while closed or not loaded. The AI is asked when this is first
+  // there and again only if it changes: a save that ticks nothing asks nothing and sends no second notification,
+  // while fresher data arriving a moment after opening (a reload, the server copy) corrects the summary.
+  const completedTasks = useMemo(
+    () => (open ? dayEndInput(loaded ? tasks : undefined, format(new Date(), 'yyyy-MM-dd')) : null),
+    [open, loaded, tasks],
+  );
+  const key = completedTasks ? JSON.stringify(completedTasks) : '';
   useEffect(() => {
-    if (!open) { if (sum.pending) sum.reset(); return; } // closed: a reply still on its way is dropped
-    let live = true; // false once closed, so a dropped reply sends no notification either
+    if (!completedTasks) { if (sum.pending) sum.reset(); return; } // closed: a reply still on its way is dropped
+    let live = true; // false once closed or superseded, so a dropped reply sends no notification either
     const notify = (body: string) => { if (live) showNotification("Today's Wrap-Up", { body }); };
-
-    const todayStr = format(new Date(), 'yyyy-MM-dd');
-    const completedTasks = tasks
-      .filter((task) => (task.completions || []).includes(todayStr))
-      .map((task) => task.title);
 
     if (completedTasks.length === 0) {
       const defaultSummary = "You didn't complete any tasks today. Let's aim to get at least one done tomorrow!";
@@ -72,7 +76,7 @@ export default function DayEndSummaryDialog({ open, onOpenChange, tasks }: DayEn
       }).then((result) => notify(result?.motivationalQuote ?? FALLBACK_QUOTE));
     }
     return () => { live = false; };
-  }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [key]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

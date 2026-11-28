@@ -19,15 +19,29 @@ export function linkAnalysis(link: Pick<SavedLink, 'id' | 'summary'>, running: r
   return running.includes(link.id) ? 'running' : 'stalled';
 }
 
-export type AnalysisFate =
-  | 'apply'
-  /** Deleted meanwhile. */
-  | 'gone'
-  /** The user edited the link while the AI worked: typing wins, the reply is dropped. */
-  | 'edited';
+/** The title a link is saved with while the AI reads it: its host. */
+export const hostOf = (url: string) => { try { return new URL(url).hostname.replace(/^www\./, ''); } catch { return url; } };
+/** The category a link is saved with while the AI reads it. */
+export const PLACEHOLDER_CATEGORY: SavedLink['category'] = 'Other';
+/** The summary a link gets when the AI couldn't read it. */
+export const ANALYSIS_FAILED = 'Couldn’t analyze this link. It’s saved; tap edit to add a title and notes.';
 
-/** What to do with an analysis reply: `started` is the link when the request went out, `now` is what's stored. */
-export function analysisFate(started: SavedLink, now: SavedLink | undefined): AnalysisFate {
-  if (!now) return 'gone';
-  return now.title !== started.title || now.summary !== started.summary || now.category !== started.category ? 'edited' : 'apply';
+export type AnalysisFound = Pick<SavedLink, 'title' | 'summary' | 'category'> & Pick<Partial<SavedLink>, 'model'>;
+
+/**
+ * What an analysis reply changes in the stored link (`now`), field by field: a field still holding its placeholder
+ * takes the AI's value, one the user has set meanwhile is kept (`kept` says some were). `found` is null when the
+ * analysis failed: then only a placeholder summary is replaced, so the link never stays "Analyzing…".
+ * null: the link was deleted, or there is nothing to do.
+ */
+export function analysisPatch(now: SavedLink | undefined, found: AnalysisFound | null): { patch: Partial<SavedLink>; kept: boolean } | null {
+  if (!now) return null;
+  if (!found) return isAnalyzing(now) ? { patch: { summary: ANALYSIS_FAILED }, kept: false } : null;
+  const patch: Partial<SavedLink> = {};
+  if (now.title === hostOf(now.url)) patch.title = found.title;
+  if (isAnalyzing(now)) patch.summary = found.summary;
+  if (now.category === PLACEHOLDER_CATEGORY) patch.category = found.category;
+  const filled = Object.keys(patch).length;
+  if (filled && found.model !== undefined) patch.model = found.model;
+  return { patch, kept: filled < 3 };
 }

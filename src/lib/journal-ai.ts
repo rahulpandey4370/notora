@@ -2,23 +2,25 @@
 // `npx tsx src/lib/journal-ai.check.ts`. Used by components/notora/JournalManager.
 
 export type AiReplyFate =
-  /** Save it. */
+  /** Save it (to the entry's own day, whichever day is on screen by then). */
   | 'apply'
-  /** The request is no longer the current one (day changed, entry deleted, page left): drop it silently. */
+  /** The page was left or the entry was deleted: drop it silently. */
   | 'stale'
   /** The user changed the text meanwhile: typing wins, drop it and say so. */
   | 'edited';
 
 export function aiReplyFate(a: {
-  /** Still the latest request for the day on screen. */
+  /** The journal page is still on screen (after it has gone, nothing can be saved safely). */
   current: boolean;
   /** The entry text the AI was given. */
   sent: string;
   /** The entry text stored now; undefined when the entry is gone. */
   stored: string | undefined;
-  /** The editor is open on the entry: its draft may hold typing that isn't stored yet. */
+  /** The editor is open on this entry: its draft may hold typing that isn't stored yet. */
   editing: boolean;
+  /** The reply replaces the entry text (Format). A summary doesn't, so an open editor is not in its way. */
+  writesText: boolean;
 }): AiReplyFate {
   if (!a.current || a.stored === undefined) return 'stale';
-  return a.editing || a.stored !== a.sent ? 'edited' : 'apply';
+  return a.stored !== a.sent || (a.editing && a.writesText) ? 'edited' : 'apply';
 }

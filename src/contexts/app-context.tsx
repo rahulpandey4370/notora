@@ -10,6 +10,7 @@ import { clearDeviceCache, readCache, writeCache } from '@/lib/device-cache';
 import type { AppData } from '@/lib/types';
 import { v4 as uuidv4 } from 'uuid';
 import { useToast } from '@/hooks/use-toast';
+import { accountLeft, canSave, NEW_SYNC, saveStatus, syncStep, type SaveStatus, type SyncCmd, type SyncEvent, type SyncState } from '@/lib/sync-engine';
 
 const defaultAppData: AppData = {
   tasks: [],
@@ -39,7 +40,7 @@ const defaultAppData: AppData = {
   taskTemplateBundles: [],
 };
 
-type SaveState = 'idle' | 'saving' | 'saved' | 'error';
+type SaveState = SaveStatus;
 
 interface AppContextType {
   data: AppData | null;
@@ -113,16 +114,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [saveState, setSaveState] = useState<SaveState>('idle');
   const { toast } = useToast();
 
-  // Server version (updated_at) the on-screen data is based on; every save is
-  // conditional on it so a stale device can't overwrite newer edits. null while
-  // showing the device cache: nothing is saved until the server confirms it.
-  const version = useRef<string | null>(null);
-  const cachedVersion = useRef<string | null>(null);
+  // The sync engine (lib/sync-engine): one state object for what the screen is based on, what is unsaved and how the
+  // last load and save went. It lives in a ref because the async code below must read it the moment it changes, and
+  // it changes only through `send`. The save indicator is derived from it, never set by hand.
+  const sync = useRef<SyncState<AppData>>(NEW_SYNC);
+  const send = useCallback((e: SyncEvent<AppData>): SyncCmd[] => {
+    const { state, cmds } = syncStep(sync.current, e);
+    sync.current = state;
+    setSaveState(saveStatus(state));
+    return cmds;
+  }, []);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const pendingData = useRef<AppData | null>(null);
-  const inFlight = useRef<Promise<void> | null>(null);
-  const holds = useRef(0); // >0 while the server itself is writing (chat Confirm): saves wait
-  const hasData = useRef(false);
+  const inFlight = useRef<Promise<void> | null>(null); // the save request that is out: the next one waits for it
   const logoutRef = useRef(logout);
   logoutRef.current = logout;
 
@@ -138,58 +141,55 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const loadData = useCallback(async (opts: { quiet?: boolean } = {}) => {
     if (!username) return;
+    const epoch = sync.current.epoch; // a sign-out while this is out makes its reply another account's: dropped
     // First open on this device: paint the cached copy now, refresh behind it.
-    if (!hasData.current) {
+    if (!sync.current.hasData) {
       const cached = readCache(username);
       if (cached) {
-        cachedVersion.current = cached.version;
-        hasData.current = true;
+        send({ type: 'cacheShown', version: cached.version });
         setData(normalize(cached.data));
         setLoading(false);
       }
     }
-    if (!opts.quiet && !hasData.current) setLoading(true);
+    if (!opts.quiet && !sync.current.hasData) setLoading(true);
     setLoadFailed(false);
+    send({ type: 'loadStarted' });
     try {
       const stored = (await api<Stored | null>({ op: 'load' })) ?? (await api<Stored>({ op: 'create', data: freshDefaults() }));
-      const base = version.current ?? cachedVersion.current;
-      if (stored.version === base) {
-        // Workspace unchanged elsewhere. Fitbit data lives in its own table and is merged in on
-        // load without bumping the version, so take the server copy when nothing is unsaved.
-        // With edits pending, keep them; the next load brings the Fitbit numbers.
-        version.current = stored.version;
-        if (pendingData.current) void flushSave();
-        else if (!inFlight.current) { // a save still landing would otherwise be rolled back on screen
+      if (sync.current.epoch !== epoch) return;
+      // The engine decides what a finished load means (same version or changed elsewhere, edits pending or not).
+      for (const cmd of send({ type: 'loaded', version: stored.version, epoch })) {
+        if (cmd === 'flush') void flushSave();
+        else if (cmd === 'refresh') {
           const next = normalize(stored.data);
           // ponytail: whole-document JSON compare (~350 KB) to skip a no-op re-render. After a local edit jsonb key
           // order can differ, costing one harmless extra re-render; add a server health stamp if it shows up in profiles.
           setData(prev => (JSON.stringify(prev) === JSON.stringify(next) ? prev : next));
-        }
-      } else {
-        if (pendingData.current) {
-          // Changed on another device while this one had unsaved edits: the server copy wins.
-          pendingData.current = null;
+        } else if (cmd === 'tellChangedElsewhere') {
           toast({ variant: 'destructive', title: 'Updated on another device', description: 'Your workspace changed elsewhere, so it has been refreshed. Your last edit here was not saved; please redo it.' });
-        }
-        version.current = stored.version;
-        setData(normalize(stored.data));
+        } else if (cmd === 'replace') setData(normalize(stored.data));
       }
-      cachedVersion.current = null;
-      hasData.current = true;
       writeCache(username, stored);
     } catch (err) {
-      if (!hasData.current) setLoadFailed(true); // nothing on screen to fall back on
+      if (sync.current.epoch !== epoch) return;
+      send({ type: 'loadFailed', epoch });
+      if (!sync.current.hasData) setLoadFailed(true); // nothing on screen to fall back on
       reportError(err, "Couldn't load your workspace");
     } finally {
-      setLoading(false);
+      if (sync.current.epoch === epoch) setLoading(false);
     }
-  }, [username, reportError, toast]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [username, reportError, toast, send]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const lastUser = useRef<string | null>(null);
   useEffect(() => {
     if (authLoading) return;
+    // The account left (signed out, or another one logged in over it): nothing unsaved, cached or in flight carries
+    // over, and its workspace leaves the screen before the next one loads.
+    if (accountLeft(lastUser.current, username)) { send({ type: 'signedOut' }); setData(null); setLoadFailed(false); }
+    lastUser.current = username;
     if (username) void loadData();
-    else { setLoading(false); setLoadFailed(false); setData(null); hasData.current = false; version.current = null; }
-  }, [username, authLoading, loadData]);
+    else { setLoading(false); setLoadFailed(false); setData(null); send({ type: 'signedOut' }); }
+  }, [username, authLoading, loadData, send]);
 
   /**
    * Persist state: debounced (a burst of edits = one write), serialised (a
@@ -198,47 +198,49 @@ export function AppProvider({ children }: { children: ReactNode }) {
    */
   const flushSave = useCallback(async (): Promise<void> => {
     if (inFlight.current) { await inFlight.current; }
-    if (!username || !pendingData.current || !version.current || holds.current > 0) return;
-    const payload = pendingData.current;
-    pendingData.current = null;
+    if (!username || !canSave(sync.current)) return;
+    const epoch = sync.current.epoch;
+    const payload = sync.current.pending!;
+    const base = sync.current.version;
+    send({ type: 'saveStarted' });
     const run = (async () => {
-      setSaveState('saving');
       try {
-        const result = await api<{ ok: true; version: string } | { ok: false; conflict: true }>({ op: 'save', data: payload, version: version.current });
+        const result = await api<{ ok: true; version: string } | { ok: false; conflict: true }>({ op: 'save', data: payload, version: base });
+        // Signed out while it was out: the reply belongs to that account. It must not touch this one's state,
+        // re-queue its edit here, or re-create its device cache.
+        if (sync.current.epoch !== epoch) return;
         if (result.ok) {
-          version.current = result.version;
+          send({ type: 'saveSucceeded', version: result.version, epoch });
           writeCache(username, { data: payload, version: result.version });
-          setSaveState(pendingData.current ? 'saving' : 'saved');
         } else {
-          setSaveState('error');
-          toast({
-            variant: 'destructive',
-            title: 'Updated on another device',
-            description: 'Your workspace changed elsewhere, so it has been reloaded. Your last edit here was not saved; please redo it.',
-          });
-          pendingData.current = null;
-          version.current = null; // so the reload replaces the screen
-          await loadData({ quiet: true });
+          for (const cmd of send({ type: 'saveConflicted', epoch })) {
+            if (cmd === 'tellConflict') {
+              toast({
+                variant: 'destructive',
+                title: 'Updated on another device',
+                description: 'Your workspace changed elsewhere, so it has been reloaded. Your last edit here was not saved; please redo it.',
+              });
+            } else if (cmd === 'reload') await loadData({ quiet: true });
+          }
         }
       } catch (err: any) {
-        setSaveState('error');
-        // Keep the edit queued so the next change or a refocus retries it.
-        pendingData.current = pendingData.current ?? payload;
+        if (sync.current.epoch !== epoch) return;
+        // The engine keeps the edit queued so the next change or a refocus retries it.
+        send({ type: 'saveFailed', payload, epoch });
         reportError(err, "Changes couldn't be saved");
       }
     })();
     inFlight.current = run;
     try { await run; } finally { if (inFlight.current === run) inFlight.current = null; }
-  }, [username, toast, loadData, reportError]);
+  }, [username, toast, loadData, reportError, send]);
 
   const handleDataChange = useCallback((newData: AppData) => {
     if (!username) return;
     setData(newData);
-    pendingData.current = newData;
-    setSaveState('saving');
+    send({ type: 'edited', data: newData });
     if (saveTimer.current) clearTimeout(saveTimer.current);
     saveTimer.current = setTimeout(() => { void flushSave(); }, 600);
-  }, [username, flushSave]);
+  }, [username, flushSave, send]);
 
   /** Write any pending edit now (before something else writes on the server). */
   const flushNow = useCallback(async () => {
@@ -260,7 +262,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (!username) return;
     const onVisible = () => {
       if (document.visibilityState !== 'visible') return;
-      if (pendingData.current && version.current) { void flushNow(); return; }
+      if (sync.current.pending && sync.current.version) { void flushNow(); return; }
       if (!inFlight.current) void loadData({ quiet: true });
     };
     document.addEventListener('visibilitychange', onVisible);
@@ -278,10 +280,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
    */
   const serverWrite = useCallback(async <T,>(fn: () => Promise<T>): Promise<T> => {
     await flushNow();
-    holds.current++;
+    send({ type: 'held' });
     try { return await fn(); }
-    finally { await loadData({ quiet: true }); holds.current--; if (pendingData.current) void flushSave(); }
-  }, [flushNow, loadData, flushSave]);
+    finally { await loadData({ quiet: true }); send({ type: 'released' }); if (sync.current.pending) void flushSave(); }
+  }, [flushNow, loadData, flushSave, send]);
 
   // Don't let a debounced write get dropped by a tab close / navigation.
   useEffect(() => {

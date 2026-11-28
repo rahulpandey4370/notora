@@ -45,7 +45,16 @@ Each bug is marked **(R)** if the surveyor read the code that causes it, **(I)**
 
 Each has a check script in `src/lib` (`page-gate`, `ask`, `log-session`). The live AI reply path was not run (no signed-in session in development); the transitions it uses are covered by the checks.
 
-**Still to do:** rows 1, 4, 7–15, 17–22, the rest of rows 6 and 16.
+**Batch 2 (2026-11-28), done:**
+
+- **Row 1, workspace sync engine:** `lib/sync-engine` holds one state (version on screen, cached version, pending edit, save out, server holds, last load, last save outcome, sign-in epoch) changed only by `syncStep`; the two branching points (after a load, after a conflict) return commands. `AppProvider` keeps it in a ref and still owns the network calls, the 600 ms debounce and the one-save-at-a-time ordering. The save indicator is derived by `saveStatus`.
+- **Fixed, each with a failing check first:** the indicator stuck on "Saving…" after an unsaved edit was dropped by a reload; stuck on "Not saved" after a conflict reloaded fine; "Saving…" forever for an edit made on the cached copy while offline (now "Not saved" until the server answers).
+- **Found and fixed (not in the survey):** a save still out at sign-out that failed after the next person signed in was re-queued and, on the next refocus, written into that person's workspace. Reproduced on the old code in a harness. Replies to anything started before a sign-out are now dropped, which also stops a late 401 from signing the next person out and a late success from re-creating the old account's device cache.
+- **How it was compared:** the real provider was mounted with a fake signed-in user and a scripted `/api/data` (no real server call), and 16 scenarios were traced on the old and new code: edit, burst, edit during a save, failure then edit, failure then refocus, conflict, refocus, a server write with an edit during it, cache-first boots (same version, changed elsewhere, with an edit, offline), failed load then Retry, and two account switches. Ten traces are identical; six differ. Five of those are the fixes above; the sixth is a side effect, not a fix: the save made while signing out no longer flashes "Saved". The two plain cache-first boots show nothing about the cached copy (the load answered in the same tick); the three cache scenarios with an edit carry that evidence.
+- **Account replaced directly:** logging in as someone else without signing out counts as a sign-out for the engine (`accountLeft`).
+- **Not exercised:** the real server, first-ever workspace creation, and the real 401 sign-out path (that a late 401 no longer signs the next person out comes from reading the code).
+
+**Still to do:** rows 4, 7–15, 17–22, the rest of rows 6 and 16.
 
 ## Already explicit (need nothing)
 

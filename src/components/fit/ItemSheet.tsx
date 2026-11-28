@@ -7,6 +7,7 @@ import { useModelFor, useModelStore } from '@/hooks/use-model-store';
 import { MEAL_SLOTS, type FitnessDraft } from '@/lib/fitness';
 import { parseFitnessLog } from '@/ai/flows/parse-fitness-log';
 import { AutoTextarea } from './AutoTextarea';
+import { useAsk } from '@/hooks/use-ask';
 import { QtyMeasure } from './FoodsPanel';
 import type { FoodsApi } from './useFoods';
 import { amountOf, measuresFor, openMealAmount, rescaleMeal, savedMealName, scaleFood, type Food, type MealAmount } from '@/lib/food-match';
@@ -37,9 +38,10 @@ export function ItemSheet({ item, data, day, today, onClose, onSave, onDelete, o
   const act = item?.kind === 'activity' ? fd?.activities.find(a => a.id === item.id) : undefined;
   const [f, setF] = useState<Form>(toForm());
   const [ask, setAsk] = useState('');
-  const [busy, setBusy] = useState(false);
-  const [note, setNote] = useState('');
-  const [split, setSplit] = useState<FitnessDraft | null>(null);
+  // "Edit with AI" as one named state (lib/ask): idle → pending → ready (a note, and for several meals a proposed
+  // split) | failed. A reply for a sheet that has moved to another item, or closed, is dropped.
+  const assist = useAsk<{ note: string; split?: FitnessDraft }>();
+  const busy = assist.pending, split = assist.value?.split ?? null, note = assist.value?.note || assist.error;
 
   // A meal's amount lives in Quantity + Measure, never in the Food field: the name is shown without it and put back on save.
   // The rules (when a meal still follows its food, how the amount is read off a name, what name is saved) are in
@@ -69,21 +71,23 @@ export function ItemSheet({ item, data, day, today, onClose, onSave, onDelete, o
   const shown = useRef<string | null>(null);
   const dirty = useRef(false);
   useEffect(() => {
-    if (!item) { shown.current = null; return; }
+    if (!item) { shown.current = null; assist.reset(); return; } // closed: a reply still on its way is dropped
     if (shown.current === item.id && dirty.current) return;
     shown.current = item.id; dirty.current = false;
     const name = meal ? load(meal, linked) : undefined;
-    setF({ ...toForm(meal, act), ...(name != null ? { name } : {}) }); setAsk(''); setNote(''); setSplit(null);
+    setF({ ...toForm(meal, act), ...(name != null ? { name } : {}) }); setAsk(''); assist.reset();
   }, [item?.id, !!linked]); // eslint-disable-line react-hooks/exhaustive-deps
   if (item && !meal && !act) return null;
   const isMeal = item?.kind === 'meal';
-  const set = (p: Partial<Form>) => { dirty.current = true; setF(x => ({ ...x, ...p })); setSplit(null); };
+  // A hand edit means a proposed split (and its "Save to replace…" note) no longer matches the form.
+  const dropSplit = () => { if (split) assist.reset(); };
+  const set = (p: Partial<Form>) => { dirty.current = true; setF(x => ({ ...x, ...p })); dropSplit(); };
   const amtQty = Number(amt.qty);
   const amtOk = amt.qty.trim() !== '' && Number.isFinite(amtQty) && amtQty > 0;
   // A new amount rewrites the numbers. An empty or zero amount changes nothing, so a half-typed field never zeroes the meal.
   const changeAmount = (next: { unit: string; qty: string }) => {
     dirty.current = true;
-    setAmt(next); setSplit(null);
+    setAmt(next); dropSplit();
     const q = Number(next.qty);
     if (next.qty.trim() === '' || !Number.isFinite(q) || q <= 0 || !meal) return;
     if (food) {
@@ -123,34 +127,34 @@ export function ItemSheet({ item, data, day, today, onClose, onSave, onDelete, o
 
   const askAi = async () => {
     if (!item || !ask.trim() || busy) return;
-    if (aiDisabled) { setNote('Demo: sign in to edit with AI.'); return; }
-    setBusy(true); setNote(''); dirty.current = true;
+    if (aiDisabled) { assist.set({ note: 'Demo: sign in to edit with AI.' }); return; }
+    dirty.current = true;
     const current: FitnessDraft = isMeal
       ? { date: day, meals: [{ name: fullName(), kcal, proteinG: p, carbsG: c, fatG: fat, fiberG: num(f.fiberG), ...(f.slot ? { slot: f.slot } : {}) }], activities: [], values: [] }
       : { date: day, meals: [], activities: [{ name: f.name, minutes: num(f.minutes), kcal, stepBased: f.stepBased }], values: [] };
-    try {
-      const r = await parseFitnessLog({ message: ask.trim(), todayYmd: today, dayYmd: day, trackers: [], currentDraft: current, webSearch, localTime: format(new Date(), 'HH:mm') }, selectedModel);
-      if (isMeal && r.meals.length > 1) {
-        const keepSlot = f.slot || undefined;
-        setSplit({ date: day, meals: r.meals.map(m => ({ ...m, slot: m.slot ?? keepSlot })), activities: [], values: [] });
-        setNote(`${r.reply} Save to replace this with ${r.meals.length} items.`);
-      } else if (isMeal && r.meals[0]) {
-        const m = r.meals[0];
-        // The AI's numbers are now the ones the amount scales, and they no longer follow the saved food. The stored
-        // weight was for the old numbers: save the AI's, or the one its name states, or clear it (0).
-        const name = load(m);
-        const o = openMealAmount(m);
-        setGrams(m.grams ?? (o.parts.kind === 'weight' ? o.qty : 0));
-        setF(x => ({ ...x, name, kcal: str(m.kcal), proteinG: str(m.proteinG), carbsG: str(m.carbsG), fatG: str(m.fatG), fiberG: str(m.fiberG), slot: m.slot ?? x.slot }));
-        setNote(`${r.reply} Check it, then Save.`);
-      } else if (!isMeal && r.activities[0]) {
-        const a = r.activities[0];
-        setF(x => ({ ...x, name: a.name, minutes: str(a.minutes), kcal: str(a.kcal), stepBased: a.stepBased }));
-        setNote(`${r.reply} Check it, then Save.`);
-      } else setNote("The AI didn't change anything. Try saying it differently.");
-      setAsk('');
-    } catch { setNote("Couldn't reach the AI. Check your connection and try again."); }
-    finally { setBusy(false); }
+    const keepSlot = f.slot || undefined;
+    let reply: Awaited<ReturnType<typeof parseFitnessLog>> | undefined;
+    const result = await assist.run(async () => {
+      const r = reply = await parseFitnessLog({ message: ask.trim(), todayYmd: today, dayYmd: day, trackers: [], currentDraft: current, webSearch, localTime: format(new Date(), 'HH:mm') }, selectedModel);
+      if (isMeal && r.meals.length > 1) return { note: `${r.reply} Save to replace this with ${r.meals.length} items.`, split: { date: day, meals: r.meals.map(m => ({ ...m, slot: m.slot ?? keepSlot })), activities: [], values: [] } };
+      if (isMeal ? r.meals[0] : r.activities[0]) return { note: `${r.reply} Check it, then Save.` };
+      return { note: "The AI didn't change anything. Try saying it differently." };
+    }, { error: "Couldn't reach the AI. Check your connection and try again." });
+    // Nothing below runs for a failure, or for a reply that came back after this sheet moved to another item.
+    if (!result || !reply) return;
+    if (!result.split && isMeal && reply.meals[0]) {
+      const m = reply.meals[0];
+      // The AI's numbers are now the ones the amount scales, and they no longer follow the saved food. The stored
+      // weight was for the old numbers: save the AI's, or the one its name states, or clear it (0).
+      const name = load(m);
+      const o = openMealAmount(m);
+      setGrams(m.grams ?? (o.parts.kind === 'weight' ? o.qty : 0));
+      setF(x => ({ ...x, name, kcal: str(m.kcal), proteinG: str(m.proteinG), carbsG: str(m.carbsG), fatG: str(m.fatG), fiberG: str(m.fiberG), slot: m.slot ?? x.slot }));
+    } else if (!isMeal && reply.activities[0]) {
+      const a = reply.activities[0];
+      setF(x => ({ ...x, name: a.name, minutes: str(a.minutes), kcal: str(a.kcal), stepBased: a.stepBased }));
+    }
+    setAsk('');
   };
 
   const numField = (key: keyof Form, label: string, unit: string) => (
@@ -252,7 +256,7 @@ export function ItemSheet({ item, data, day, today, onClose, onSave, onDelete, o
 
           <div className="flex gap-2">
             <button type="button" className="f-pill flex-1" onClick={() => { if (item) { onDelete(item); onClose(); } }}><Trash2 className="h-4 w-4" aria-hidden />Delete</button>
-            <button type="button" className="f-pill f-pill-primary flex-[2]" disabled={isMeal && !amtOk && !split} onClick={save}>Save</button>
+            <button type="button" className="f-pill f-pill-primary flex-[2]" disabled={busy || (isMeal && !amtOk && !split)} onClick={save}>Save</button>
           </div>
         </div>
       </SheetContent>
